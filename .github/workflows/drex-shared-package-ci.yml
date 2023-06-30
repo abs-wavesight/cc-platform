@@ -6,11 +6,13 @@ on:
     paths:
       - 'shared/**/*'
       - '.github/workflows/drex-shared-package-ci.yml'
+      - 'nuget.config'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'shared/**/*'
       - '.github/workflows/drex-shared-package-ci.yml'
+      - 'nuget.config'
   workflow_dispatch:
 
 concurrency:
