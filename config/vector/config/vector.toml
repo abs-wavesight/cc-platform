@@ -17,6 +17,7 @@
 
 [sources.container-logs]
 type = "docker_logs"
+# NOTE: Unfortunately, "include_labels" is all or nothing, so we cannot use it here to filter on "container_type"; instead, we must apply a filter condition in remap-container-logs
 # docker_host = "tcp://172.16.239.1:2376" # Necessary when running with Hyper-V containers on Windows, where the named pipe does not seem to work
 
 [transforms.remap-container-logs]
@@ -24,22 +25,26 @@ type = "remap"
 inputs = ["container-logs"]
 file = "./config/remap-container-logs.vrl"
 
-[transforms.filter-container-logs]
+[transforms.filter-container-logs-on-container-type]
 type = "filter"
 inputs = ["remap-container-logs"]
-# After transforming incoming logs, log levels should be standardized so this logic will work across all containers
+condition = 'exists(.container_type)'
+
+[transforms.filter-container-logs-on-level]
+type = "filter"
+inputs = ["filter-container-logs-on-container-type"]
 condition = '.level == "warn" || .level == "error" || .level == "critical"'
 
 [sinks.disk]
 type = "file"
-inputs = ["remap-container-logs"]
+inputs = ["filter-container-logs-on-container-type"]
 encoding.codec = "json"
 compression = "none" # compression options: ["none", "gzip", "zstd"].
 path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log" # Remember to change file extension if enabling compression (e.g. ".gzip" or ".zst")
 
 [sinks.rabbitmq]
 type = "amqp"
-inputs = ["filter-container-logs"]
+inputs = ["filter-container-logs-on-level"]
 connection_string = "amqp://rabbitmq-local:5672"
 encoding.codec = "json"
 exchange = ""

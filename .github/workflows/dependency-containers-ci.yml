@@ -101,6 +101,12 @@ jobs:
           dockerfile: containers/${{ matrix.container }}/Dockerfile
           pushImage: true
           tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          labels: >-
+            org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}: ${{ matrix.container }}",
+            ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
+            ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
+            ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
+            ${{ env.LABEL_PREFIX }}.container_type=infrastructure
           addTimestamp: true
           platform: windows/amd64          
 

@@ -1,9 +1,14 @@
 # attempt to parse JSON but fail gracefully
 .message = parse_json(.message) ?? .message
+.label = parse_json(.label) ?? .label
 
 # we don't need the entire docker container id
 if exists(.container_id) {
   .container_id = truncate!(.container_id, 12)
+}
+
+if (exists(.label."org.eagle.wavesight.container_type")) {
+  .container_type = .label."org.eagle.wavesight.container_type"
 }
 
 # remove fields with low value
