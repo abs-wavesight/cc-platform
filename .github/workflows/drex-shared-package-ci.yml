@@ -44,5 +44,5 @@ jobs:
       solution-directory: libraries/Drex.Shared
       nuget-working-directory: libraries/Drex.Shared/Shared
       nuget-package-name: Abs.CommonCore.Drex.Shared
-      project-file: libraries/Drex.Shared/Shared/Shared.csproj
+      project-file: Shared/Shared.csproj
     secrets: inherit
