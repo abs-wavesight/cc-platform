@@ -1,0 +1,39 @@
+name: Shared - Get Clean Branch Names
+
+on:
+  workflow_call:
+    outputs:
+      tagFriendlyBranchName:
+        description: Lowercase branch name with slashes replaced with dashes
+        value: ${{ jobs.clean_branch_names.outputs.tagFriendlyBranchName }}
+      tagFriendlyBranchNameWithPrefixDash:
+        description: Tag-friendly branch name with preceeding dash, or empty string if branch is main
+        value: ${{ jobs.clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+
+env:
+  MAIN_BRANCH: main
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  clean_branch_names:
+    name: Clean Branch Names
+    runs-on: windows-2019
+    outputs:
+      tagFriendlyBranchName: ${{ steps.clean_branch_names.outputs.tagFriendlyBranchName }}
+      tagFriendlyBranchNameWithPrefixDash: ${{ steps.clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+    steps:
+    - name: Construct tag-friendly branch name
+      id: clean_branch_names
+      run: |
+        $isMerged=('${{ github.event_name }}' -eq 'push')
+        $tagFriendlyBranchName=If($isMerged) {$Env:GITHUB_REF_NAME} Else {$Env:GITHUB_HEAD_REF}
+        $tagFriendlyBranchName=$tagFriendlyBranchName.ToLower() -replace '[/]', '-'
+        echo "Tag-friendly branch name: $tagFriendlyBranchName"
+        echo "tagFriendlyBranchName=$tagFriendlyBranchName" >> $Env:GITHUB_OUTPUT
+        
+        $tagFriendlyBranchNameWithPrefixDash=($tagFriendlyBranchName -eq "${{ env.MAIN_BRANCH }}") ? "" : "-$tagFriendlyBranchName"
+        echo "Tag-friendly branch name (with prefix dash): $tagFriendlyBranchNameWithPrefixDash"
+        echo "tagFriendlyBranchNameWithPrefixDash=$tagFriendlyBranchNameWithPrefixDash" >> $Env:GITHUB_OUTPUT

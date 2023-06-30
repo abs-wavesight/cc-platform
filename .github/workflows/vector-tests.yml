@@ -1,0 +1,43 @@
+name: Vector Tests
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'config/vector/**/*'
+      - '.github/workflows/vector-tests.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'config/vector/**/*'
+      - '.github/workflows/vector-tests.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: vector-tests-${{ github.head_ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  run-vector-tests:
+    name: Run Vector Tests
+
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Run Tests
+        working-directory: ${{ github.workspace }}
+        run: ./config/vector/tests/run-tests.ps1

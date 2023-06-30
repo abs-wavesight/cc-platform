@@ -1,0 +1,90 @@
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'critical' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "critical"
+container_type = "application"
+[[tests.outputs]]
+extract_from = "filter-container-logs-on-level"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("critical", .level)'
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'error' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "error"
+container_type = "application"
+[[tests.outputs]]
+extract_from = "filter-container-logs-on-level"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("error", .level)'
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'warn' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "warn"
+container_type = "application"
+[[tests.outputs]]
+extract_from = "filter-container-logs-on-level"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("warn", .level)'
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'info' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs-on-level"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "info"
+container_type = "application"
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'debug' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs-on-level"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "debug"
+container_type = "application"
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'trace' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs-on-level"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "trace"
+container_type = "application"
+
+[[tests]]
+name = "filter-container-logs-on-level GIVEN level of 'none' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs-on-level"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "none"
+container_type = "application"
+
+[[tests]]
+name = "filter-container-logs-on-container-type GIVEN missing 'container_type SHOULD exclude log"
+no_outputs_from = ["filter-container-logs-on-container-type"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "error"

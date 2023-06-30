@@ -1,0 +1,40 @@
+# attempt to parse JSON but fail gracefully
+.message = parse_json(.message) ?? .message
+.label = parse_json(.label) ?? .label
+
+# we don't need the entire docker container id
+if exists(.container_id) {
+  .container_id = truncate!(.container_id, 12)
+}
+
+if (exists(.label."org.eagle.wavesight.container_type")) {
+  .container_type = .label."org.eagle.wavesight.container_type"
+}
+
+# remove fields with low value
+del(.container_created_at)
+del(.label)
+del(.source_type)
+del(.host)
+
+# remove embedded timestamps in favor of consistent top-level timestamp
+del(.message.Timestamp)
+del(.message.timestamp)
+del(.message.time)
+
+# promote log level field to top level
+logLevel = .level
+if exists(.message.level) {
+  logLevel = del(.message.level)
+} else if exists(.message.LogLevel) {
+  logLevel = del(.message.LogLevel)
+}
+
+# standardize log levels across applications
+logLevel = downcase(logLevel) ?? "none"
+if logLevel == "information" {
+  logLevel = "info"
+} else if logLevel == "warning" {
+  logLevel = "warn"
+}
+.level = logLevel
