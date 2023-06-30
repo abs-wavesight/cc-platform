@@ -1,0 +1,93 @@
+name: Shared - Publish Nuget Package
+
+on:
+  workflow_call:
+    inputs:
+      solution-directory: # service
+        required: true
+        type: string
+        description: Relative to the repository root (e.g., "service")    
+      nuget-working-directory:
+        required: true
+        type: string
+        description: The working directory for nuget commands
+      nuget-package-name:
+        required: true
+        type: string
+        description: The name for nuget to use for the package
+      project-file:
+        required: true
+        type: string
+        description: The path to the the csproj file from solution root
+   
+defaults:
+  run:
+    shell: pwsh
+      
+env:  
+  ABS_NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }},
+  ABS_NUGET_USERNAME: ${{ github.ACTOR }}
+  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages
+  SOLUTION_DIRECTORY: ${{ inputs.solution-directory }}
+  NUGET_WORKING_DIRECTORY: ${{ inputs.nuget-working-directory }}
+  NUGET_PACKAGE_NAME: ${{ inputs.nuget-package-name }}
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  
+jobs:
+  get_clean_branch_names:
+    name: Get Clean Branch Names
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
+
+  publish-nuget-package:
+    name: Publish Nuget Package
+    needs: [get_clean_branch_names]
+    runs-on: windows-2019
+    env:
+      BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
+      BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch
+
+      - name: Cache nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.NUGET_PACKAGE_PATH }}
+          key: ${{ runner.OS }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-nuget-
+            
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Construct version number
+        working-directory: ${{ env.SOLUTION_DIRECTORY }}
+        run: |
+          $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
+          Write-Output "Version: ${Version}"
+          echo "NUGET_PACKAGE_VERSION=$Version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $ProjFile = "${{ inputs.project-file }}"
+          (Get-Content $ProjFile ).replace("<Version></Version>", "<Version>${Version}</Version>") | Set-Content $ProjFile
+                   
+      - name: Nuget - Set Nuget credentials
+        working-directory: ./
+        run: |
+          $AbsNugetUsername = "USERNAME"
+          echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          $AbsNugetPassword = "${{ github.TOKEN }}"
+          echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append                   
+                   
+      - name: Nuget - Pack
+        working-directory: ${{ env.NUGET_WORKING_DIRECTORY }}
+        run: dotnet pack --configuration Release
+
+      - name: Nuget - Push
+        working-directory: ${{ env.NUGET_WORKING_DIRECTORY }}
+        run: |
+          dotnet nuget push `
+          "bin/Release/${{ env.NUGET_PACKAGE_NAME }}.${{ env.NUGET_PACKAGE_VERSION }}.nupkg" `
+          --source "github" `
+          --api-key ${{ secrets.GITHUB_TOKEN }}

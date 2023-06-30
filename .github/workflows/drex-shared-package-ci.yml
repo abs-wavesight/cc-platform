@@ -1,0 +1,46 @@
+name: D-REX Shared Package CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'shared/**/*'
+      - '.github/workflows/drex-shared-package-ci.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'shared/**/*'
+      - '.github/workflows/drex-shared-package-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: drex-shared-package-${{ github.head_ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dump-context:
+    name: Dump Context
+    uses: ./.github/workflows/shared-dump-context.yml
+
+  build:
+    name: Build & Run Tests
+    uses: ./.github/workflows/shared-dotnet-build.yml
+    with:
+      solution-directory: libraries/Drex.Shared
+      solution-name: Drex.Shared.sln
+    secrets: inherit
+
+  publish-nuget-package:
+    name: Publish Nuget Package
+    needs: [build]
+    uses: ./.github/workflows/shared-publish-nuget-package.yml
+    with:
+      solution-directory: libraries/Drex.Shared
+      nuget-working-directory: libraries/Drex.Shared/Shared
+      nuget-package-name: Abs.CommonCore.Drex.Shared
+      project-file: libraries/Drex.Shared/Shared/Shared.csproj
+    secrets: inherit
