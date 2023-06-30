@@ -1,0 +1,8 @@
+[sinks.loki]
+type = "loki"
+inputs = ["remap-container-logs"]
+endpoint = "http://loki:3100"
+encoding.codec = "json"
+
+[sinks.loki.labels]
+source = "vector"

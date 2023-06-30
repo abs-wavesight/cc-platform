@@ -1,0 +1,19 @@
+name: Shared - Dump Context
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dump-context:
+    name: Dump Context
+    runs-on: windows-2019
+    steps:
+      - name: Dump context
+        env:
+          DUMP: ${{ toJSON(github) }}
+        run: Write-Output $Env:DUMP

@@ -1,0 +1,125 @@
+[[tests]]
+name = "remap-container-logs GIVEN .message.LogLevel of 'Information' SHOULD remap to .level of 'info'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"LogLevel": "Information"}'
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("info", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN .message.LogLevel of 'Warning' SHOULD remap to .level of 'warn'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"LogLevel": "Warning"}'
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("warn", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN .message.level of 'Information' SHOULD remap to .level of 'info'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"level": "Information"}'
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("info", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN .message.level of 'Warning' SHOULD remap to .level of 'warn'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"level": "Warning"}'
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("warn", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN .level of 'Information' SHOULD remap to .level of 'info'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "Information"
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("info", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN .level of 'Warning' SHOULD remap to .level of 'warn'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "Warning"
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("warn", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN no level SHOULD set .level to 'none'"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = ''
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("none", .level)'
+
+[[tests]]
+name = "remap-container-logs GIVEN default docker message SHOULD remove unnecessary fields"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+container_id = "12345678901234567890"
+container_created_at = "should be removed"
+label = "should be removed"
+source_type = "should be removed"
+host = "should be removed"
+message = '''
+{
+  "message": "the message",
+  "Timestamp": "should be removed",
+  "timestamp": "should be removed",
+  "time": "should be removed"
+}
+'''
+[[tests.outputs]]
+extract_from = "remap-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = '''
+assert_eq!("123456789012", .container_id)
+assert!(!exists(.container_created_at))
+assert!(!exists(.label))
+assert!(!exists(.source_type))
+assert!(!exists(.host))
+assert!(!exists(.message.Timestamp))
+assert!(!exists(.message.timestamp))
+assert!(!exists(.message.time))
+assert_eq!("the message", .message.message)
+'''

@@ -1,0 +1,74 @@
+[[tests]]
+name = "filter-container-logs GIVEN level of 'critical' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "critical"
+[[tests.outputs]]
+extract_from = "filter-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("critical", .level)'
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'error' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "error"
+[[tests.outputs]]
+extract_from = "filter-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("error", .level)'
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'warn' SHOULD include log"
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "warn"
+[[tests.outputs]]
+extract_from = "filter-container-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("warn", .level)'
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'info' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "info"
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'debug' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "debug"
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'trace' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "trace"
+
+[[tests]]
+name = "filter-container-logs GIVEN level of 'none' SHOULD exclude log"
+no_outputs_from = ["filter-container-logs"]
+[[tests.inputs]]
+insert_at = "remap-container-logs"
+type = "log"
+[tests.inputs.log_fields]
+level = "none"

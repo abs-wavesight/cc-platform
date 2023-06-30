@@ -1,0 +1,51 @@
+#                                    __   __  __
+#                                    \ \ / / / /
+#                                     \ V / / /
+#                                      \_/  \/
+#
+#                                    V E C T O R
+#                                   Configuration
+#
+# ------------------------------------------------------------------------------
+# Website: https://vector.dev
+# Docs: https://vector.dev/docs
+# Chat: https://chat.vector.dev
+# ------------------------------------------------------------------------------
+
+# Change this to use a non-default directory for Vector data storage:
+# data_dir = "/var/lib/vector"
+
+[sources.container-logs]
+type = "docker_logs"
+# docker_host = "tcp://172.16.239.1:2376" # Necessary when running with Hyper-V containers on Windows, where the named pipe does not seem to work
+
+[transforms.remap-container-logs]
+type = "remap"
+inputs = ["container-logs"]
+file = "./config/remap-container-logs.vrl"
+
+[transforms.filter-container-logs]
+type = "filter"
+inputs = ["remap-container-logs"]
+# After transforming incoming logs, log levels should be standardized so this logic will work across all containers
+condition = '.level == "warn" || .level == "error" || .level == "critical"'
+
+[sinks.disk]
+type = "file"
+inputs = ["remap-container-logs"]
+encoding.codec = "json"
+compression = "none" # compression options: ["none", "gzip", "zstd"].
+path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log" # Remember to change file extension if enabling compression (e.g. ".gzip" or ".zst")
+
+[sinks.rabbitmq]
+type = "amqp"
+inputs = ["filter-container-logs"]
+connection_string = "amqp://rabbitmq-local:5672"
+encoding.codec = "json"
+exchange = ""
+
+# Vector's GraphQL API (disabled by default)
+# Use a browser or `vector top` to view detailed information at http://localhost:8686
+# [api]
+# enabled = true
+# address = "127.0.0.1:8686"
