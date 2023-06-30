@@ -396,3 +396,16 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+**/*.sln.DotSettings.user
+
+bin/
+obj/
+.idea/
+TestResults/
+.nuget/
+Coverage/
+logs/
+/.gitignore
+nuget.config
+!/nuget.config
+/containers/rabbitmq/utilities/handle.exe
