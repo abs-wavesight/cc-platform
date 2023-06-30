@@ -1,4 +1,4 @@
-name: Dependency Containers PR Cleanup
+name: Libraries PR Cleanup
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   clean-container-images:
-    name: Clean Container Images
+    name: Clean Nuget Packages
     uses: ./.github/workflows/shared-cleanup-after-pr-merge.yml
     with:
-      image-names: "['rabbitmq', 'vector', 'loki', 'grafana']"
+      nuget-package-names: "['Abs.CommonCore.Drex.Shared']"

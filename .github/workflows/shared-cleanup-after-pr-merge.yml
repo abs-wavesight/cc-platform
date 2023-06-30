@@ -1,0 +1,104 @@
+name: Shared - Post-Merge PR Package Cleanup
+
+on:
+  workflow_call:
+    inputs:
+      image-names:
+        required: false
+        type: string
+        description: JSON array in string form, listing the container image names that should be cleaned up ("['foo', 'bar']")
+      nuget-package-names:
+        required: false
+        type: string
+        description: JSON array in string form, listing the nuget package names that should be cleaned up ("['foo', 'bar']")
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch name (MUST replace slashes with dashes)'
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dump-context:
+    name: Dump Context
+    uses: ./.github/workflows/shared-dump-context.yml
+
+  get_clean_branch_names:
+    name: Get Clean Branch Names
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
+
+  clean-container-images:
+    if: (((github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true) && needs.get_clean_branch_names.outputs.tagFriendlyBranchName != 'main') && inputs.image-names != '')
+    needs: get_clean_branch_names
+    name: Clean Up Container Images
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+        image: ${{ fromJson(inputs.image-names) }}
+
+    runs-on: windows-2019
+
+    steps:
+    - name: Set branch names from current branch
+      if: (github.event_name != 'workflow_dispatch')
+      run: |
+        echo "Branch name with prefix dash: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}"
+        echo "BRANCH_NAME_WITH_PREFIX_DASH=${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+    
+    - name: Set branch names from input
+      if: (github.event_name == 'workflow_dispatch')
+      run: |
+        $branchNameWithPrefixDash="-${{ inputs.branch }}".ToLower()
+        echo "Branch name with prefix dash: $branchNameWithPrefixDash"
+        echo "BRANCH_NAME_WITH_PREFIX_DASH=$branchNameWithPrefixDash" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+    - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
+      name: Prune all merged branch container package versions
+      with:
+        organization: abs-wavesight
+        type: container
+        names: |
+          ${{ matrix.image }}
+        version-pattern: "^${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}(?:.{0}|.{8})$" # This will match all versions for this branch's package
+        keep: 0
+        dry-run: false
+
+
+  clean-nuget-packages:
+    if: (((github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true) && needs.get_clean_branch_names.outputs.tagFriendlyBranchName != 'main') && inputs.nuget-package-names != '')
+    needs: get_clean_branch_names
+    name: Clean Up Nuget Packages
+    strategy:
+      matrix:
+        package: ${{ fromJson(inputs.nuget-package-names) }}
+
+    runs-on: windows-2019
+
+    steps:
+    - name: Set branch names from current branch
+      if: github.event_name != 'workflow_dispatch'
+      run: |
+        echo "Branch name with prefix dash: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}"
+        echo "BRANCH_NAME_WITH_PREFIX_DASH=${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+    
+    - name: Set branch names from input
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        $branchNameWithPrefixDash="-${{ inputs.branch }}".ToLower()
+        echo "Branch name with prefix dash: $branchNameWithPrefixDash"
+        echo "BRANCH_NAME_WITH_PREFIX_DASH=$branchNameWithPrefixDash" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+    - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
+      name: Prune all merged branch Nuget package versions
+      with:
+        organization: abs-wavesight
+        type: nuget
+        names: |
+          ${{ matrix.package }}
+        version-pattern: ".*${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}.*$" # This will match all versions for this branch's package
+        keep: 0
+        dry-run: false
