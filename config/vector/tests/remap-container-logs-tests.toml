@@ -98,7 +98,6 @@ type = "log"
 container_id = "12345678901234567890"
 container_created_at = "should be removed"
 label = '''{ "org.eagle.wavesight.container_type": "application"}'''
-label = "should be removed"
 source_type = "should be removed"
 host = "should be removed"
 message = '''
