@@ -1,0 +1,24 @@
+name: Libraries PR Cleanup
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch name (MUST replace slashes with dashes)'
+        required: true
+        type: string
+
+concurrency:
+  group: dependency-containers-pr-cleanup-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  clean-container-images:
+    name: Clean Nuget Packages
+    uses: ./.github/workflows/shared-cleanup-after-pr-merge.yml
+    with:
+      nuget-package-names: "['Abs.CommonCore.Drex.Shared']"
