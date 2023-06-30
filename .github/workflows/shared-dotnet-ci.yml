@@ -1,0 +1,140 @@
+name: Shared - Dotnet CI
+
+on:
+  workflow_call:
+    inputs:
+      image-name: # cc-drex-service
+        required: true
+        type: string
+      label-description: # ABS Common Core Data Remote EXchange Service (D-REX)
+        required: true
+        type: string
+      docker-context-directory: # service
+        required: true
+        type: string
+        description: Relative to the repository root (e.g., "service")
+      solution-directory: # service
+        required: true
+        type: string
+        description: Relative to the repository root (e.g., "service")
+      solution-name: # Drex.sln
+        required: true
+        type: string
+        description: Should be found with the `solution-directory` (e.g., "Drex.sln")
+      dockerfile-name: # Drex.Dockerfile
+        required: true
+        type: string
+        description: Should be found with the `solution-directory` (e.g., "Drex.Dockerfile")
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ inputs.image-name }}
+  DOTNET_IMAGE_TAG_WIN2019: 7.0-nanoserver-1809
+  DOTNET_IMAGE_TAG_WIN2022: 7.0-nanoserver-ltsc2022
+  POWERSHELL_IMAGE_TAG_WIN2019: lts-7.2-nanoserver-1809
+  POWERSHELL_IMAGE_TAG_WIN2022: nanoserver-ltsc2022
+  LABEL_PREFIX: org.eagle.wavesight
+  IMAGE_DESCRIPTION: ${{ inputs.label-description }}
+  COVERAGE_OUTPUT_LOCATION: service/{0}/TestResults/*/coverage.cobertura.xml
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dump-context:
+    name: Dump Context
+    uses: ./.github/workflows/shared-dump-context.yml
+
+  get_clean_branch_names:
+    name: Get Clean Branch Names
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
+
+  build:
+    name: Build & Run Tests
+    uses: ./.github/workflows/shared-dotnet-build.yml
+    with:
+      solution-directory: service
+      solution-name: Drex.sln
+    secrets: inherit
+
+  push-image:
+    name: Push Container Image
+    needs: [ get_clean_branch_names, build ]
+    strategy:
+      matrix:
+        os: [ windows-2019, windows-2022 ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch
+
+      - name: Construct tag-friendly shortened git SHA
+        working-directory: ${{ inputs.solution-directory }}
+        run: |
+          $tagFriendlySha=$Env:GITHUB_SHA
+          $tagFriendlySha=$tagFriendlySha.Substring(0, 7)
+          echo "Tag-friendly git SHA: $tagFriendlySha"
+          echo "SHORT_SHA=$tagFriendlySha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Nuget - Copy config
+        working-directory: ./
+        run: Copy-Item ./nuget.config ${{ inputs.solution-directory }}
+
+      - name: Nuget - Set Nuget credentials
+        working-directory: ./
+        run: |
+          $AbsNugetUsername = "USERNAME"
+          echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          $AbsNugetPassword = "${{ github.TOKEN }}"
+          echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build and push Docker image
+        id: build-and-push-container
+        uses: mr-smithers-excellent/docker-build-push@v6
+        env:
+          BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
+          BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+        with:
+          buildArgs: >-
+            DOTNET_TAG=${{ matrix.os == 'windows-2022' && env.DOTNET_IMAGE_TAG_WIN2022 || env.DOTNET_IMAGE_TAG_WIN2019 }},
+            POWERSHELL_NANOSERVER_TAG=${{ matrix.os == 'windows-2022' && env.POWERSHELL_IMAGE_TAG_WIN2022 || env.POWERSHELL_IMAGE_TAG_WIN2019 }},
+            ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",
+            ABS_NUGET_PASSWORD="${{ env.ABS_NUGET_PASSWORD }}"
+          image: ${{ env.IMAGE_NAME }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.ACTOR }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          directory: ${{ inputs.docker-context-directory }}
+          dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
+          pushImage: true
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          labels: >-
+            org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
+            ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
+            ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
+            ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
+            ${{ env.LABEL_PREFIX }}.container_type=application
+          addTimestamp: true
+          platform: windows/amd64
+
+      - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
+        env:
+          BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
+          BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+        if: env.BRANCH_NAME != 'main'
+        name: Prune old package versions
+        with:
+          organization: abs-wavesight
+          type: container
+          names: |
+            ${{ env.IMAGE_NAME }}
+          version-pattern: "^${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}-(?!${{ env.SHORT_SHA }}$).{7}$" # This will match all versions for this branch's package EXCEPT the one we just published
+          keep: 0
+          dry-run: false
