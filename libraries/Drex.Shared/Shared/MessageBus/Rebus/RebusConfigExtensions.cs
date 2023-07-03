@@ -31,7 +31,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                     .SetPublisherConfirms(true)
                     .ExchangeNames(
                         directExchangeName: directExchangeName,
-                        topicExchangeName: topicExchangeName))
+                        topicExchangeName: topicExchangeName)
+                    .Declarations(declareExchanges: false, declareInputQueue: false))
                 .Options(o =>
                 {
                     o.SetBusName(busName);
@@ -55,7 +56,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                     .UseRabbitMq(
                         sourceMessageBusConnectionInfo.ToConnectionString(),
                         inputQueueName)
-                    .SetPublisherConfirms(true))
+                    .SetPublisherConfirms(true)
+                    .Declarations(declareExchanges: false, declareInputQueue: false))
                 .Options(o =>
                 {
                     o.SetBusName(busName);
@@ -80,7 +82,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                     .SetPublisherConfirms(true)
                     .ExchangeNames(
                         directExchangeName: directExchangeName,
-                        topicExchangeName: topicExchangeName))
+                        topicExchangeName: topicExchangeName)
+                    .Declarations(declareExchanges: false, declareInputQueue: false))
                 .Options(o =>
                 {
                     o.SetBusName(busName);
@@ -101,7 +104,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
                 .Transport(t => t
                     .UseRabbitMqAsOneWayClient(busConnection.ToConnectionString())
-                    .SetPublisherConfirms(true))
+                    .SetPublisherConfirms(true)
+                    .Declarations(declareExchanges: false, declareInputQueue: false))
                 .Options(o =>
                 {
                     o.SetBusName(busName);
