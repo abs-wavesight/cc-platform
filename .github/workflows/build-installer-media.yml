@@ -45,4 +45,4 @@ jobs:
           path: ${{ matrix.component.name }}
       - name: "Check file contents"
         run: |
-          Get-Content ${{ $GITHUB_WORKSPACE }}\${{ matrix.component.name }}\README.md
+          Get-Content $env:GITHUB_WORKSPACE\${{ matrix.component.name }}\README.md
