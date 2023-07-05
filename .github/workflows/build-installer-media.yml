@@ -1,0 +1,36 @@
+name: Build Installer Media
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+concurrency:
+  group: build-installer-media
+  cancel-in-progress: true
+
+jobs:
+  load-cc-components:
+    name: Parse CC Component Registry
+    runs-on: windows-latest
+    outputs:
+      registry: ${{ parseJSON(steps.loadRegistry.outputs.registryContents) }}
+    steps:
+      - id: loadRegistry
+        name: "Load Component Registry"
+        run: |
+          $REGISTRY_CONTENTS = $(GET-Content component_registry.json)
+          Write-Output "::set-output name=registryContents::$REGISTRY_CONTENTS
+  build-components:
+    runs-on: windows-latest  # TODO run on 2019 and 2022?
+    needs: load-cc-components
+    strategy:
+      matrix:
+        component: ${{ needs.load-cc-components.outputs.registry.components }}
+    steps:
+      - name: "Pull Latest Release"
+        with:
+          GITHUB_TOKEN: ${{ secrets.FETCH_RELEASES_TOKEN }}
+        run: |
+          Write-Output "Pulling release for ${{ matrix.component.name }}..."
