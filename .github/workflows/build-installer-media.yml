@@ -34,7 +34,7 @@ jobs:
         component: ${{ needs.load-cc-components.outputs.registry.components }}
     steps:
       - name: "Pull Latest Release"
-        with:
-          GITHUB_TOKEN: ${{ secrets.FETCH_RELEASES_TOKEN }}
+#        with:
+#          GITHUB_TOKEN: ${{ secrets.FETCH_RELEASES_TOKEN }}
         run: |
           Write-Output "Pulling release for ${{ matrix.component.name }}..."
