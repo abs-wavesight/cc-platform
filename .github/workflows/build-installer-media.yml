@@ -19,7 +19,7 @@ jobs:
     name: Parse CC Component Registry
     runs-on: windows-latest
     outputs:
-      registry: ${{ fromJSON(steps.loadRegistry.outputs.registryContents) }}
+      registry: ${{ steps.loadRegistry.outputs.registryContents }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
     needs: load-cc-components
     strategy:
       matrix:
-        component: ${{ needs.load-cc-components.outputs.registry.components }}
+        component: ${{ fromJSON(needs.load-cc-components.outputs.registry).components }}
     steps:
       - name: "Pull Latest Release"
 #        with:
