@@ -3,8 +3,8 @@ using Rebus.Bus;
 using Rebus.Config;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Drex.Contracts;
-using Rebus.Serialization;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus;
+using Rebus.Serialization;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
 {
