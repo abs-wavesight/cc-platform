@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'shared/**/*'
+      - 'libraries/Drex.Shared/**/*'
       - '.github/workflows/drex-shared-package-ci.yml'
       - 'nuget.config'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'shared/**/*'
+      - 'libraries/Drex.Shared/**/*'
       - '.github/workflows/drex-shared-package-ci.yml'
       - 'nuget.config'
   workflow_dispatch:

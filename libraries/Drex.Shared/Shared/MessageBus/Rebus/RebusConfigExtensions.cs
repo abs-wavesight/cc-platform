@@ -36,31 +36,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 .Options(o =>
                 {
                     o.SetBusName(busName);
-                    o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
-                    // o.LogPipeline(verbose: true);
-                })
-                .SetSerialization(serializerConfig);
-        }
-
-        public static RebusConfigurer ConfigureRebusConsumer(
-            this RebusConfigurer rebusConfigurer,
-            BusConnection sourceMessageBusConnectionInfo,
-            string busName,
-            string inputQueueName,
-            ILoggerFactory loggerFactory,
-            Action<StandardConfigurer<ISerializer>>? serializerConfig = null)
-        {
-            return rebusConfigurer
-                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
-                .Transport(t => t
-                    .UseRabbitMq(
-                        sourceMessageBusConnectionInfo.ToConnectionString(),
-                        inputQueueName)
-                    .SetPublisherConfirms(true)
-                    .Declarations(declareExchanges: false, declareInputQueue: false))
-                .Options(o =>
-                {
-                    o.SetBusName(busName);
+                    if (string.IsNullOrWhiteSpace(deadLetterQueueName) == false) o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
                     // o.LogPipeline(verbose: true);
                 })
                 .SetSerialization(serializerConfig);
@@ -93,28 +69,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 .SetSerialization(serializerConfig);
         }
 
-        public static RebusConfigurer ConfigureRebusPublisher(
-            this RebusConfigurer rebusConfigurer,
-            BusConnection busConnection,
-            string busName,
-            ILoggerFactory loggerFactory,
-            Action<StandardConfigurer<ISerializer>>? serializerConfig = null)
-        {
-            return rebusConfigurer
-                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
-                .Transport(t => t
-                    .UseRabbitMqAsOneWayClient(busConnection.ToConnectionString())
-                    .SetPublisherConfirms(true)
-                    .Declarations(declareExchanges: false, declareInputQueue: false))
-                .Options(o =>
-                {
-                    o.SetBusName(busName);
-                    o.EnableCompression(1);
-                    // o.LogPipeline(verbose: true);
-                })
-                .SetSerialization(serializerConfig);
-        }
-
         private static RebusConfigurer SetSerialization(this RebusConfigurer rebusConfigurer,
             Action<StandardConfigurer<ISerializer>>? serializerConfig = null)
         {
@@ -123,7 +77,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 return rebusConfigurer
                     .Serialization(s => s.Register(_ => new StringMessageSerializer()));
             }
-                
+
             return rebusConfigurer
                 .Serialization(s => serializerConfig(s));
         }
