@@ -21,10 +21,13 @@ jobs:
     outputs:
       registry: ${{ fromJSON(steps.loadRegistry.outputs.registryContents) }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - id: loadRegistry
         name: "Load Component Registry"
         run: |
           $REGISTRY_CONTENTS = $(GET-Content component_registry.json)
+          Write-Output "Registry contents: $(REGISTRY_CONTENTS)"
           Write-Output "::set-output name=registryContents::$REGISTRY_CONTENTS"
   build-components:
     runs-on: windows-latest  # TODO run on 2019 and 2022?
