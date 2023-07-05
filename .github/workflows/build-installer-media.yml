@@ -43,6 +43,15 @@ jobs:
           token: ${{ secrets.FETCH_RELEASES_TOKEN }}
           ref: "main" # TODO update to pull latest release
           path: ${{ matrix.component.name }}
-      - name: "Check file contents"
+          # TODO build list of files to checkout from component registry?
+          sparse-checkout: |
+            scripts/*
+            README.md
+            docker-compose*.yml
+          sparse-checkout-cone-mode: false
+      - name: "Check file contents" # TODO delete this test step
         run: |
           Get-Content $env:GITHUB_WORKSPACE\${{ matrix.component.name }}\README.md
+      - name: "Create release zip"
+        run: |
+          Compress-Archive -Verbose -Path ${{ matrix.component.name }}\* -DestinationPath ${{ matrix.component.name }}.zip
