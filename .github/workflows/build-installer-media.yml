@@ -19,7 +19,7 @@ jobs:
     name: Parse CC Component Registry
     runs-on: windows-latest
     outputs:
-      registry: ${{ parseJSON(steps.loadRegistry.outputs.registryContents) }}
+      registry: ${{ fromJSON(steps.loadRegistry.outputs.registryContents) }}
     steps:
       - id: loadRegistry
         name: "Load Component Registry"
