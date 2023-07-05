@@ -2,7 +2,7 @@
   "components": [
     {
       "name": "D-REX",
-      "repository_url": "https://github.com/abs-wavesight/cc-drex"
+      "repository_path": "abs-wavesight/cc-drex"
     }
   ]
 }

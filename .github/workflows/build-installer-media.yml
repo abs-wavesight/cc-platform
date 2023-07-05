@@ -36,8 +36,13 @@ jobs:
       matrix:
         component: ${{ fromJSON(needs.load-cc-components.outputs.registry).components }}
     steps:
-      - name: "Pull Latest Release"
-#        with:
-#          GITHUB_TOKEN: ${{ secrets.FETCH_RELEASES_TOKEN }}
+      - name: "Pull Latest Release for ${{ matrix.component.name }}"
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ matrix.component.repository_path }}
+          token: ${{ secrets.FETCH_RELEASES_TOKEN }}
+          ref: "main" # TODO update to pull latest release
+          path: ${{ matrix.component.name }}
+      - name: "Check file contents"
         run: |
-          Write-Output "Pulling release for ${{ matrix.component.name }}..."
+          Get-Content ${{ $GITHUB_WORKSPACE }}\${{ matrix.component.name }}\README.md
