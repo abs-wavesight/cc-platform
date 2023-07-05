@@ -18,10 +18,21 @@
         {
             public const string ResourcePrefix = "cc.drex";
 
-            public const string SiteSourceDirectExchangeName = $"{ResourcePrefix}.site.src.{DirectExchangeSuffix}";
-            public const string SiteSourceTopicExchangeName = $"{ResourcePrefix}.site.src.{TopicExchangeSuffix}";
-            public const string SiteSourceDlqQueueName = $"{ResourcePrefix}.site.src-dlq.{QueueSuffix}";
-            public const string CentralSinkExchangeFormat = $"{ResourcePrefix}.{{0}}.{{1}}-snk";
+            public const string SiteClientDirectExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{DirectExchangeSuffix}";
+            public const string SiteClientTopicExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{TopicExchangeSuffix}";
+            public const string SiteClientDlqExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{TopicExchangeSuffix}";
+            public const string SiteClientDlqTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{QueueSuffix}";
+
+            public const string CentralClientDirectExchangeTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src.{DirectExchangeSuffix}";
+            public const string CentralClientTopicExchangeTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src.{TopicExchangeSuffix}";
+            public const string CentralClientDlqExchangeTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{TopicExchangeSuffix}";
+            public const string CentralClientDlqTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{QueueSuffix}";
+
+            public const string SiteDlqExchangeName = $"{ResourcePrefix}.site.internal-src-dlq.{DirectExchangeSuffix}";
+            public const string SiteDlqName = $"{ResourcePrefix}.site.internal-src-dlq.{QueueSuffix}";
+            public const string CentralDlqName = $"{ResourcePrefix}.central.internal-src-dlq.{QueueSuffix}";
+            public const string CentralDlqExchangeName = $"{ResourcePrefix}.central.internal-src-dlq.{DirectExchangeSuffix}";
+
             public const string QueueSuffix = "q";
             public const string DirectExchangeSuffix = "ed";
             public const string TopicExchangeSuffix = "et";

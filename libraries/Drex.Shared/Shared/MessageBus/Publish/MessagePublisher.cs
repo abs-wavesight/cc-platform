@@ -35,23 +35,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
                 .Start());
         }
 
-        public MessagePublisher(
-            BusConnection busConnection,
-            string busKey,
-            ILoggerFactory loggerFactory,
-            Action<StandardConfigurer<ISerializer>>? serializerConfig = null)
-        {
-            BusKey = busKey;
-            _bus = new Lazy<IBus>(() => Configure
-                .OneWayClient()
-                .ConfigureRebusPublisher(
-                    busConnection,
-                    busKey,
-                    loggerFactory,
-                    serializerConfig)
-                .Start());
-        }
-
         public async Task PublishAsync(object message, string destinationQueueName, Dictionary<string, string> headers)
         {
             await _bus.Value.Advanced.Routing.Send(destinationQueueName, message, headers);
