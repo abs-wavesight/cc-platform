@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Drex.Contracts" Version="1.0.74-feature-ado-20141-allow-message-headers" />
+		<PackageReference Include="Abs.CommonCore.Drex.Contracts" Version="1.0.77-feature-ado-20141-allow-message-headers" />
 		<PackageReference Include="Polly" Version="7.2.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
