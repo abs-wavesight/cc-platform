@@ -46,7 +46,7 @@ jobs:
           # TODO build list of files to checkout from component registry?
           sparse-checkout: |
             scripts/*
-            ./README.md
+            README.md
             docker-compose*.yml
           sparse-checkout-cone-mode: false
       - name: "Check file contents" # TODO delete this test step
