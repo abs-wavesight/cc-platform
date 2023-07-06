@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Drex.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.40, )",
-        "resolved": "1.0.40",
-        "contentHash": "W+GMzZmGNIlVsATn1EUE6airOXII238V5D2JVY5qC+DCadnISzCQOlZA4cCY8XU7AG6DyikCz/M805u4KJV7EA=="
+        "requested": "[1.0.74-feature-ado-20141-allow-message-headers, )",
+        "resolved": "1.0.74-feature-ado-20141-allow-message-headers",
+        "contentHash": "+S6I8tDLlS1Q536uYX2yARe4e15a7Lb8ZMmkB4IQF+D57gH/ctGZBM5c5zX6F7+RyJWvZHmYi4iGJKDGX8el2w=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Direct",
