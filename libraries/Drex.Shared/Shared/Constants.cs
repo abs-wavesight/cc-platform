@@ -36,8 +36,8 @@
             public const string SiteLogExchangeName = $"{ResourcePrefix}.site.int-log.{DirectExchangeSuffix}";
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.int-log.{QueueSuffix}";
 
-            public const string CentralLogExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-log-snk.{DirectExchangeSuffix}";
-            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{site}}-log-snk.{QueueSuffix}";
+            public const string CentralLogExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{DirectExchangeSuffix}";
+            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{QueueSuffix}";
 
             public const string QueueSuffix = "q";
             public const string DirectExchangeSuffix = "ed";
