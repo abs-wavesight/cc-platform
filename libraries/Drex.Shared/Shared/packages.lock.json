@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.54, )",
-        "resolved": "1.0.54",
-        "contentHash": "SnApCqjdOQUzlELb0Q4KifIZqTgKGvj7iiwtu47kq6IVkyiEGdLEdYfRL2OVCw0y5pVgXRX8uAvXxKDBwoj86g==",
+        "requested": "[1.0.55-feature-ado-20141-allow-message-headers, )",
+        "resolved": "1.0.55-feature-ado-20141-allow-message-headers",
+        "contentHash": "fn3ofZgCyghPd/Wn8mSrhqRImK7iaPfy9olcBZo/dUiLN45/DfZVbg0nGSnJ9NcnMBJfeuTC6KjjjoXb20BIlg==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0"
