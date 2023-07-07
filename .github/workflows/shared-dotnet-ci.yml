@@ -86,7 +86,7 @@ jobs:
           $tagFriendlySha=$tagFriendlySha.Substring(0, 7)
           echo "Tag-friendly git SHA: $tagFriendlySha"
           echo "SHORT_SHA=$tagFriendlySha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          
+
       - name: Nuget - Copy config
         working-directory: ./
         run: Copy-Item ./nuget.config ${{ inputs.solution-directory }}
@@ -96,10 +96,10 @@ jobs:
         run: |
           $AbsNugetUsername = "USERNAME"
           echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          
+
           $AbsNugetPassword = "${{ github.TOKEN }}"
           echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          
+
       - name: Build and push Docker image
         id: build-and-push-container
         uses: mr-smithers-excellent/docker-build-push@v6
