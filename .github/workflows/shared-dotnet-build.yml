@@ -70,8 +70,10 @@ jobs:
       - name: Debug
         working-directory: ${{ inputs.solution-directory }}
         run: |
-           $RunTests = "${{ inputs.run-integration-tests }}"
+           $RunTests = ${{ inputs.run-integration-tests }} == true
            echo "RunTests=$RunTests"
+           $RunTests = ${{ inputs.run-integration-tests }} != true
+           echo "NotRunTests=$RunTests"
         
       - name: Test
         if: ${{ inputs.run-integration-tests }} == true
