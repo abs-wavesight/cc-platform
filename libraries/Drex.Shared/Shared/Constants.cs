@@ -33,10 +33,12 @@
             public const string CentralDlqName = $"{ResourcePrefix}.central.internal-src-dlq.{QueueSuffix}";
             public const string CentralDlqExchangeName = $"{ResourcePrefix}.central.internal-src-dlq.{DirectExchangeSuffix}";
 
-            public const string SiteLogExchangeName = $"{ResourcePrefix}.site.int-log.{DirectExchangeSuffix}";
+            public const string SiteLogDirectExchangeName = $"{ResourcePrefix}.site.int-log.{DirectExchangeSuffix}";
+            public const string SiteLogDirectTopicName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.int-log.{QueueSuffix}";
 
-            public const string CentralLogExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{DirectExchangeSuffix}";
+            public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{DirectExchangeSuffix}";
+            public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{TopicExchangeSuffix}";
             public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{QueueSuffix}";
 
             public const string QueueSuffix = "q";
