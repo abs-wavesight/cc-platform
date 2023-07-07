@@ -86,6 +86,7 @@ jobs:
           $tagFriendlySha=$tagFriendlySha.Substring(0, 7)
           echo "Tag-friendly git SHA: $tagFriendlySha"
           echo "SHORT_SHA=$tagFriendlySha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          
       - name: Nuget - Copy config
         working-directory: ./
         run: Copy-Item ./nuget.config ${{ inputs.solution-directory }}
@@ -95,8 +96,10 @@ jobs:
         run: |
           $AbsNugetUsername = "USERNAME"
           echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          
           $AbsNugetPassword = "${{ github.TOKEN }}"
           echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          
       - name: Build and push Docker image
         id: build-and-push-container
         uses: mr-smithers-excellent/docker-build-push@v6
@@ -139,4 +142,3 @@ jobs:
             ${{ env.IMAGE_NAME }}
           version-pattern: "^${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}-(?!${{ env.SHORT_SHA }}$).{7}$" # This will match all versions for this branch's package EXCEPT the one we just published
           keep: 0
-          dry-run: false
