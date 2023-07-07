@@ -38,15 +38,15 @@ jobs:
         name: Checkout branch
         
       - name: Debug
+        if: inputs.run-integration-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        if: ${{ inputs.run-integration-tests }}==true
         run: | 
             echo ${{ inputs.run-integration-tests }}
             echo ${{ inputs.run-integration-tests }} == true
       
       - name: Debug2
+        if: inputs.run-integration-tests != true
         working-directory: ${{ inputs.solution-directory }}
-        if: ${{ inputs.run-integration-tests }}!=true
         run: | 
             echo ${{ inputs.run-integration-tests }}
             echo ${{ inputs.run-integration-tests }} != true
