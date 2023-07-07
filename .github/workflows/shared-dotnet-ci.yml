@@ -142,3 +142,4 @@ jobs:
             ${{ env.IMAGE_NAME }}
           version-pattern: "^${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}-(?!${{ env.SHORT_SHA }}$).{7}$" # This will match all versions for this branch's package EXCEPT the one we just published
           keep: 0
+          dry-run: false
