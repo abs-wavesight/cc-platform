@@ -25,6 +25,10 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "Drex.Dockerfile")
+      run-integration-tests:
+        required: false
+        type: boolean
+        description: Flag allows run or skip integration and e2e tests
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -59,6 +63,7 @@ jobs:
     with:
       solution-directory: service
       solution-name: Drex.sln
+      run-integration-tests: ${{ inputs.run-integration-tests }}
     secrets: inherit
 
   push-image:
