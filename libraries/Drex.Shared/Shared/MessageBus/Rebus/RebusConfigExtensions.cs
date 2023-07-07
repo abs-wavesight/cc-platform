@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Drex.Contracts;
+﻿using Abs.CommonCore.Contracts.Json;
 using Abs.CommonCore.Drex.Shared.MessageBus.Extensions;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization;
 using Microsoft.Extensions.Logging;
@@ -119,7 +119,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 return rebusConfigurer
                     .Serialization(s => s.Register(_ => new StringMessageSerializer()));
             }
-                
+
             return rebusConfigurer
                 .Serialization(s => serializerConfig(s));
         }
