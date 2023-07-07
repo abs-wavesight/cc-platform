@@ -36,6 +36,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Checkout branch
+        
+      - name: Debug
+        working-directory: ${{ inputs.solution-directory }}
+        if: ${{ inputs.run-integration-tests }} == true
+        run: | 
+            echo ${{ inputs.run-integration-tests }}
+            echo ${{ inputs.run-integration-tests }} == true
+      
+      - name: Debug2
+        working-directory: ${{ inputs.solution-directory }}
+        if: ${{ inputs.run-integration-tests }} != true
+        run: | 
+            echo ${{ inputs.run-integration-tests }}
+            echo ${{ inputs.run-integration-tests }} != true
 
       - name: Cache nuget packages
         uses: actions/cache@v3
@@ -66,14 +80,6 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
-        
-      - name: Debug
-        working-directory: ${{ inputs.solution-directory }}
-        run: |
-           $RunTests = ${{ inputs.run-integration-tests }}==true
-           echo "RunTests=$RunTests"
-           $RunTests = ${{ inputs.run-integration-tests }}!=true
-           echo "NotRunTests=$RunTests"
         
       - name: Test
         if: ${{ inputs.run-integration-tests }} == true
