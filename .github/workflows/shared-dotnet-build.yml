@@ -39,14 +39,14 @@ jobs:
         
       - name: Debug
         working-directory: ${{ inputs.solution-directory }}
-        if: ${{ inputs.run-integration-tests }} == "true"
+        if: ${{ inputs.run-integration-tests }}==true
         run: | 
             echo ${{ inputs.run-integration-tests }}
             echo ${{ inputs.run-integration-tests }} == true
       
       - name: Debug2
         working-directory: ${{ inputs.solution-directory }}
-        if: ${{ inputs.run-integration-tests }} != "true"
+        if: ${{ inputs.run-integration-tests }}!=true
         run: | 
             echo ${{ inputs.run-integration-tests }}
             echo ${{ inputs.run-integration-tests }} != true
