@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Drex.Contracts;
+﻿using Abs.CommonCore.Contracts.Json;
 using Abs.CommonCore.Drex.Shared.MessageBus.Extensions;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization;
 using Microsoft.Extensions.Logging;
