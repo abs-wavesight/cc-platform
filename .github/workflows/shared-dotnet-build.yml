@@ -70,7 +70,9 @@ jobs:
       - name: Test
         if: inputs.run-integration-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+        run: |
+            docker login ghcr.io/abs-wavesight/ --username abs-wavesight --password ${{ github.TOKEN }}
+            dotnet test ${{ inputs.solution-name }} -c Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
       - name: Test (skip integration, e2e)
         if: inputs.run-integration-tests != true
