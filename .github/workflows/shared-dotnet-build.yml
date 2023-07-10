@@ -77,11 +77,11 @@ jobs:
           mkdir -p ${{ env.DOCKER_IMAGE_CACHE_LOCATION }} 
           docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
           docker pull ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}
-          docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output ./${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar
+          docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
       
       - name: Use CC dependency docker image cache if cache hit
         if: steps.cache-docker-common-core.outputs.cache-hit == 'true'
-        run: docker image load --input ./${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar
+        run: docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
 
 
 
