@@ -15,7 +15,12 @@ on:
         required: false
         type: boolean
         default: false
-        description: Flag allows run or skip integration and e2e tests
+        description: Flag allows run or skip integration tests
+      run-e2e-tests:
+        required: false
+        type: boolean
+        default: false
+        description: Flag allows run or skip e2e tests
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -69,35 +74,35 @@ jobs:
         with:
           path: ${{ env.DOCKER_IMAGE_CACHE_LOCATION }}
           key: ${{ env.DOCKER_IMAGE_CACHE_KEY }}_rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}
-            
-      # TODO RH: Need to authenticate to GitHub docker repo and pull from there
-      - name: Update CC dependency docker image cache if cache miss
-        if: steps.cache-docker-common-core.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ${{ env.DOCKER_IMAGE_CACHE_LOCATION }} 
-          docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
-          docker pull ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}
-          docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
       
       - name: Use CC dependency docker image cache if cache hit
         if: steps.cache-docker-common-core.outputs.cache-hit == 'true'
         run: docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
 
+      # NOTE: We are intentionally running this every time (even if cache is hit), as we want to ensure we have the latest image
+      # TODO RH: Ensure this does NOT re-pull if the image was loaded from cache (since that would defeat the point)
+      - name: Update CC dependency docker image cache
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}"
 
+          Write-Output "Logging in to Docker..."
+          & docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
 
+          Write-Output "Pulling Docker image..."
+          $PullOutput = (docker pull "${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}") | Out-String
 
+          if ($PullOutput -notlike "*Image is up to date*") {
+            Write-Output "Saving Docker image..."
+            & docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
+          }
+          else {
+            Write-Output "Docker image is up to date. Skipping save."
+          }
 
+          Write-Output "Loading docker image..."
+          & docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
 
-
-
-
-
-
-
-
-
-
-
+          Write-Output "Done."
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
@@ -120,19 +125,20 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
-        
-        # TODO RH: Split unit tests from Integration/E2E tests, so we can clearly see the timings
-      - name: Test
-        if: inputs.run-integration-tests == true
-        working-directory: ${{ inputs.solution-directory }}
-        run: |
-            docker login ghcr.io/abs-wavesight/ --username abs-wavesight --password ${{ github.TOKEN }}
-            dotnet test ${{ inputs.solution-name }} -c Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
-      - name: Test (skip integration, e2e)
-        if: inputs.run-integration-tests != true
+      - name: Run unit tests
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+
+      - name: Run integration tests
+        if: inputs.run-integration-tests == 'true'
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+
+      - name: Run end-to-end tests
+        if: inputs.run-e2e-tests == 'true'
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
       - name: Report test results
         uses: dorny/test-reporter@v1
