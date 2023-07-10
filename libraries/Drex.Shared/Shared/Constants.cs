@@ -37,9 +37,9 @@
             public const string SiteLogTopicExchangeName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.int-log.{QueueSuffix}";
 
-            public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{DirectExchangeSuffix}";
-            public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{TopicExchangeSuffix}";
-            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{QueueSuffix}";
+            public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.{{app}}-{{site}}-snk-log.{DirectExchangeSuffix}";
+            public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.{{app}}-{{site}}-snk-log.{TopicExchangeSuffix}";
+            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{app}}-{{site}}-snk-log.{QueueSuffix}";
 
             public const string QueueSuffix = "q";
             public const string DirectExchangeSuffix = "ed";
