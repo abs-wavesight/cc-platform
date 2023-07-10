@@ -81,6 +81,7 @@ jobs:
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
       - name: Log in to docker
+        if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
         run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
 
       # - name: Restore CC dependency docker image cache if it exists
