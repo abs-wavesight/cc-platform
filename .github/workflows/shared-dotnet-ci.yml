@@ -27,10 +27,12 @@ on:
         description: Should be found with the `solution-directory` (e.g., "Drex.Dockerfile")
       run-integration-tests:
         required: false
+        default: false
         type: boolean
         description: Flag allows run or skip integration tests
       run-e2e-tests:
         required: false
+        default: false
         type: boolean
         description: Flag allows run or skip e2e tests
 
