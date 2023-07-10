@@ -84,9 +84,6 @@ jobs:
             Write-Output "Docker image is up to date. Skipping save."
           }
 
-          Write-Output "Loading docker image..."
-          & docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
-
           Write-Output "Done."
 
       - name: Setup dotnet
