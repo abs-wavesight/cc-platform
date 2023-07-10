@@ -75,7 +75,7 @@ jobs:
         if: steps.cache-docker-common-core.outputs.cache-hit != 'true'
         run: |
           mkdir -p ${{ env.DOCKER_IMAGE_CACHE_LOCATION }} 
-          docker pull rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}
+          docker pull ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}
           docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output ${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar
       
       - name: Use CC dependency docker image cache if cache hit
@@ -120,6 +120,7 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
         
+        # TODO RH: Split unit tests from Integration/E2E tests, so we can clearly see the timings
       - name: Test
         if: inputs.run-integration-tests == true
         working-directory: ${{ inputs.solution-directory }}
