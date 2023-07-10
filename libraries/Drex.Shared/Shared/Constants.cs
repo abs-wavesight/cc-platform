@@ -34,7 +34,7 @@
             public const string CentralDlqExchangeName = $"{ResourcePrefix}.central.internal-src-dlq.{DirectExchangeSuffix}";
 
             public const string SiteLogDirectExchangeName = $"{ResourcePrefix}.site.int-log.{DirectExchangeSuffix}";
-            public const string SiteLogDirectTopicName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
+            public const string SiteLogTopicExchangeName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.int-log.{QueueSuffix}";
 
             public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk-log.{DirectExchangeSuffix}";
