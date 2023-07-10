@@ -30,8 +30,6 @@ env:
   DOCKER_IMAGE_CACHE_LOCATION: ${{ github.workspace }}/.docker/images
   DOCKER_IMAGE_CACHE_KEY: cache-docker-common-core
   DOCKER_REPO: ghcr.io/abs-wavesight
-  # TODO RH: Figure out how we are going to get a new tab when the RabbitMQ latest "windows-2019" image is updated
-  # RABBITMQ_IMAGE_TAG: windows-2019-main-d340f4e
   RABBITMQ_IMAGE_TAG: windows-2019
 
 defaults:
@@ -55,18 +53,6 @@ jobs:
           key: ${{ runner.OS }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.OS }}-nuget-
-      
-
-
-
-
-
-
-
-
-
-
-
 
       - name: Restore CC dependency docker image cache if it exists
         id: cache-docker-common-core
@@ -75,12 +61,11 @@ jobs:
           path: ${{ env.DOCKER_IMAGE_CACHE_LOCATION }}
           key: ${{ env.DOCKER_IMAGE_CACHE_KEY }}_rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}
       
-      - name: Use CC dependency docker image cache if cache hit
+      - name: Use CC dependency docker image cache (if cache hit)
         if: steps.cache-docker-common-core.outputs.cache-hit == 'true'
         run: docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
 
       # NOTE: We are intentionally running this every time (even if cache is hit), as we want to ensure we have the latest image
-      # TODO RH: Ensure this does NOT re-pull if the image was loaded from cache (since that would defeat the point)
       - name: Update CC dependency docker image cache
         run: |
           New-Item -ItemType Directory -Force -Path "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}"
