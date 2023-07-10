@@ -80,39 +80,39 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
-      - name: Restore CC dependency docker image cache if it exists
-        if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
-        id: cache-docker-common-core
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.DOCKER_IMAGE_CACHE_LOCATION }}
-          key: ${{ env.DOCKER_IMAGE_CACHE_KEY }}_rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}
+      # - name: Restore CC dependency docker image cache if it exists
+      #   if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
+      #   id: cache-docker-common-core
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.DOCKER_IMAGE_CACHE_LOCATION }}
+      #     key: ${{ env.DOCKER_IMAGE_CACHE_KEY }}_rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}
       
-      - name: Use CC dependency docker image cache (if cache hit)
-        if: ((inputs.run-integration-tests == true || inputs.run-e2e-tests == true) && steps.cache-docker-common-core.outputs.cache-hit == 'true')
-        run: docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
+      # - name: Use CC dependency docker image cache (if cache hit)
+      #   if: ((inputs.run-integration-tests == true || inputs.run-e2e-tests == true) && steps.cache-docker-common-core.outputs.cache-hit == 'true')
+      #   run: docker image load --input "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
 
-      # NOTE: We are intentionally running this every time (even if cache is hit), as we want to ensure we have the latest image
-      - name: Update CC dependency docker image cache
-        if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
-        run: |
-          New-Item -ItemType Directory -Force -Path "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}"
+      # # NOTE: We are intentionally running this every time (even if cache is hit), as we want to ensure we have the latest image
+      # - name: Update CC dependency docker image cache
+      #   if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
+      #   run: |
+      #     New-Item -ItemType Directory -Force -Path "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}"
 
-          Write-Output "Logging in to Docker..."
-          & docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
+      #     Write-Output "Logging in to Docker..."
+      #     & docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
 
-          Write-Output "Pulling Docker image..."
-          $PullOutput = (docker pull "${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}") | Out-String
+      #     Write-Output "Pulling Docker image..."
+      #     $PullOutput = (docker pull "${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}") | Out-String
 
-          if ($PullOutput -notlike "*Image is up to date*") {
-            Write-Output "Saving Docker image..."
-            & docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
-          }
-          else {
-            Write-Output "Docker image is up to date. Skipping save."
-          }
+      #     if ($PullOutput -notlike "*Image is up to date*") {
+      #       Write-Output "Saving Docker image..."
+      #       & docker image save ${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }} --output "${{ env.DOCKER_IMAGE_CACHE_LOCATION }}/rabbitmq_${{ env.RABBITMQ_IMAGE_TAG }}.tar"
+      #     }
+      #     else {
+      #       Write-Output "Docker image is up to date. Skipping save."
+      #     }
 
-          Write-Output "Done."
+      #     Write-Output "Done."
 
       - name: Run integration tests
         if: inputs.run-integration-tests == true
