@@ -15,13 +15,20 @@ on:
         required: false
         type: boolean
         default: false
-        description: Flag allows run or skip integration and e2e tests
+        description: Flag allows run or skip integration tests
+      run-e2e-tests:
+        required: false
+        type: boolean
+        default: false
+        description: Flag allows run or skip e2e tests
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages
   COVERAGE_OUTPUT_LOCATION: service/{0}/TestResults/*/coverage.cobertura.xml
+  DOCKER_REPO: ghcr.io/abs-wavesight
+  RABBITMQ_IMAGE_TAG: windows-2019
 
 defaults:
   run:
@@ -66,18 +73,24 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
-        
-      - name: Test
-        if: inputs.run-integration-tests == true
-        working-directory: ${{ inputs.solution-directory }}
-        run: |
-            docker login ghcr.io/abs-wavesight/ --username abs-wavesight --password ${{ github.TOKEN }}
-            dotnet test ${{ inputs.solution-name }} -c Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
-      - name: Test (skip integration, e2e)
-        if: inputs.run-integration-tests != true
+      - name: Run unit tests
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+
+      - name: Log in to docker registry
+        if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
+        run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Run integration tests
+        if: inputs.run-integration-tests == true
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+
+      - name: Run end-to-end tests
+        if: inputs.run-e2e-tests == true
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
       - name: Report test results
         uses: dorny/test-reporter@v1

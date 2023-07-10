@@ -28,12 +28,15 @@ on:
       run-integration-tests:
         required: false
         type: boolean
-        description: Flag allows run or skip integration and e2e tests
+        description: Flag allows run or skip integration tests
+      run-e2e-tests:
+        required: false
+        type: boolean
+        description: Flag allows run or skip e2e tests
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ inputs.image-name }}
   DOTNET_IMAGE_TAG_WIN2019: 7.0-nanoserver-1809
@@ -64,6 +67,7 @@ jobs:
       solution-directory: service
       solution-name: Drex.sln
       run-integration-tests: ${{ inputs.run-integration-tests }}
+      run-e2e-tests: ${{ inputs.run-e2e-tests }}
     secrets: inherit
 
   push-image:
