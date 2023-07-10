@@ -28,7 +28,11 @@ on:
       run-integration-tests:
         required: false
         type: boolean
-        description: Flag allows run or skip integration and e2e tests
+        description: Flag allows run or skip integration tests
+      run-e2e-tests:
+        required: false
+        type: boolean
+        description: Flag allows run or skip e2e tests
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -63,6 +67,7 @@ jobs:
       solution-directory: service
       solution-name: Drex.sln
       run-integration-tests: ${{ inputs.run-integration-tests }}
+      run-e2e-tests: ${{ inputs.run-e2e-tests }}
     secrets: inherit
 
   push-image:
