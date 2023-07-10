@@ -78,11 +78,9 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
 
-      - name: Pull dependency docker images
+      - name: Log in to docker registry
         if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
-        run: |
-          docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
-          docker pull "${{ env.DOCKER_REPO }}/rabbitmq:${{ env.RABBITMQ_IMAGE_TAG }}"
+        run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Run integration tests
         if: inputs.run-integration-tests == true
