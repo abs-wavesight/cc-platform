@@ -16,7 +16,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
             BusConnection sourceMessageBusConnectionInfo,
             string busName,
             string inputQueueName,
-            string deadLetterQueueName,
+            string? deadLetterQueueName,
             string directExchangeName,
             string topicExchangeName,
             ILoggerFactory loggerFactory,
