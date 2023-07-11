@@ -10,7 +10,7 @@ namespace CommonCore.Platform.Config
 {
     public static class ConfigParser
     {
-        public static TConfig LoadConfig<TConfig>(IConfigurationRoot internalConfigRaw, string filePath)
+        public static TConfig LoadConfig<TConfig>(string filePath)
             where TConfig : class, new()
         {
             GuardAgainstMissingFile<TConfig>(filePath);
@@ -22,7 +22,7 @@ namespace CommonCore.Platform.Config
             return siteConfigRaw.Bind<TConfig>();
         }
 
-        public static TConfig LoadConfig<TConfig>(IConfigurationRoot internalConfigRaw, string filePath, Func<TConfig, string, string> preprocess)
+        public static TConfig LoadConfig<TConfig>(string filePath, Func<TConfig, string, string> preprocess)
             where TConfig : class, new()
         {
             GuardAgainstMissingFile<TConfig>(filePath);

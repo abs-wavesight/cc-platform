@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <RootNamespace>CommonCore.Platform</RootNamespace>
-	  <AssemblyName>CommonCore.Platform</AssemblyName>
-	  <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>CommonCore.Platform</RootNamespace>
+		<AssemblyName>CommonCore.Platform</AssemblyName>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<Version></Version> <!-- Replaced in CI pipeline -->
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.57" />

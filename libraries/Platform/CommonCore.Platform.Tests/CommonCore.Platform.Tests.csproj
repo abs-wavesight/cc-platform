@@ -22,4 +22,17 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CommonCore.Platform\CommonCore.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Configs\InvalidConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configs\ValidConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

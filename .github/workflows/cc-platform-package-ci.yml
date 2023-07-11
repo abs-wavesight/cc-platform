@@ -44,5 +44,5 @@ jobs:
       solution-directory: libraries/Platform
       nuget-working-directory: libraries/Platform
       nuget-package-name: CommonCore.Platform
-      project-file: libraries/Platform/CommonCore.Platform.csproj
+      project-file: libraries/Platform/CommonCore.Platform/CommonCore.Platform.csproj
     secrets: inherit
