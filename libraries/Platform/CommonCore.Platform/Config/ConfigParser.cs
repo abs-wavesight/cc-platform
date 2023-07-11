@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text;
-using CommonCore.Platform.Exceptions;
-using CommonCore.Platform.Extensions;
+using Abs.CommonCore.Platform.Exceptions;
+using Abs.CommonCore.Platform.Extensions;
 using Contracts.Helpers.Extensions;
 using Json.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace CommonCore.Platform.Config
+namespace Abs.CommonCore.Platform.Config
 {
     public static class ConfigParser
     {

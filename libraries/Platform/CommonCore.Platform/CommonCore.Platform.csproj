@@ -4,11 +4,15 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<RootNamespace>CommonCore.Platform</RootNamespace>
-		<AssemblyName>CommonCore.Platform</AssemblyName>
+		<RootNamespace>Abs.CommonCore.Platform</RootNamespace>
+		<AssemblyName>Abs.CommonCore.Platform</AssemblyName>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<Version></Version> <!-- Replaced in CI pipeline -->
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="packages.lock.json" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.57" />

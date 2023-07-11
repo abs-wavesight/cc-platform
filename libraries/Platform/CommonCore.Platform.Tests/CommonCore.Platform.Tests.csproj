@@ -7,6 +7,8 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+	  <RootNamespace>Abs.CommonCore.Platform.Tests</RootNamespace>
+	  <AssemblyName>Abs.CommonCore.Platform.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace CommonCore.Platform.Extensions
+namespace Abs.CommonCore.Platform.Extensions
 {
     public static class ConfigExtensions
     {

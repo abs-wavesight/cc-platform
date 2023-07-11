@@ -1,4 +1,4 @@
-﻿namespace CommonCore.Platform.Extensions
+﻿namespace Abs.CommonCore.Platform.Extensions
 {
     public static class ListExtensions
     {

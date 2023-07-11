@@ -1,7 +1,7 @@
-using CommonCore.Platform.Config;
-using CommonCore.Platform.Tests.Models;
+using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Tests.Models;
 
-namespace CommonCore.Platform.Tests
+namespace Abs.CommonCore.Platform.Tests
 {
     public class UnitTest1
     {

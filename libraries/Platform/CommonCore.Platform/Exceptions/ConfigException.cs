@@ -1,4 +1,4 @@
-﻿namespace CommonCore.Platform.Exceptions
+﻿namespace Abs.CommonCore.Platform.Exceptions
 {
     public class ConfigException : Exception
     {
