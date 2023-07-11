@@ -42,7 +42,7 @@ jobs:
     uses: ./.github/workflows/shared-publish-nuget-package.yml
     with:
       solution-directory: libraries/Platform
-      nuget-working-directory: libraries/Platform
-      nuget-package-name: CommonCore.Platform
+      nuget-working-directory: libraries/Platform/CommonCore.Platform
+      nuget-package-name: Abs.CommonCore.Platform
       project-file: CommonCore.Platform/CommonCore.Platform.csproj
     secrets: inherit
