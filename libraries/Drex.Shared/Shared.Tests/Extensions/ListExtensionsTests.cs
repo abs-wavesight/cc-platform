@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Drex.Shared.Extensions;
+﻿using Abs.CommonCore.Platform.Extensions;
 using FluentAssertions;
 
 namespace Abs.CommonCore.Drex.Shared.Tests.Extensions;
