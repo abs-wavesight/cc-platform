@@ -1,0 +1,16 @@
+﻿using System.ComponentModel;
+using System.Reflection;
+
+namespace CommonCore.Platform.Extensions
+{
+    public static class AttributeExtensions
+    {
+        public static string? GetDescription(this Type type, string propertyName)
+        {
+            return type
+                .GetProperty(propertyName)
+                ?.GetCustomAttribute<DescriptionAttribute>()
+                ?.Description;
+        }
+    }
+}

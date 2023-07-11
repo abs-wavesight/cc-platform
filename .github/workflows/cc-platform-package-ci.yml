@@ -1,0 +1,48 @@
+name: Common Core Platform Package CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'libraries/Platform/**/*'
+      - '.github/workflows/cc-platform-package-ci.yml'
+      - 'nuget.config'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'libraries/Platform/**/*'
+      - '.github/workflows/cc-platform-package-ci.yml'
+      - 'nuget.config'
+  workflow_dispatch:
+
+concurrency:
+  group: cc-platform-package-${{ github.head_ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  dump-context:
+    name: Dump Context
+    uses: ./.github/workflows/shared-dump-context.yml
+
+  build:
+    name: Build & Run Tests
+    uses: ./.github/workflows/shared-dotnet-build.yml
+    with:
+      solution-directory: libraries/Platform
+      solution-name: CommonCore.Platform.sln
+    secrets: inherit
+
+  publish-nuget-package:
+    name: Publish Nuget Package
+    needs: [build]
+    uses: ./.github/workflows/shared-publish-nuget-package.yml
+    with:
+      solution-directory: libraries/Platform
+      nuget-working-directory: libraries/Platform
+      nuget-package-name: CommonCore.Platform
+      project-file: libraries/Platform/CommonCore.Platform.csproj
+    secrets: inherit
