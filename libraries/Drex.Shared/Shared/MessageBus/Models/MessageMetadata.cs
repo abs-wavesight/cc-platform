@@ -1,5 +1,5 @@
-﻿using Abs.CommonCore.Drex.Shared.Extensions;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Abs.CommonCore.Platform.Extensions;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
 {

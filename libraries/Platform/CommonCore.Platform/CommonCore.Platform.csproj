@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Abs.CommonCore.Platform</RootNamespace>
+		<AssemblyName>Abs.CommonCore.Platform</AssemblyName>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<Version></Version> <!-- Replaced in CI pipeline -->
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="packages.lock.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.57" />
+		<PackageReference Include="JsonSchema.Net" Version="4.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
+	</ItemGroup>
+
+</Project>

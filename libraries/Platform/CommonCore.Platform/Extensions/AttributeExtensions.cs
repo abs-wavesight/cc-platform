@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Abs.CommonCore.Drex.Shared.Extensions
+namespace Abs.CommonCore.Platform.Extensions
 {
     public static class AttributeExtensions
     {

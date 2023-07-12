@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.Drex.Shared.Extensions
+﻿namespace Abs.CommonCore.Platform.Extensions
 {
     public static class ListExtensions
     {

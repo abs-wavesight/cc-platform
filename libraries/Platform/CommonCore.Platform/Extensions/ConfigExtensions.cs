@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Abs.CommonCore.Drex.Shared.Extensions
+namespace Abs.CommonCore.Platform.Extensions
 {
     public static class ConfigExtensions
     {
-        public static TConfig Bind<TConfig>(this IConfiguration config, string? key = null) 
+        public static TConfig Bind<TConfig>(this IConfiguration config, string? key = null)
             where TConfig : class, new()
         {
             var configModel = new TConfig();
-            
+
             if (!string.IsNullOrWhiteSpace(key))
             {
                 config.Bind(key, configModel);

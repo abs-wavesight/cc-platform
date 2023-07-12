@@ -12,6 +12,20 @@
           "Grpc.AspNetCore": "2.32.0"
         }
       },
+      "Abs.CommonCore.Platform": {
+        "type": "Direct",
+        "requested": "[1.0.6-feature-ado-20438-json-configuration, )",
+        "resolved": "1.0.6-feature-ado-20438-json-configuration",
+        "contentHash": "L9hCVFGMyNKt4/lP/h1tfgTDTCQyxvS1Iq2eAWKbQ13bB4wxjYT6kaExVJiBdVSuiNIfFfmL6Vo+Hdet8hghFg==",
+        "dependencies": {
+          "Abs.CommonCore.Contracts": "1.0.57",
+          "JsonSchema.Net": "4.1.1",
+          "Microsoft.Extensions.Configuration": "7.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "7.0.4",
+          "Microsoft.Extensions.Configuration.Json": "7.0.0",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "7.0.5"
+        }
+      },
       "Microsoft.Extensions.Configuration": {
         "type": "Direct",
         "requested": "[7.0.0, )",
@@ -196,6 +210,37 @@
         "type": "Transitive",
         "resolved": "2.32.0",
         "contentHash": "phODsWXk5K0fnCxPA5r2sINMUusNnWnceFExqVI1CR2HhkdzECZjKMYtzUZRktNl1zUkBON0kR/JHK7xcBw0gA=="
+      },
+      "JetBrains.Annotations": {
+        "type": "Transitive",
+        "resolved": "2021.2.0",
+        "contentHash": "kKSyoVfndMriKHLfYGmr0uzQuI4jcc3TKGyww7buJFCYeHb/X0kodYBPL7n9454q7v6ASiRmDgpPGaDGerg/Hg=="
+      },
+      "Json.More.Net": {
+        "type": "Transitive",
+        "resolved": "1.8.0",
+        "contentHash": "JWxlYwCSYXZIWezmrvRgaxhI/vEEpQlZVm6/lskuS7p/uPrNJzQxbe2CPjzkF3UUz4RI8WkmObs6ycpxoE9T7w==",
+        "dependencies": {
+          "System.Text.Json": "6.0.2"
+        }
+      },
+      "JsonPointer.Net": {
+        "type": "Transitive",
+        "resolved": "3.0.1",
+        "contentHash": "TtUFnAp/0wK4v16quNKAbtAngXV7NrTBe3t70beTxiBU9VRhHFnLqjjU+MKWFMbM3AK++oiI2b4abgK2/7WNJA==",
+        "dependencies": {
+          "Json.More.Net": "1.8.0"
+        }
+      },
+      "JsonSchema.Net": {
+        "type": "Transitive",
+        "resolved": "4.1.1",
+        "contentHash": "R17IcU2nfddbMsbTzKZAUWLaVx3sGP5XLjiCfAC7ob56f/rmVfj5q6IdADdCtYPxxcyOpFPQLYXfTFODXCWmMQ==",
+        "dependencies": {
+          "JetBrains.Annotations": "2021.2.0",
+          "Json.More.Net": "1.8.0",
+          "JsonPointer.Net": "3.0.1"
+        }
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
