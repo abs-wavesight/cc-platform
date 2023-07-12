@@ -23,6 +23,9 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
         [Description(Constants.MessageHeaders.Sink)]
         public string? Sink { get; set; }
 
+        [Description(Constants.MessageHeaders.IMO)]
+        public string? IMO { get; set; }
+
         private MessageMetadata(Dictionary<string, string> headers)
         {
             headers.TryGetValue(GetType().GetDescription(nameof(Client))!, out var client);
@@ -42,6 +45,9 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
 
             headers.TryGetValue(GetType().GetDescription(nameof(Sink))!, out var sink);
             Sink = sink;
+
+            headers.TryGetValue(GetType().GetDescription(nameof(IMO))!, out var imo);
+            IMO = imo;
         }
 
         public static MessageMetadata FromHeaders(Dictionary<string, string> headers)

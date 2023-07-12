@@ -12,6 +12,7 @@
             public const string Source = $"{Prefix}.source";
             public const string Destination = $"{Prefix}.destination";
             public const string Sink = $"{Prefix}.sink";
+            public const string IMO = $"{Prefix}.imo";
         }
 
         public static class MessageBus
