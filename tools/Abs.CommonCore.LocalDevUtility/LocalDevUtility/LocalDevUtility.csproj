@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Abs.CommonCore.LocalDevUtility</RootNamespace>
+        <AssemblyName>Abs.CommonCore.LocalDevUtility</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.5" />
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.Management.Automation" Version="7.3.5" />
+    </ItemGroup>
+
+
+
+</Project>

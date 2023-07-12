@@ -1,0 +1,24 @@
+---
+version: '3'
+
+services:
+
+  cc.rabbitmq-template: # This is never used, but must be here in order to be a valid compose file
+    container_name: rabbitmq-template-s
+    image: ghcr.io/abs-wavesight/rabbitmq:windows-2019
+
+  cc.rabbitmq-local:
+    container_name: rabbitmq-local-s
+    build:
+      context: ../../containers/rabbitmq
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.container_type: "infrastructure"
+
+  cc.rabbitmq-remote:
+    container_name: rabbitmq-remote-s
+    build:
+      context: ../../containers/rabbitmq
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.container_type: "infrastructure"

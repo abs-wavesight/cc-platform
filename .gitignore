@@ -406,3 +406,4 @@ logs/
 nuget.config
 !/nuget.config
 /containers/rabbitmq/utilities/handle.exe
+/compose/local-dev/.env
