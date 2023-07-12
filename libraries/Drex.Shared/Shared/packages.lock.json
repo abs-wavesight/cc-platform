@@ -14,9 +14,9 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.6-feature-ado-20438-json-configuration, )",
-        "resolved": "1.0.6-feature-ado-20438-json-configuration",
-        "contentHash": "L9hCVFGMyNKt4/lP/h1tfgTDTCQyxvS1Iq2eAWKbQ13bB4wxjYT6kaExVJiBdVSuiNIfFfmL6Vo+Hdet8hghFg==",
+        "requested": "[1.0.11, )",
+        "resolved": "1.0.11",
+        "contentHash": "UipI9JpLuudt/gHpGvHTJsf1WVZdnTrRraPo7YyU25p9XPVbmJZI7AoU1Hg0GMwFC6I0LazBiWXqZn1dphRbRw==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.57",
           "JsonSchema.Net": "4.1.1",
