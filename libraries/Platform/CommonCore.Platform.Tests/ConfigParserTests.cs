@@ -16,7 +16,7 @@ namespace Abs.CommonCore.Platform.Tests
         }
 
         [Fact]
-        public void ValidConfig__Preprocess_FileParsed()
+        public void ValidConfig_Preprocess_FileParsed()
         {
             var config = ConfigParser.LoadConfig<TestConfig>(@"Configs/ValidConfig.json",
                 (c, v) =>
