@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Models;
 
-namespace Abs.CommonCore.LocalDevUtility;
+namespace Abs.CommonCore.LocalDevUtility.Commands;
 
 public static class ConfigureCommand
 {

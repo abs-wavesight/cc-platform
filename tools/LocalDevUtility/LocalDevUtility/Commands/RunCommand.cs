@@ -1,10 +1,10 @@
-﻿using System.Management.Automation;
-using System.Text;
+﻿using System.Text;
 using Abs.CommonCore.LocalDevUtility.Extensions;
+using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Models;
 using TextCopy;
 
-namespace Abs.CommonCore.LocalDevUtility;
+namespace Abs.CommonCore.LocalDevUtility.Commands;
 
 public static class RunCommand
 {
@@ -15,7 +15,7 @@ public static class RunCommand
 
         if (runOptions.Reset == true)
         {
-            ResetDocker();
+            DockerHelper.ResetDocker();
         }
 
         await CreateEnvFile(appConfig, runOptions);
@@ -94,7 +94,7 @@ public static class RunCommand
 
         if (runOptions.Mode is RunMode.c or RunMode.r)
         {
-            RunPowerShellCommand(composeCommandBuilder.ToString());
+            PowerShellHelper.RunPowerShellCommand(composeCommandBuilder.ToString());
         }
 
         if (runOptions.Mode is RunMode.o)
@@ -117,7 +117,7 @@ public static class RunCommand
 
         var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
         Console.WriteLine($"Pulling {runComponent.ImageName} image...");
-        RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
+        PowerShellHelper.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
     }
 
     /// <summary>
@@ -172,18 +172,6 @@ public static class RunCommand
         return dependencyFound;
     }
 
-    private static void ResetDocker()
-    {
-        var resetDockerCommandBuilder = new StringBuilder();
-        Console.WriteLine("\nResetting Docker...");
-        RunPowerShellCommand("docker ps -aq | ForEach-Object { Write-Output \"Stopping $(docker stop $_) & removing $(docker rm $_)\" };");
-        RunPowerShellCommand("Write-Output \"Pruning system: $(docker system prune -f)\"");
-        RunPowerShellCommand("Write-Output \"Pruning volume: $(docker volume prune -f)\"");
-        RunPowerShellCommand("Write-Output \"Pruning network: $(docker network prune -f)\"");
-        Console.WriteLine("Docker reset complete.");
-        RunPowerShellCommand(resetDockerCommandBuilder.ToString());
-    }
-
     private static void AddComponentFilesIfPresent(
         StringBuilder builder,
         RunOptions runOptions,
@@ -211,46 +199,11 @@ public static class RunCommand
         {
             case RunComponentMode.s:
                 return "source";
-                break;
             case RunComponentMode.i:
                 return "image";
             default:
                 throw new ArgumentOutOfRangeException(nameof(runComponentMode), runComponentMode, null);
         }
-    }
-
-    private static void RunPowerShellCommand(string command)
-    {
-        using var ps = PowerShell.Create();
-        ps.AddScript(command);
-        ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-        var output = new PSDataCollection<string>();
-        output.DataAdded += ProcessCommandStandardOutput;
-        ps.Streams.Error.DataAdded += ProcessCommandErrorOutput;
-
-        var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-        if (asyncToken.AsyncWaitHandle.WaitOne())
-        {
-            ps.EndInvoke(asyncToken);
-        }
-
-        ps.InvokeAsync();
-    }
-
-    private static void ProcessCommandStandardOutput(object? sender, DataAddedEventArgs eventArgs)
-    {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        Console.WriteLine(outputItem);
-    }
-
-    private static void ProcessCommandErrorOutput(object? sender, DataAddedEventArgs eventArgs)
-    {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        Console.Error.WriteLine(outputItem);
     }
 
     private static async Task CreateEnvFile(AppConfig appConfig, RunOptions runOptions)

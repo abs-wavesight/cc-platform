@@ -1,4 +1,4 @@
-namespace LocalDevUtility.Tests;
+namespace Abs.CommonCore.LocalDevUtility.Tests;
 
 public class UnitTest1
 {

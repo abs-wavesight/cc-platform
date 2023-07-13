@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using Abs.CommonCore.LocalDevUtility.Commands;
 using Abs.CommonCore.LocalDevUtility.Models;
 using Figgle;
 using Spectre.Console;
@@ -83,7 +84,11 @@ public static class Program
 
     private static Command BuildStopCommand()
     {
-        var command = new Command("stop", "Stop Common Core components that may have been started in the background");
+        var command = new Command("stop", "Stop compose components that may have been started in the background");
+
+        command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
+
+        command.Handler = CommandHandler.Create(StopCommand.Stop);
         return command;
     }
 
