@@ -32,9 +32,9 @@ public static class Program
 
     private static Command BuildConfigureCommand()
     {
-        var command = new Command("configure");
+        var command = new Command("configure", "Configure the utility via interactive prompts. Must be run at least once before using \"run\".");
 
-        var printOption = new Option<bool?>("--print-only")
+        var printOption = new Option<bool?>("--print-only", "Print the current configuration without prompting for new values")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
@@ -48,7 +48,7 @@ public static class Program
 
     private static Command BuildRunCommand()
     {
-        var command = new Command("run");
+        var command = new Command("run", "Run Common Core components via Docker");
 
         var modeOption = new Option<RunMode?>("--mode", "r = run immediately, c = confirm before running, o = output and copy to clipboard without running")
         {
@@ -83,7 +83,7 @@ public static class Program
 
     private static Command BuildStopCommand()
     {
-        var command = new Command("stop");
+        var command = new Command("stop", "Stop Common Core components that may have been started in the background");
         return command;
     }
 
