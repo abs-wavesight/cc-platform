@@ -1,23 +1,47 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using Abs.CommonCore.LocalDevUtility.Commands;
+using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Models;
 using Figgle;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility;
 
-public static class Program
+public class Program
 {
-    public static async Task<int> Main(string[]? args)
+    public static async Task<int> Main(string[]? args = null)
+    {
+        var services = new ServiceCollection()
+            .AddLogging(builder =>
+            {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.IncludeScopes = false;
+                    options.SingleLine = true;
+                    options.TimestampFormat = "hh:mm:ss.fff ";
+                });
+            });
+        services.AddSingleton<IPowerShellAdapter, PowerShellAdapter>();
+        var serviceProvider = services.BuildServiceProvider();
+
+        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+        var powerShellAdapter = serviceProvider.GetRequiredService<IPowerShellAdapter>();
+
+        return await Main(args, logger, powerShellAdapter);
+    }
+
+    public static async Task<int> Main(string[]? args, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         Console.WriteLine(FiggleFonts.Doom.Render("ABS-WS | Common Core"));
         AnsiConsole.Write(new Rule("Local Dev Utility"));
 
         var root = BuildRootCommand();
-        root.AddCommand(BuildConfigureCommand());
-        root.AddCommand(BuildRunCommand());
-        root.AddCommand(BuildStopCommand());
+        root.AddCommand(BuildConfigureCommand(logger, powerShellAdapter));
+        root.AddCommand(BuildRunCommand(logger, powerShellAdapter));
+        root.AddCommand(BuildStopCommand(logger, powerShellAdapter));
         return await root.InvokeAsync(args ?? Array.Empty<string>());
     }
 
@@ -31,7 +55,7 @@ public static class Program
         return root;
     }
 
-    private static Command BuildConfigureCommand()
+    private static Command BuildConfigureCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var command = new Command("configure", "Configure the utility via interactive prompts. Must be run at least once before using \"run\".");
 
@@ -42,12 +66,15 @@ public static class Program
         printOption.AddAlias("-p");
         command.AddOption(printOption);
 
-        command.Handler = CommandHandler.Create(ConfigureCommand.Configure);
+        command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) =>
+        {
+            await ConfigureCommand.Configure(configureOptions, logger);
+        });
 
         return command;
     }
 
-    private static Command BuildRunCommand()
+    private static Command BuildRunCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var command = new Command("run", "Run Common Core components via Docker");
 
@@ -77,18 +104,25 @@ public static class Program
         siteConfigOverrideOption.AddAlias("-s");
         command.AddOption(siteConfigOverrideOption);
 
-        command.Handler = CommandHandler.Create(RunCommand.Run);
+        command.Handler = CommandHandler.Create(async (RunOptions runOptions) =>
+        {
+            await RunCommand.Run(runOptions, logger, powerShellAdapter);
+        });
 
         return command;
     }
 
-    private static Command BuildStopCommand()
+    private static Command BuildStopCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var command = new Command("stop", "Stop compose components that may have been started in the background");
 
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
 
-        command.Handler = CommandHandler.Create(StopCommand.Stop);
+        command.Handler = CommandHandler.Create(async (StopOptions stopOptions) =>
+        {
+            await StopCommand.Stop(stopOptions, logger, powerShellAdapter);
+        });
+
         return command;
     }
 

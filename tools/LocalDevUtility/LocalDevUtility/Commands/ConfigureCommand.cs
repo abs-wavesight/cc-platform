@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands;
 
 public static class ConfigureCommand
 {
-    public static async Task<int> Configure(ConfigureOptions configureOptions)
+    public static async Task<int> Configure(ConfigureOptions configureOptions, ILogger logger)
     {
         var readAppConfig = await ReadConfig();
         if (configureOptions.PrintOnly == true)
@@ -107,16 +108,22 @@ public static class ConfigureCommand
         return JsonSerializer.Deserialize<AppConfig>(appConfigJson) ?? null;
     }
 
-    private static async Task<string> SaveConfig(AppConfig appConfig)
+    public static async Task<string> SaveConfig(AppConfig? appConfig)
     {
+        var configFileName = GetConfigFileName();
+
+        if (appConfig == null && File.Exists(configFileName))
+        {
+            File.Delete(configFileName);
+            return "[Config File Deleted]";
+        }
+
         var appConfigJson = JsonSerializer.Serialize(
             appConfig,
             new JsonSerializerOptions
             {
                 WriteIndented = true
             });
-
-        var configFileName = GetConfigFileName();
         await File.WriteAllTextAsync(configFileName, appConfigJson);
         return configFileName;
     }

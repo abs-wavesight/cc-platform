@@ -2,20 +2,22 @@
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Models;
+using Microsoft.Extensions.Logging;
+using Spectre.Console;
 using TextCopy;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands;
 
 public static class RunCommand
 {
-    public static async Task<int> Run(RunOptions runOptions)
+    public static async Task<int> Run(RunOptions runOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var appConfig = (await ConfigureCommand.ReadConfig())!;
         ConfigureCommand.ValidateConfigAndThrow(appConfig);
 
         if (runOptions.Reset == true)
         {
-            DockerHelper.ResetDocker();
+            DockerHelper.ResetDocker(powerShellAdapter);
         }
 
         await CreateEnvFile(appConfig, runOptions);
@@ -66,10 +68,17 @@ public static class RunCommand
         {
             foreach (var component in RunOptions.ComponentPropertyNames)
             {
-                PullImageIfNeeded(runOptions, appConfig, component);
+                PullImageIfNeeded(powerShellAdapter, runOptions, appConfig, component);
                 AddComponentFilesIfPresent(composeCommandBuilder, runOptions, component);
             }
         }
+
+        var configCommand = $"{composeCommandBuilder} config";
+        Console.WriteLine("\nFinal compose configuration:");
+        AnsiConsole.Write(new Rule());
+        powerShellAdapter.RunPowerShellCommand(configCommand);
+        AnsiConsole.Write(new Rule());
+        Console.WriteLine();
 
         composeCommandBuilder.Append(" up --build");
 
@@ -83,7 +92,6 @@ public static class RunCommand
             composeCommandBuilder.Append(" --abort-on-container-exit");
         }
 
-
         if (runOptions.Mode == RunMode.c)
         {
             Console.WriteLine("\nCONFIRM: Press enter to run this Docker Compose command.");
@@ -95,7 +103,7 @@ public static class RunCommand
         {
             Console.WriteLine("\nNow running the following Docker Compose command:");
             Console.WriteLine(composeCommandBuilder.ToString());
-            PowerShellHelper.RunPowerShellCommand(composeCommandBuilder.ToString());
+            powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
         }
 
         if (runOptions.Mode is RunMode.o)
@@ -108,7 +116,7 @@ public static class RunCommand
         return 0;
     }
 
-    private static void PullImageIfNeeded(RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
+    private static void PullImageIfNeeded(IPowerShellAdapter powerShellAdapter, RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
     {
         var componentIsNotIncludedOrIsSetToRunFromSource = runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue
                                                            || propertyValue == RunComponentMode.s;
@@ -119,7 +127,7 @@ public static class RunCommand
 
         var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
         Console.WriteLine($"Pulling {runComponent.ImageName} image...");
-        PowerShellHelper.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
+        powerShellAdapter.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
     }
 
     /// <summary>

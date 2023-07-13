@@ -5,19 +5,20 @@ using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility.Helpers;
 
-public static class PowerShellHelper
+public class PowerShellAdapter : IPowerShellAdapter
 {
-    private static readonly ConcurrentDictionary<string,string> _colorsByContainerName = new ();
+    private readonly ConcurrentDictionary<string,string> _colorsByContainerName = new ();
 
-    public static void RunPowerShellCommand(string command)
+    public List<string> RunPowerShellCommand(string command)
     {
         using var ps = PowerShell.Create();
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
 
+        var rawOutput = new List<string>();
         var output = new PSDataCollection<string>();
-        output.DataAdded += ProcessCommandStandardOutput;
-        ps.Streams.Error.DataAdded += ProcessCommandErrorOutput;
+        output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, sender, args);
+        ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, sender, args);
 
         var asyncToken = ps.BeginInvoke<object, string>(null, output);
 
@@ -27,27 +28,34 @@ public static class PowerShellHelper
         }
 
         ps.InvokeAsync();
+
+        return rawOutput;
     }
 
-    private static void ProcessCommandStandardOutput(object? sender, DataAddedEventArgs eventArgs)
+    private void ProcessCommandOutput(List<string> rawOutput, object? sender, DataAddedEventArgs eventArgs)
     {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        OutputWithColorForDockerCompose(outputItem);
-    }
+        string? outputItem;
+        switch (sender)
+        {
+            case PSDataCollection<string> collection:
+                outputItem = collection[eventArgs.Index];
+                break;
+            case PSDataCollection<ErrorRecord> errorCollection:
+                outputItem = errorCollection[eventArgs.Index].ToString();
+                break;
+            default:
+                return;
+        }
 
-    private static void ProcessCommandErrorOutput(object? sender, DataAddedEventArgs eventArgs)
-    {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        Console.Error.WriteLine(outputItem);
+        OutputWithColorForDockerCompose(outputItem!);
+        rawOutput.Add(outputItem!);
     }
 
     /// <summary>
     /// Hack to get back colors-by-container in docker compose output
     /// </summary>
     /// <param name="rawOutput"></param>
-    private static void OutputWithColorForDockerCompose(string rawOutput)
+    private void OutputWithColorForDockerCompose(string rawOutput)
     {
         var colorStack = new Stack<string>();
         colorStack.Push("fuchsia");

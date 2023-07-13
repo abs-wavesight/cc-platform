@@ -15,7 +15,7 @@ public class RunOptions
     [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: nameof(Rabbitmq))]
     public RunComponentMode? Vector { get; set; }
 
-    [RunComponent(composePath: "grafana", imageName: "grafana")]
+    [RunComponent(composePath: "grafana", imageName: "grafana", dependencyPropertyNames: nameof(Loki))]
     public RunComponentMode? Grafana { get; set; }
 
     [RunComponent(composePath: "loki", imageName: "loki")]
