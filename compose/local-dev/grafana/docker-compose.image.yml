@@ -1,0 +1,7 @@
+---
+version: '3'
+
+services:
+  cc.grafana:
+    container_name: grafana-i
+    image: ghcr.io/abs-wavesight/grafana:windows-${WINDOWS_VERSION}

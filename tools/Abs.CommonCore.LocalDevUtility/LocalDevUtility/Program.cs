@@ -1,8 +1,8 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using System.Diagnostics;
-using System.Management.Automation;
 using Abs.CommonCore.LocalDevUtility.Models;
+using Figgle;
+using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility;
 
@@ -10,6 +10,9 @@ public static class Program
 {
     public static async Task<int> Main(string[]? args)
     {
+        Console.WriteLine(FiggleFonts.Doom.Render("ABS-WS | Common Core"));
+        AnsiConsole.Write(new Rule("Local Dev Utility"));
+
         var root = BuildRootCommand();
         root.AddCommand(BuildConfigureCommand());
         root.AddCommand(BuildRunCommand());
@@ -48,7 +51,6 @@ public static class Program
         var command = new Command("run");
 
         command.AddOption(GetRunComponentOption("drex-service"));
-        command.AddOption(GetRunComponentOption("drex-test-client"));
         command.AddOption(GetRunComponentOption("rabbitmq"));
         command.AddOption(GetRunComponentOption("vector"));
         command.AddOption(GetRunComponentOption("grafana"));
@@ -59,8 +61,16 @@ public static class Program
         command.AddOption(GetFlagOption("reset", "r"));
         command.AddOption(GetFlagOption("background", "b"));
         command.AddOption(GetFlagOption("abort-on-container-exit", "a"));
+        command.AddOption(GetFlagOption("confirm", "c"));
 
-        command.Handler = CommandHandler.Create(Run);
+        var siteConfigOverrideOption = new Option<string?>("--drex-site-config-file-name-override")
+        {
+            Arity = ArgumentArity.ZeroOrOne,
+        };
+        siteConfigOverrideOption.AddAlias("-s");
+        command.AddOption(siteConfigOverrideOption);
+
+        command.Handler = CommandHandler.Create(RunCommand.Run);
 
         return command;
     }
@@ -69,88 +79,6 @@ public static class Program
     {
         var command = new Command("stop");
         return command;
-    }
-
-    private static async Task<int> Run(RunOptions runOptions)
-    {
-        var appConfig = (await ConfigureCommand.ReadConfig())!;
-        // ConfigureCommand.ValidateConfigAndThrow(appConfig); // TODO RH: Uncomment
-
-        // await CreateEnvFile(appConfig); // TODO RH: Uncomment
-
-        // TODO RH: Add all "-f" commands
-        var composeCommand = "docker-compose --help";
-
-        RunCommand(composeCommand);
-
-        // Run command in powershell
-
-
-
-        return 0;
-    }
-
-    // private static (string output, string error) RunCommand(string command)
-    // {
-    //     using var process = new Process();
-    //     process.StartInfo = new ProcessStartInfo("powershell.exe", command)
-    //     {
-    //         RedirectStandardOutput = true,
-    //         RedirectStandardError = true
-    //     };
-    //     process.Start();
-    //     var output = process.StandardOutput.ReadToEnd();
-    //     var error = process.StandardError.ReadToEnd();
-    //     return (output, error);
-    // }
-
-    private static void RunCommand(string command)
-    {
-        using (var ps = PowerShell.Create())
-        {
-            ps.AddScript(command);
-            ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-            var output = new PSDataCollection<string>();
-            output.DataAdded += ProcessCommandStandardOutput;
-            ps.Streams.Error.DataAdded += ProcessCommandErrorOutput;
-
-            var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-            if (asyncToken.AsyncWaitHandle.WaitOne())
-            {
-                ps.EndInvoke(asyncToken);
-            }
-
-            ps.InvokeAsync();
-        }
-    }
-
-    private static void ProcessCommandStandardOutput(object? sender, DataAddedEventArgs eventArgs)
-    {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        Console.WriteLine(outputItem);
-    }
-
-    private static void ProcessCommandErrorOutput(object? sender, DataAddedEventArgs eventArgs)
-    {
-        if (sender is not PSDataCollection<string> collection) return;
-        var outputItem = collection[eventArgs.Index];
-        Console.Error.WriteLine(outputItem);
-    }
-
-    private static async Task CreateEnvFile(AppConfig appConfig)
-    {
-        var envValues = new Dictionary<string, string>
-        {
-            {"WINDOWS_VERSION", appConfig.ContainerWindowsVersion},
-            {"PATH_TO_CC_PLATFORM_REPO", appConfig.CommonCorePlatformRepositoryPath},
-            {"PATH_TO_CC_DREX_REPO", appConfig.CommonCoreDrexRepositoryPath}
-        };
-        var envFileText = string.Join("\n", envValues.Select(_ => $"{_.Key}={_.Value}"));
-        var envFileName = Path.Combine(appConfig.CommonCorePlatformRepositoryPath, Constants.EnvFileRelativePath);
-        await File.WriteAllTextAsync(envFileName, envFileText);
     }
 
     private static Option<RunComponentMode?> GetRunComponentOption(string name)

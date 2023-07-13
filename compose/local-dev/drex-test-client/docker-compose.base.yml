@@ -1,0 +1,14 @@
+---
+version: '3'
+
+services:
+
+  cc.drex-test-client:
+    container_name: drex-test-client
+    depends_on:
+      - cc.drex-service
+      - cc.vector
+      - cc.rabbitmq-local
+      - cc.rabbitmq-remote
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

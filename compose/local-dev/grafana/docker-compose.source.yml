@@ -1,0 +1,11 @@
+---
+version: '3'
+
+services:
+  cc.grafana:
+    container_name: grafana-s
+    build:
+      context: ../../containers/grafana
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.container_type: "infrastructure"

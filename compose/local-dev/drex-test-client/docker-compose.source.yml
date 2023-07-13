@@ -1,0 +1,15 @@
+---
+version: '3'
+
+services:
+
+  cc.drex-test-client:
+    container_name: drex-test-client-s
+    build:
+      context: ./client/TestClient
+      dockerfile: TestClient.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.container_type: "application"

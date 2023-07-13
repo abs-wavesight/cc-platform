@@ -8,9 +8,9 @@ public static class ConfigureCommand
 {
     public static async Task<int> Configure(ConfigureOptions configureOptions)
     {
+        var readAppConfig = await ReadConfig();
         if (configureOptions.PrintOnly == true)
         {
-            var readAppConfig = await ReadConfig();
             if (readAppConfig == null)
             {
                 Console.WriteLine("Configuration was not found. Run \"configure\" command to initialize.");
@@ -19,17 +19,30 @@ public static class ConfigureCommand
             {
                 Console.Write($"{nameof(readAppConfig.CommonCorePlatformRepositoryPath)}: {readAppConfig.CommonCorePlatformRepositoryPath}");
             }
+
             return 0;
         }
 
-        Console.Write("\"cc-platform\" repository local path: ");
-        var ccPlatformRepositoryLocalPath = Console.ReadLine() ?? "";
+        Console.Write($"\"cc-platform\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCorePlatformRepositoryPath) ? $" ({readAppConfig.CommonCorePlatformRepositoryPath})" : "")}: ");
+        var ccPlatformRepositoryLocalPath = Console.ReadLine() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccPlatformRepositoryLocalPath))
+        {
+            ccPlatformRepositoryLocalPath = readAppConfig?.CommonCorePlatformRepositoryPath;
+        }
 
-        Console.Write("\"cc-drex\" repository local path: ");
-        var ccDrexRepositoryLocalPath = Console.ReadLine() ?? "";
+        Console.Write($"\"cc-drex\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDrexRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexRepositoryPath})" : "")}: ");
+        var ccDrexRepositoryLocalPath = Console.ReadLine() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccDrexRepositoryLocalPath))
+        {
+            ccDrexRepositoryLocalPath = readAppConfig?.CommonCoreDrexRepositoryPath;
+        }
 
-        Console.Write("Container Windows version (2019 or 2022): ");
-        var containerWindowsVersion = Console.ReadLine() ?? "";
+        Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
+        var containerWindowsVersion = Console.ReadLine() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(containerWindowsVersion))
+        {
+            containerWindowsVersion = readAppConfig?.ContainerWindowsVersion;
+        }
 
         var appConfig = new AppConfig
         {
@@ -39,10 +52,9 @@ public static class ConfigureCommand
         };
 
         ValidateConfigAndThrow(appConfig);
+        var fileName = await SaveConfig(appConfig);
+        Console.WriteLine($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
 
-        await SaveConfig(appConfig);
-
-        Console.WriteLine("Configuration complete.");
         return 0;
     }
 
@@ -65,14 +77,12 @@ public static class ConfigureCommand
             return errors;
         }
 
-        var ccPlatformRepositoryDirectory = new DirectoryInfo(appConfig.CommonCorePlatformRepositoryPath);
-        if (!ccPlatformRepositoryDirectory.Exists)
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCorePlatformRepositoryPath) || !new DirectoryInfo(appConfig.CommonCorePlatformRepositoryPath).Exists)
         {
             errors.Add($"\"cc-platform\" repository path ({appConfig.CommonCorePlatformRepositoryPath}) could not be found");
         }
 
-        var ccDrexRepositoryDirectory = new DirectoryInfo(appConfig.CommonCoreDrexRepositoryPath);
-        if (!ccDrexRepositoryDirectory.Exists)
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDrexRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDrexRepositoryPath).Exists)
         {
             errors.Add($"\"cc-drex\" repository path ({appConfig.CommonCoreDrexRepositoryPath}) could not be found");
         }
@@ -97,7 +107,7 @@ public static class ConfigureCommand
         return JsonSerializer.Deserialize<AppConfig>(appConfigJson) ?? null;
     }
 
-    private static async Task SaveConfig(AppConfig appConfig)
+    private static async Task<string> SaveConfig(AppConfig appConfig)
     {
         var appConfigJson = JsonSerializer.Serialize(
             appConfig,
@@ -106,7 +116,9 @@ public static class ConfigureCommand
                 WriteIndented = true
             });
 
-        await File.WriteAllTextAsync(GetConfigFileName(), appConfigJson);
+        var configFileName = GetConfigFileName();
+        await File.WriteAllTextAsync(configFileName, appConfigJson);
+        return configFileName;
     }
 
     private static string GetConfigFileName()

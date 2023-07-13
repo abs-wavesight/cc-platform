@@ -1,0 +1,31 @@
+---
+version: '3'
+
+services:
+
+  cc.vector:
+    container_name: vector
+    command: [ "-c", "C:\\config\\vector.toml", "--log-format", "json", "--color", "never" ]
+    # necessary to change hostname for vector to process/include its own logs
+    # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
+    hostname: "vector"
+    logging:
+      driver: local
+    ports:
+      - "8686:8686"
+    restart: always
+    depends_on:
+      cc.rabbitmq-local:
+        condition: service_healthy
+    volumes:
+      - type: npipe
+        source: \\.\pipe\docker_engine
+        target: \\.\pipe\docker_engine
+      - type: bind
+        source: ./../../config/vector/config
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: ./../../logs/
+        target: C:/cc-logs
+        read_only: false # need to write logs to disk

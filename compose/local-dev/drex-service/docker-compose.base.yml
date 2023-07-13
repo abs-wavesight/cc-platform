@@ -9,7 +9,7 @@ services:
       - cc.vector
       - cc.rabbitmq-local
     environment:
-      - SiteConfigFileName=drex-demo-site-alpha.site-config.json
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
     ports:
       - "12345:5000"
     restart: always

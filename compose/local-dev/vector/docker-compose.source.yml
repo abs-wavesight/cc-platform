@@ -1,0 +1,12 @@
+---
+version: '3'
+
+services:
+
+  cc.vector:
+    container_name: vector-s
+    build:
+      context: ../../containers/vector
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.container_type: "infrastructure"

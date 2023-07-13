@@ -1,0 +1,8 @@
+---
+version: '3'
+
+services:
+
+  cc.vector:
+    container_name: vector-i
+    image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
