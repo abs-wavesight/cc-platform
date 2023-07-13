@@ -30,10 +30,10 @@ public class Program
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var powerShellAdapter = serviceProvider.GetRequiredService<IPowerShellAdapter>();
 
-        return await Main(args, logger, powerShellAdapter);
+        return await Run(args, logger, powerShellAdapter);
     }
 
-    public static async Task<int> Main(string[]? args, ILogger logger, IPowerShellAdapter powerShellAdapter)
+    public static async Task<int> Run(string[]? args, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         Console.WriteLine(FiggleFonts.Doom.Render("ABS-WS | Common Core"));
         AnsiConsole.Write(new Rule("Local Dev Utility"));
@@ -68,7 +68,9 @@ public class Program
 
         command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) =>
         {
-            await ConfigureCommand.Configure(configureOptions, logger);
+            return await TryExecuteCommandAsync(
+                async () => await ConfigureCommand.Configure(configureOptions, logger),
+                logger);
         });
 
         return command;
@@ -106,7 +108,9 @@ public class Program
 
         command.Handler = CommandHandler.Create(async (RunOptions runOptions) =>
         {
-            await RunCommand.Run(runOptions, logger, powerShellAdapter);
+            return await TryExecuteCommandAsync(
+                async () => await RunCommand.Run(runOptions, logger, powerShellAdapter),
+                logger);
         });
 
         return command;
@@ -118,12 +122,40 @@ public class Program
 
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
 
-        command.Handler = CommandHandler.Create(async (StopOptions stopOptions) =>
+        command.Handler = CommandHandler.Create((StopOptions stopOptions) =>
         {
-            await StopCommand.Stop(stopOptions, logger, powerShellAdapter);
+            return TryExecuteCommand(
+                () => StopCommand.Stop(stopOptions, logger, powerShellAdapter),
+                logger);
         });
 
         return command;
+    }
+
+    private static async Task<int> TryExecuteCommandAsync(Func<Task<int>> command, ILogger logger)
+    {
+        try
+        {
+            return await command();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while running the command:\n{ex}");
+            return 1;
+        }
+    }
+
+    private static int TryExecuteCommand(Func<int> command, ILogger logger)
+    {
+        try
+        {
+            return command();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while running the command");
+            return 1;
+        }
     }
 
     private static Option<RunComponentMode?> GetRunComponentOption(string name)

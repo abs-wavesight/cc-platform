@@ -6,7 +6,7 @@ namespace Abs.CommonCore.LocalDevUtility.Commands;
 
 public static class StopCommand
 {
-    public static async Task<int> Stop(StopOptions stopOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
+    public static int Stop(StopOptions stopOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         using (CliStep.Start("Stopping compose services"))
         {

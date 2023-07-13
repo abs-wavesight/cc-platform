@@ -1,11 +1,19 @@
 ﻿using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
+using Xunit.Abstractions;
 
 namespace Abs.CommonCore.LocalDevUtility.Tests;
 
 public class RunCommandTests
 {
+    private readonly ITestOutputHelper _testOutput;
+
+    public RunCommandTests(ITestOutputHelper testOutput)
+    {
+        _testOutput = testOutput;
+    }
+
     [Theory]
     [InlineData("run -m r --rabbitmq i", new[]{"cc.rabbitmq-local"})]
     [InlineData("run -m r --vector i", new[]{"cc.rabbitmq-local", "cc.vector"})]
@@ -17,7 +25,7 @@ public class RunCommandTests
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices)
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture();
+        var fixture = new LocalDevUtilityFixture(_testOutput);
         await fixture.SetUpConfig();
 
         // Act
