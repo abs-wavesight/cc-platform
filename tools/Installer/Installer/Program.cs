@@ -1,13 +1,17 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Installer.Actions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Abs.CommonCore.Installer
 {
     [ExcludeFromCodeCoverage]
     internal class Program
     {
-        static async Task<int> Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             var downloadCommand = new Command("download", "Download components for installation");
             downloadCommand.TreatUnmatchedTokensAsErrors = true;
@@ -19,7 +23,11 @@ namespace Abs.CommonCore.Installer
 
             downloadCommand.SetHandler(async (registry) =>
             {
-                var downloader = new ComponentDownloader(registry);
+                var builder = Host.CreateApplicationBuilder(args);
+                var (logger, loggerFactory) = ConfigureLogging(builder.Logging);
+
+                logger.LogInformation("Starting component downloader");
+                var downloader = new ComponentDownloader(loggerFactory, registry);
                 await downloader.ExecuteAsync();
             }, registryParam);
 
@@ -33,6 +41,36 @@ namespace Abs.CommonCore.Installer
             });
 
             return await root.InvokeAsync(args);
+        }
+
+        private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)
+        {
+            builder.ClearProviders();
+
+            // When debugging locally, simple console output is easier to read than JSON; but when deployed, we want structured JSON logs
+            #if DEBUG
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
+                options.ColorBehavior = LoggerColorBehavior.Enabled;
+            });
+            #else
+            builder.AddJsonConsole(options =>
+            {
+                options.TimestampFormat = "u";
+                options.IncludeScopes = true;
+            });
+            #endif
+
+            var provider = builder.Services.BuildServiceProvider();
+            var logger = provider.GetRequiredService<ILogger<Program>>();
+            builder.Services.AddSingleton<ILogger>(logger);
+
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
+            return (logger, loggerFactory);
         }
     }
 }
