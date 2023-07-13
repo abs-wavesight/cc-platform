@@ -50,18 +50,24 @@ public static class Program
     {
         var command = new Command("run");
 
+        var modeOption = new Option<RunMode?>("--mode", "r = run immediately, c = confirm before running, o = output and copy to clipboard without running")
+        {
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        modeOption.AddAlias("-m");
+        command.AddOption(modeOption);
+
         command.AddOption(GetRunComponentOption("drex-service"));
         command.AddOption(GetRunComponentOption("rabbitmq"));
         command.AddOption(GetRunComponentOption("vector"));
         command.AddOption(GetRunComponentOption("grafana"));
         command.AddOption(GetRunComponentOption("loki"));
 
-        command.AddOption(GetFlagOption("deps", "d"));
-        command.AddOption(GetFlagOption("log-viz", "l"));
-        command.AddOption(GetFlagOption("reset", "r"));
-        command.AddOption(GetFlagOption("background", "b"));
-        command.AddOption(GetFlagOption("abort-on-container-exit", "a"));
-        command.AddOption(GetFlagOption("confirm", "c"));
+        command.AddOption(GetFlagOption("deps", "d", "Run dependencies: RabbitMQ (local and remote), Vector"));
+        command.AddOption(GetFlagOption("log-viz", "l", "Run log visualization components: Grafana, Loki"));
+        command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
+        command.AddOption(GetFlagOption("background", "b", "Run in background, a.k.a. detached (cannot be used with --abort-on-container-exit)"));
+        command.AddOption(GetFlagOption("abort-on-container-exit", "a", "Abort if any container exits (cannot be used with --background)"));
 
         var siteConfigOverrideOption = new Option<string?>("--drex-site-config-file-name-override")
         {
@@ -83,19 +89,19 @@ public static class Program
 
     private static Option<RunComponentMode?> GetRunComponentOption(string name)
     {
-        return new Option<RunComponentMode?>($"--{name}")
+        return new Option<RunComponentMode?>($"--{name}", "Component: i = from image, s = from source")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
     }
 
-    private static Option<bool?> GetFlagOption(string name, string? alias = null)
+    private static Option<bool?> GetFlagOption(string name, string alias, string description)
     {
-        var option = new Option<bool?>($"--{name}");
-        if (!string.IsNullOrEmpty(alias))
+        var option = new Option<bool?>($"--{name}", description)
         {
-            option.AddAlias($"-{alias}");
-        }
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        option.AddAlias($"-{alias}");
         return option;
     }
 }

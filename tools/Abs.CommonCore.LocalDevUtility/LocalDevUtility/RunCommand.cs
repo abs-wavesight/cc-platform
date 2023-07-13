@@ -2,6 +2,7 @@
 using System.Text;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Models;
+using TextCopy;
 
 namespace Abs.CommonCore.LocalDevUtility;
 
@@ -48,15 +49,15 @@ public static class RunCommand
 
         if (runOptions.Deps == true)
         {
-            runOptions.Rabbitmq ??= RunComponentMode.I;
-            runOptions.Vector ??= RunComponentMode.I;
+            runOptions.Rabbitmq ??= RunComponentMode.i;
+            runOptions.Vector ??= RunComponentMode.i;
             AddProfile(composeCommandBuilder, Constants.Profiles.RabbitMqRemote);
         }
 
         if (runOptions.LogViz == true)
         {
-            runOptions.Loki ??= RunComponentMode.I;
-            runOptions.Grafana ??= RunComponentMode.I;
+            runOptions.Loki ??= RunComponentMode.i;
+            runOptions.Grafana ??= RunComponentMode.i;
         }
 
         AddAllDependencies(runOptions);
@@ -82,15 +83,25 @@ public static class RunCommand
             composeCommandBuilder.Append(" --abort-on-container-exit");
         }
 
-        Console.WriteLine($"\nDocker Compose command to be run: {composeCommandBuilder}");
+        Console.WriteLine($"\nDocker Compose command to be run:");
+        Console.WriteLine(composeCommandBuilder.ToString());
 
-        if (runOptions.Confirm == true)
+        if (runOptions.Mode == RunMode.c)
         {
             Console.WriteLine("\nCONFIRM: Press enter to run this Docker Compose command.");
             Console.ReadLine();
         }
 
-        RunPowerShellCommand(composeCommandBuilder.ToString());
+        if (runOptions.Mode is RunMode.c or RunMode.r)
+        {
+            RunPowerShellCommand(composeCommandBuilder.ToString());
+        }
+
+        if (runOptions.Mode is RunMode.o)
+        {
+            await ClipboardService.SetTextAsync(composeCommandBuilder.ToString());
+            Console.WriteLine("The above command has been copied to your clipboard.");
+        }
 
         return 0;
     }
@@ -98,7 +109,7 @@ public static class RunCommand
     private static void PullImageIfNeeded(RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
     {
         var componentIsNotIncludedOrIsSetToRunFromSource = runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue
-                                                           || propertyValue == RunComponentMode.S;
+                                                           || propertyValue == RunComponentMode.s;
         if (componentIsNotIncludedOrIsSetToRunFromSource)
         {
             return;
@@ -154,7 +165,7 @@ public static class RunCommand
             }
 
             // Set dependency component to run from image
-            dependencyPropertyInfo.SetValue(runOptions, RunComponentMode.I);
+            dependencyPropertyInfo.SetValue(runOptions, RunComponentMode.i);
             dependencyFound = true;
         }
 
@@ -198,10 +209,10 @@ public static class RunCommand
     {
         switch (runComponentMode)
         {
-            case RunComponentMode.S:
+            case RunComponentMode.s:
                 return "source";
                 break;
-            case RunComponentMode.I:
+            case RunComponentMode.i:
                 return "image";
             default:
                 throw new ArgumentOutOfRangeException(nameof(runComponentMode), runComponentMode, null);
@@ -210,25 +221,22 @@ public static class RunCommand
 
     private static void RunPowerShellCommand(string command)
     {
-        // TODO RH: How do we pass colors through (e.g. docker logs)
-        using (var ps = PowerShell.Create())
+        using var ps = PowerShell.Create();
+        ps.AddScript(command);
+        ps.AddCommand("Out-String").AddParameter("Stream", true);
+
+        var output = new PSDataCollection<string>();
+        output.DataAdded += ProcessCommandStandardOutput;
+        ps.Streams.Error.DataAdded += ProcessCommandErrorOutput;
+
+        var asyncToken = ps.BeginInvoke<object, string>(null, output);
+
+        if (asyncToken.AsyncWaitHandle.WaitOne())
         {
-            ps.AddScript(command);
-            ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-            var output = new PSDataCollection<string>();
-            output.DataAdded += ProcessCommandStandardOutput;
-            ps.Streams.Error.DataAdded += ProcessCommandErrorOutput;
-
-            var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-            if (asyncToken.AsyncWaitHandle.WaitOne())
-            {
-                ps.EndInvoke(asyncToken);
-            }
-
-            ps.InvokeAsync();
+            ps.EndInvoke(asyncToken);
         }
+
+        ps.InvokeAsync();
     }
 
     private static void ProcessCommandStandardOutput(object? sender, DataAddedEventArgs eventArgs)

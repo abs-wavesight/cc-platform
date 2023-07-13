@@ -4,6 +4,8 @@ namespace Abs.CommonCore.LocalDevUtility.Models;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class RunOptions
 {
+    public RunMode? Mode { get; set; }
+
     [RunComponent(composePath: "drex-service", imageName: "cc-drex-service", dependencyPropertyNames: nameof(Rabbitmq))]
     public RunComponentMode? DrexService { get; set; }
 
@@ -24,7 +26,6 @@ public class RunOptions
     public bool? Reset { get; set; }
     public bool? Background { get; set; }
     public bool? AbortOnContainerExit { get; set; }
-    public bool? Confirm { get; set; }
     public string? DrexSiteConfigFileNameOverride { get; set; }
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)

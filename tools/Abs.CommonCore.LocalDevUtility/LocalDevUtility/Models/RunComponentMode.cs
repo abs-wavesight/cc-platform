@@ -3,8 +3,8 @@
 public enum RunComponentMode
 {
     /// <summary>Source</summary>
-    S = 1,
+    s = 1,
 
     /// <summary>Image</summary>
-    I = 2
+    i = 2
 }
