@@ -83,24 +83,26 @@ public static class RunCommand
             composeCommandBuilder.Append(" --abort-on-container-exit");
         }
 
-        Console.WriteLine($"\nDocker Compose command to be run:");
-        Console.WriteLine(composeCommandBuilder.ToString());
 
         if (runOptions.Mode == RunMode.c)
         {
             Console.WriteLine("\nCONFIRM: Press enter to run this Docker Compose command.");
+            Console.WriteLine(composeCommandBuilder.ToString());
             Console.ReadLine();
         }
 
         if (runOptions.Mode is RunMode.c or RunMode.r)
         {
+            Console.WriteLine("\nNow running the following Docker Compose command:");
+            Console.WriteLine(composeCommandBuilder.ToString());
             PowerShellHelper.RunPowerShellCommand(composeCommandBuilder.ToString());
         }
 
         if (runOptions.Mode is RunMode.o)
         {
             await ClipboardService.SetTextAsync(composeCommandBuilder.ToString());
-            Console.WriteLine("The above command has been copied to your clipboard.");
+            Console.WriteLine("Docker Compose command below has been copied to your clipboard:");
+            Console.WriteLine(composeCommandBuilder.ToString());
         }
 
         return 0;
