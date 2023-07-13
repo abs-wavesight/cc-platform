@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Installer": {
+      "commandName": "Project",
+      "commandLineArgs": "download -r C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\DownloaderConfig.json"
+    }
+  }
+}

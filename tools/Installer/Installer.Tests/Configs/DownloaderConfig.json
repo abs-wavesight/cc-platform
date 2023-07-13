@@ -1,0 +1,15 @@
+{
+  "outputLocation": "c:\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "type": "docker",
+      "files": [
+        {
+          "source": "https://github.com/abs-wavesight/cc-drex/pkgs/container/rabbitmq/106010921?tag=windows-2019",
+          "destination": "rabbitMq_container"
+        }
+      ]
+    }
+  ]
+}

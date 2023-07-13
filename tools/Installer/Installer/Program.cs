@@ -1,6 +1,6 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
-using Abs.CommonCore.Installer.Actions;
+using Abs.CommonCore.Installer.Actions.Downloader;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,12 +34,7 @@ namespace Abs.CommonCore.Installer
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
             root.Add(downloadCommand);
-
-            root.SetHandler(async (mode) =>
-            {
-
-            });
-
+            
             return await root.InvokeAsync(args);
         }
 

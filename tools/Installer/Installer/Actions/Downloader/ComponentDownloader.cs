@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Abs.CommonCore.Installer.Actions.Downloader.Config;
+using Abs.CommonCore.Platform.Config;
+using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Actions
+namespace Abs.CommonCore.Installer.Actions.Downloader
 {
     public class ComponentDownloader
     {
         private readonly ILogger _logger;
-        private readonly FileInfo _registry;
+        private readonly DownloaderConfig _config;
 
         public ComponentDownloader(ILoggerFactory loggerFactory, FileInfo registry)
         {
             _logger = loggerFactory.CreateLogger<ComponentDownloader>();
-            _registry = registry;
+            _config = ConfigParser.LoadConfig<DownloaderConfig>(registry.FullName);
         }
 
         public async Task ExecuteAsync()
