@@ -34,6 +34,7 @@ jobs:
     with:
       solution-directory: tools/LocalDevUtility
       solution-name: LocalDevUtility.sln
+      install-docker-compose: true
     secrets: inherit
 
   publish-nuget-package:
