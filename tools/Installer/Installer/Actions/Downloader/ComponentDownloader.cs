@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Diagnostics;
 using Abs.CommonCore.Installer.Actions.Downloader.Config;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging;
