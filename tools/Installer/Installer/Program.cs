@@ -26,7 +26,7 @@ namespace Abs.CommonCore.Installer
                 var builder = Host.CreateApplicationBuilder(args);
                 var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
-                var downloader = new ComponentDownloader(loggerFactory, registry);
+                using var downloader = new ComponentDownloader(loggerFactory, registry);
                 await downloader.ExecuteAsync();
             }, registryParam);
 

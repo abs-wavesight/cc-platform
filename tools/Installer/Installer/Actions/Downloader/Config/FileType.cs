@@ -3,6 +3,7 @@
     public enum FileType
     {
         None = 0,
-        Container
+        Container,
+        File
     }
 }
