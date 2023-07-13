@@ -7,9 +7,9 @@ namespace Abs.CommonCore.Installer.Actions.Downloader.Config
     public class DownloaderConfig
     {
         [JsonPropertyName("outputLocation")]
-        public string OutputLocation { get; init; }
+        public string OutputLocation { get; init; } = "";
 
         [JsonPropertyName("components")]
-        public Component[] Components { get; init; }
+        public Component[] Components { get; init; } = Array.Empty<Component>();
     }
 }

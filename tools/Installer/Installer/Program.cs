@@ -24,9 +24,8 @@ namespace Abs.CommonCore.Installer
             downloadCommand.SetHandler(async (registry) =>
             {
                 var builder = Host.CreateApplicationBuilder(args);
-                var (logger, loggerFactory) = ConfigureLogging(builder.Logging);
+                var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
-                logger.LogInformation("Starting component downloader");
                 var downloader = new ComponentDownloader(loggerFactory, registry);
                 await downloader.ExecuteAsync();
             }, registryParam);
