@@ -57,6 +57,9 @@ jobs:
         with:
           dotnet-version: 7.0.x
 
+      - name: Install docker-compose
+        run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination C:\Windows\System32\docker-compose.exe
+
       - name: Nuget - Set Nuget credentials
         working-directory: ./
         run: |
