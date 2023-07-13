@@ -7,6 +7,13 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Abs.CommonCore.LocalDevUtility</RootNamespace>
         <AssemblyName>Abs.CommonCore.LocalDevUtility</AssemblyName>
+
+        <PackageId>Abs.CommonCore.LocalDevUtility</PackageId>
+        <Version></Version> <!-- This empty version tag is filled in by the GitHub Actions workflow before publishing the package -->
+        <Authors>ABS Wavesight</Authors>
+        <PackageDescription>Utility to aid local development process</PackageDescription>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>cc-local</ToolCommandName>
     </PropertyGroup>
 
     <ItemGroup>
