@@ -1,13 +1,37 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+
+namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
 public class RunComponentAttribute : Attribute
 {
-    public RunComponentAttribute(string composePath, string imageName, string? profile = null, params string[] dependencyPropertyNames)
+    public RunComponentAttribute(
+        string composePath,
+        string imageName,
+        string? profile = null,
+        string? defaultVariant = null,
+        string[]? dependencyPropertyNames = null)
     {
         ComposePath = composePath;
         ImageName = imageName;
         Profile = profile;
-        DependencyPropertyNames = dependencyPropertyNames;
+        DefaultVariant = defaultVariant;
+        DependencyPropertyNames = dependencyPropertyNames ?? Array.Empty<string>();
+        AliasPropertyNames = Array.Empty<string>();
+    }
+
+    public RunComponentAttribute(
+        string composePath,
+        string imageName,
+        Dictionary<string,string?>? variantsByDependencyPropertyName,
+        string? profile = null,
+        string? defaultVariant = null)
+    {
+        ComposePath = composePath;
+        ImageName = imageName;
+        Profile = profile;
+        DefaultVariant = defaultVariant;
+        DependencyPropertyNames = Array.Empty<string>();
+        VariantsByDependencyPropertyName = variantsByDependencyPropertyName ?? new Dictionary<string, string?>();
         AliasPropertyNames = Array.Empty<string>();
     }
 
@@ -17,6 +41,7 @@ public class RunComponentAttribute : Attribute
         ComposePath = null;
         ImageName = null;
         Profile = null;
+        DefaultVariant = null;
         DependencyPropertyNames = Array.Empty<string>();
     }
 
@@ -25,5 +50,7 @@ public class RunComponentAttribute : Attribute
     public string? ComposePath { get; }
     public string? ImageName { get; }
     public string? Profile { get; }
+    public string? DefaultVariant { get; }
+    public Dictionary<string,string?>? VariantsByDependencyPropertyName { get; }
     public string[] DependencyPropertyNames { get; }
 }

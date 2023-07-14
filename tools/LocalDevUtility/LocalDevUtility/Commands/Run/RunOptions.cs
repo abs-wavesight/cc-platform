@@ -16,13 +16,13 @@ public class RunOptions
     [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
     public RunComponentMode? RabbitmqRemote { get; set; }
 
-    [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: nameof(RabbitmqLocal))]
+    [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: new []{nameof(RabbitmqLocal)})]
     public RunComponentMode? Vector { get; set; }
 
-    [RunComponent(composePath: "grafana", imageName: "grafana", dependencyPropertyNames: nameof(Loki))]
+    [RunComponent(composePath: "grafana", imageName: "grafana", dependencyPropertyNames: new []{nameof(Loki), nameof(Vector)})]
     public RunComponentMode? Grafana { get; set; }
 
-    [RunComponent(composePath: "loki", imageName: "loki")]
+    [RunComponent(composePath: "loki", imageName: "loki", dependencyPropertyNames: new []{nameof(Vector)})]
     public RunComponentMode? Loki { get; set; }
 
 
