@@ -2,8 +2,10 @@
 using FluentAssertions;
 using Xunit.Abstractions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Abs.CommonCore.LocalDevUtility.Tests;
 
+[Collection(nameof(RunCommandTests))]
 public class RunCommandTests
 {
     private readonly ITestOutputHelper _testOutput;

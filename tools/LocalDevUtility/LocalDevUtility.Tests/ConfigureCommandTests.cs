@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 
 namespace Abs.CommonCore.LocalDevUtility.Tests;
 
+[Collection(nameof(RunCommandTests))]
 public class ConfigureCommandTests
 {
     private readonly ITestOutputHelper _testOutput;
