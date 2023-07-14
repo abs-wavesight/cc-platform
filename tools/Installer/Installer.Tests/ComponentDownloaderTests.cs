@@ -36,7 +36,7 @@ namespace Installer.Tests
             var initializer = Initialize(@"Configs/DownloaderConfig.json");
             await initializer.downloader.ExecuteAsync();
 
-            initializer.commandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+            initializer.commandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
         private (Mock<IDataRequestService> dataRequest, Mock<ICommandExecutionService> commandExecute, ComponentDownloader downloader) Initialize(string file)

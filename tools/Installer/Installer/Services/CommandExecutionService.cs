@@ -16,7 +16,7 @@ namespace Abs.CommonCore.Installer.Services
             _verifyOnly = verifyOnly;
         }
 
-        public async Task ExecuteCommandAsync(string command, string arguments)
+        public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
         {
             _logger.LogInformation($"Executing: {command} {arguments}");
 
@@ -32,6 +32,7 @@ namespace Abs.CommonCore.Installer.Services
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WorkingDirectory = workingDirectory;
 
             process.ErrorDataReceived += (sender, args) =>
             {
