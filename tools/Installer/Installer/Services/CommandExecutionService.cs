@@ -7,16 +7,23 @@ namespace Abs.CommonCore.Installer.Services
     [ExcludeFromCodeCoverage]
     public class CommandExecutionService : ICommandExecutionService
     {
+        private readonly bool _verifyOnly;
         private readonly ILogger _logger;
 
-        public CommandExecutionService(ILogger logger)
+        public CommandExecutionService(ILogger logger, bool verifyOnly = false)
         {
             _logger = logger;
+            _verifyOnly = verifyOnly;
         }
 
         public async Task ExecuteCommandAsync(string command, string arguments)
         {
             _logger.LogInformation($"Executing: {command} {arguments}");
+
+            if (_verifyOnly)
+            {
+                return;
+            }
 
             var process = new Process();
             process.StartInfo.FileName = command;

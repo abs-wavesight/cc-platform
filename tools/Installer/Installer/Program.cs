@@ -22,16 +22,22 @@ namespace Abs.CommonCore.Installer
             registryParam.AddAlias("-r");
             downloadCommand.Add(registryParam);
 
-            downloadCommand.SetHandler(async (registry) =>
+            var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
+            verifyOnlyParam.SetDefaultValue(false);
+            verifyOnlyParam.IsRequired = false;
+            verifyOnlyParam.AddAlias("-v");
+            downloadCommand.Add(verifyOnlyParam);
+
+            downloadCommand.SetHandler(async (registry, verifyOnly) =>
             {
                 var builder = Host.CreateApplicationBuilder(args);
                 var (logger, loggerFactory) = ConfigureLogging(builder.Logging);
 
-                var dataRequest = new DataRequestService(logger);
-                var commandExecution = new CommandExecutionService(logger);
+                var dataRequest = new DataRequestService(logger, verifyOnly);
+                var commandExecution = new CommandExecutionService(logger, verifyOnly);
                 var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry);
                 await downloader.ExecuteAsync();
-            }, registryParam);
+            }, registryParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;

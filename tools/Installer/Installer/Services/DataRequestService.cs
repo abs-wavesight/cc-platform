@@ -10,14 +10,17 @@ namespace Abs.CommonCore.Installer.Services
         private readonly ILogger _logger;
         private const string _nugetEnvironmentVariableName = "ABS_NUGET_PASSWORD";
         private readonly string? _nugetEnvironmentVariable;
+        private readonly bool _verifyOnly;
 
         private readonly HttpClient _httpClient = new HttpClient();
 
-        public DataRequestService(ILogger logger)
+        public DataRequestService(ILogger logger, bool verifyOnly = false)
         {
             _logger = logger;
             _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(_nugetEnvironmentVariableName);
-            if (string.IsNullOrWhiteSpace(_nugetEnvironmentVariable))
+            _verifyOnly = verifyOnly;
+
+            if (verifyOnly == false && string.IsNullOrWhiteSpace(_nugetEnvironmentVariable))
             {
                 throw new Exception("Nuget environment variable not found");
             }
@@ -26,6 +29,12 @@ namespace Abs.CommonCore.Installer.Services
         public async Task<byte[]> RequestByteArrayAsync(string source)
         {
             _logger.LogInformation($"Loading data from '{source}'");
+
+            if (_verifyOnly)
+            {
+                return Array.Empty<byte>();
+            }
+
             using (var request = new HttpRequestMessage(HttpMethod.Get, source))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _nugetEnvironmentVariable);

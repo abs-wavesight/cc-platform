@@ -46,6 +46,24 @@ namespace Installer.Tests
             initializer.commandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
+        [Fact]
+        public async Task VerifyOnly_FileNotDownloaded()
+        {
+            var dataRequest = new DataRequestService(NullLogger.Instance, true);
+            var result = await dataRequest.RequestByteArrayAsync("http://Not.a.valid.url.path");
+            Assert.Equal(Array.Empty<byte>(), result);
+        }
+
+        [Fact]
+        public async Task ValidConfig__VerifyOnly_CommandNotExecuted()
+        {
+            var commandExecution = new CommandExecutionService(NullLogger.Instance, true);
+
+            var exception = await Record.ExceptionAsync(() =>
+                commandExecution.ExecuteCommandAsync("Not a valid command", "Not a valid argument"));
+            Assert.Null(exception);
+        }
+
         private (Mock<IDataRequestService> dataRequest, Mock<ICommandExecutionService> commandExecute, ComponentDownloader downloader) Initialize(string file)
         {
             var dataRequest = new Mock<IDataRequestService>();
