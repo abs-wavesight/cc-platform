@@ -64,7 +64,7 @@ public static class ConfigureCommand
         var validationErrors = ValidateConfig(appConfig);
         if (validationErrors.Any())
         {
-            throw new Exception("Configuration is invalid:\n" + string.Join("\n", validationErrors));
+            throw new Exception("Configuration is invalid. Run \"cc-local configure\" to provide valid configuration values. Run \"cc-local configure -p\" to see your currently saved configuration values. Errors:\n" + string.Join("\n", validationErrors));
         }
     }
 
