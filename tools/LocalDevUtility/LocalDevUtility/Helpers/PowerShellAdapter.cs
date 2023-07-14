@@ -10,12 +10,12 @@ public class PowerShellAdapter : IPowerShellAdapter
 {
     private readonly ConcurrentDictionary<string,string> _colorsByContainerName = new ();
 
-    public List<string> RunPowerShellCommand(string command)
+    public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {
-        return RunPowerShellCommand(command, null);
+        return RunPowerShellCommand(command, null, timeout);
     }
 
-    public List<string> RunPowerShellCommand(string command, ILogger? logger)
+    public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
         using var ps = PowerShell.Create();
         ps.AddScript(command);
@@ -28,7 +28,10 @@ public class PowerShellAdapter : IPowerShellAdapter
 
         var asyncToken = ps.BeginInvoke<object, string>(null, output);
 
-        if (asyncToken.AsyncWaitHandle.WaitOne())
+
+        if (timeout.HasValue
+                ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
+                : asyncToken.AsyncWaitHandle.WaitOne())
         {
             ps.EndInvoke(asyncToken);
         }

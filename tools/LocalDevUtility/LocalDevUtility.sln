@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDevUtility", "LocalDev
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDevUtility.Tests", "LocalDevUtility.Tests\LocalDevUtility.Tests.csproj", "{D1BB46EC-08FB-4539-A64A-1B3C5403F5EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{3B836843-95D0-4255-8147-EADDE7CCABCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{D1BB46EC-08FB-4539-A64A-1B3C5403F5EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1BB46EC-08FB-4539-A64A-1B3C5403F5EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1BB46EC-08FB-4539-A64A-1B3C5403F5EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B836843-95D0-4255-8147-EADDE7CCABCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B836843-95D0-4255-8147-EADDE7CCABCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B836843-95D0-4255-8147-EADDE7CCABCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B836843-95D0-4255-8147-EADDE7CCABCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

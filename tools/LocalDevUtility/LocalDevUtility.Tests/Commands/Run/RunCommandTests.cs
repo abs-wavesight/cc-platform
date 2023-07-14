@@ -2,8 +2,6 @@
 using FluentAssertions;
 using Xunit.Abstractions;
 
-// TODO RH: Add integration test that starts ALL services and confirms that they all come up
-
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
 
@@ -55,7 +53,7 @@ public class RunCommandTests
     private void AssertComposeConfigIsValid(LocalDevUtilityFixture fixture, string composeCommandPart)
     {
         var configCommand = $"{composeCommandPart} config";
-        var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand);
+        var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(1));
         _testOutput.WriteLine($"Compose Config Output:\n{string.Join("\n", configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: abs-cc");
@@ -64,7 +62,7 @@ public class RunCommandTests
     private void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, string[] expectedServices)
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
-        var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand);
+        var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(1));
         configServicesCommandOutput.Should().HaveCount(expectedServices.Length);
         configServicesCommandOutput.Should().AllSatisfy(_ => expectedServices.Should().Contain(_));
     }

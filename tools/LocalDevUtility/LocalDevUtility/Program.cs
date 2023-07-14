@@ -155,12 +155,20 @@ public class Program
         }
     }
 
-    private static Option<RunComponentMode?> GetRunComponentOption(string name, string? description = null)
+    private static Option<RunComponentMode> GetRunComponentOption(string name, string? description = null)
     {
-        return new Option<RunComponentMode?>($"--{name}", $"Component: i = from image, s = from source{(string.IsNullOrWhiteSpace(description) ? "" : $"; {description}")}")
+        var option = new Option<RunComponentMode>($"--{name}", $"Component: i = from image, s = from source{(string.IsNullOrWhiteSpace(description) ? "" : $"; {description}")}")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
+        option.AddValidator(optionResult =>
+        {
+            if (!optionResult.Tokens.Any())
+            {
+                optionResult.ErrorMessage = $"Invalid value for \"{optionResult.Token}\". You must provide a valid component mode (i = from image, s = from source).";
+            }
+        });
+        return option;
     }
 
     private static Option<bool?> GetFlagOption(string name, string alias, string description)
