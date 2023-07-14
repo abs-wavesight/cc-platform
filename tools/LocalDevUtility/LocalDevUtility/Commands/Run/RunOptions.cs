@@ -1,12 +1,20 @@
 ﻿// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable ClassNeverInstantiated.Global
 
+using Abs.CommonCore.LocalDevUtility.Commands.Run.Attributes;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public class RunOptions
 {
+    public RunOptions(RunMode? mode)
+    {
+        Mode = mode;
+    }
+
     [RunComponent(composePath: "drex-service", imageName: "cc-drex-service")]
     [RunComponentDependency(nameof(RabbitmqLocal))]
     [RunComponentDependency(nameof(Vector))]
@@ -32,13 +40,16 @@ public class RunOptions
     public RunComponentMode? Loki { get; set; }
 
 
-    [RunComponent(aliasPropertyNames: nameof(RabbitmqLocal))]
+    [RunComponentAlias(nameof(RabbitmqLocal))]
     public RunComponentMode? Rabbitmq { get; set; }
 
-    [RunComponent(aliasPropertyNames: new []{nameof(RabbitmqLocal), nameof(RabbitmqRemote), nameof(Vector)})]
+    [RunComponentAlias(nameof(RabbitmqLocal))]
+    [RunComponentAlias(nameof(RabbitmqRemote))]
+    [RunComponentAlias(nameof(Vector))]
     public RunComponentMode? Deps { get; set; }
 
-    [RunComponent(aliasPropertyNames: new []{nameof(Grafana), nameof(Loki)})]
+    [RunComponentAlias(nameof(Grafana))]
+    [RunComponentAlias(nameof(Loki))]
     public RunComponentMode? LogViz { get; set; }
 
     public RunMode? Mode { get; set; }
@@ -54,10 +65,10 @@ public class RunOptions
         .ToList();
 
     public static List<string> NonAliasComponentPropertyNames => ComponentPropertyNames
-        .Where(_ => (typeof(RunOptions).GetRunComponent(_)?.IsAlias ?? false) == false)
+        .Where(_ => !typeof(RunOptions).GetRunComponentAliases(_).Any())
         .ToList();
 
     public static List<string> AliasComponentPropertyNames => ComponentPropertyNames
-        .Where(_ => typeof(RunOptions).GetRunComponent(_)?.IsAlias == true)
+        .Where(_ => typeof(RunOptions).GetRunComponentAliases(_).Any())
         .ToList();
 }

@@ -145,17 +145,16 @@ public static class RunCommand
             return;
         }
 
-        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
-        if (!runComponent.IsAlias)
+        var runComponentAliases = runOptions.GetType().GetRunComponentAliases(componentPropertyName).ToList();
+        if (!runComponentAliases.Any())
         {
             return;
         }
 
-        foreach (var aliasPropertyName in runComponent.AliasPropertyNames)
+        foreach (var runComponentAlias in runComponentAliases)
         {
-            runOptions.GetType().GetProperty(aliasPropertyName)!.SetValue(runOptions, propertyValue);
+            runOptions.GetType().GetProperty(runComponentAlias.AliasPropertyName)!.SetValue(runOptions, propertyValue);
         }
-
     }
 
     /// <summary>

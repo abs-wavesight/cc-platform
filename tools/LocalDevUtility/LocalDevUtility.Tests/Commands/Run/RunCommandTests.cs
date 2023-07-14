@@ -2,6 +2,8 @@
 using FluentAssertions;
 using Xunit.Abstractions;
 
+// TODO RH: Add integration test that starts ALL services and confirms that they all come up
+
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
 
