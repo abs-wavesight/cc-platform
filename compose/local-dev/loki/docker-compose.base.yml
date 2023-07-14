@@ -11,7 +11,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ./../../config/loki
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/loki
         target: C:/Program Files/loki/config
         read_only: true
       - type: volume

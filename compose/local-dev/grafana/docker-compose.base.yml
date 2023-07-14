@@ -14,11 +14,11 @@ services:
         source: grafana-db
         target: C:/Program Files/GrafanaLabs/grafana/data
       - type: bind
-        source: ./../../config/grafana/datasources
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/grafana/datasources
         target: C:/Program Files/GrafanaLabs/grafana/conf/provisioning/datasources
         read_only: true
       - type: bind
-        source: ./../../config/grafana
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/grafana
         target: C:/Program Files/GrafanaLabs/grafana/conf/custom/
         read_only: true
     depends_on:

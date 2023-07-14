@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
 
+// TODO RH: This won't work -- need to build the file list for this as well
 public static class StopCommand
 {
     public static int Stop(StopOptions stopOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)

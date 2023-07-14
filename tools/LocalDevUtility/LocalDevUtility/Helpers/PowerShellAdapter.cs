@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility.Helpers;
@@ -11,14 +12,19 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command)
     {
+        return RunPowerShellCommand(command, null);
+    }
+
+    public List<string> RunPowerShellCommand(string command, ILogger? logger)
+    {
         using var ps = PowerShell.Create();
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
 
         var rawOutput = new List<string>();
         var output = new PSDataCollection<string>();
-        output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, sender, args);
-        ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, sender, args);
+        output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
+        ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
 
         var asyncToken = ps.BeginInvoke<object, string>(null, output);
 
@@ -32,7 +38,7 @@ public class PowerShellAdapter : IPowerShellAdapter
         return rawOutput;
     }
 
-    private void ProcessCommandOutput(List<string> rawOutput, object? sender, DataAddedEventArgs eventArgs)
+    private void ProcessCommandOutput(List<string> rawOutput, ILogger? logger, object? sender, DataAddedEventArgs eventArgs)
     {
         string? outputItem;
         switch (sender)
@@ -49,6 +55,11 @@ public class PowerShellAdapter : IPowerShellAdapter
 
         OutputWithColorForDockerCompose(outputItem!);
         rawOutput.Add(outputItem!);
+
+        if (logger != null)
+        {
+            logger.LogInformation(outputItem);
+        }
     }
 
     /// <summary>

@@ -162,10 +162,4 @@ public class ConfigureCommandTests
         File.Exists(originalFileName).Should().BeFalse();
         File.Exists(resultFileName).Should().BeFalse();
     }
-
-    [Fact]
-    public async Task ConfigureCommandTestX()
-    {
-        // TODO RH: Test Configure command
-    }
 }

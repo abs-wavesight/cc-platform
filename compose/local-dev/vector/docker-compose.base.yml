@@ -21,10 +21,10 @@ services:
         source: \\.\pipe\docker_engine
         target: \\.\pipe\docker_engine
       - type: bind
-        source: ./../../config/vector/config
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/vector/config
         target: C:/config
         read_only: true
       - type: bind
-        source: ./../../logs/
+        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/
         target: C:/cc-logs
         read_only: false # need to write logs to disk

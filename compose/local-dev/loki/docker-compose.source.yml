@@ -5,7 +5,7 @@ services:
   cc.loki:
     container_name: loki-s
     build:
-      context: ../../containers/loki
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/loki
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.container_type: "infrastructure"

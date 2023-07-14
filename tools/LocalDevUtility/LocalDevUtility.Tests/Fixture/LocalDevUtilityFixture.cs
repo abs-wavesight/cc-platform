@@ -44,7 +44,7 @@ public class LocalDevUtilityFixture
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
-            CommonCoreDrexRepositoryPath = repoRootPath,
+            CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
             ContainerWindowsVersion = "2019"
         };
     }

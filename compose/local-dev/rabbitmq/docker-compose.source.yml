@@ -10,7 +10,7 @@ services:
   cc.rabbitmq-local:
     container_name: rabbitmq-local-s
     build:
-      context: ../../containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.container_type: "infrastructure"
@@ -18,7 +18,7 @@ services:
   cc.rabbitmq-remote:
     container_name: rabbitmq-remote-s
     build:
-      context: ../../containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.container_type: "infrastructure"

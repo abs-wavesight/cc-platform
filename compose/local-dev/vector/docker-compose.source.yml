@@ -6,7 +6,7 @@ services:
   cc.vector:
     container_name: vector-s
     build:
-      context: ../../containers/vector
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/vector
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.container_type: "infrastructure"
