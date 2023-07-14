@@ -2,7 +2,7 @@
   "profiles": {
     "Installer": {
       "commandName": "Project",
-      "commandLineArgs": "download -r C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\DownloaderConfig.json -v"
+      "commandLineArgs": "download -c C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\DownloaderConfig.json -v"
     }
   }
 }
