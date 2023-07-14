@@ -16,7 +16,7 @@ namespace Abs.CommonCore.Installer.Services
             _verifyOnly = verifyOnly;
         }
 
-        public async Task ExecuteCommandAsync(string command, string arguments)
+        public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
         {
             _logger.LogInformation($"Executing: {command} {arguments}");
 
@@ -26,12 +26,13 @@ namespace Abs.CommonCore.Installer.Services
             }
 
             var process = new Process();
-            process.StartInfo.FileName = command;
-            process.StartInfo.Arguments = arguments;
+            process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
+            process.StartInfo.Arguments = $"/C {command} {arguments}";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WorkingDirectory = workingDirectory;
 
             process.ErrorDataReceived += (sender, args) =>
             {

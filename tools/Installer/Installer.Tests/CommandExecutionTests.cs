@@ -13,7 +13,7 @@ namespace Installer.Tests
             await File.WriteAllBytesAsync(tempFile, new byte[] { 1, 2, 3 });
 
             // del doesn't work directly
-            await commandExecution.ExecuteCommandAsync("cmd.exe", $"cmd /c del {tempFile}");
+            await commandExecution.ExecuteCommandAsync("del", $"{tempFile}", "");
             Assert.True(File.Exists(tempFile) == false);
         }
 
@@ -23,7 +23,7 @@ namespace Installer.Tests
             var commandExecution = new CommandExecutionService(NullLoggerFactory.Instance, true);
 
             var exception = await Record.ExceptionAsync(() =>
-                commandExecution.ExecuteCommandAsync("Not a valid command", "Not a valid argument"));
+                commandExecution.ExecuteCommandAsync("Not a valid command", "Not a valid argument", ""));
             Assert.Null(exception);
         }
     }

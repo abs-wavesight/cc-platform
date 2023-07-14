@@ -2,6 +2,6 @@
 {
     public interface ICommandExecutionService
     {
-        Task ExecuteCommandAsync(string command, string arguments);
+        Task ExecuteCommandAsync(string command, string arguments, string workingDirectory);
     }
 }
