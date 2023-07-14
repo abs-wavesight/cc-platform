@@ -19,14 +19,14 @@ public class RunCommandTests
     [InlineData("run -m r --rabbitmq i", new[]{"cc.rabbitmq-local"})]
     [InlineData("run -m r --rabbitmq-local i", new[]{"cc.rabbitmq-local"})]
     [InlineData("run -m r --rabbitmq-remote i", new[]{"cc.rabbitmq-remote"})]
-    [InlineData("run -m r --vector i", new[]{"cc.rabbitmq-local", "cc.vector"})]
+    [InlineData("run -m r --vector i", new[]{"cc.rabbitmq-local", "cc.vector"}, new[]{"vector/docker-compose.variant.default.yml"})]
     [InlineData("run -m r --grafana i", new[]{"cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector"})]
-    [InlineData("run -m r --loki i", new[]{"cc.loki", "cc.rabbitmq-local", "cc.vector"})]
+    [InlineData("run -m r --loki i", new[]{"cc.loki", "cc.rabbitmq-local", "cc.vector"}, new[]{"vector/docker-compose.variant.loki.yml"})]
     [InlineData("run -m r --drex-service i", new[]{"cc.drex-service", "cc.rabbitmq-local", "cc.vector"})]
     [InlineData("run -m r --deps i", new[]{"cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector"})]
-    [InlineData("run -m r --deps i --drex-service i", new[]{"cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector", "cc.drex-service"})]
-    [InlineData("run -m r --deps i --log-viz i --drex-service i", new[]{"cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector", "cc.drex-service", "cc.loki", "cc.grafana"})]
-    public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices)
+    [InlineData("run -m r --deps i --drex-service i", new[]{"cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector", "cc.drex-service"}, new[]{"vector/docker-compose.variant.default.yml"})]
+    [InlineData("run -m r --deps i --log-viz i --drex-service i", new[]{"cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector", "cc.drex-service", "cc.loki", "cc.grafana"}, new[]{"vector/docker-compose.variant.loki.yml"})]
+    public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
     {
         // Arrange
         var fixture = new LocalDevUtilityFixture(_testOutput);
@@ -39,6 +39,7 @@ public class RunCommandTests
         var composeCommandPart = AssertComposeCommandWasExecutedAndExtractComposeCommandPart(fixture);
         AssertComposeConfigIsValid(fixture, composeCommandPart);
         AssertComposeStartsExpectedServices(fixture, composeCommandPart, expectedServices);
+        AssertSpecificExpectedComposeFilesArePresent(composeCommandPart, specificExpectedComposeFiles);
     }
 
     private string AssertComposeCommandWasExecutedAndExtractComposeCommandPart(LocalDevUtilityFixture fixture)
@@ -53,6 +54,7 @@ public class RunCommandTests
     {
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand);
+        _testOutput.WriteLine($"Compose Config Output:\n{string.Join("\n", configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: abs-cc");
     }
@@ -63,5 +65,15 @@ public class RunCommandTests
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand);
         configServicesCommandOutput.Should().HaveCount(expectedServices.Length);
         configServicesCommandOutput.Should().AllSatisfy(_ => expectedServices.Should().Contain(_));
+    }
+
+    private void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, string[]? specificExpectedComposeFiles)
+    {
+        if (specificExpectedComposeFiles == null)
+        {
+            return;
+        }
+
+        specificExpectedComposeFiles.Should().AllSatisfy(_ => composeCommandPart.Should().Contain(_));
     }
 }

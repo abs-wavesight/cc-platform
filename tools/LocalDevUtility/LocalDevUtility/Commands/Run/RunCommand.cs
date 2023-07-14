@@ -196,7 +196,7 @@ public static class RunCommand
         foreach (var runComponentDependency in runComponentDependencies)
         {
             var dependencyPropertyInfo = runOptions.GetType().GetProperty(runComponentDependency.DependencyPropertyName)!;
-            var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(runOptions, null) is RunComponentMode;
+            var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(runOptions, null) is RunComponentMode dependencyRunComponent;
             if (dependencyIsAlreadyPresent)
             {
                 continue;
@@ -221,9 +221,44 @@ public static class RunCommand
         builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.base.yml");
         builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.{GetComposeFileSuffix(propertyValue)}.yml");
 
+        var variantToAdd = GetVariantToAddIfNeeded(runOptions, componentPropertyName);
+        if (!string.IsNullOrWhiteSpace(variantToAdd))
+        {
+            builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.variant.{variantToAdd}.yml");
+        }
+
         if (string.IsNullOrWhiteSpace(runComponent.Profile)) return;
 
         AddProfile(builder, runComponent.Profile);
+    }
+
+    private static string? GetVariantToAddIfNeeded(RunOptions runOptions, string componentPropertyName)
+    {
+        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
+        var variantToAdd = runComponent.DefaultVariant;
+        foreach (var potentialDependingComponentPropertyName in RunOptions.ComponentPropertyNames)
+        {
+            var dependencyRunComponents = runOptions.GetType().GetRunComponentDependencies(potentialDependingComponentPropertyName);
+            var matchingRunComponentDependency = dependencyRunComponents.SingleOrDefault(_ => _.DependencyPropertyName == componentPropertyName);
+            if (matchingRunComponentDependency == null)
+            {
+                continue;
+            }
+
+            var dependentRunComponentIsNotPresent = runOptions.GetType().GetProperty(potentialDependingComponentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode;
+            if (dependentRunComponentIsNotPresent)
+            {
+                continue;
+            }
+
+            // Only overwrite variant if it's present
+            if (!string.IsNullOrWhiteSpace(matchingRunComponentDependency.Variant))
+            {
+                variantToAdd = matchingRunComponentDependency.Variant;
+            }
+        }
+
+        return variantToAdd;
     }
 
     private static void AddProfile(StringBuilder builder, string profile)

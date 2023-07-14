@@ -27,9 +27,8 @@ public class RunOptions
     [RunComponentDependency(nameof(Loki))]
     public RunComponentMode? Grafana { get; set; }
 
-    // [RunComponent(composePath: "loki", imageName: "loki", dependencyPropertyNames: new []{nameof(Vector)})]
     [RunComponent(composePath: "loki", imageName: "loki")]
-    [RunComponentDependency(nameof(Vector))]
+    [RunComponentDependency(dependencyPropertyName: nameof(Vector), variant: "loki")]
     public RunComponentMode? Loki { get; set; }
 
 

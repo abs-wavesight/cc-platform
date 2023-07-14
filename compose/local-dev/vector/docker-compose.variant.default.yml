@@ -1,0 +1,7 @@
+---
+version: '3'
+
+services:
+
+  cc.vector:
+    command: [ "-c", "C:\\config\\vector.toml", "--log-format", "json", "--color", "never" ]

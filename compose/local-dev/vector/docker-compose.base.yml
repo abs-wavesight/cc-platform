@@ -5,7 +5,6 @@ services:
 
   cc.vector:
     container_name: vector
-    command: [ "-c", "C:\\config\\vector.toml", "--log-format", "json", "--color", "never" ]
     # necessary to change hostname for vector to process/include its own logs
     # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
     hostname: "vector"
