@@ -23,7 +23,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
         {
             if (string.IsNullOrWhiteSpace(_config.Location))
             {
-                throw new Exception("Output location must be specified");
+                throw new Exception("Location must be specified");
             }
 
             _logger.LogInformation("Starting installer");
