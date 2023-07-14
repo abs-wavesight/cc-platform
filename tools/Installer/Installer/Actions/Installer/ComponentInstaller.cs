@@ -27,47 +27,71 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
             _logger.LogInformation("Starting installer");
 
+            _logger.LogInformation("Beginning installation phase");
             foreach (var component in _config.Components)
             {
-                _logger.LogInformation($"Starting component '{component.Name}'");
+                _logger.LogInformation($"Installing component '{component.Name}'");
 
                 try
                 {
-                    await ExecuteComponentAsync(component);
+                    await ProcessComponentInstallersAsync(component);
                 }
                 catch (Exception ex)
                 {
                     throw new Exception($"Unable to install component '{component.Name}'", ex);
                 }
             }
+            _logger.LogInformation("Installation phase complete");
+
+            _logger.LogInformation("Beginning execution phase");
+            foreach (var component in _config.Components)
+            {
+                _logger.LogInformation($"Executing component '{component.Name}'");
+
+                try
+                {
+                    await ProcessComponentExecutorsAsync(component);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Unable to execute component '{component.Name}'", ex);
+                }
+            }
+            _logger.LogInformation("Execution phase complete");
 
             _logger.LogInformation("Installer complete");
         }
 
-        private async Task ExecuteComponentAsync(Component component)
+        private async Task ProcessComponentInstallersAsync(Component component)
         {
             var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
-            Directory.CreateDirectory(rootLocation);
+            var actions = component.Actions
+                .Where(x => x.Action == ActionType.Install);
 
-            foreach (var action in component.Actions)
+            foreach (var action in actions)
             {
-                await ProcessComponentActionAsync(action);
+                await ProcessInstallActionAsync(action, rootLocation);
             }
         }
 
-        private Task ProcessComponentActionAsync(ComponentAction action)
+        private async Task ProcessComponentExecutorsAsync(Component component)
         {
-            if (action.Action == ActionType.Install) return ProcessInstallActionAsync(action);
-            if (action.Action == ActionType.Execute) return ProcessExecuteActionAsync(action);
-            throw new Exception($"Unknown action type '{action.Action}'");
+            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
+            var actions = component.Actions
+                .Where(x => x.Action == ActionType.Execute);
+
+            foreach (var action in actions)
+            {
+                await ProcessExecuteActionAsync(action, rootLocation);
+            }
         }
 
-        private Task ProcessInstallActionAsync(ComponentAction action)
+        private Task ProcessInstallActionAsync(ComponentAction action, string rootLocation)
         {
             throw new NotImplementedException();
         }
 
-        private Task ProcessExecuteActionAsync(ComponentAction action)
+        private Task ProcessExecuteActionAsync(ComponentAction action, string rootLocation)
         {
             throw new NotImplementedException();
         }
