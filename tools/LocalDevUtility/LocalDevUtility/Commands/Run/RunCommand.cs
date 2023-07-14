@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Abs.CommonCore.LocalDevUtility.Commands.Configure;
+﻿using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,11 @@ public static class RunCommand
             DockerHelper.ResetDocker(powerShellAdapter);
         }
 
-        await CreateEnvFile(appConfig, runOptions);
+        var additionalEnvValues = new Dictionary<string, string>
+        {
+            { Constants.ComposeEnvKeys.DrexSiteConfigFileNameOverride, runOptions.DrexSiteConfigFileNameOverride ?? Constants.DefaultDrexSiteConfigFileName }
+        };
+        await DockerHelper.CreateEnvFile(appConfig, additionalEnvValues);
 
         using (CliStep.Start("Copying nuget.config files to component directories"))
         {
@@ -52,22 +55,7 @@ public static class RunCommand
             Directory.CreateDirectory(Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.LogsDirectoryName));
         }
 
-        var executionRootPath = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.DockerComposeExecutionRootPath);
-
-        var composeCommandBuilder = new StringBuilder();
-        composeCommandBuilder.Append($"cd \"{executionRootPath}\"; docker-compose -f docker-compose.root.yml");
-
-        AddAllAliasesTargets(runOptions);
-        AddAllDependencies(runOptions);
-
-        using (CliStep.Start("Pulling images", true))
-        {
-            foreach (var component in RunOptions.NonAliasComponentPropertyNames)
-            {
-                PullImageIfNeeded(powerShellAdapter, runOptions, appConfig, component);
-                AddComponentFilesIfPresent(composeCommandBuilder, runOptions, component);
-            }
-        }
+        var composeCommandBuilder = DockerHelper.BuildComposeCommand(appConfig, runOptions);
 
         var configCommand = $"{composeCommandBuilder} config";
         Console.WriteLine("\nFinal compose configuration:");
@@ -75,6 +63,14 @@ public static class RunCommand
         powerShellAdapter.RunPowerShellCommand(configCommand);
         AnsiConsole.Write(new Rule());
         Console.WriteLine();
+
+        using (CliStep.Start("Pulling images", true))
+        {
+            foreach (var component in RunOptions.NonAliasComponentPropertyNames)
+            {
+                PullImageIfNeeded(powerShellAdapter, runOptions, appConfig, component);
+            }
+        }
 
         composeCommandBuilder.Append(" up --build");
 
@@ -124,172 +120,5 @@ public static class RunCommand
         var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
         Console.WriteLine($"Pulling {runComponent.ImageName} image...");
         powerShellAdapter.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
-    }
-
-    /// <summary>
-    /// Transform all alias components into their targets
-    /// </summary>
-    /// <param name="runOptions"></param>
-    private static void AddAllAliasesTargets(RunOptions runOptions)
-    {
-        foreach (var component in RunOptions.AliasComponentPropertyNames)
-        {
-            AddAliasIfNeeded(runOptions, component);
-        }
-    }
-
-    private static void AddAliasIfNeeded(RunOptions runOptions, string componentPropertyName)
-    {
-        if (runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue)
-        {
-            return;
-        }
-
-        var runComponentAliases = runOptions.GetType().GetRunComponentAliases(componentPropertyName).ToList();
-        if (!runComponentAliases.Any())
-        {
-            return;
-        }
-
-        foreach (var runComponentAlias in runComponentAliases)
-        {
-            runOptions.GetType().GetProperty(runComponentAlias.AliasPropertyName)!.SetValue(runOptions, propertyValue);
-        }
-    }
-
-    /// <summary>
-    /// Iterate all components until all dependencies are added
-    /// </summary>
-    /// <param name="runOptions"></param>
-    private static void AddAllDependencies(RunOptions runOptions)
-    {
-        bool dependencyFound;
-        do
-        {
-            dependencyFound = false;
-            foreach (var component in RunOptions.ComponentPropertyNames)
-            {
-                if (AddDependenciesIfNeeded(runOptions, component))
-                {
-                    dependencyFound = true;
-                }
-            }
-        } while (dependencyFound);
-    }
-
-    /// <summary>
-    /// Returns true if a dependency was added
-    /// </summary>
-    /// <param name="runOptions"></param>
-    /// <param name="componentPropertyName"></param>
-    /// <returns></returns>
-    private static bool AddDependenciesIfNeeded(RunOptions runOptions, string componentPropertyName)
-    {
-        if (runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode)
-        {
-            return false;
-        }
-
-        var dependencyFound = false;
-        var runComponentDependencies = runOptions.GetType().GetRunComponentDependencies(componentPropertyName);
-        foreach (var runComponentDependency in runComponentDependencies)
-        {
-            var dependencyPropertyInfo = runOptions.GetType().GetProperty(runComponentDependency.DependencyPropertyName)!;
-            var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(runOptions, null) is RunComponentMode dependencyRunComponent;
-            if (dependencyIsAlreadyPresent)
-            {
-                continue;
-            }
-
-            // Set dependency component to run from image
-            dependencyPropertyInfo.SetValue(runOptions, RunComponentMode.i);
-            dependencyFound = true;
-        }
-
-        return dependencyFound;
-    }
-
-    private static void AddComponentFilesIfPresent(
-        StringBuilder builder,
-        RunOptions runOptions,
-        string componentPropertyName)
-    {
-        if (runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue) return;
-
-        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
-        builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.base.yml");
-        builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.{GetComposeFileSuffix(propertyValue)}.yml");
-
-        var variantToAdd = GetVariantToAddIfNeeded(runOptions, componentPropertyName);
-        if (!string.IsNullOrWhiteSpace(variantToAdd))
-        {
-            builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.variant.{variantToAdd}.yml");
-        }
-
-        if (string.IsNullOrWhiteSpace(runComponent.Profile)) return;
-
-        AddProfile(builder, runComponent.Profile);
-    }
-
-    private static string? GetVariantToAddIfNeeded(RunOptions runOptions, string componentPropertyName)
-    {
-        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
-        var variantToAdd = runComponent.DefaultVariant;
-        foreach (var potentialDependingComponentPropertyName in RunOptions.ComponentPropertyNames)
-        {
-            var dependencyRunComponents = runOptions.GetType().GetRunComponentDependencies(potentialDependingComponentPropertyName);
-            var matchingRunComponentDependency = dependencyRunComponents.SingleOrDefault(_ => _.DependencyPropertyName == componentPropertyName);
-            if (matchingRunComponentDependency == null)
-            {
-                continue;
-            }
-
-            var dependentRunComponentIsNotPresent = runOptions.GetType().GetProperty(potentialDependingComponentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode;
-            if (dependentRunComponentIsNotPresent)
-            {
-                continue;
-            }
-
-            // Only overwrite variant if it's present
-            if (!string.IsNullOrWhiteSpace(matchingRunComponentDependency.Variant))
-            {
-                variantToAdd = matchingRunComponentDependency.Variant;
-            }
-        }
-
-        return variantToAdd;
-    }
-
-    private static void AddProfile(StringBuilder builder, string profile)
-    {
-        builder.Append($" --profile {profile}");
-    }
-
-    private static string GetComposeFileSuffix(RunComponentMode runComponentMode)
-    {
-        switch (runComponentMode)
-        {
-            case RunComponentMode.s:
-                return "source";
-            case RunComponentMode.i:
-                return "image";
-            default:
-                throw new ArgumentOutOfRangeException(nameof(runComponentMode), runComponentMode, null);
-        }
-    }
-
-    private static async Task CreateEnvFile(AppConfig appConfig, RunOptions runOptions)
-    {
-        var envValues = new Dictionary<string, string>
-        {
-            {Constants.ComposeEnvKeys.WindowsVersion, appConfig.ContainerWindowsVersion!},
-            {Constants.ComposeEnvKeys.PathToCommonCorePlatformRepository, appConfig.CommonCorePlatformRepositoryPath!},
-            {Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository, appConfig.CommonCoreDrexRepositoryPath!},
-            {Constants.ComposeEnvKeys.DrexSiteConfigFileNameOverride, runOptions.DrexSiteConfigFileNameOverride ?? Constants.DefaultDrexSiteConfigFileName}
-        };
-        var envFileText = string.Join("\n", envValues.Select(_ => $"{_.Key}={_.Value}"));
-        var envFileName = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.EnvFileRelativePath);
-        await File.WriteAllTextAsync(envFileName, envFileText);
-        Console.WriteLine($"\nDocker Compose .env file created ({envFileName}):\n{envFileText}");
     }
 }

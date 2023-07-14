@@ -1,17 +1,24 @@
-﻿using Abs.CommonCore.LocalDevUtility.Helpers;
+﻿using Abs.CommonCore.LocalDevUtility.Commands.Configure;
+using Abs.CommonCore.LocalDevUtility.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
 
-// TODO RH: This won't work -- need to build the file list for this as well
 public static class StopCommand
 {
-    public static int Stop(StopOptions stopOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
+    public static async Task<int> Stop(StopOptions stopOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
-        using (CliStep.Start("Stopping compose services"))
-        {
-            powerShellAdapter.RunPowerShellCommand("docker-compose stop");
-        }
+        var appConfig = (await ConfigureCommand.ReadConfig())!;
+        ConfigureCommand.ValidateConfigAndThrow(appConfig);
+
+        await DockerHelper.CreateEnvFile(appConfig);
+
+        var composeCommandBuilder = DockerHelper.BuildComposeCommand(appConfig, stopOptions);
+        composeCommandBuilder.Append(" down");
+
+        Console.WriteLine("Now running the following Docker Compose command:");
+        Console.WriteLine(composeCommandBuilder.ToString());
+        powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
 
         if (stopOptions.Reset == true)
         {

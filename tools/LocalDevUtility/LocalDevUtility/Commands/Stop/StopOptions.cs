@@ -1,6 +1,8 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
+﻿using Abs.CommonCore.LocalDevUtility.Commands.Shared;
 
-public class StopOptions
+namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
+
+public class StopOptions : ComposeOptions
 {
     public bool? Reset { get; set; }
 }

@@ -1,10 +1,12 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using Abs.CommonCore.LocalDevUtility.Commands;
 using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Commands.Run;
+using Abs.CommonCore.LocalDevUtility.Commands.Shared;
 using Abs.CommonCore.LocalDevUtility.Commands.Stop;
+using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform.Extensions;
 using Figgle;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -89,16 +91,7 @@ public class Program
         modeOption.AddAlias("-m");
         command.AddOption(modeOption);
 
-        command.AddOption(GetRunComponentOption("drex-service"));
-        command.AddOption(GetRunComponentOption("rabbitmq-local"));
-        command.AddOption(GetRunComponentOption("rabbitmq-remote", "Run a copy of rabbitmq with a different hostname and port to represent a remote instance (e.g. Central)"));
-        command.AddOption(GetRunComponentOption("vector"));
-        command.AddOption(GetRunComponentOption("grafana"));
-        command.AddOption(GetRunComponentOption("loki"));
-
-        command.AddOption(GetRunComponentOption("rabbitmq", "Alias for \"rabbitmq-local\""));
-        command.AddOption(GetRunComponentOption("deps", "Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\""));
-        command.AddOption(GetRunComponentOption("log-viz", "Alias for \"loki\" and \"grafana\""));
+        AddComponentOptions(command);
 
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
         command.AddOption(GetFlagOption("background", "b", "Run in background, a.k.a. detached (cannot be used with --abort-on-container-exit)"));
@@ -125,16 +118,28 @@ public class Program
     {
         var command = new Command("stop", "Stop compose components that may have been started in the background");
 
+        AddComponentOptions(command);
+
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
 
         command.Handler = CommandHandler.Create((StopOptions stopOptions) =>
         {
-            return TryExecuteCommand(
-                () => StopCommand.Stop(stopOptions, logger, powerShellAdapter),
+            return TryExecuteCommandAsync(
+                async () => await StopCommand.Stop(stopOptions, logger, powerShellAdapter),
                 logger);
         });
 
         return command;
+    }
+
+    private static void AddComponentOptions(Command command)
+    {
+        foreach (var runComponentPropertyName in ComposeOptions.ComponentPropertyNames)
+        {
+            var parameterName = runComponentPropertyName.ToSnakeCase();
+            var description = typeof(RunOptions).GetDescription(runComponentPropertyName);
+            command.AddOption(GetRunComponentOption(parameterName, description));
+        }
     }
 
     private static async Task<int> TryExecuteCommandAsync(Func<Task<int>> command, ILogger logger)
@@ -146,19 +151,6 @@ public class Program
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while running the command:\n{ex}");
-            return 1;
-        }
-    }
-
-    private static int TryExecuteCommand(Func<int> command, ILogger logger)
-    {
-        try
-        {
-            return command();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while running the command");
             return 1;
         }
     }
