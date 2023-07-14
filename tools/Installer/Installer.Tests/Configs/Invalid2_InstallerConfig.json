@@ -1,0 +1,10 @@
+{
+  "location": "",
+  "components": [
+    {
+      "name": "RabbitMq",      
+      "actions": [
+      ]
+    }
+  ]
+}
