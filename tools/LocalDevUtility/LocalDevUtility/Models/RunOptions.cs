@@ -1,18 +1,22 @@
 ﻿// ReSharper disable UnusedMember.Global
+
+using Abs.CommonCore.LocalDevUtility.Extensions;
+
 namespace Abs.CommonCore.LocalDevUtility.Models;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class RunOptions
 {
-    public RunMode? Mode { get; set; }
-
-    [RunComponent(composePath: "drex-service", imageName: "cc-drex-service", dependencyPropertyNames: nameof(Rabbitmq))]
+    [RunComponent(composePath: "drex-service", imageName: "cc-drex-service", dependencyPropertyNames: new []{nameof(RabbitmqLocal), nameof(Vector)})]
     public RunComponentMode? DrexService { get; set; }
 
     [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
-    public RunComponentMode? Rabbitmq { get; set; }
+    public RunComponentMode? RabbitmqLocal { get; set; }
 
-    [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: nameof(Rabbitmq))]
+    [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
+    public RunComponentMode? RabbitmqRemote { get; set; }
+
+    [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: nameof(RabbitmqLocal))]
     public RunComponentMode? Vector { get; set; }
 
     [RunComponent(composePath: "grafana", imageName: "grafana", dependencyPropertyNames: nameof(Loki))]
@@ -21,8 +25,17 @@ public class RunOptions
     [RunComponent(composePath: "loki", imageName: "loki")]
     public RunComponentMode? Loki { get; set; }
 
-    public bool? Deps { get; set; }
-    public bool? LogViz { get; set; }
+
+    [RunComponent(aliasPropertyNames: nameof(RabbitmqLocal))]
+    public RunComponentMode? Rabbitmq { get; set; }
+
+    [RunComponent(aliasPropertyNames: new []{nameof(RabbitmqLocal), nameof(RabbitmqRemote), nameof(Vector)})]
+    public RunComponentMode? Deps { get; set; }
+
+    [RunComponent(aliasPropertyNames: new []{nameof(Grafana), nameof(Loki)})]
+    public RunComponentMode? LogViz { get; set; }
+
+    public RunMode? Mode { get; set; }
     public bool? Reset { get; set; }
     public bool? Background { get; set; }
     public bool? AbortOnContainerExit { get; set; }
@@ -32,5 +45,13 @@ public class RunOptions
         .GetProperties()
         .Where(_ => _.PropertyType == typeof(RunComponentMode?) || _.PropertyType == typeof(RunComponentMode))
         .Select(_ => _.Name)
+        .ToList();
+
+    public static List<string> NonAliasComponentPropertyNames => ComponentPropertyNames
+        .Where(_ => (typeof(RunOptions).GetRunComponent(_)?.IsAlias ?? false) == false)
+        .ToList();
+
+    public static List<string> AliasComponentPropertyNames => ComponentPropertyNames
+        .Where(_ => typeof(RunOptions).GetRunComponent(_)?.IsAlias == true)
         .ToList();
 }

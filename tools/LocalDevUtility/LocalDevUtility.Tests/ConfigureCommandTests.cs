@@ -1,7 +1,4 @@
-﻿using Abs.CommonCore.LocalDevUtility.Helpers;
-using Moq;
-
-namespace Abs.CommonCore.LocalDevUtility.Tests;
+﻿namespace Abs.CommonCore.LocalDevUtility.Tests;
 
 public class ConfigureCommandTests
 {

@@ -39,7 +39,7 @@ public class Program
         AnsiConsole.Write(new Rule("Local Dev Utility"));
 
         var root = BuildRootCommand();
-        root.AddCommand(BuildConfigureCommand(logger, powerShellAdapter));
+        root.AddCommand(BuildConfigureCommand(logger));
         root.AddCommand(BuildRunCommand(logger, powerShellAdapter));
         root.AddCommand(BuildStopCommand(logger, powerShellAdapter));
         return await root.InvokeAsync(args ?? Array.Empty<string>());
@@ -55,7 +55,7 @@ public class Program
         return root;
     }
 
-    private static Command BuildConfigureCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
+    private static Command BuildConfigureCommand(ILogger logger)
     {
         var command = new Command("configure", "Configure the utility via interactive prompts. Must be run at least once before using \"run\".");
 
@@ -88,13 +88,16 @@ public class Program
         command.AddOption(modeOption);
 
         command.AddOption(GetRunComponentOption("drex-service"));
-        command.AddOption(GetRunComponentOption("rabbitmq"));
+        command.AddOption(GetRunComponentOption("rabbitmq-local"));
+        command.AddOption(GetRunComponentOption("rabbitmq-remote", "Run a copy of rabbitmq with a different hostname and port to represent a remote instance (e.g. Central)"));
         command.AddOption(GetRunComponentOption("vector"));
         command.AddOption(GetRunComponentOption("grafana"));
         command.AddOption(GetRunComponentOption("loki"));
 
-        command.AddOption(GetFlagOption("deps", "d", "Run dependencies: RabbitMQ (local and remote), Vector"));
-        command.AddOption(GetFlagOption("log-viz", "l", "Run log visualization components: Grafana, Loki"));
+        command.AddOption(GetRunComponentOption("rabbitmq", "Alias for \"rabbitmq-local\""));
+        command.AddOption(GetRunComponentOption("deps", "Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\""));
+        command.AddOption(GetRunComponentOption("log-viz", "Alias for \"loki\" and \"grafana\""));
+
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
         command.AddOption(GetFlagOption("background", "b", "Run in background, a.k.a. detached (cannot be used with --abort-on-container-exit)"));
         command.AddOption(GetFlagOption("abort-on-container-exit", "a", "Abort if any container exits (cannot be used with --background)"));
@@ -158,9 +161,9 @@ public class Program
         }
     }
 
-    private static Option<RunComponentMode?> GetRunComponentOption(string name)
+    private static Option<RunComponentMode?> GetRunComponentOption(string name, string? description = null)
     {
-        return new Option<RunComponentMode?>($"--{name}", "Component: i = from image, s = from source")
+        return new Option<RunComponentMode?>($"--{name}", $"Component: i = from image, s = from source{(string.IsNullOrWhiteSpace(description) ? "" : $"; {description}")}")
         {
             Arity = ArgumentArity.ZeroOrOne
         };

@@ -49,24 +49,12 @@ public static class RunCommand
         var composeCommandBuilder = new StringBuilder();
         composeCommandBuilder.Append($"cd \"{executionRootPath}\"; docker-compose -f docker-compose.root.yml");
 
-        if (runOptions.Deps == true)
-        {
-            runOptions.Rabbitmq ??= RunComponentMode.i;
-            runOptions.Vector ??= RunComponentMode.i;
-            AddProfile(composeCommandBuilder, Constants.Profiles.RabbitMqRemote);
-        }
-
-        if (runOptions.LogViz == true)
-        {
-            runOptions.Loki ??= RunComponentMode.i;
-            runOptions.Grafana ??= RunComponentMode.i;
-        }
-
+        AddAllAliasesTargets(runOptions);
         AddAllDependencies(runOptions);
 
         using (CliStep.Start("Pulling images", true))
         {
-            foreach (var component in RunOptions.ComponentPropertyNames)
+            foreach (var component in RunOptions.NonAliasComponentPropertyNames)
             {
                 PullImageIfNeeded(powerShellAdapter, runOptions, appConfig, component);
                 AddComponentFilesIfPresent(composeCommandBuilder, runOptions, component);
@@ -128,6 +116,38 @@ public static class RunCommand
         var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
         Console.WriteLine($"Pulling {runComponent.ImageName} image...");
         powerShellAdapter.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
+    }
+
+    /// <summary>
+    /// Transform all alias components into their targets
+    /// </summary>
+    /// <param name="runOptions"></param>
+    private static void AddAllAliasesTargets(RunOptions runOptions)
+    {
+        foreach (var component in RunOptions.AliasComponentPropertyNames)
+        {
+            AddAliasIfNeeded(runOptions, component);
+        }
+    }
+
+    private static void AddAliasIfNeeded(RunOptions runOptions, string componentPropertyName)
+    {
+        if (runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue)
+        {
+            return;
+        }
+
+        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
+        if (!runComponent.IsAlias)
+        {
+            return;
+        }
+
+        foreach (var aliasPropertyName in runComponent.AliasPropertyNames)
+        {
+            runOptions.GetType().GetProperty(aliasPropertyName)!.SetValue(runOptions, propertyValue);
+        }
+
     }
 
     /// <summary>

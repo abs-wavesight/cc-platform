@@ -38,7 +38,7 @@ public class LocalDevUtilityFixture
     {
         await SetUpConfig(new AppConfig
         {
-            CommonCorePlatformRepositoryPath = "C:/src/abs/cc-platform",
+            CommonCorePlatformRepositoryPath = "C:/src/abs/cc-platform", // TODO RH: Fix these values in CI
             CommonCoreDrexRepositoryPath = "C:/src/abs/cc-drex",
             ContainerWindowsVersion = "2019"
         });
