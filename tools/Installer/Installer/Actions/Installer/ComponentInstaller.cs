@@ -1,8 +1,7 @@
-﻿using Abs.CommonCore.Installer.Actions.Downloader.Config;
+﻿using Abs.CommonCore.Installer.Actions.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging;
-using Component = Abs.CommonCore.Installer.Actions.Downloader.Config.Component;
 
 namespace Abs.CommonCore.Installer.Actions.Installer
 {
@@ -10,7 +9,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
     {
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
-        private readonly DownloaderConfig _config;
+        private readonly InstallerConfig _config;
 
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, FileInfo config)
         {
@@ -26,8 +25,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                 throw new Exception("Output location must be specified");
             }
 
-            _logger.LogInformation("Starting downloader");
-            Directory.CreateDirectory(_config.OutputLocation);
+            _logger.LogInformation("Starting installer");
 
             foreach (var component in _config.Components)
             {
@@ -39,58 +37,39 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Unable to execute component '{component.Name}'", ex);
+                    throw new Exception($"Unable to install component '{component.Name}'", ex);
                 }
             }
 
-            _logger.LogInformation("Downloader complete");
+            _logger.LogInformation("Installer complete");
         }
 
-        private Task ExecuteComponentAsync(Component component)
+        private async Task ExecuteComponentAsync(Component component)
         {
             var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
             Directory.CreateDirectory(rootLocation);
 
-            if (component.Type == ComponentType.Docker) return ExecuteDockerComponentAsync(component);
-            throw new Exception($"Unknown component type '{component.Type}'");
-        }
-
-        private async Task ExecuteDockerComponentAsync(Component component)
-        {
-            foreach (var file in component.Files)
+            foreach (var action in component.Actions)
             {
-                await ProcessFileAsync(component, file.Type, file.Source, file.Destination);
+                await ProcessComponentActionAsync(action);
             }
         }
 
-        private Task ProcessFileAsync(Component component, FileType fileType, string source, string destination)
+        private Task ProcessComponentActionAsync(ComponentAction action)
         {
-            if (fileType == FileType.Container) return ProcessContainerFileAsync(component, source, destination);
-            if (fileType == FileType.File) return ProcessSimpleFileAsync(component, source, destination);
-            throw new Exception($"Unknown file type '{fileType}'");
+            if (action.Action == ActionType.Install) return ProcessInstallActionAsync(action);
+            if (action.Action == ActionType.Execute) return ProcessExecuteActionAsync(action);
+            throw new Exception($"Unknown action type '{action.Action}'");
         }
 
-        private async Task ProcessContainerFileAsync(Component component, string source, string destination)
+        private Task ProcessInstallActionAsync(ComponentAction action)
         {
-            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
-            var containerFile = Path.Combine(rootLocation, destination);
-
-            _logger.LogInformation($"Pulling image '{source}'");
-            await _commandExecutionService.ExecuteCommandAsync("docker", $"pull {source}");
-
-            _logger.LogInformation($"Saving image '{source}' to '{destination}'");
-            await _commandExecutionService.ExecuteCommandAsync("docker", $"save -o {containerFile} {source}");
+            throw new NotImplementedException();
         }
 
-        private async Task ProcessSimpleFileAsync(Component component, string source, string destination)
+        private Task ProcessExecuteActionAsync(ComponentAction action)
         {
-            var outputPath = Path.Combine(_config.OutputLocation, component.Name, destination);
-
-            _logger.LogInformation($"Downloading file '{source}'");
-            var data = await _dataRequestService.RequestByteArrayAsync(source);
-
-            _logger.LogInformation($"Saving file '{source}' to '{destination}'");
-            await File.WriteAllBytesAsync(outputPath, data);
+            throw new NotImplementedException();
         }
     }
 }

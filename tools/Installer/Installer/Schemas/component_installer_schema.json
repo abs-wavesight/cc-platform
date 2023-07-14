@@ -22,20 +22,13 @@
         "title": "Individual components to process",
         "required": [
           "name",
-          "type",
-          "files"
+          "actions"
         ],
         "properties": {
           "name": {
             "type": "string",
             "default": "",
             "title": "Name of the component"
-          },
-          "type": {
-            "type": "string",
-            "default": "none",
-            "title": "Type of the component",
-            "enum": [ "none", "docker" ]
           },
           "actions": {
             "type": "array",
