@@ -18,28 +18,28 @@ namespace Installer.Tests
         public async Task InvalidConfigValues_ThrowsException()
         {
             var initializer = Initialize(@"Configs/Invalid2_DownloaderConfig.json");
-            await Assert.ThrowsAsync<Exception>(() => initializer.downloader.ExecuteAsync());
+            await Assert.ThrowsAsync<Exception>(() => initializer.Downloader.ExecuteAsync());
         }
 
         [Fact]
         public async Task ValidConfig_FileDownloaded()
         {
             var initializer = Initialize(@"Configs/DownloaderConfig.json");
-            await initializer.downloader.ExecuteAsync();
+            await initializer.Downloader.ExecuteAsync();
 
-            initializer.dataRequest.Verify(x => x.RequestByteArrayAsync(It.IsAny<string>()), Times.Once);
+            initializer.DataRequest.Verify(x => x.RequestByteArrayAsync(It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
         public async Task ValidConfig_CommandExecuted()
         {
             var initializer = Initialize(@"Configs/DownloaderConfig.json");
-            await initializer.downloader.ExecuteAsync();
+            await initializer.Downloader.ExecuteAsync();
 
-            initializer.commandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+            initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
-        private (Mock<IDataRequestService> dataRequest, Mock<ICommandExecutionService> commandExecute, ComponentDownloader downloader) Initialize(string file)
+        private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string file)
         {
             var dataRequest = new Mock<IDataRequestService>();
             var commandExecute = new Mock<ICommandExecutionService>();
