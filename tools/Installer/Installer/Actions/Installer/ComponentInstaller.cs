@@ -4,21 +4,19 @@ using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging;
 using Component = Abs.CommonCore.Installer.Actions.Downloader.Config.Component;
 
-namespace Abs.CommonCore.Installer.Actions.Downloader
+namespace Abs.CommonCore.Installer.Actions.Installer
 {
-    public class ComponentDownloader
+    public class ComponentInstaller
     {
-        private readonly IDataRequestService _dataRequestService;
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
         private readonly DownloaderConfig _config;
 
-        public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService, FileInfo config)
+        public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, FileInfo config)
         {
-            _dataRequestService = dataRequestService;
             _commandExecutionService = commandExecutionService;
-            _logger = loggerFactory.CreateLogger<ComponentDownloader>();
-            _config = ConfigParser.LoadConfig<DownloaderConfig>(config.FullName);
+            _logger = loggerFactory.CreateLogger<ComponentInstaller>();
+            _config = ConfigParser.LoadConfig<InstallerConfig>(config.FullName);
         }
 
         public async Task ExecuteAsync()

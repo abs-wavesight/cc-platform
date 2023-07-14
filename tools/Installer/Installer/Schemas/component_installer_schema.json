@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "default": {},
-  "title": "JSON schema for component downloader",
+  "title": "JSON schema for component installer",
   "required": [
     "outputLocation",
     "components"
@@ -11,7 +11,7 @@
     "output_location": {
       "type": "string",
       "default": "",
-      "title": "Location to save components to"
+      "title": "Location to read components from"
     },
     "components": {
       "type": "array",
@@ -37,28 +37,29 @@
             "title": "Type of the component",
             "enum": [ "none", "docker" ]
           },
-          "files": {
+          "actions": {
             "type": "array",
             "default": [],
-            "title": "Files for the component",
+            "title": "Actions for the component",
             "items": {
               "type": "object",
               "default": {},
-              "title": "File information",
+              "title": "Action information",
               "required": [
                 "source",
-                "destination"
+                "action"
               ],
               "properties": {
                 "source": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Source for the file"
+                  "type": "array",
+                  "default": [],
+                  "title": "Sources for the action"
                 },
-                "destination": {
+                "action": {
                   "type": "string",
-                  "default": "",
-                  "title": "Destination for the file"
+                  "default": "none",
+                  "title": "Action for the source",
+                  "enum": [ "none", "install", "execute" ]
                 }
               }
             }

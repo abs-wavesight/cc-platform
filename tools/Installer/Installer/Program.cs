@@ -66,9 +66,8 @@ namespace Abs.CommonCore.Installer
             var builder = Host.CreateApplicationBuilder(args);
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
-            var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, config);
+            var downloader = new ComponentInstaller(loggerFactory, commandExecution, config);
             await downloader.ExecuteAsync();
         }
 
