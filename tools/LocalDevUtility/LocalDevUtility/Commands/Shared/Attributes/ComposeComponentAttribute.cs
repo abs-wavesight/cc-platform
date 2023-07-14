@@ -1,9 +1,9 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Run.Attributes;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
-public class RunComponentAttribute : Attribute
+public class ComposeComponentAttribute : Attribute
 {
-    public RunComponentAttribute(
+    public ComposeComponentAttribute(
         string composePath,
         string imageName,
         string? profile = null,

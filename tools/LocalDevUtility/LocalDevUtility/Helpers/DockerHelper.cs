@@ -75,7 +75,7 @@ public static class DockerHelper
 
     private static void AddAliasIfNeeded(ComposeOptions composeOptions, string componentPropertyName)
     {
-        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not RunComponentMode propertyValue)
+        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode propertyValue)
         {
             return;
         }
@@ -120,7 +120,7 @@ public static class DockerHelper
     /// <returns></returns>
     private static bool AddDependenciesIfNeeded(ComposeOptions composeOptions, string componentPropertyName)
     {
-        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not RunComponentMode)
+        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode)
         {
             return false;
         }
@@ -130,14 +130,14 @@ public static class DockerHelper
         foreach (var runComponentDependency in runComponentDependencies)
         {
             var dependencyPropertyInfo = composeOptions.GetType().GetProperty(runComponentDependency.DependencyPropertyName)!;
-            var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(composeOptions, null) is RunComponentMode;
+            var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(composeOptions, null) is ComposeComponentMode;
             if (dependencyIsAlreadyPresent)
             {
                 continue;
             }
 
             // Set dependency component to run from image
-            dependencyPropertyInfo.SetValue(composeOptions, RunComponentMode.i);
+            dependencyPropertyInfo.SetValue(composeOptions, ComposeComponentMode.i);
             dependencyFound = true;
         }
 
@@ -149,7 +149,7 @@ public static class DockerHelper
         ComposeOptions composeOptions,
         string componentPropertyName)
     {
-        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not RunComponentMode propertyValue) return;
+        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode propertyValue) return;
 
         var runComponent = composeOptions.GetType().GetRunComponent(componentPropertyName)!;
         builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.base.yml");
@@ -179,7 +179,7 @@ public static class DockerHelper
                 continue;
             }
 
-            var dependentRunComponentIsNotPresent = composeOptions.GetType().GetProperty(potentialDependingComponentPropertyName)!.GetValue(composeOptions, null) is not RunComponentMode;
+            var dependentRunComponentIsNotPresent = composeOptions.GetType().GetProperty(potentialDependingComponentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode;
             if (dependentRunComponentIsNotPresent)
             {
                 continue;
@@ -200,16 +200,16 @@ public static class DockerHelper
         builder.Append($" --profile {profile}");
     }
 
-    private static string GetComposeFileSuffix(RunComponentMode runComponentMode)
+    private static string GetComposeFileSuffix(ComposeComponentMode composeComponentMode)
     {
-        switch (runComponentMode)
+        switch (composeComponentMode)
         {
-            case RunComponentMode.s:
+            case ComposeComponentMode.s:
                 return "source";
-            case RunComponentMode.i:
+            case ComposeComponentMode.i:
                 return "image";
             default:
-                throw new ArgumentOutOfRangeException(nameof(runComponentMode), runComponentMode, null);
+                throw new ArgumentOutOfRangeException(nameof(composeComponentMode), composeComponentMode, null);
         }
     }
 }

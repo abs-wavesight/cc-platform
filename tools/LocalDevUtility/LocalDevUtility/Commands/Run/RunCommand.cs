@@ -110,8 +110,8 @@ public static class RunCommand
 
     private static void PullImageIfNeeded(IPowerShellAdapter powerShellAdapter, RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
     {
-        var componentIsNotIncludedOrIsSetToRunFromSource = runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not RunComponentMode propertyValue
-                                                           || propertyValue == RunComponentMode.s;
+        var componentIsNotIncludedOrIsSetToRunFromSource = runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not ComposeComponentMode propertyValue
+                                                           || propertyValue == ComposeComponentMode.s;
         if (componentIsNotIncludedOrIsSetToRunFromSource)
         {
             return;

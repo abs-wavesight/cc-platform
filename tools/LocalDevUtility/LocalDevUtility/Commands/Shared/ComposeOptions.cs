@@ -5,57 +5,57 @@
 
 using System.ComponentModel;
 using Abs.CommonCore.LocalDevUtility.Commands.Run;
-using Abs.CommonCore.LocalDevUtility.Commands.Run.Attributes;
+using Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Shared;
 
 public abstract class ComposeOptions
 {
-    [RunComponent(composePath: "drex-service", imageName: "cc-drex-service")]
-    [RunComponentDependency(nameof(RabbitmqLocal))]
-    [RunComponentDependency(nameof(Vector))]
-    public RunComponentMode? DrexService { get; set; }
+    [ComposeComponent(composePath: "drex-service", imageName: "cc-drex-service")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(Vector))]
+    public ComposeComponentMode? DrexService { get; set; }
 
-    [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
-    public RunComponentMode? RabbitmqLocal { get; set; }
+    [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
+    public ComposeComponentMode? RabbitmqLocal { get; set; }
 
     [Description("Run a copy of rabbitmq with a different hostname and port to represent a remote instance (e.g. Central)")]
-    [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
-    public RunComponentMode? RabbitmqRemote { get; set; }
+    [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
+    public ComposeComponentMode? RabbitmqRemote { get; set; }
 
-    [RunComponent(composePath: "vector", imageName: "vector", defaultVariant: "default")]
-    [RunComponentDependency(nameof(RabbitmqLocal))]
-    public RunComponentMode? Vector { get; set; }
+    [ComposeComponent(composePath: "vector", imageName: "vector", defaultVariant: "default")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    public ComposeComponentMode? Vector { get; set; }
 
-    [RunComponent(composePath: "grafana", imageName: "grafana")]
-    [RunComponentDependency(nameof(Vector))]
-    [RunComponentDependency(nameof(Loki))]
-    public RunComponentMode? Grafana { get; set; }
+    [ComposeComponent(composePath: "grafana", imageName: "grafana")]
+    [ComposeComponentDependency(nameof(Vector))]
+    [ComposeComponentDependency(nameof(Loki))]
+    public ComposeComponentMode? Grafana { get; set; }
 
-    [RunComponent(composePath: "loki", imageName: "loki")]
-    [RunComponentDependency(dependencyPropertyName: nameof(Vector), variant: "loki")]
-    public RunComponentMode? Loki { get; set; }
+    [ComposeComponent(composePath: "loki", imageName: "loki")]
+    [ComposeComponentDependency(dependencyPropertyName: nameof(Vector), variant: "loki")]
+    public ComposeComponentMode? Loki { get; set; }
 
 
     [Description("Alias for \"rabbitmq-local\"")]
-    [RunComponentAlias(nameof(RabbitmqLocal))]
-    public RunComponentMode? Rabbitmq { get; set; }
+    [ComposeComponentAlias(nameof(RabbitmqLocal))]
+    public ComposeComponentMode? Rabbitmq { get; set; }
 
     [Description("Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\"")]
-    [RunComponentAlias(nameof(RabbitmqLocal))]
-    [RunComponentAlias(nameof(RabbitmqRemote))]
-    [RunComponentAlias(nameof(Vector))]
-    public RunComponentMode? Deps { get; set; }
+    [ComposeComponentAlias(nameof(RabbitmqLocal))]
+    [ComposeComponentAlias(nameof(RabbitmqRemote))]
+    [ComposeComponentAlias(nameof(Vector))]
+    public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]
-    [RunComponentAlias(nameof(Grafana))]
-    [RunComponentAlias(nameof(Loki))]
-    public RunComponentMode? LogViz { get; set; }
+    [ComposeComponentAlias(nameof(Grafana))]
+    [ComposeComponentAlias(nameof(Loki))]
+    public ComposeComponentMode? LogViz { get; set; }
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
-        .Where(_ => _.PropertyType == typeof(RunComponentMode?) || _.PropertyType == typeof(RunComponentMode))
+        .Where(_ => _.PropertyType == typeof(ComposeComponentMode?) || _.PropertyType == typeof(ComposeComponentMode))
         .Select(_ => _.Name)
         .ToList();
 

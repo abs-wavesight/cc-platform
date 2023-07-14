@@ -27,7 +27,6 @@ public class LocalDevUtilityIntegrationTests
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var utilityExecutablePath = Path.Combine(executingPath, "Abs.CommonCore.LocalDevUtility.exe");
 
-        // TODO RH: Ideally we should use the actual "configure" command here
         await fixture.SetUpValidTestConfig();
 
         var runCommand = $"{utilityExecutablePath} run {componentParameters} --background --reset --mode r";

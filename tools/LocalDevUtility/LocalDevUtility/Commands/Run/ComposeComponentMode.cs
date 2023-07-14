@@ -1,6 +1,6 @@
 ﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
-public enum RunComponentMode
+public enum ComposeComponentMode
 {
     /// <summary>Source</summary>
     s = 1,

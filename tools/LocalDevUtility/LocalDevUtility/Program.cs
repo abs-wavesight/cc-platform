@@ -155,9 +155,9 @@ public class Program
         }
     }
 
-    private static Option<RunComponentMode> GetRunComponentOption(string name, string? description = null)
+    private static Option<ComposeComponentMode> GetRunComponentOption(string name, string? description = null)
     {
-        var option = new Option<RunComponentMode>($"--{name}", $"Component: i = from image, s = from source{(string.IsNullOrWhiteSpace(description) ? "" : $"; {description}")}")
+        var option = new Option<ComposeComponentMode>($"--{name}", $"Component: i = from image, s = from source{(string.IsNullOrWhiteSpace(description) ? "" : $"; {description}")}")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
