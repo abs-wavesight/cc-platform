@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Installer.Actions.Downloader;
+using Abs.CommonCore.Installer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,9 +25,11 @@ namespace Abs.CommonCore.Installer
             downloadCommand.SetHandler(async (registry) =>
             {
                 var builder = Host.CreateApplicationBuilder(args);
-                var (_, loggerFactory) = ConfigureLogging(builder.Logging);
+                var (logger, loggerFactory) = ConfigureLogging(builder.Logging);
 
-                using var downloader = new ComponentDownloader(loggerFactory, registry);
+                var dataRequest = new DataRequestService(logger);
+                var commandExecution = new CommandExecutionService(logger);
+                var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry);
                 await downloader.ExecuteAsync();
             }, registryParam);
 

@@ -1,0 +1,11 @@
+{
+  "outputLocation": "",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "type": "docker",
+      "files": [        
+      ]
+    }
+  ]
+}
