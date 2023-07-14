@@ -36,17 +36,22 @@ public class LocalDevUtilityFixture
         await Program.Run(inputArray, TestLogger.Default, MockPowerShellAdapter.Object);
     }
 
-    public async Task SetUpConfig()
+    public AppConfig GetValidTestConfig()
     {
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
 
-        await SetUpConfig(new AppConfig
+        return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = repoRootPath,
             ContainerWindowsVersion = "2019"
-        });
+        };
+    }
+
+    public async Task SetUpValidTestConfig()
+    {
+        await SetUpConfig(GetValidTestConfig());
     }
 
     public async Task SetUpConfig(AppConfig? config)

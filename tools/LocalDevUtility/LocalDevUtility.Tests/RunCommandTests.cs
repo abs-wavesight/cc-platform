@@ -28,7 +28,7 @@ public class RunCommandTests
     {
         // Arrange
         var fixture = new LocalDevUtilityFixture(_testOutput);
-        await fixture.SetUpConfig();
+        await fixture.SetUpValidTestConfig();
 
         // Act
         await fixture.ExecuteApplication(command);
