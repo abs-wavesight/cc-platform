@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Abs.CommonCore.LocalDevUtility.Commands;
+using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Helpers;
-using Abs.CommonCore.LocalDevUtility.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;

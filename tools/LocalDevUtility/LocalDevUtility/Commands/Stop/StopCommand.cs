@@ -1,8 +1,7 @@
 ﻿using Abs.CommonCore.LocalDevUtility.Helpers;
-using Abs.CommonCore.LocalDevUtility.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.LocalDevUtility.Commands;
+namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
 
 public static class StopCommand
 {

@@ -1,12 +1,12 @@
 ﻿using System.Text;
+using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
-using Abs.CommonCore.LocalDevUtility.Models;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using TextCopy;
 
-namespace Abs.CommonCore.LocalDevUtility.Commands;
+namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
 public static class RunCommand
 {

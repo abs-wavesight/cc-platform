@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Models;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Configure;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ConfigureOptions

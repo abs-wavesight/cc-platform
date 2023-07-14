@@ -2,7 +2,7 @@
 
 using Abs.CommonCore.LocalDevUtility.Extensions;
 
-namespace Abs.CommonCore.LocalDevUtility.Models;
+namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class RunOptions

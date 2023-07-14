@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Models;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Stop;
 
 public class StopOptions
 {

@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 using System.Text.Json;
-using Abs.CommonCore.LocalDevUtility.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.LocalDevUtility.Commands;
+namespace Abs.CommonCore.LocalDevUtility.Commands.Configure;
 
 public static class ConfigureCommand
 {

@@ -1,10 +1,10 @@
-﻿using Abs.CommonCore.LocalDevUtility.Commands;
-using Abs.CommonCore.LocalDevUtility.Models;
+﻿using Abs.CommonCore.LocalDevUtility.Commands.Configure;
+using Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
 using Xunit.Abstractions;
 
-namespace Abs.CommonCore.LocalDevUtility.Tests;
+namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.Configure;
 
 [Collection(nameof(RunCommandTests))]
 public class ConfigureCommandTests

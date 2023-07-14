@@ -3,7 +3,7 @@ using FluentAssertions;
 using Xunit.Abstractions;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
-namespace Abs.CommonCore.LocalDevUtility.Tests;
+namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
 
 [Collection(nameof(RunCommandTests))]
 public class RunCommandTests

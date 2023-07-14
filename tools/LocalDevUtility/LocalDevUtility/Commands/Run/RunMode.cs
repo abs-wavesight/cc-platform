@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Models;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
 public enum RunMode
 {
