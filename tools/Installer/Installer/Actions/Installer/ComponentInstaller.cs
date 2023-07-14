@@ -1,6 +1,7 @@
 ﻿using Abs.CommonCore.Installer.Actions.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions.Installer
@@ -20,7 +21,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         public async Task ExecuteAsync()
         {
-            if (string.IsNullOrWhiteSpace(_config.OutputLocation))
+            if (string.IsNullOrWhiteSpace(_config.Location))
             {
                 throw new Exception("Output location must be specified");
             }
@@ -64,7 +65,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private async Task ProcessComponentInstallersAsync(Component component)
         {
-            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
+            var rootLocation = Path.Combine(_config.Location, component.Name);
             var actions = component.Actions
                 .Where(x => x.Action == ActionType.Install);
 
@@ -76,7 +77,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private async Task ProcessComponentExecutorsAsync(Component component)
         {
-            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
+            var rootLocation = Path.Combine(_config.Location, component.Name);
             var actions = component.Actions
                 .Where(x => x.Action == ActionType.Execute);
 
@@ -86,14 +87,28 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             }
         }
 
-        private Task ProcessInstallActionAsync(ComponentAction action, string rootLocation)
+        private async Task ProcessInstallActionAsync(ComponentAction action, string rootLocation)
         {
-            throw new NotImplementedException();
+            foreach (var source in action.Source)
+            {
+                _logger.LogInformation($"Running installation for '{source}'");
+                if (source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"-i {source}", rootLocation);
+                else
+                {
+                    var parts = source.Split(' ');
+                    await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
+                }
+            }
         }
 
-        private Task ProcessExecuteActionAsync(ComponentAction action, string rootLocation)
+        private async Task ProcessExecuteActionAsync(ComponentAction action, string rootLocation)
         {
-            throw new NotImplementedException();
+            foreach (var source in action.Source)
+            {
+                _logger.LogInformation($"Running execution for '{source}'");
+                var parts = source.Split(' ');
+                await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
+            }
         }
     }
 }

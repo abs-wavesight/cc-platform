@@ -8,7 +8,7 @@
     "components"
   ],
   "properties": {
-    "output_location": {
+    "location": {
       "type": "string",
       "default": "",
       "title": "Location to read components from"
