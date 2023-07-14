@@ -7,7 +7,9 @@ namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class RunOptions
 {
-    [RunComponent(composePath: "drex-service", imageName: "cc-drex-service", dependencyPropertyNames: new []{nameof(RabbitmqLocal), nameof(Vector)})]
+    [RunComponent(composePath: "drex-service", imageName: "cc-drex-service")]
+    [RunComponentDependency(nameof(RabbitmqLocal))]
+    [RunComponentDependency(nameof(Vector))]
     public RunComponentMode? DrexService { get; set; }
 
     [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
@@ -16,13 +18,18 @@ public class RunOptions
     [RunComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
     public RunComponentMode? RabbitmqRemote { get; set; }
 
-    [RunComponent(composePath: "vector", imageName: "vector", dependencyPropertyNames: new []{nameof(RabbitmqLocal)})]
+    [RunComponent(composePath: "vector", imageName: "vector", defaultVariant: "default")]
+    [RunComponentDependency(nameof(RabbitmqLocal))]
     public RunComponentMode? Vector { get; set; }
 
-    [RunComponent(composePath: "grafana", imageName: "grafana", dependencyPropertyNames: new []{nameof(Loki), nameof(Vector)})]
+    [RunComponent(composePath: "grafana", imageName: "grafana")]
+    [RunComponentDependency(nameof(Vector))]
+    [RunComponentDependency(nameof(Loki))]
     public RunComponentMode? Grafana { get; set; }
 
-    [RunComponent(composePath: "loki", imageName: "loki", dependencyPropertyNames: new []{nameof(Vector)})]
+    // [RunComponent(composePath: "loki", imageName: "loki", dependencyPropertyNames: new []{nameof(Vector)})]
+    [RunComponent(composePath: "loki", imageName: "loki")]
+    [RunComponentDependency(nameof(Vector))]
     public RunComponentMode? Loki { get; set; }
 
 

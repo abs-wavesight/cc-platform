@@ -2,27 +2,12 @@
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Run;
 
+[AttributeUsage(AttributeTargets.Property)]
 public class RunComponentAttribute : Attribute
 {
     public RunComponentAttribute(
         string composePath,
         string imageName,
-        string? profile = null,
-        string? defaultVariant = null,
-        string[]? dependencyPropertyNames = null)
-    {
-        ComposePath = composePath;
-        ImageName = imageName;
-        Profile = profile;
-        DefaultVariant = defaultVariant;
-        DependencyPropertyNames = dependencyPropertyNames ?? Array.Empty<string>();
-        AliasPropertyNames = Array.Empty<string>();
-    }
-
-    public RunComponentAttribute(
-        string composePath,
-        string imageName,
-        Dictionary<string,string?>? variantsByDependencyPropertyName,
         string? profile = null,
         string? defaultVariant = null)
     {
@@ -30,8 +15,6 @@ public class RunComponentAttribute : Attribute
         ImageName = imageName;
         Profile = profile;
         DefaultVariant = defaultVariant;
-        DependencyPropertyNames = Array.Empty<string>();
-        VariantsByDependencyPropertyName = variantsByDependencyPropertyName ?? new Dictionary<string, string?>();
         AliasPropertyNames = Array.Empty<string>();
     }
 
@@ -42,7 +25,6 @@ public class RunComponentAttribute : Attribute
         ImageName = null;
         Profile = null;
         DefaultVariant = null;
-        DependencyPropertyNames = Array.Empty<string>();
     }
 
     public string[] AliasPropertyNames { get; }
@@ -51,6 +33,19 @@ public class RunComponentAttribute : Attribute
     public string? ImageName { get; }
     public string? Profile { get; }
     public string? DefaultVariant { get; }
-    public Dictionary<string,string?>? VariantsByDependencyPropertyName { get; }
-    public string[] DependencyPropertyNames { get; }
+}
+
+// TODO RH: Add new attribute for "RunComponentAlias"
+
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+public class RunComponentDependencyAttribute : Attribute
+{
+    public string DependencyPropertyName { get; }
+    public string? Variant { get; }
+
+    public RunComponentDependencyAttribute(string dependencyPropertyName, string? variant = null)
+    {
+        DependencyPropertyName = dependencyPropertyName;
+        Variant = variant;
+    }
 }

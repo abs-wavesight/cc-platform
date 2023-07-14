@@ -12,4 +12,12 @@ public static class AttributeExtensions
             ? null
             : property.GetCustomAttribute<RunComponentAttribute>();
     }
+
+    public static IEnumerable<RunComponentDependencyAttribute> GetRunComponentDependencies(this Type type, string propertyName)
+    {
+        var property = type.GetProperty(propertyName);
+        return (object?) property == null
+            ? Array.Empty<RunComponentDependencyAttribute>()
+            : property.GetCustomAttributes<RunComponentDependencyAttribute>();
+    }
 }

@@ -192,10 +192,10 @@ public static class RunCommand
         }
 
         var dependencyFound = false;
-        var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
-        foreach (var dependencyPropertyName in runComponent.DependencyPropertyNames)
+        var runComponentDependencies = runOptions.GetType().GetRunComponentDependencies(componentPropertyName);
+        foreach (var runComponentDependency in runComponentDependencies)
         {
-            var dependencyPropertyInfo = runOptions.GetType().GetProperty(dependencyPropertyName)!;
+            var dependencyPropertyInfo = runOptions.GetType().GetProperty(runComponentDependency.DependencyPropertyName)!;
             var dependencyIsAlreadyPresent = dependencyPropertyInfo.GetValue(runOptions, null) is RunComponentMode;
             if (dependencyIsAlreadyPresent)
             {
