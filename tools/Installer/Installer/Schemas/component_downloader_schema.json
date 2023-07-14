@@ -50,6 +50,12 @@
                 "destination"
               ],
               "properties": {
+                "type": {
+                  "type": "string",
+                  "default": "none",
+                  "title": "Type of the file to process",
+                  "enum": [ "none", "container", "file" ]
+                },
                 "source": {
                   "type": "string",
                   "default": "",
