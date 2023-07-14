@@ -17,10 +17,10 @@ namespace Abs.CommonCore.Installer
             var downloadCommand = new Command("download", "Download components for installation");
             downloadCommand.TreatUnmatchedTokensAsErrors = true;
 
-            var registryParam = new Option<FileInfo>("--registry", "Installation registry");
-            registryParam.IsRequired = true;
-            registryParam.AddAlias("-r");
-            downloadCommand.Add(registryParam);
+            var configParam = new Option<FileInfo>("--config", "Location of configuration");
+            configParam.IsRequired = true;
+            configParam.AddAlias("-c");
+            downloadCommand.Add(configParam);
 
             var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
             verifyOnlyParam.SetDefaultValue(false);
@@ -28,22 +28,27 @@ namespace Abs.CommonCore.Installer
             verifyOnlyParam.AddAlias("-v");
             downloadCommand.Add(verifyOnlyParam);
 
-            downloadCommand.SetHandler(async (registry, verifyOnly) =>
+            downloadCommand.SetHandler(async (config, verifyOnly) =>
             {
-                var builder = Host.CreateApplicationBuilder(args);
-                var (_, loggerFactory) = ConfigureLogging(builder.Logging);
-
-                var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
-                var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-                var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry);
-                await downloader.ExecuteAsync();
-            }, registryParam, verifyOnlyParam);
+                await ExecuteDownloadCommandAsync(config, verifyOnly, args);
+            }, configParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
             root.Add(downloadCommand);
             
             return await root.InvokeAsync(args);
+        }
+
+        private static async Task ExecuteDownloadCommandAsync(FileInfo config, bool verifyOnly, string[] args)
+        {
+            var builder = Host.CreateApplicationBuilder(args);
+            var (_, loggerFactory) = ConfigureLogging(builder.Logging);
+
+            var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
+            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, config);
+            await downloader.ExecuteAsync();
         }
 
         private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)
