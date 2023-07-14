@@ -1,8 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services
 {
+    [ExcludeFromCodeCoverage]
     public class DataRequestService : IDataRequestService
     {
         private readonly ILogger _logger;

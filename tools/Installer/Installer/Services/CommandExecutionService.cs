@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services
 {
+    [ExcludeFromCodeCoverage]
     public class CommandExecutionService : ICommandExecutionService
     {
         private readonly ILogger _logger;
