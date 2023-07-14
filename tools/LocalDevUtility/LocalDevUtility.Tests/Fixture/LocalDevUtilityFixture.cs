@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.LocalDevUtility.Commands;
+﻿using System.Reflection;
+using Abs.CommonCore.LocalDevUtility.Commands;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Models;
 using Microsoft.Extensions.Logging;
@@ -36,10 +37,13 @@ public class LocalDevUtilityFixture
 
     public async Task SetUpConfig()
     {
+        var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
+
         await SetUpConfig(new AppConfig
         {
-            CommonCorePlatformRepositoryPath = "C:/src/abs/cc-platform", // TODO RH: Fix these values in CI
-            CommonCoreDrexRepositoryPath = "C:/src/abs/cc-drex",
+            CommonCorePlatformRepositoryPath = repoRootPath,
+            CommonCoreDrexRepositoryPath = repoRootPath,
             ContainerWindowsVersion = "2019"
         });
     }
