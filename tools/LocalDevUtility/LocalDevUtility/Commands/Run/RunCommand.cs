@@ -84,7 +84,7 @@ public static class RunCommand
             composeCommandBuilder.Append(" --abort-on-container-exit");
         }
 
-        if (runOptions.Mode == RunMode.c)
+        if (runOptions.Mode is RunMode.c or null)
         {
             Console.WriteLine("\nCONFIRM: Press enter to run this Docker Compose command.");
             Console.WriteLine(composeCommandBuilder.ToString());

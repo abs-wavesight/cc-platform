@@ -84,7 +84,7 @@ public class Program
     {
         var command = new Command("run", "Run Common Core components via Docker");
 
-        var modeOption = new Option<RunMode?>("--mode", "r = run immediately, c = confirm before running, o = output and copy to clipboard without running")
+        var modeOption = new Option<RunMode?>("--mode", "r = run immediately, c = confirm before running, o = output and copy to clipboard without running (default = r)")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
