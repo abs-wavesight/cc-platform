@@ -15,6 +15,6 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ./../../config/drex
+        source: ${PATH_TO_CC_DREX_REPO}/config/drex
         target: C:/app/config
         read_only: true

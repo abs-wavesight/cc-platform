@@ -1,5 +1,4 @@
-﻿// TODO RH: Move drex config back to drex repo; use absolute path in docker-compose
-namespace Abs.CommonCore.LocalDevUtility.Commands.Run.Attributes;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Run.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class RunComponentAttribute : Attribute
