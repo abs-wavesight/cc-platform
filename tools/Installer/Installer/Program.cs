@@ -31,10 +31,10 @@ namespace Abs.CommonCore.Installer
             downloadCommand.SetHandler(async (registry, verifyOnly) =>
             {
                 var builder = Host.CreateApplicationBuilder(args);
-                var (logger, loggerFactory) = ConfigureLogging(builder.Logging);
+                var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
-                var dataRequest = new DataRequestService(logger, verifyOnly);
-                var commandExecution = new CommandExecutionService(logger, verifyOnly);
+                var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
+                var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
                 var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry);
                 await downloader.ExecuteAsync();
             }, registryParam, verifyOnlyParam);

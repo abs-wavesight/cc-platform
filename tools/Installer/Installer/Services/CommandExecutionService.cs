@@ -10,9 +10,9 @@ namespace Abs.CommonCore.Installer.Services
         private readonly bool _verifyOnly;
         private readonly ILogger _logger;
 
-        public CommandExecutionService(ILogger logger, bool verifyOnly = false)
+        public CommandExecutionService(ILoggerFactory loggerFactory, bool verifyOnly = false)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<CommandExecutionService>();
             _verifyOnly = verifyOnly;
         }
 

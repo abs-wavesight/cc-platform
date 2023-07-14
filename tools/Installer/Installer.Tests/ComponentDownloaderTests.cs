@@ -49,7 +49,7 @@ namespace Installer.Tests
         [Fact]
         public async Task VerifyOnly_FileNotDownloaded()
         {
-            var dataRequest = new DataRequestService(NullLogger.Instance, true);
+            var dataRequest = new DataRequestService(NullLoggerFactory.Instance, true);
             var result = await dataRequest.RequestByteArrayAsync("http://Not.a.valid.url.path");
             Assert.Equal(Array.Empty<byte>(), result);
         }
@@ -57,7 +57,7 @@ namespace Installer.Tests
         [Fact]
         public async Task ValidConfig__VerifyOnly_CommandNotExecuted()
         {
-            var commandExecution = new CommandExecutionService(NullLogger.Instance, true);
+            var commandExecution = new CommandExecutionService(NullLoggerFactory.Instance, true);
 
             var exception = await Record.ExceptionAsync(() =>
                 commandExecution.ExecuteCommandAsync("Not a valid command", "Not a valid argument"));

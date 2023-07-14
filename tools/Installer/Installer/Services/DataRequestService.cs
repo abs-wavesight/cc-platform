@@ -14,9 +14,9 @@ namespace Abs.CommonCore.Installer.Services
 
         private readonly HttpClient _httpClient = new HttpClient();
 
-        public DataRequestService(ILogger logger, bool verifyOnly = false)
+        public DataRequestService(ILoggerFactory loggerFactory, bool verifyOnly = false)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<DataRequestService>();
             _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(_nugetEnvironmentVariableName);
             _verifyOnly = verifyOnly;
 
