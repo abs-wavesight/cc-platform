@@ -1,8 +1,0 @@
----
-version: '3'
-
-services:
-
-  cc.drex-test-client:
-    container_name: drex-test-client-s
-    image: ghcr.io/abs-wavesight/cc-drex-test-client:windows-${WINDOWS_VERSION}
