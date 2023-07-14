@@ -32,10 +32,18 @@ public static class RunCommand
             };
             foreach (var nugetConfigCopyTarget in nugetConfigCopyTargets)
             {
-                File.Copy(
-                    Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.NugetConfigFileName),
-                    Path.Combine(nugetConfigCopyTarget, Constants.NugetConfigFileName),
-                    true);
+                try
+                {
+                    File.Copy(
+                        Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.NugetConfigFileName),
+                        Path.Combine(nugetConfigCopyTarget, Constants.NugetConfigFileName),
+                        true);
+                }
+                catch (DirectoryNotFoundException ex)
+                {
+                    // Just warn here, it's not necessarily a breaking issue (e.g. in CI, or if we're not building containers from source)
+                    logger.LogWarning($"Could not find nuget.config file to copy to {nugetConfigCopyTarget}: {ex.Message}");
+                }
             }
         }
 

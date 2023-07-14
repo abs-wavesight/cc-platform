@@ -2,6 +2,7 @@
 using Abs.CommonCore.LocalDevUtility.Commands;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.Models;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit.Abstractions;
@@ -50,6 +51,7 @@ public class LocalDevUtilityFixture
 
     public async Task SetUpConfig(AppConfig? config)
     {
+        ConfigureCommand.ValidateConfig(config).Should().HaveCount(0);
         await ConfigureCommand.SaveConfig(config);
     }
 }
