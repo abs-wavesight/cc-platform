@@ -26,8 +26,8 @@ namespace Abs.CommonCore.Installer.Services
             }
 
             var process = new Process();
-            process.StartInfo.FileName = command;
-            process.StartInfo.Arguments = arguments;
+            process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
+            process.StartInfo.Arguments = $"/C {command} {arguments}";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardOutput = true;

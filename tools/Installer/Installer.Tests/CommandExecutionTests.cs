@@ -13,7 +13,7 @@ namespace Installer.Tests
             await File.WriteAllBytesAsync(tempFile, new byte[] { 1, 2, 3 });
 
             // del doesn't work directly
-            await commandExecution.ExecuteCommandAsync("cmd.exe", $"cmd /c del {tempFile}", "");
+            await commandExecution.ExecuteCommandAsync("del", $"{tempFile}", "");
             Assert.True(File.Exists(tempFile) == false);
         }
 
