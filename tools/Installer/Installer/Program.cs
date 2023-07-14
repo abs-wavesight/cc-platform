@@ -47,7 +47,8 @@ namespace Abs.CommonCore.Installer
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
             root.Add(downloadCommand);
-            
+            root.Add(installCommand);
+
             return await root.InvokeAsync(args);
         }
 

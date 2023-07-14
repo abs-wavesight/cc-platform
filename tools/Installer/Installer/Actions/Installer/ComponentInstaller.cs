@@ -92,7 +92,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             foreach (var source in action.Source)
             {
                 _logger.LogInformation($"Running installation for '{source}'");
-                if (source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"-i {source}", rootLocation);
+                if (source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {source}", rootLocation);
                 else
                 {
                     var parts = source.Split(' ');
