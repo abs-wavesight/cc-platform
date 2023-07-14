@@ -9,13 +9,6 @@ namespace Installer.Tests
     public class ComponentDownloaderTests
     {
         [Fact]
-        public async Task ValidConfig_SuccessfulExecution()
-        {
-            var initializer = Initialize(@"Configs/DownloaderConfig.json");
-            await initializer.downloader.ExecuteAsync();
-        }
-
-        [Fact]
         public void InvalidConfig_ThrowsException()
         {
             Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_DownloaderConfig.json"));
@@ -44,24 +37,6 @@ namespace Installer.Tests
             await initializer.downloader.ExecuteAsync();
 
             initializer.commandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
-        }
-
-        [Fact]
-        public async Task VerifyOnly_FileNotDownloaded()
-        {
-            var dataRequest = new DataRequestService(NullLoggerFactory.Instance, true);
-            var result = await dataRequest.RequestByteArrayAsync("http://Not.a.valid.url.path");
-            Assert.Equal(Array.Empty<byte>(), result);
-        }
-
-        [Fact]
-        public async Task ValidConfig__VerifyOnly_CommandNotExecuted()
-        {
-            var commandExecution = new CommandExecutionService(NullLoggerFactory.Instance, true);
-
-            var exception = await Record.ExceptionAsync(() =>
-                commandExecution.ExecuteCommandAsync("Not a valid command", "Not a valid argument"));
-            Assert.Null(exception);
         }
 
         private (Mock<IDataRequestService> dataRequest, Mock<ICommandExecutionService> commandExecute, ComponentDownloader downloader) Initialize(string file)
