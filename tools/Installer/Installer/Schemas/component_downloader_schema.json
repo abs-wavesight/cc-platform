@@ -4,11 +4,11 @@
   "default": {},
   "title": "JSON schema for component downloader",
   "required": [
-    "outputLocation",
+    "location",
     "components"
   ],
   "properties": {
-    "output_location": {
+    "location": {
       "type": "string",
       "default": "",
       "title": "Location to save components to"

@@ -23,13 +23,13 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         public async Task ExecuteAsync()
         {
-            if (string.IsNullOrWhiteSpace(_config.OutputLocation))
+            if (string.IsNullOrWhiteSpace(_config.Location))
             {
                 throw new Exception("Output location must be specified");
             }
 
             _logger.LogInformation("Starting downloader");
-            Directory.CreateDirectory(_config.OutputLocation);
+            Directory.CreateDirectory(_config.Location);
 
             foreach (var component in _config.Components)
             {
@@ -50,7 +50,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         private Task ExecuteComponentAsync(Component component)
         {
-            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
+            var rootLocation = Path.Combine(_config.Location, component.Name);
             Directory.CreateDirectory(rootLocation);
 
             if (component.Type == ComponentType.Docker) return ExecuteDockerComponentAsync(component);
@@ -74,7 +74,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         private async Task ProcessContainerFileAsync(Component component, string source, string destination)
         {
-            var rootLocation = Path.Combine(_config.OutputLocation, component.Name);
+            var rootLocation = Path.Combine(_config.Location, component.Name);
             var containerFile = Path.Combine(rootLocation, destination);
 
             _logger.LogInformation($"Pulling image '{source}'");
@@ -86,7 +86,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         private async Task ProcessSimpleFileAsync(Component component, string source, string destination)
         {
-            var outputPath = Path.Combine(_config.OutputLocation, component.Name, destination);
+            var outputPath = Path.Combine(_config.Location, component.Name, destination);
 
             _logger.LogInformation($"Downloading file '{source}'");
             var data = await _dataRequestService.RequestByteArrayAsync(source);
