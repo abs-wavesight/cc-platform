@@ -4,7 +4,6 @@ version: '3'
 services:
 
   cc.drex-service:
-    container_name: drex-service-s
     build:
       context: ${PATH_TO_CC_DREX_REPO}
       dockerfile: service/Drex.Dockerfile
@@ -12,4 +11,5 @@ services:
         ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
         ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
       labels:
+        org.eagle.wavesight.built_from: "source"
         org.eagle.wavesight.container_type: "application"

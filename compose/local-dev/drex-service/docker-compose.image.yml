@@ -4,5 +4,4 @@ version: '3'
 services:
 
   cc.drex-service:
-    container_name: drex-service-i
     image: ghcr.io/abs-wavesight/cc-drex-service:windows-${WINDOWS_VERSION}

@@ -4,13 +4,10 @@ version: '3'
 services:
 
   cc.rabbitmq-template: # This is never used, but must be here in order to be a valid compose file
-    container_name: rabbitmq-template-i
     image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
 
   cc.rabbitmq-local:
-    container_name: rabbitmq-local-i
     image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
 
   cc.rabbitmq-remote:
-    container_name: rabbitmq-remote-i
     image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}

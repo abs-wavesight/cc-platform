@@ -13,6 +13,7 @@ services:
       context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
       dockerfile: Dockerfile
       labels:
+        org.eagle.wavesight.built_from: "source"
         org.eagle.wavesight.container_type: "infrastructure"
 
   cc.rabbitmq-remote:
@@ -21,4 +22,5 @@ services:
       context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
       dockerfile: Dockerfile
       labels:
+        org.eagle.wavesight.built_from: "source"
         org.eagle.wavesight.container_type: "infrastructure"
