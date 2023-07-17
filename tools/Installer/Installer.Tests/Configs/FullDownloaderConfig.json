@@ -8,6 +8,16 @@
           "type": "container",
           "source": "ghcr.io/abs-wavesight/rabbitmq:windows-2019",
           "destination": "rabbitmq.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/containers/rabbitmq/Dockerfile",
+          "destination": "Dockerfile"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
+          "destination": "cc-rabbitmq.conf"
         }
       ]
     },
@@ -18,6 +28,16 @@
           "type": "container",
           "source": "ghcr.io/abs-wavesight/vector:windows-2019",
           "destination": "vector.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/vector/config/vector-loki.toml",
+          "destination": "vector-loki.toml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/vector/config/vector.toml",
+          "destination": "vector.toml"
         }
       ]
     },
@@ -28,6 +48,16 @@
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-2019",
           "destination": "drex.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/drex-demo-site-alpha.site-config.json",
+          "destination": "drex-demo-site-alpha.site-config.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/drex-demo.client-app-config.json",
+          "destination": "drex-demo.client-app-config.json"
         }
       ]
     },
@@ -38,6 +68,16 @@
           "type": "container",
           "source": "ghcr.io/abs-wavesight/loki:windows-2019",
           "destination": "loki.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/containers/loki/Dockerfile",
+          "destination": "Dockerfile"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/loki/cc-loki-config.yml",
+          "destination": "cc-loki-config.yml"
         }
       ]
     }
