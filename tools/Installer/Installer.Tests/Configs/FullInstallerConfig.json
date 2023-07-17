@@ -2,13 +2,115 @@
   "location": "c:\\abs\\installer",
   "components": [
     {
+      "name": "Docker",
+      "actions": [
+        {
+          "source": "docker.zip",
+          "destination": "c:\\docker.zip",
+          "action": "copy",
+          "isImmediate": true
+        },
+        {
+          "source": "tar -xf c:\\docker.zip",
+          "action": "execute",
+          "isImmediate": true
+        },
+        {
+          "source": "docker-compose.exe",
+          "destination": "c:\\docker\\docker-compose.exe",
+          "action": "copy",
+          "isImmediate": true
+        },
+        {
+          "source": "c:\\docker\\dockerd --register-service",
+          "action": "execute",
+          "isImmediate": true
+        },
+        {
+          "source": "Start-Service docker",
+          "action": "execute",
+          "isImmediate": true
+        }
+      ]
+    },
+    {
       "name": "RabbitMq",
       "actions": [
         {
-          "source": "rabbitmq.tar", "action": "install"
+          "source": "rabbitmq.tar",
+          "action": "install"
         },
         {
-          "source": "dir", "action": "execute"
+          "source": "Dockerfile",
+          "destination": "c:\\config\\rabbitmq\\Dockerfile",
+          "action": "copy"
+        },
+        {
+          "source": "cc-rabbitmq.conf",
+          "destination": "c:\\config\\rabbitmq\\cc-rabbitmq.conf",
+          "action": "copy"
+        }
+      ]
+    },
+    {
+      "name": "Vector",
+      "actions": [
+        {
+          "source": "vector.tar",
+          "action": "install"
+        },
+        {
+          "source": "vector-loki.toml",
+          "destination": "c:\\config\\vector\\vector-loki.toml",
+          "action": "copy"
+        },
+        {
+          "source": "vector.toml",
+          "destination": "c:\\config\\vector\\vector.toml",
+          "action": "copy"
+        }
+      ]
+    },
+    {
+      "name": "Drex",
+      "actions": [
+        {
+          "source": "drex.tar",
+          "action": "install"
+        },
+        {
+          "source": "drex-demo-site-alpha.site-config.json",
+          "destination": "c:\\config\\drex-demo-site-alpha.site-config.json",
+          "action": "copy"
+        },
+        {
+          "source": "drex-demo.client-app-config.json",
+          "destination": "c:\\config\\drex-demo.client-app-config.json",
+          "action": "copy"
+        },
+        {
+          "source": "clean-logs.ps1",
+          "destination": "c:\\config\\clean-logs.ps1",
+          "action": "copy"
+        }
+      ]
+    },
+    {
+      "name": "Loki",
+      "actions": [
+        {
+          "source": "loki.tar",
+          "action": "install"
+        },
+        {
+          "source": "Dockerfile",
+          "destination": "c:\\config\\loki\\Dockerfile",
+          "action": "copy"
+        },
+        {
+          "source": "cc-loki-config.yml",
+          "destination": "c:\\config\\loki\\cc-loki-config.yml",
+          "action": "copy"
         }
       ]
     }
