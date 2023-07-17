@@ -48,17 +48,11 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
             _logger.LogInformation("Downloader complete");
         }
 
-        private Task ExecuteComponentAsync(Component component)
+        private async Task ExecuteComponentAsync(Component component)
         {
             var rootLocation = Path.Combine(_config.Location, component.Name);
             Directory.CreateDirectory(rootLocation);
 
-            if (component.Type == ComponentType.Docker) return ExecuteDockerComponentAsync(component);
-            throw new Exception($"Unknown component type '{component.Type}'");
-        }
-
-        private async Task ExecuteDockerComponentAsync(Component component)
-        {
             foreach (var file in component.Files)
             {
                 await ProcessFileAsync(component, file.Type, file.Source, file.Destination);

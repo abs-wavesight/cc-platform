@@ -33,6 +33,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Configs\FullDownloaderConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Configs\Invalid2_DownloaderConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

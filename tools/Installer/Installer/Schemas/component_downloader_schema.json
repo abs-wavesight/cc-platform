@@ -22,7 +22,6 @@
         "title": "Individual components to process",
         "required": [
           "name",
-          "type",
           "files"
         ],
         "properties": {
@@ -30,12 +29,6 @@
             "type": "string",
             "default": "",
             "title": "Name of the components"
-          },
-          "type": {
-            "type": "string",
-            "default": "none",
-            "title": "Type of the component",
-            "enum": [ "none", "docker" ]
           },
           "files": {
             "type": "array",

@@ -1,0 +1,45 @@
+{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-2019",
+          "destination": "rabbitmq.tar"
+        }
+      ]
+    },
+    {
+      "name": "Vector",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/vector:windows-2019",
+          "destination": "vector.tar"
+        }
+      ]
+    },
+    {
+      "name": "Drex",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-2019",
+          "destination": "drex.tar"
+        }
+      ]
+    },
+    {
+      "name": "Loki",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/loki:windows-2019",
+          "destination": "loki.tar"
+        }
+      ]
+    }
+  ]
+}
