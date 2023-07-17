@@ -76,7 +76,7 @@ public static class RunCommand
             }
         }
 
-        composeCommandBuilder.Append(" up --build --no-recreate");
+        composeCommandBuilder.Append(" up --build");
 
         if (runOptions.Background == true)
         {
