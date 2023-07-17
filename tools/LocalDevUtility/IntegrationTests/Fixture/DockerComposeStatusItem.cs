@@ -1,4 +1,4 @@
-namespace Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
+﻿namespace Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 
 public class DockerComposeStatusItem
 {

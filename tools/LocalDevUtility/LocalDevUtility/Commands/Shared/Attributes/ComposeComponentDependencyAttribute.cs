@@ -1,4 +1,4 @@
-namespace Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
 
 /// <summary>
 /// Dependency component (service) for the owning component, which must be started if the owning component is started

@@ -1,4 +1,4 @@
-namespace Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
+﻿namespace Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
 
 /// <summary>
 /// Alias for a different Compose component (service)

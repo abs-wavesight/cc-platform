@@ -8,7 +8,7 @@ namespace Abs.CommonCore.LocalDevUtility.Helpers;
 
 public class PowerShellAdapter : IPowerShellAdapter
 {
-    private readonly ConcurrentDictionary<string,string> _colorsByContainerName = new ();
+    private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
 
     public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {

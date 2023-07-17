@@ -40,7 +40,7 @@ public static class DockerHelper
         return composeCommandBuilder;
     }
 
-    public static async Task CreateEnvFile(AppConfig appConfig, Dictionary<string,string>? additionalOptions = null)
+    public static async Task CreateEnvFile(AppConfig appConfig, Dictionary<string, string>? additionalOptions = null)
     {
         var envValues = new Dictionary<string, string>
         {

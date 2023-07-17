@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Abs.CommonCore.LocalDevUtility.Commands;
 using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using FluentAssertions;
@@ -23,7 +22,7 @@ public class LocalDevUtilityFixture
         MockPowerShellAdapter = new Mock<IPowerShellAdapter>();
         MockPowerShellAdapter
             .Setup(_ => _.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
-            .Callback<string,TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem); });
+            .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem); });
 
         TestLogger.Default.SetTestOutput(testOutput);
         Logger = TestLogger.Default;
