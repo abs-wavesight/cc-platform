@@ -81,7 +81,7 @@ jobs:
 
       - name: Check code formatting
         if: inputs.check-code-formatting == true
-        working-directory: ${{ inputs.solution-directory }}
+        working-directory: ./
         run: dotnet format "${{ inputs.solution-directory }}/${{ inputs.solution-name }}" --verify-no-changes
 
       - name: Run unit tests
