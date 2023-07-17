@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Rebus.Bus;
-using Rebus.Config;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Contracts.Json;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus;
+using Microsoft.Extensions.Logging;
+using Rebus.Bus;
+using Rebus.Config;
 using Rebus.Serialization;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
