@@ -39,8 +39,10 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                     RootLocation = Path.Combine(_config.Location, x.Component.Name),
                     Action = y
                 }))
-                .OrderByDescending(x => x.Action.IsImmediate)
+                .OrderByDescending(x => x.Action.Action == ActionType.Copy)
+                .ThenByDescending(x => x.Action.Action == ActionType.ExecuteImmediate)
                 .ThenByDescending(x => x.Action.Action == ActionType.Install)
+                .ThenByDescending(x => x.Action.Action == ActionType.Execute)
                 .ToArray();
 
             foreach (var action in actions)
@@ -68,7 +70,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
         {
-            if (action.Action == ActionType.Execute) return RunExecuteCommandAsync(component, rootLocation, action);
+            if (action.Action == ActionType.Execute || action.Action == ActionType.ExecuteImmediate) return RunExecuteCommandAsync(component, rootLocation, action);
             if (action.Action == ActionType.Install) return RunInstallCommandAsync(component, rootLocation, action);
             if (action.Action == ActionType.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
             if (action.Action == ActionType.Copy) return RunCopyCommandAsync(component, rootLocation, action);

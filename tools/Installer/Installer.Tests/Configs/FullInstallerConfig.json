@@ -7,29 +7,24 @@
         {
           "source": "docker.zip",
           "destination": "c:\\docker.zip",
-          "action": "copy",
-          "isImmediate": true
+          "action": "copy"
         },
         {
           "source": "tar -xf c:\\docker.zip",
-          "action": "execute",
-          "isImmediate": true
+          "action": "executeImmediate"
         },
         {
           "source": "docker-compose.exe",
           "destination": "c:\\docker\\docker-compose.exe",
-          "action": "copy",
-          "isImmediate": true
+          "action": "copy"
         },
         {
           "source": "c:\\docker\\dockerd --register-service",
-          "action": "execute",
-          "isImmediate": true
+          "action": "executeImmediate"
         },
         {
           "source": "Start-Service docker",
-          "action": "execute",
-          "isImmediate": true
+          "action": "executeImmediate"
         }
       ]
     },
@@ -111,6 +106,15 @@
           "source": "cc-loki-config.yml",
           "destination": "c:\\config\\loki\\cc-loki-config.yml",
           "action": "copy"
+        }
+      ]
+    },
+    {
+      "name": "Execute",
+      "actions": [
+        {
+          "source": "docker-compose up",
+          "action": "execute"
         }
       ]
     }

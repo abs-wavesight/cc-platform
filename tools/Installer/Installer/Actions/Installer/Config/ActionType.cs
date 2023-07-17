@@ -6,6 +6,7 @@
         Copy,
         Install,
         Execute,
+        ExecuteImmediate,
         UpdatePath
     }
 }

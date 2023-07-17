@@ -10,9 +10,6 @@ namespace Abs.CommonCore.Installer.Actions.Installer.Config
         [JsonPropertyName("destination")]
         public string Destination { get; init; } = "";
 
-        [JsonPropertyName("isImmediate")]
-        public bool IsImmediate { get; init; } = false;
-
         [JsonPropertyName("action")]
         public ActionType Action { get; init; }
     }
