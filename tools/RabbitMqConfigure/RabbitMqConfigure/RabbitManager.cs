@@ -35,7 +35,7 @@ namespace Abs.CommonCore.Drex.RabbitMqConfigure
         {
             // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
             var generator = new Password(true, true, true, true, 32);
-            
+
             var password = generator.Next();
             var username = clientName;
 
