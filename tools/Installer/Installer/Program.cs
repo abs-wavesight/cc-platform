@@ -49,7 +49,9 @@ namespace Abs.CommonCore.Installer
             root.Add(downloadCommand);
             root.Add(installCommand);
 
-            return await root.InvokeAsync(args);
+            var result = await root.InvokeAsync(args);
+            await Task.Delay(1000);
+            return result;
         }
 
         private static async Task ExecuteDownloadCommandAsync(FileInfo config, bool verifyOnly, string[] args)
@@ -69,8 +71,8 @@ namespace Abs.CommonCore.Installer
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var downloader = new ComponentInstaller(loggerFactory, commandExecution, config);
-            await downloader.ExecuteAsync();
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, config);
+            await installer.ExecuteAsync();
         }
 
         private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)

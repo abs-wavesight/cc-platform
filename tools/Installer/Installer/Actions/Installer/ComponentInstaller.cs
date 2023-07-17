@@ -39,8 +39,8 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                     RootLocation = Path.Combine(_config.Location, x.Component.Name),
                     Action = y
                 }))
-                .OrderBy(x => x.Action.IsImmediate)
-                .ThenBy(x => x.Action.Action == ActionType.Install)
+                .OrderByDescending(x => x.Action.IsImmediate)
+                .ThenByDescending(x => x.Action.Action == ActionType.Install)
                 .ToArray();
 
             foreach (var action in actions)
