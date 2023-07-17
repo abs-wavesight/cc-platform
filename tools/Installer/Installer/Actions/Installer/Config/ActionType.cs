@@ -5,6 +5,7 @@
         None = 0,
         Copy,
         Install,
-        Execute
+        Execute,
+        UpdatePath
     }
 }

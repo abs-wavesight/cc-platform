@@ -8,6 +8,8 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 {
     public class ComponentInstaller
     {
+        private const string _pathEnvironmentVariable = "PATH";
+
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
         private readonly InstallerConfig _config;
@@ -29,13 +31,22 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             _logger.LogInformation("Starting installer");
             VerifySourcesPresent();
 
-            _logger.LogInformation("Beginning installation phase");
-            await InstallComponentsAsync();
-            _logger.LogInformation("Installation phase complete");
+            var actions = _config.Components
+                .Select(x => new { Component = x, Actions = x.Actions })
+                .SelectMany(x => x.Actions.Select(y => new
+                {
+                    Component = x.Component,
+                    RootLocation = Path.Combine(_config.Location, x.Component.Name),
+                    Action = y
+                }))
+                .OrderBy(x => x.Action.IsImmediate)
+                .ThenBy(x => x.Action.Action == ActionType.Install)
+                .ToArray();
 
-            _logger.LogInformation("Beginning execution phase");
-            await ExecuteComponentsAsync();
-            _logger.LogInformation("Execution phase complete");
+            foreach (var action in actions)
+            {
+                await ProcessExecuteActionAsync(action.Component, action.RootLocation, action.Action);
+            }
 
             _logger.LogInformation("Installer complete");
         }
@@ -55,67 +66,25 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             }
         }
 
-        private async Task InstallComponentsAsync()
+        private Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
         {
-            foreach (var component in _config.Components)
-            {
-                _logger.LogInformation($"Installing component '{component.Name}'");
-
-                try
-                {
-                    await ProcessComponentInstallersAsync(component);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Unable to install component '{component.Name}'", ex);
-                }
-            }
+            if (action.Action == ActionType.Execute) return RunExecuteCommandAsync(component, rootLocation, action);
+            if (action.Action == ActionType.Install) return RunInstallCommandAsync(component, rootLocation, action);
+            if (action.Action == ActionType.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
+            if (action.Action == ActionType.Copy) return RunCopyCommandAsync(component, rootLocation, action);
+            throw new Exception($"Unknown action command: {action.Action}");
         }
 
-        private async Task ExecuteComponentsAsync()
+        private async Task RunExecuteCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
-            foreach (var component in _config.Components)
-            {
-                _logger.LogInformation($"Executing component '{component.Name}'");
-
-                try
-                {
-                    await ProcessComponentExecutorsAsync(component);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Unable to execute component '{component.Name}'", ex);
-                }
-            }
+            _logger.LogInformation($"{component.Name}: Running execution for '{action.Source}'");
+            var parts = action.Source.Split(' ');
+            await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
         }
 
-        private async Task ProcessComponentInstallersAsync(Component component)
+        private async Task RunInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
-            var rootLocation = Path.Combine(_config.Location, component.Name);
-            var actions = component.Actions
-                .Where(x => x.Action == ActionType.Install);
-
-            foreach (var action in actions)
-            {
-                await ProcessInstallActionAsync(action, rootLocation);
-            }
-        }
-
-        private async Task ProcessComponentExecutorsAsync(Component component)
-        {
-            var rootLocation = Path.Combine(_config.Location, component.Name);
-            var actions = component.Actions
-                .Where(x => x.Action == ActionType.Execute || x.Action == ActionType.Copy);
-
-            foreach (var action in actions)
-            {
-                await ProcessExecuteActionAsync(action, rootLocation);
-            }
-        }
-
-        private async Task ProcessInstallActionAsync(ComponentAction action, string rootLocation)
-        {
-            _logger.LogInformation($"Running installation for '{action.Source}'");
+            _logger.LogInformation($"{component.Name}: Running installation for '{action.Source}'");
             if (action.Source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {action.Source}", rootLocation);
             else
             {
@@ -124,21 +93,23 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             }
         }
 
-        private async Task ProcessExecuteActionAsync(ComponentAction action, string rootLocation)
+        private async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
-            if (action.Action == ActionType.Copy)
-            {
-                _logger.LogInformation($"Copying file '{action.Source}' to '{action.Destination}'");
-                var directory = Path.GetDirectoryName(action.Destination)!;
-                Directory.CreateDirectory(directory);
+            _logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
+            var path = Environment.GetEnvironmentVariable(_pathEnvironmentVariable, EnvironmentVariableTarget.Machine)
+                       ?? "";
 
-                await _commandExecutionService.ExecuteCommandAsync("copy", $"{action.Source} {action.Destination}", rootLocation);
-                return;
-            }
+            if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {_pathEnvironmentVariable} \"%{_pathEnvironmentVariable}%;{action.Source}\"", rootLocation);
+        }
 
-            _logger.LogInformation($"Running execution for '{action.Source}'");
-            var parts = action.Source.Split(' ');
-            await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
+        private async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            _logger.LogInformation($"{component.Name}: Copying file '{action.Source}' to '{action.Destination}'");
+            var directory = Path.GetDirectoryName(action.Destination)!;
+            Directory.CreateDirectory(directory);
+
+            await _commandExecutionService.ExecuteCommandAsync("copy", $"{action.Source} {action.Destination}", rootLocation);
         }
     }
 }

@@ -57,7 +57,12 @@
                   "type": "string",
                   "default": "none",
                   "title": "Action for the source",
-                  "enum": [ "none", "copy", "install", "execute" ]
+                  "enum": [ "none", "copy", "install", "execute", "updatePath" ]
+                },
+                "isImmediate": {
+                  "type": "boolean",
+                  "default": "false",
+                  "title": "Indicates whether the action has higher priority"
                 }
               }
             }
