@@ -13,11 +13,6 @@
           "type": "file",
           "source": "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-windows-x86_64.exe",
           "destination": "docker-compose.exe"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
         }
       ]
     },
