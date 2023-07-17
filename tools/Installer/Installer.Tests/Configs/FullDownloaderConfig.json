@@ -2,6 +2,26 @@
   "location": "c:\\abs\\installer",
   "components": [
     {
+      "name": "Docker",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://download.docker.com/win/static/stable/x86_64/docker-24.0.4.zip",
+          "destination": "docker.zip"
+        },
+        {
+          "type": "file",
+          "source": "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-windows-x86_64.exe",
+          "destination": "docker-compose.exe"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
+          "destination": "cc-rabbitmq.conf"
+        }
+      ]
+    },
+    {
       "name": "RabbitMq",
       "files": [
         {
@@ -58,6 +78,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/drex-demo.client-app-config.json",
           "destination": "drex-demo.client-app-config.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/scripts/clean-logs.ps1",
+          "destination": "clean-logs.ps1"
         }
       ]
     },
