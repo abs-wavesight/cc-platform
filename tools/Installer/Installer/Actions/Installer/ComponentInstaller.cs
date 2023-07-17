@@ -29,6 +29,18 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             _logger.LogInformation("Starting installer");
 
             _logger.LogInformation("Beginning installation phase");
+            await InstallComponentsAsync();
+            _logger.LogInformation("Installation phase complete");
+
+            _logger.LogInformation("Beginning execution phase");
+            await ExecuteComponentsAsync();
+            _logger.LogInformation("Execution phase complete");
+
+            _logger.LogInformation("Installer complete");
+        }
+
+        private async Task InstallComponentsAsync()
+        {
             foreach (var component in _config.Components)
             {
                 _logger.LogInformation($"Installing component '{component.Name}'");
@@ -42,9 +54,10 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                     throw new Exception($"Unable to install component '{component.Name}'", ex);
                 }
             }
-            _logger.LogInformation("Installation phase complete");
+        }
 
-            _logger.LogInformation("Beginning execution phase");
+        private async Task ExecuteComponentsAsync()
+        {
             foreach (var component in _config.Components)
             {
                 _logger.LogInformation($"Executing component '{component.Name}'");
@@ -58,9 +71,6 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                     throw new Exception($"Unable to execute component '{component.Name}'", ex);
                 }
             }
-            _logger.LogInformation("Execution phase complete");
-
-            _logger.LogInformation("Installer complete");
         }
 
         private async Task ProcessComponentInstallersAsync(Component component)
