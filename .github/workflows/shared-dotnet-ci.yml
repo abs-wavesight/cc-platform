@@ -33,6 +33,10 @@ on:
         required: false
         type: boolean
         description: Flag allows run or skip e2e tests
+      check-code-formatting:
+        required: false
+        type: boolean
+        description: If true, will fail build if formatting changes are detected (using dotnet format)
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -68,6 +72,7 @@ jobs:
       solution-name: ${{ inputs.solution-name }}
       run-integration-tests: ${{ inputs.run-integration-tests }}
       run-e2e-tests: ${{ inputs.run-e2e-tests }}
+      check-code-formatting: ${{ inputs.check-code-formatting }}
     secrets: inherit
 
   push-image:
