@@ -2,13 +2,70 @@
   "location": "c:\\abs\\installer",
   "components": [
     {
+      "name": "Docker",
+      "actions": [
+        {
+          "source": "docker.zip",
+          "destination": "c:\\docker.zip",
+          "action": "copy",
+          "isImmediate": true
+        },
+        {
+          "source": "tar -xf c:\\docker.zip",
+          "action": "execute",
+          "isImmediate": true
+        },
+        {
+          "source": "docker.compose.exe",
+          "destination": "c:\\docker\\docker.compose.exe",
+          "action": "copy",
+          "isImmediate": true
+        },
+        {
+          "source": "c:\\docker\\dockerd --register-service",
+          "action": "execute",
+          "isImmediate": true
+        },
+        {
+          "source": "Start-Service docker",
+          "action": "execute",
+          "isImmediate": true
+        }
+      ]
+    },
+    {
       "name": "RabbitMq",
       "actions": [
         {
-          "source": "rabbitmq.tar", "action": "install"
-        },
+          "source": "rabbitmq.tar",
+          "action": "install"
+        }
+      ]
+    },
+    {
+      "name": "Vector",
+      "actions": [
         {
-          "source": "dir", "action": "execute"
+          "source": "vector.tar",
+          "action": "install"
+        }
+      ]
+    },
+    {
+      "name": "Drex",
+      "actions": [
+        {
+          "source": "drex.tar",
+          "action": "install"
+        }
+      ]
+    },
+    {
+      "name": "Loki",
+      "actions": [
+        {
+          "source": "loki.tar",
+          "action": "install"
         }
       ]
     }

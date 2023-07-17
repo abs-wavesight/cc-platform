@@ -2,7 +2,7 @@
   "profiles": {
     "Installer": {
       "commandName": "Project",
-      "commandLineArgs": "install -c C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\InstallerConfig.json"
+      "commandLineArgs": "install -c C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\FullInstallerConfig.json -v"
     }
   }
 }
