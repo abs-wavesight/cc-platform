@@ -23,4 +23,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
 	</ItemGroup>
 
+  <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
+
 </Project>
