@@ -96,6 +96,7 @@ public class Program
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
         command.AddOption(GetFlagOption("background", "b", "Run in background, a.k.a. detached (cannot be used with --abort-on-container-exit)"));
         command.AddOption(GetFlagOption("abort-on-container-exit", "a", "Abort if any container exits (cannot be used with --background)"));
+        command.AddOption(GetFlagOption("verbose", "v", "Print out final compose configuration"));
 
         var siteConfigOverrideOption = new Option<string?>("--drex-site-config-file-name-override")
         {

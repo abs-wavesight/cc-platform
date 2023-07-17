@@ -14,4 +14,5 @@ public class RunOptions : ComposeOptions
     public bool? Background { get; set; }
     public bool? AbortOnContainerExit { get; set; }
     public string? DrexSiteConfigFileNameOverride { get; set; }
+    public bool? Verbose { get; set; }
 }

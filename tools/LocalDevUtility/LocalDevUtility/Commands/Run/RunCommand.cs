@@ -58,11 +58,15 @@ public static class RunCommand
         var composeCommandBuilder = DockerHelper.BuildComposeCommand(appConfig, runOptions);
 
         var configCommand = $"{composeCommandBuilder} config";
-        Console.WriteLine("\nFinal compose configuration:");
-        AnsiConsole.Write(new Rule());
-        powerShellAdapter.RunPowerShellCommand(configCommand);
-        AnsiConsole.Write(new Rule());
-        Console.WriteLine();
+
+        if (runOptions.Verbose == true)
+        {
+            Console.WriteLine("\nFinal compose configuration:");
+            AnsiConsole.Write(new Rule());
+            powerShellAdapter.RunPowerShellCommand(configCommand);
+            AnsiConsole.Write(new Rule());
+            Console.WriteLine();
+        }
 
         using (CliStep.Start("Pulling images", true))
         {
