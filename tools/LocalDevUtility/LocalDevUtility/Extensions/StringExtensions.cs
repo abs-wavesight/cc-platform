@@ -14,4 +14,9 @@ public static class StringExtensions
             ? trimmed[..^1]
             : trimmed;
     }
+
+    public static string ToForwardSlashes(this string str)
+    {
+        return str.Replace("\\", "/");
+    }
 }

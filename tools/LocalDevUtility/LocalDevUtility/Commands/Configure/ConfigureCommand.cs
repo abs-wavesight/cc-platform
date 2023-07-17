@@ -25,14 +25,14 @@ public static class ConfigureCommand
         }
 
         Console.Write($"\"cc-platform\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCorePlatformRepositoryPath) ? $" ({readAppConfig.CommonCorePlatformRepositoryPath})" : "")}: ");
-        var ccPlatformRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash() ?? string.Empty;
+        var ccPlatformRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccPlatformRepositoryLocalPath))
         {
             ccPlatformRepositoryLocalPath = readAppConfig?.CommonCorePlatformRepositoryPath;
         }
 
         Console.Write($"\"cc-drex\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDrexRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexRepositoryPath})" : "")}: ");
-        var ccDrexRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash() ?? string.Empty;
+        var ccDrexRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccDrexRepositoryLocalPath))
         {
             ccDrexRepositoryLocalPath = readAppConfig?.CommonCoreDrexRepositoryPath;
