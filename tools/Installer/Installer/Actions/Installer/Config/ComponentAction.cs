@@ -5,7 +5,10 @@ namespace Abs.CommonCore.Installer.Actions.Installer.Config
     public class ComponentAction
     {
         [JsonPropertyName("source")]
-        public string[] Source { get; init; } = Array.Empty<string>();
+        public string Source { get; init; } = "";
+
+        [JsonPropertyName("destination")]
+        public string Destination { get; init; } = "";
 
         [JsonPropertyName("action")]
         public ActionType Action { get; init; }

@@ -5,12 +5,10 @@
       "name": "RabbitMq",
       "actions": [
         {
-          "source": [ "rabbitmq.tar" ],
-          "action": "install"
+          "source": "rabbitmq.tar", "action": "install"
         },
         {
-          "source": [ "dir" ],
-          "action": "execute"
+          "source": "dir", "action": "execute"
         }
       ]
     }

@@ -27,6 +27,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             }
 
             _logger.LogInformation("Starting installer");
+            VerifySourcesPresent();
 
             _logger.LogInformation("Beginning installation phase");
             await InstallComponentsAsync();
@@ -37,6 +38,21 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             _logger.LogInformation("Execution phase complete");
 
             _logger.LogInformation("Installer complete");
+        }
+
+        private void VerifySourcesPresent()
+        {
+            var missingFiles = _config.Components
+                .SelectMany(component => component.Actions, (component, action) => new { component, action })
+                .Where(t => t.action.Action == ActionType.Install || t.action.Action == ActionType.Copy)
+                .Select(t => Path.Combine(_config.Location, t.component.Name, t.action.Source))
+                .Where(location => File.Exists(location) == false)
+                .ToArray();
+
+            if (missingFiles.Any())
+            {
+                throw new Exception($"Required installation files are missing: {missingFiles.StringJoin(", ")}");
+            }
         }
 
         private async Task InstallComponentsAsync()
@@ -89,7 +105,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
         {
             var rootLocation = Path.Combine(_config.Location, component.Name);
             var actions = component.Actions
-                .Where(x => x.Action == ActionType.Execute);
+                .Where(x => x.Action == ActionType.Execute || x.Action == ActionType.Copy);
 
             foreach (var action in actions)
             {
@@ -99,26 +115,30 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private async Task ProcessInstallActionAsync(ComponentAction action, string rootLocation)
         {
-            foreach (var source in action.Source)
+            _logger.LogInformation($"Running installation for '{action.Source}'");
+            if (action.Source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {action.Source}", rootLocation);
+            else
             {
-                _logger.LogInformation($"Running installation for '{source}'");
-                if (source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {source}", rootLocation);
-                else
-                {
-                    var parts = source.Split(' ');
-                    await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
-                }
+                var parts = action.Source.Split(' ');
+                await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
             }
         }
 
         private async Task ProcessExecuteActionAsync(ComponentAction action, string rootLocation)
         {
-            foreach (var source in action.Source)
+            if (action.Action == ActionType.Copy)
             {
-                _logger.LogInformation($"Running execution for '{source}'");
-                var parts = source.Split(' ');
-                await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
+                _logger.LogInformation($"Copying file '{action.Source}' to '{action.Destination}'");
+                var directory = Path.GetDirectoryName(action.Destination)!;
+                Directory.CreateDirectory(directory);
+
+                await _commandExecutionService.ExecuteCommandAsync("copy", $"{action.Source} {action.Destination}", rootLocation);
+                return;
             }
+
+            _logger.LogInformation($"Running execution for '{action.Source}'");
+            var parts = action.Source.Split(' ');
+            await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
         }
     }
 }

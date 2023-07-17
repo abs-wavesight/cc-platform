@@ -3,6 +3,7 @@
     public enum ActionType
     {
         None = 0,
+        Copy,
         Install,
         Execute
     }

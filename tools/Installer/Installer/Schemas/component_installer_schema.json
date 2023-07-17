@@ -44,15 +44,20 @@
               ],
               "properties": {
                 "source": {
-                  "type": "array",
-                  "default": [],
-                  "title": "Sources for the action"
+                  "type": "string",
+                  "default": "",
+                  "title": "Source for the action"
+                },
+                "destination": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Destination for the action"
                 },
                 "action": {
                   "type": "string",
                   "default": "none",
                   "title": "Action for the source",
-                  "enum": [ "none", "install", "execute" ]
+                  "enum": [ "none", "copy", "install", "execute" ]
                 }
               }
             }
