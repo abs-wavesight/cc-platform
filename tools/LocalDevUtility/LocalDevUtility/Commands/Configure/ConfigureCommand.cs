@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using Abs.CommonCore.LocalDevUtility.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Configure;
@@ -24,14 +25,14 @@ public static class ConfigureCommand
         }
 
         Console.Write($"\"cc-platform\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCorePlatformRepositoryPath) ? $" ({readAppConfig.CommonCorePlatformRepositoryPath})" : "")}: ");
-        var ccPlatformRepositoryLocalPath = Console.ReadLine() ?? string.Empty;
+        var ccPlatformRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccPlatformRepositoryLocalPath))
         {
             ccPlatformRepositoryLocalPath = readAppConfig?.CommonCorePlatformRepositoryPath;
         }
 
         Console.Write($"\"cc-drex\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDrexRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexRepositoryPath})" : "")}: ");
-        var ccDrexRepositoryLocalPath = Console.ReadLine() ?? string.Empty;
+        var ccDrexRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccDrexRepositoryLocalPath))
         {
             ccDrexRepositoryLocalPath = readAppConfig?.CommonCoreDrexRepositoryPath;
