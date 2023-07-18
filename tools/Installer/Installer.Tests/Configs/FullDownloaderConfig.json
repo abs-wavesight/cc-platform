@@ -26,8 +26,8 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/containers/rabbitmq/Dockerfile",
-          "destination": "Dockerfile"
+          "source": "https://docker-compose.yml",
+          "destination": "docker-compose.yml"
         },
         {
           "type": "file",
@@ -46,8 +46,8 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/vector/config/vector-loki.toml",
-          "destination": "vector-loki.toml"
+          "source": "https://docker-compose.yml",
+          "destination": "docker-compose.yml"
         },
         {
           "type": "file",
@@ -63,6 +63,11 @@
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-2019",
           "destination": "drex.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://docker-compose.yml",
+          "destination": "docker-compose.yml"
         },
         {
           "type": "file",
@@ -91,8 +96,8 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/containers/loki/Dockerfile",
-          "destination": "Dockerfile"
+          "source": "https://docker-compose.yml",
+          "destination": "docker-compose.yml"
         },
         {
           "type": "file",
