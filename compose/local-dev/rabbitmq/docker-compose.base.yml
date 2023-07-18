@@ -1,0 +1,50 @@
+---
+version: '3'
+
+services:
+
+  cc.rabbitmq-template: &rabbitmq
+    environment:
+      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\cc-rabbitmq.conf
+    logging:
+      driver: local
+    profiles: ['templates']
+    restart: always
+    volumes:
+      - &config_volume 
+        type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/rabbitmq/
+        target: C:/rabbitmq/config
+        read_only: true
+
+  cc.rabbitmq-local:
+    <<: *rabbitmq
+    container_name: rabbitmq-local
+    hostname: rabbitmq-local
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    profiles: ['rabbitmq-local']
+    volumes:
+      - *config_volume
+      - type: volume
+        source: rabbitmq-local-storage
+        target: C:/data/rabbitmq
+
+  cc.rabbitmq-remote:
+    <<: *rabbitmq
+    container_name: rabbitmq-remote
+    hostname: rabbitmq-remote
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    profiles: ['rabbitmq-remote']
+    volumes:
+      - *config_volume
+      - type: volume
+        source: rabbitmq-remote-storage
+        target: C:/data/rabbitmq
+
+volumes:
+  rabbitmq-local-storage:
+  rabbitmq-remote-storage:

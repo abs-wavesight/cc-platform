@@ -1,0 +1,10 @@
+---
+version: '3'
+
+services:
+
+  cc.vector:
+    command: [ "-c", "C:\\config\\vector.toml", "-c", "C:\\config\\vector-loki.toml", "--log-format", "json", "--color", "never" ]
+    depends_on:
+      cc.loki:
+        condition: service_healthy

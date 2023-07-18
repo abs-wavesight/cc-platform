@@ -1,0 +1,69 @@
+﻿// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable ClassNeverInstantiated.Global
+
+using System.ComponentModel;
+using Abs.CommonCore.LocalDevUtility.Commands.Run;
+using Abs.CommonCore.LocalDevUtility.Commands.Shared.Attributes;
+using Abs.CommonCore.LocalDevUtility.Extensions;
+
+namespace Abs.CommonCore.LocalDevUtility.Commands.Shared;
+
+public abstract class ComposeOptions
+{
+    [ComposeComponent(composePath: "drex-service", imageName: "cc-drex-service")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(Vector))]
+    public ComposeComponentMode? DrexService { get; set; }
+
+    [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
+    public ComposeComponentMode? RabbitmqLocal { get; set; }
+
+    [Description("Run a copy of rabbitmq with a different hostname and port to represent a remote instance (e.g. Central)")]
+    [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
+    public ComposeComponentMode? RabbitmqRemote { get; set; }
+
+    [ComposeComponent(composePath: "vector", imageName: "vector", defaultVariant: "default")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    public ComposeComponentMode? Vector { get; set; }
+
+    [ComposeComponent(composePath: "grafana", imageName: "grafana")]
+    [ComposeComponentDependency(nameof(Vector))]
+    [ComposeComponentDependency(nameof(Loki))]
+    public ComposeComponentMode? Grafana { get; set; }
+
+    [ComposeComponent(composePath: "loki", imageName: "loki")]
+    [ComposeComponentDependency(dependencyPropertyName: nameof(Vector), variant: "loki")]
+    public ComposeComponentMode? Loki { get; set; }
+
+
+    [Description("Alias for \"rabbitmq-local\"")]
+    [ComposeComponentAlias(nameof(RabbitmqLocal))]
+    public ComposeComponentMode? Rabbitmq { get; set; }
+
+    [Description("Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\"")]
+    [ComposeComponentAlias(nameof(RabbitmqLocal))]
+    [ComposeComponentAlias(nameof(RabbitmqRemote))]
+    [ComposeComponentAlias(nameof(Vector))]
+    public ComposeComponentMode? Deps { get; set; }
+
+    [Description("Alias for \"loki\" and \"grafana\"")]
+    [ComposeComponentAlias(nameof(Grafana))]
+    [ComposeComponentAlias(nameof(Loki))]
+    public ComposeComponentMode? LogViz { get; set; }
+
+    public static List<string> ComponentPropertyNames => typeof(RunOptions)
+        .GetProperties()
+        .Where(_ => _.PropertyType == typeof(ComposeComponentMode?) || _.PropertyType == typeof(ComposeComponentMode))
+        .Select(_ => _.Name)
+        .ToList();
+
+    public static List<string> NonAliasComponentPropertyNames => ComponentPropertyNames
+        .Where(_ => !typeof(RunOptions).GetRunComponentAliases(_).Any())
+        .ToList();
+
+    public static List<string> AliasComponentPropertyNames => ComponentPropertyNames
+        .Where(_ => typeof(RunOptions).GetRunComponentAliases(_).Any())
+        .ToList();
+}

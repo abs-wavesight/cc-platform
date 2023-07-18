@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Abs.CommonCore.LocalDevUtility</RootNamespace>
+        <AssemblyName>Abs.CommonCore.LocalDevUtility</AssemblyName>
+
+        <PackageId>Abs.CommonCore.LocalDevUtility</PackageId>
+        <Version></Version> <!-- This empty version tag is filled in by the GitHub Actions workflow before publishing the package -->
+        <Authors>ABS Wavesight</Authors>
+        <PackageDescription>Utility to aid local development process</PackageDescription>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>cc-local</ToolCommandName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Abs.CommonCore.Platform" Version="1.0.11" />
+      <PackageReference Include="Figgle" Version="0.5.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+      <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.5" />
+      <PackageReference Include="Spectre.Console" Version="0.47.0" />
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.Management.Automation" Version="7.3.5" />
+      <PackageReference Include="TextCopy" Version="6.2.1" />
+    </ItemGroup>
+
+  <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
+
+</Project>

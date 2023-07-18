@@ -21,6 +21,11 @@ on:
         type: boolean
         default: false
         description: Flag allows run or skip e2e tests
+      install-docker-compose:
+        required: false
+        type: boolean
+        default: false
+        description: Will install docker-compose before running tests
       check-code-formatting:
         required: false
         type: boolean
@@ -61,6 +66,14 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
+
+      - name: Install docker-compose
+        if: inputs.install-docker-compose == true
+        run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination C:\Windows\System32\docker-compose.exe
+
+      - name: Confirm docker-compose
+        if: inputs.install-docker-compose == true
+        run: docker-compose --version
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
