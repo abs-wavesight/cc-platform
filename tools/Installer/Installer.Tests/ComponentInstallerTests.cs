@@ -17,14 +17,14 @@ namespace Installer.Tests
         [Fact]
         public async Task InvalidConfigValues_ThrowsException()
         {
-            var initializer = Initialize(@"Configs/Invalid2_InstallerConfig.json");
+            var initializer = Initialize(@"Configs/Invalid_InstallerConfig.json");
             await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync());
         }
 
         [Fact]
         public async Task ValidConfig_InstallAction()
         {
-            var initializer = Initialize(@"Configs/InstallerConfig.json");
+            var initializer = Initialize(@"Configs/RegistryConfig.json");
             await initializer.Installer.ExecuteAsync();
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -33,7 +33,7 @@ namespace Installer.Tests
         [Fact]
         public async Task ValidConfig_ExecuteAction()
         {
-            var initializer = Initialize(@"Configs/InstallerConfig.json");
+            var initializer = Initialize(@"Configs/RegistryConfig.json");
             await initializer.Installer.ExecuteAsync();
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("dir", It.IsAny<string>(), It.IsAny<string>()), Times.Once);

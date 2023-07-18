@@ -1,4 +1,5 @@
 ﻿using Abs.CommonCore.Installer.Actions.Installer.Config;
+using Abs.CommonCore.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -12,31 +13,38 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
-        private readonly InstallerConfig _config;
 
-        public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, FileInfo config)
+        private readonly InstallerConfig? _installerConfig;
+        private readonly ComponentRegistryConfig _registryConfig;
+
+        public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, FileInfo registryConfig, FileInfo? installerConfig = null)
         {
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentInstaller>();
-            _config = ConfigParser.LoadConfig<InstallerConfig>(config.FullName);
+
+            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName);
+            _installerConfig = installerConfig != null
+                ? ConfigParser.LoadConfig<InstallerConfig>(installerConfig.FullName)
+                : null;
         }
 
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(string[]? specificComponents = null)
         {
-            if (string.IsNullOrWhiteSpace(_config.Location))
+            if (string.IsNullOrWhiteSpace(_registryConfig.Location))
             {
                 throw new Exception("Location must be specified");
             }
 
             _logger.LogInformation("Starting installer");
-            VerifySourcesPresent();
+            var components = DetermineComponents(specificComponents);
+            VerifySourcesPresent(components);
 
-            var actions = _config.Components
+            var actions = components
                 .Select(x => new { Component = x, Actions = x.Actions })
                 .SelectMany(x => x.Actions.Select(y => new
                 {
                     Component = x.Component,
-                    RootLocation = Path.Combine(_config.Location, x.Component.Name),
+                    RootLocation = Path.Combine(_registryConfig.Location, x.Component.Name),
                     Action = y
                 }))
                 .OrderByDescending(x => x.Action.Action == ActionType.Copy)
@@ -53,12 +61,40 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             _logger.LogInformation("Installer complete");
         }
 
-        private void VerifySourcesPresent()
+        private Component[] DetermineComponents(string[]? specificComponents)
         {
-            var missingFiles = _config.Components
+            try
+            {
+                if (specificComponents?.Length > 0)
+                {
+                    return specificComponents
+                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                        .Distinct()
+                    .ToArray();
+                }
+
+                if (_installerConfig?.Components.Length > 0)
+                {
+                    return _installerConfig.Components
+                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                        .Distinct()
+                        .ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to determine components to use", ex);
+            }
+
+            throw new Exception("No components found to download");
+        }
+
+        private void VerifySourcesPresent(Component[] components)
+        {
+            var missingFiles = components
                 .SelectMany(component => component.Actions, (component, action) => new { component, action })
                 .Where(t => t.action.Action == ActionType.Install || t.action.Action == ActionType.Copy)
-                .Select(t => Path.Combine(_config.Location, t.component.Name, t.action.Source))
+                .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
                 .Where(location => File.Exists(location) == false)
                 .ToArray();
 

@@ -1,68 +1,18 @@
-{
+﻿{
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "default": {},
   "title": "JSON schema for component installer",
   "required": [
-    "location",
     "components"
   ],
   "properties": {
-    "location": {
-      "type": "string",
-      "default": "",
-      "title": "Location to read components from"
-    },
     "components": {
       "type": "array",
       "default": [],
-      "title": "The components to process",
+      "title": "The components to install",
       "items": {
-        "type": "object",
-        "title": "Individual components to process",
-        "required": [
-          "name",
-          "actions"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "default": "",
-            "title": "Name of the component"
-          },
-          "actions": {
-            "type": "array",
-            "default": [],
-            "title": "Actions for the component",
-            "items": {
-              "type": "object",
-              "default": {},
-              "title": "Action information",
-              "required": [
-                "source",
-                "action"
-              ],
-              "properties": {
-                "source": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Source for the action"
-                },
-                "destination": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Destination for the action"
-                },
-                "action": {
-                  "type": "string",
-                  "default": "none",
-                  "title": "Action for the source",
-                  "enum": [ "none", "copy", "install", "execute", "executeImmediate", "updatePath" ]
-                }
-              }
-            }
-          }
-        }
+        "type": "string"
       }
     }
   }

@@ -47,13 +47,18 @@ namespace Abs.CommonCore.Installer
 
             var installCommand = new Command("install", "Install components");
             installCommand.TreatUnmatchedTokensAsErrors = true;
-            installCommand.Add(configParam);
+            installCommand.Add(registryParam);
             installCommand.Add(verifyOnlyParam);
 
-            installCommand.SetHandler(async (config, verifyOnly) =>
+            var installConfigParam = new Option<FileInfo>("--install", "Location of install configuration");
+            installConfigParam.IsRequired = false;
+            installConfigParam.AddAlias("-i");
+            installCommand.Add(installConfigParam);
+
+            downloadCommand.SetHandler(async (registryConfig, installerConfig, components, verifyOnly) =>
             {
-                await ExecuteInstallCommandAsync(config, verifyOnly, args);
-            }, configParam, verifyOnlyParam);
+                await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, verifyOnly, args);
+            }, registryParam, installConfigParam, componentParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -76,14 +81,14 @@ namespace Abs.CommonCore.Installer
             await downloader.ExecuteAsync(components);
         }
 
-        private static async Task ExecuteInstallCommandAsync(FileInfo config, bool verifyOnly, string[] args)
+        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo installerConfig, string[] components, bool verifyOnly, string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, config);
-            await installer.ExecuteAsync();
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig);
+            await installer.ExecuteAsync(components);
         }
 
         private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)

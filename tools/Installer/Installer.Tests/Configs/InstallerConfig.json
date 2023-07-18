@@ -1,18 +1,5 @@
-{
-  "location": "c:\\abs\\installer",
+﻿{
   "components": [
-    {
-      "name": "RabbitMq",
-      "actions": [
-        {
-          "source": "rabbitmq.tar",
-          "action": "install"
-        },
-        {
-          "source": "dir",
-          "action": "execute"
-        }
-      ]
-    }
+    "RabbitMq"
   ]
 }
