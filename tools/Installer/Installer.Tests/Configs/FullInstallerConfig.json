@@ -25,6 +25,10 @@
         {
           "source": "Start-Service docker",
           "action": "executeImmediate"
+        },
+        {
+          "source": "c:\\docker",
+          "action": "updatePath"
         }
       ]
     },
@@ -36,8 +40,8 @@
           "action": "install"
         },
         {
-          "source": "Dockerfile",
-          "destination": "c:\\config\\rabbitmq\\Dockerfile",
+          "source": "docker-compose.yml",
+          "destination": "c:\\config\\rabbitmq\\docker-compose.yml",
           "action": "copy"
         },
         {
@@ -63,6 +67,11 @@
           "source": "vector.toml",
           "destination": "c:\\config\\vector\\vector.toml",
           "action": "copy"
+        },
+        {
+          "source": "docker-compose.yml",
+          "destination": "c:\\config\\vector\\docker-compose.yml",
+          "action": "copy"
         }
       ]
     },
@@ -87,6 +96,11 @@
           "source": "clean-logs.ps1",
           "destination": "c:\\config\\clean-logs.ps1",
           "action": "copy"
+        },
+        {
+          "source": "docker-compose.yml",
+          "destination": "c:\\config\\drex\\docker-compose.yml",
+          "action": "copy"
         }
       ]
     },
@@ -98,13 +112,13 @@
           "action": "install"
         },
         {
-          "source": "Dockerfile",
-          "destination": "c:\\config\\loki\\Dockerfile",
+          "source": "cc-loki-config.yml",
+          "destination": "c:\\config\\loki\\cc-loki-config.yml",
           "action": "copy"
         },
         {
-          "source": "cc-loki-config.yml",
-          "destination": "c:\\config\\loki\\cc-loki-config.yml",
+          "source": "docker-compose.yml",
+          "destination": "c:\\config\\loki\\docker-compose.yml",
           "action": "copy"
         }
       ]
@@ -113,7 +127,7 @@
       "name": "Execute",
       "actions": [
         {
-          "source": "docker-compose up",
+          "source": "docker-compose -f c:\\docker\\rabbitmq\\docker-compose.yml -f c:\\docker\\vector\\docker-compose.yml -f c:\\docker\\drex\\docker-compose.yml -f c:\\docker\\loki\\docker-compose.yml up --build",
           "action": "execute"
         }
       ]
