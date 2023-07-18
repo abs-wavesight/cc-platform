@@ -1,16 +1,16 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Abs.CommonCore.Installer.Actions.Downloader.Config
+namespace Abs.CommonCore.Installer.Config
 {
-    public class ComponentFile
+    public class ComponentAction
     {
-        [JsonPropertyName("type")]
-        public FileType Type { get; init; }
-
         [JsonPropertyName("source")]
         public string Source { get; init; } = "";
 
         [JsonPropertyName("destination")]
         public string Destination { get; init; } = "";
+
+        [JsonPropertyName("action")]
+        public ActionType Action { get; init; }
     }
 }

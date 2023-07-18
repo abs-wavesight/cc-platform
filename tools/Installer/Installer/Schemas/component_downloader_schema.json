@@ -1,68 +1,18 @@
-{
+﻿{
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "default": {},
   "title": "JSON schema for component downloader",
   "required": [
-    "location",
     "components"
   ],
   "properties": {
-    "location": {
-      "type": "string",
-      "default": "",
-      "title": "Location to save components to"
-    },
     "components": {
       "type": "array",
       "default": [],
-      "title": "The components to process",
+      "title": "The components to download",
       "items": {
-        "type": "object",
-        "title": "Individual components to process",
-        "required": [
-          "name",
-          "files"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "default": "",
-            "title": "Name of the components"
-          },
-          "files": {
-            "type": "array",
-            "default": [],
-            "title": "Files for the component",
-            "items": {
-              "type": "object",
-              "default": {},
-              "title": "File information",
-              "required": [
-                "source",
-                "destination"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "default": "none",
-                  "title": "Type of the file to process",
-                  "enum": [ "none", "container", "file" ]
-                },
-                "source": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Source for the file"
-                },
-                "destination": {
-                  "type": "string",
-                  "default": "",
-                  "title": "Destination for the file"
-                }
-              }
-            }
-          }
-        }
+        "type": "string"
       }
     }
   }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Abs.CommonCore.Installer.Actions.Downloader.Config
+namespace Abs.CommonCore.Installer.Config
 {
     public class Component
     {
@@ -9,5 +9,8 @@ namespace Abs.CommonCore.Installer.Actions.Downloader.Config
 
         [JsonPropertyName("files")]
         public ComponentFile[] Files { get; init; } = Array.Empty<ComponentFile>();
+
+        [JsonPropertyName("actions")]
+        public ComponentAction[] Actions { get; init; } = Array.Empty<ComponentAction>();
     }
 }

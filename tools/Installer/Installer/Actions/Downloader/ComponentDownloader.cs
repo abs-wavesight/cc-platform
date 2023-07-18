@@ -1,8 +1,9 @@
 ﻿using Abs.CommonCore.Installer.Actions.Downloader.Config;
+using Abs.CommonCore.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging;
-using Component = Abs.CommonCore.Installer.Actions.Downloader.Config.Component;
+using Component = Abs.CommonCore.Installer.Config.Component;
 
 namespace Abs.CommonCore.Installer.Actions.Downloader
 {
@@ -11,29 +12,37 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
         private readonly IDataRequestService _dataRequestService;
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
-        private readonly DownloaderConfig _config;
 
-        public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService, FileInfo registry)
+        private readonly DownloaderConfig? _downloaderConfig;
+        private readonly ComponentRegistryConfig _registryConfig;
+
+        public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService, FileInfo registryConfig, FileInfo? downloaderConfig = null)
         {
             _dataRequestService = dataRequestService;
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentDownloader>();
-            _config = ConfigParser.LoadConfig<DownloaderConfig>(registry.FullName);
+
+            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName);
+            _downloaderConfig = downloaderConfig != null
+                ? ConfigParser.LoadConfig<DownloaderConfig>(downloaderConfig.FullName)
+                : null;
         }
 
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(string[]? specificComponents = null)
         {
-            if (string.IsNullOrWhiteSpace(_config.Location))
+            if (string.IsNullOrWhiteSpace(_registryConfig.Location))
             {
                 throw new Exception("Location must be specified");
             }
 
             _logger.LogInformation("Starting downloader");
-            Directory.CreateDirectory(_config.Location);
+            Directory.CreateDirectory(_registryConfig.Location);
 
-            foreach (var component in _config.Components)
+            var components = DetermineComponents(specificComponents);
+
+            foreach (var component in components)
             {
-                _logger.LogInformation($"Starting component '{component.Name}'");
+                _logger.LogInformation($"Downloading component '{component.Name}'");
 
                 try
                 {
@@ -41,16 +50,44 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Unable to execute component '{component.Name}'", ex);
+                    throw new Exception($"Unable to download component '{component.Name}'", ex);
                 }
             }
 
             _logger.LogInformation("Downloader complete");
         }
 
+        private Component[] DetermineComponents(string[]? specificComponents)
+        {
+            try
+            {
+                if (specificComponents?.Length > 0)
+                {
+                    return specificComponents
+                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                        .Distinct()
+                        .ToArray();
+                }
+
+                if (_downloaderConfig?.Components.Length > 0)
+                {
+                    return _downloaderConfig.Components
+                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                        .Distinct()
+                        .ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to determine components to use", ex);
+            }
+
+            throw new Exception("No components found to download");
+        }
+
         private async Task ExecuteComponentAsync(Component component)
         {
-            var rootLocation = Path.Combine(_config.Location, component.Name);
+            var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
             Directory.CreateDirectory(rootLocation);
 
             foreach (var file in component.Files)
@@ -68,7 +105,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         private async Task ProcessContainerFileAsync(Component component, string source, string destination)
         {
-            var rootLocation = Path.Combine(_config.Location, component.Name);
+            var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
             var containerFile = Path.Combine(rootLocation, destination);
 
             _logger.LogInformation($"Pulling image '{source}'");
@@ -80,7 +117,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
         private async Task ProcessSimpleFileAsync(Component component, string source, string destination)
         {
-            var outputPath = Path.Combine(_config.Location, component.Name, destination);
+            var outputPath = Path.Combine(_registryConfig.Location, component.Name, destination);
 
             _logger.LogInformation($"Downloading file '{source}'");
             var data = await _dataRequestService.RequestByteArrayAsync(source);

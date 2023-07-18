@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.Installer.Actions.Downloader.Config
+﻿namespace Abs.CommonCore.Installer.Config
 {
     public enum FileType
     {

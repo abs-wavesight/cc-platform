@@ -1,4 +1,4 @@
-{
+﻿{
   "location": "c:\\abs\\installer",
   "components": [
     {
@@ -13,6 +13,39 @@
           "type": "file",
           "source": "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-windows-x86_64.exe",
           "destination": "docker-compose.exe"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker.zip",
+          "destination": "c:\\docker.zip",
+          "action": "copy"
+        },
+        {
+          "source": "tar -xf c:\\docker.zip",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "docker-compose.exe",
+          "destination": "c:\\docker\\docker-compose.exe",
+          "action": "copy"
+        },
+        {
+          "source": "c:\\docker\\dockerd --register-service",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "Start-Service docker",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "c:\\docker",
+          "action": "updatePath"
+        },
+        {
+          "source": "docker-compose.root.yml",
+          "destination": "c:\\config\\docker-compose.root.yml",
+          "action": "copy"
         }
       ]
     },
@@ -34,6 +67,27 @@
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
           "destination": "cc-rabbitmq.conf"
         }
+      ],
+      "actions": [
+        {
+          "source": "rabbitmq.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.yml",
+          "destination": "c:\\config\\rabbitmq\\docker-compose.yml",
+          "action": "copy"
+        },
+        {
+          "source": "cc-rabbitmq.conf",
+          "destination": "c:\\config\\rabbitmq\\cc-rabbitmq.conf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.rabbitmq.yml",
+          "destination": "c:\\config\\docker-compose.rabbitmq.yml",
+          "action": "copy"
+        }
       ]
     },
     {
@@ -53,6 +107,27 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/vector/config/vector.toml",
           "destination": "vector.toml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "vector.tar",
+          "action": "install"
+        },
+        {
+          "source": "vector-loki.toml",
+          "destination": "c:\\config\\vector\\vector-loki.toml",
+          "action": "copy"
+        },
+        {
+          "source": "vector.toml",
+          "destination": "c:\\config\\vector\\vector.toml",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.vector.yml",
+          "destination": "c:\\config\\docker-compose.vector.yml",
+          "action": "copy"
         }
       ]
     },
@@ -84,6 +159,27 @@
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/scripts/clean-logs.ps1",
           "destination": "clean-logs.ps1"
         }
+      ],
+      "actions": [
+        {
+          "source": "vector.tar",
+          "action": "install"
+        },
+        {
+          "source": "vector-loki.toml",
+          "destination": "c:\\config\\vector\\vector-loki.toml",
+          "action": "copy"
+        },
+        {
+          "source": "vector.toml",
+          "destination": "c:\\config\\vector\\vector.toml",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.vector.yml",
+          "destination": "c:\\config\\docker-compose.vector.yml",
+          "action": "copy"
+        }
       ]
     },
     {
@@ -103,6 +199,27 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/loki/cc-loki-config.yml",
           "destination": "cc-loki-config.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "vector.tar",
+          "action": "install"
+        },
+        {
+          "source": "vector-loki.toml",
+          "destination": "c:\\config\\vector\\vector-loki.toml",
+          "action": "copy"
+        },
+        {
+          "source": "vector.toml",
+          "destination": "c:\\config\\vector\\vector.toml",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.vector.yml",
+          "destination": "c:\\config\\docker-compose.vector.yml",
+          "action": "copy"
         }
       ]
     }

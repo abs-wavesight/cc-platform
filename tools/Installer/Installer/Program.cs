@@ -17,10 +17,21 @@ namespace Abs.CommonCore.Installer
             var downloadCommand = new Command("download", "Download components for installation");
             downloadCommand.TreatUnmatchedTokensAsErrors = true;
 
-            var configParam = new Option<FileInfo>("--config", "Location of configuration");
-            configParam.IsRequired = true;
-            configParam.AddAlias("-c");
-            downloadCommand.Add(configParam);
+            var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
+            registryParam.IsRequired = true;
+            registryParam.AddAlias("-r");
+            downloadCommand.Add(registryParam);
+
+            var downloadConfigParam = new Option<FileInfo>("--download", "Location of download configuration");
+            downloadConfigParam.IsRequired = false;
+            downloadConfigParam.AddAlias("-d");
+            downloadCommand.Add(downloadConfigParam);
+
+            var componentParam = new Option<string[]>("--component", "Specific component to process");
+            componentParam.IsRequired = false;
+            componentParam.AddAlias("-c");
+            componentParam.AllowMultipleArgumentsPerToken = true;
+            downloadCommand.Add(componentParam);
 
             var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
             verifyOnlyParam.SetDefaultValue(false);
@@ -28,10 +39,10 @@ namespace Abs.CommonCore.Installer
             verifyOnlyParam.AddAlias("-v");
             downloadCommand.Add(verifyOnlyParam);
 
-            downloadCommand.SetHandler(async (config, verifyOnly) =>
+            downloadCommand.SetHandler(async (registryConfig, downloaderConfig, components, verifyOnly) =>
             {
-                await ExecuteDownloadCommandAsync(config, verifyOnly, args);
-            }, configParam, verifyOnlyParam);
+                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, verifyOnly, args);
+            }, registryParam, downloadConfigParam, componentParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -40,15 +51,15 @@ namespace Abs.CommonCore.Installer
             return await root.InvokeAsync(args);
         }
 
-        private static async Task ExecuteDownloadCommandAsync(FileInfo config, bool verifyOnly, string[] args)
+        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, bool verifyOnly, string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
             var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, config);
-            await downloader.ExecuteAsync();
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig);
+            await downloader.ExecuteAsync(components);
         }
 
         private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)
