@@ -1,0 +1,10 @@
+---
+version: '3'
+name: 'abs-cc'
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.239.0/24
