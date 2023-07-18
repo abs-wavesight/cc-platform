@@ -80,7 +80,7 @@ namespace Abs.CommonCore.Installer
             builder.ClearProviders();
 
             // When debugging locally, simple console output is easier to read than JSON; but when deployed, we want structured JSON logs
-            #if DEBUG
+#if DEBUG
             builder.AddSimpleConsole(options =>
             {
                 options.IncludeScopes = true;
@@ -88,13 +88,13 @@ namespace Abs.CommonCore.Installer
                 options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
                 options.ColorBehavior = LoggerColorBehavior.Enabled;
             });
-            #else
+#else
             builder.AddJsonConsole(options =>
             {
                 options.TimestampFormat = "u";
                 options.IncludeScopes = true;
             });
-            #endif
+#endif
 
             var provider = builder.Services.BuildServiceProvider();
             var logger = provider.GetRequiredService<ILogger<Program>>();

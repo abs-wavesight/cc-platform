@@ -1,4 +1,4 @@
-using Abs.CommonCore.Installer.Actions.Downloader;
+﻿using Abs.CommonCore.Installer.Actions.Downloader;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
