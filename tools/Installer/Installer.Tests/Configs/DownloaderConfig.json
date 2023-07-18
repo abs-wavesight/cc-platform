@@ -1,21 +1,5 @@
-{
-  "location": "c:\\abs\\installer",
-  "components": [
-    {
-      "name": "RabbitMq",
-      "type": "docker",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-2019",
-          "destination": "rabbitmq.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/containers/rabbitmq/Dockerfile",
-          "destination": "Dockerfile"
-        }
-      ]
-    }
+﻿{
+  "components": [    
+      "RabbitMq"    
   ]
 }

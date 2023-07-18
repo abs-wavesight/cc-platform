@@ -1,0 +1,102 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "default": {},
+  "title": "JSON schema for component registry",
+  "required": [
+    "location",
+    "components"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "default": "",
+      "title": "Location to save components to"
+    },
+    "components": {
+      "type": "array",
+      "default": [],
+      "title": "The components to process",
+      "items": {
+        "type": "object",
+        "title": "Individual components to process",
+        "required": [
+          "name",
+          "files",
+          "actions"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "default": "",
+            "title": "Name of the components"
+          },
+          "files": {
+            "type": "array",
+            "default": [],
+            "title": "Files for the component",
+            "items": {
+              "type": "object",
+              "default": {},
+              "title": "File information",
+              "required": [
+                "source",
+                "destination"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "default": "none",
+                  "title": "Type of the file to process",
+                  "enum": [ "none", "container", "file" ]
+                },
+                "source": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Source for the file"
+                },
+                "destination": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Destination for the file"
+                }
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "default": [],
+            "title": "Actions for the component",
+            "items": {
+              "type": "object",
+              "default": {},
+              "title": "Action information",
+              "required": [
+                "source",
+                "action"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Source for the action"
+                },
+                "destination": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Destination for the action"
+                },
+                "action": {
+                  "type": "string",
+                  "default": "none",
+                  "title": "Action for the source",
+                  "enum": [ "none", "copy", "install", "execute", "executeImmediate", "updatePath" ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -33,25 +33,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Configs\FullDownloaderConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="Configs\FullInstallerConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="Configs\InstallerConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="Configs\Invalid2_InstallerConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="Configs\Invalid2_DownloaderConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="Configs\Invalid_InstallerConfig.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Update="Configs\Invalid_DownloaderConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\RegistryConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\Invalid2_RegistryConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\Invalid_RegistryConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Configs\DownloaderConfig.json">
