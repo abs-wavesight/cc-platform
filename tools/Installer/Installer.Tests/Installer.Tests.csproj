@@ -33,6 +33,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Configs\InvalidComponent_InstallerConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Configs\InvalidComponent_DownloaderConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

@@ -9,15 +9,22 @@ namespace Installer.Tests
     public class ComponentInstallerTests
     {
         [Fact]
-        public void InvalidConfig_ThrowsException()
+        public void InvalidInstallerConfig_ThrowsException()
         {
-            Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_InstallerConfig.json"));
+            Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_RegistryConfig.json", @"Configs/Invalid_InstallerConfig.json"));
         }
 
         [Fact]
-        public async Task InvalidConfigValues_ThrowsException()
+        public async Task InvalidRegistryConfigValues_ThrowsException()
         {
-            var initializer = Initialize(@"Configs/Invalid_InstallerConfig.json");
+            var initializer = Initialize(@"Configs/Invalid2_InstallerConfig.json");
+            await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync());
+        }
+
+        [Fact]
+        public async Task InvalidDownloaderConfigValues_ThrowsException()
+        {
+            var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_InstallerConfigjson");
             await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync());
         }
 
