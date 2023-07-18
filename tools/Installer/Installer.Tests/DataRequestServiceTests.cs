@@ -1,4 +1,4 @@
-using Abs.CommonCore.Installer.Services;
+﻿using Abs.CommonCore.Installer.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Installer.Tests
