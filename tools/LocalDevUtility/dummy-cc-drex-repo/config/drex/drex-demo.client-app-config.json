@@ -1,0 +1,63 @@
+﻿{
+  "key": "drex-demo",
+  "siteSources": [
+    {
+      "type": "queue",
+      "name": "cc.drex.site.{{client}}-src-m1.q"
+    },
+    {
+      "type": "queue",
+      "name": "cc.drex.site.{{client}}-src-m2.q"
+    },
+    {
+      "type": "queue",
+      "name": "cc.drex.site.{{client}}-src-receipt.q"
+    }
+  ],
+  "siteSinks": [
+    {
+      "type": "queue",
+      "name": "cc.{{client}}.site.snk-m3.q"
+    },
+    {
+      "type": "queue",
+      "name": "cc.{{client}}.site.snk-m4.q"
+    },
+    {
+      "type": "queue",
+      "name": "cc.{{client}}.site.snk-receipt.q"
+    }
+  ],
+  "remoteSources": {
+    "central": [
+      {
+        "type": "queue",
+        "name": "cc.drex.central.{{client}}-{{site}}-src-m3.q"
+      },
+      {
+        "type": "queue",
+        "name": "cc.drex.central.{{client}}-{{site}}-src-m4.q"
+      },
+      {
+        "type": "queue",
+        "name": "cc.drex.central.{{client}}-{{site}}-src-receipt.q"
+      }
+    ]
+  },
+  "remoteSinks": {
+    "central": [
+      {
+        "type": "queue",
+        "name": "cc.{{client}}.central.{{site}}-snk-m1.q"
+      },
+      {
+        "type": "queue",
+        "name": "cc.{{client}}.central.{{site}}-snk-m2.q"
+      },
+      {
+        "type": "queue",
+        "name": "cc.{{client}}.central.{{site}}-snk-receipt.q"
+      }
+    ]
+  }
+}

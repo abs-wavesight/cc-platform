@@ -14,6 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  LABEL_PREFIX: org.eagle.wavesight
 
 concurrency:
   group: dependency-containers-ci-${{ github.head_ref }}

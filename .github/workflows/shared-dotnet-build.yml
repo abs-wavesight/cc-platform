@@ -21,6 +21,16 @@ on:
         type: boolean
         default: false
         description: Flag allows run or skip e2e tests
+      install-docker-compose:
+        required: false
+        type: boolean
+        default: false
+        description: Will install docker-compose before running tests
+      check-code-formatting:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will fail build if formatting changes are detected (using dotnet format)
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -57,6 +67,14 @@ jobs:
         with:
           dotnet-version: 7.0.x
 
+      - name: Install docker-compose
+        if: inputs.install-docker-compose == true
+        run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination C:\Windows\System32\docker-compose.exe
+
+      - name: Confirm docker-compose
+        if: inputs.install-docker-compose == true
+        run: docker-compose --version
+
       - name: Nuget - Set Nuget credentials
         working-directory: ./
         run: |
@@ -73,6 +91,11 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
+
+      - name: Check code formatting
+        if: inputs.check-code-formatting == true
+        working-directory: ./
+        run: dotnet format "${{ inputs.solution-directory }}/${{ inputs.solution-name }}" --verify-no-changes
 
       - name: Run unit tests
         working-directory: ${{ inputs.solution-directory }}

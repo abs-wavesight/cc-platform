@@ -1,0 +1,20 @@
+---
+version: '3'
+
+services:
+
+  cc.drex-service:
+    container_name: drex-service
+    depends_on:
+      - cc.vector
+      - cc.rabbitmq-local
+    environment:
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+    ports:
+      - "12345:5000"
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_DREX_REPO}/config/drex
+        target: C:/app/config
+        read_only: true

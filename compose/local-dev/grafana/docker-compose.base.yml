@@ -1,0 +1,28 @@
+---
+version: '3'
+
+services:
+  cc.grafana:
+    container_name: grafana
+    hostname: grafana
+    command: [ "--config", ".\\conf\\custom\\grafana-config.ini" ]
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - type: volume
+        source: grafana-db
+        target: C:/Program Files/GrafanaLabs/grafana/data
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/grafana/datasources
+        target: C:/Program Files/GrafanaLabs/grafana/conf/provisioning/datasources
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/grafana
+        target: C:/Program Files/GrafanaLabs/grafana/conf/custom/
+        read_only: true
+    depends_on:
+      - cc.loki
+
+volumes:
+  grafana-db:
