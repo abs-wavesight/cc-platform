@@ -9,9 +9,15 @@ namespace Installer.Tests
     public class ComponentDownloaderTests
     {
         [Fact]
-        public void InvalidConfig_ThrowsException()
+        public void InvalidRegistryConfig_ThrowsException()
         {
             Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_RegistryConfig.json"));
+        }
+
+        [Fact]
+        public void InvalidDownloaderConfig_ThrowsException()
+        {
+            Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_DownloaderConfig.json"));
         }
 
         [Fact]
@@ -24,7 +30,7 @@ namespace Installer.Tests
         [Fact]
         public async Task InvalidDownloaderConfigValues_ThrowsException()
         {
-            var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/Invalid_DownloaderConfig.json");
+            var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_DownloaderConfig.json");
             await Assert.ThrowsAsync<Exception>(() => initializer.Downloader.ExecuteAsync());
         }
 
