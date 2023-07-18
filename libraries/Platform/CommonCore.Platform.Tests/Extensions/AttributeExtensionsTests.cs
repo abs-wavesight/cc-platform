@@ -1,5 +1,5 @@
-﻿using Abs.CommonCore.Platform.Extensions;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Abs.CommonCore.Platform.Extensions;
 using FluentAssertions;
 using Xunit;
 

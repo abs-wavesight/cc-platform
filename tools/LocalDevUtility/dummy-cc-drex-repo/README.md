@@ -1,0 +1,1 @@
+This `dummy-cc-drex-repo` directory is here for the purposes of unit/integration testing the LocalDevUtility. We need to have a config directory with runnable D-REX config files so that we can test the launching of the compose configuration.

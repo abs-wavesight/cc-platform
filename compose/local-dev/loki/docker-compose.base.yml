@@ -1,0 +1,22 @@
+---
+version: '3'
+
+services:
+  cc.loki:
+    container_name: loki
+    command: [ "-config.file", "config/cc-loki-config.yml" ]
+    hostname: loki
+    ports:
+      - "3100:3100"
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/loki
+        target: C:/Program Files/loki/config
+        read_only: true
+      - type: volume
+        source: loki-db
+        target: C:/Users/containeruser/loki
+
+volumes:
+  loki-db:

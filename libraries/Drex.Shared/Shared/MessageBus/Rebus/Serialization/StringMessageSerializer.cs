@@ -1,7 +1,7 @@
-﻿using Rebus.Messages;
-using Rebus.Serialization;
-using System.Text;
+﻿using System.Text;
 using Rebus.Extensions;
+using Rebus.Messages;
+using Rebus.Serialization;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization
 {

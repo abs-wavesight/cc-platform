@@ -34,6 +34,7 @@ jobs:
     with:
       solution-directory: libraries/Drex.Shared
       solution-name: Drex.Shared.sln
+      check-code-formatting: true
     secrets: inherit
 
   publish-nuget-package:

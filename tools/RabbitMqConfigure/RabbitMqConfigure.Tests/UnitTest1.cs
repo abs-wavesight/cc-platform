@@ -1,4 +1,4 @@
-namespace RabbitMqConfigure.Tests;
+﻿namespace RabbitMqConfigure.Tests;
 
 public class UnitTest1
 {

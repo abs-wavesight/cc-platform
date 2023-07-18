@@ -1,0 +1,11 @@
+---
+version: '3'
+
+services:
+  cc.loki:
+    build:
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/loki
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "infrastructure"
