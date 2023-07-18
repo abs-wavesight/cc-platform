@@ -29,6 +29,11 @@
         {
           "source": "c:\\docker",
           "action": "updatePath"
+        },
+        {
+          "source": "docker-compose.root.yml",
+          "destination": "c:\\config\\docker-compose.root.yml",
+          "action": "copy"
         }
       ]
     },
@@ -47,6 +52,11 @@
         {
           "source": "cc-rabbitmq.conf",
           "destination": "c:\\config\\rabbitmq\\cc-rabbitmq.conf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.rabbitmq.yml",
+          "destination": "c:\\config\\docker-compose.rabbitmq.yml",
           "action": "copy"
         }
       ]
@@ -69,8 +79,8 @@
           "action": "copy"
         },
         {
-          "source": "docker-compose.yml",
-          "destination": "c:\\config\\vector\\docker-compose.yml",
+          "source": "docker-compose.vector.yml",
+          "destination": "c:\\config\\docker-compose.vector.yml",
           "action": "copy"
         }
       ]
@@ -98,8 +108,8 @@
           "action": "copy"
         },
         {
-          "source": "docker-compose.yml",
-          "destination": "c:\\config\\drex\\docker-compose.yml",
+          "source": "docker-compose.drex.yml",
+          "destination": "c:\\config\\docker-compose.drex.yml",
           "action": "copy"
         }
       ]
@@ -117,8 +127,8 @@
           "action": "copy"
         },
         {
-          "source": "docker-compose.yml",
-          "destination": "c:\\config\\loki\\docker-compose.yml",
+          "source": "docker-compose.loki.yml",
+          "destination": "c:\\config\\docker-compose.loki.yml",
           "action": "copy"
         }
       ]
@@ -127,7 +137,7 @@
       "name": "Execute",
       "actions": [
         {
-          "source": "docker-compose -f c:\\docker\\rabbitmq\\docker-compose.yml -f c:\\docker\\vector\\docker-compose.yml -f c:\\docker\\drex\\docker-compose.yml -f c:\\docker\\loki\\docker-compose.yml up --build",
+          "source": "docker-compose -f c:\\config\\docker-compose.root.yml -f c:\\config\\docker-compose.rabbitmq.yml -f c:\\config\\docker-compose.vector.yml -f c:\\config\\docker-compose.drex.yml -f c:\\config\\docker-compose.loki.yml up --build",
           "action": "execute"
         }
       ]
