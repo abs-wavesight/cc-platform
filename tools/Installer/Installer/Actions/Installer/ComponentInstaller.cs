@@ -25,7 +25,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
             _installerConfig = installerConfig != null
                 ? ConfigParser.LoadConfig<InstallerConfig>(installerConfig.FullName)
-            : null;
+                : null;
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
             MergeParameters(mergedParameters, parameters);
