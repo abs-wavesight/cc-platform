@@ -7,7 +7,7 @@ using Component = Abs.CommonCore.Installer.Config.Component;
 
 namespace Abs.CommonCore.Installer.Actions.Downloader
 {
-    public class ComponentDownloader
+    public class ComponentDownloader : ActionBase
     {
         private readonly IDataRequestService _dataRequestService;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -16,16 +16,22 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
         private readonly DownloaderConfig? _downloaderConfig;
         private readonly ComponentRegistryConfig _registryConfig;
 
-        public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService, FileInfo registryConfig, FileInfo? downloaderConfig = null)
+        public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService,
+            FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters)
         {
             _dataRequestService = dataRequestService;
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentDownloader>();
 
-            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName);
             _downloaderConfig = downloaderConfig != null
                 ? ConfigParser.LoadConfig<DownloaderConfig>(downloaderConfig.FullName)
                 : null;
+
+            var mergedParameters = _downloaderConfig?.Parameters ?? new Dictionary<string, string>();
+            MergeParameters(mergedParameters, parameters);
+
+            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName,
+                (c, t) => ReplaceConfigParameters(t, mergedParameters));
         }
 
         public async Task ExecuteAsync(string[]? specificComponents = null)
@@ -38,7 +44,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
             _logger.LogInformation("Starting downloader");
             Directory.CreateDirectory(_registryConfig.Location);
 
-            var components = DetermineComponents(specificComponents);
+            var components = DetermineComponents(_registryConfig, specificComponents, _downloaderConfig?.Components);
 
             foreach (var component in components)
             {
@@ -55,34 +61,6 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
             }
 
             _logger.LogInformation("Downloader complete");
-        }
-
-        private Component[] DetermineComponents(string[]? specificComponents)
-        {
-            try
-            {
-                if (specificComponents?.Length > 0)
-                {
-                    return specificComponents
-                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
-                        .Distinct()
-                        .ToArray();
-                }
-
-                if (_downloaderConfig?.Components.Length > 0)
-                {
-                    return _downloaderConfig.Components
-                        .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
-                        .Distinct()
-                        .ToArray();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to determine components to use", ex);
-            }
-
-            throw new Exception("No components found to download");
         }
 
         private async Task ExecuteComponentAsync(Component component)
