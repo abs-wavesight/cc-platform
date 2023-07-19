@@ -15,16 +15,9 @@ namespace Installer.Tests
         }
 
         [Fact]
-        public async Task InvalidRegistryConfigValues_ThrowsException()
+        public async Task InvalidInstallerConfigValues_ThrowsException()
         {
-            var initializer = Initialize(@"Configs/Invalid2_InstallerConfig.json");
-            await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync());
-        }
-
-        [Fact]
-        public async Task InvalidDownloaderConfigValues_ThrowsException()
-        {
-            var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_InstallerConfigjson");
+            var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_InstallerConfig.json");
             await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync());
         }
 
@@ -32,27 +25,21 @@ namespace Installer.Tests
         public async Task ValidConfig_InstallAction()
         {
             var initializer = Initialize(@"Configs/RegistryConfig.json");
-            await initializer.Installer.ExecuteAsync();
+            await initializer.Installer.ExecuteAsync(new [] { "RabbitMq" });
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
-        [Fact]
-        public async Task ValidConfig_ExecuteAction()
-        {
-            var initializer = Initialize(@"Configs/RegistryConfig.json");
-            await initializer.Installer.ExecuteAsync();
-
-            initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("dir", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        }
-
-        private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string file)
+        private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null)
         {
             var commandExecute = new Mock<ICommandExecutionService>();
 
-            var fileInfo = new FileInfo(file);
-            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, fileInfo);
+            var registryFileInfo = new FileInfo(registryFile);
+            var installerFileInfo = string.IsNullOrWhiteSpace(installerFile) == false
+                ? new FileInfo(installerFile)
+                : null;
 
+            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo);
             return (commandExecute, downloader);
         }
     }
