@@ -42,6 +42,11 @@
             public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.{{app}}-snk-log.{TopicExchangeSuffix}";
             public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{app}}-snk-log.{QueueSuffix}";
 
+            public const string ConfigSiteSourceTemplate = $"{ResourcePrefix}.site.{{client}}-src-{{name}}.{QueueSuffix}";
+            public const string ConfigSiteSinkTemplate = $"cc.{{client}}.site.snk-{{name}}.{QueueSuffix}";
+            public const string ConfigRemoteSourceTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-{{name}}.{QueueSuffix}";
+            public const string ConfigRemoteSinkTemplate = $"cc.{{client}}.central.{{site}}-snk-{{name}}.{QueueSuffix}";
+
             public const string QueueSuffix = "q";
             public const string DirectExchangeSuffix = "ed";
             public const string TopicExchangeSuffix = "et";
