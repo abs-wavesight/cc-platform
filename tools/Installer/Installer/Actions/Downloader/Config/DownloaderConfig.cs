@@ -9,6 +9,7 @@ namespace Abs.CommonCore.Installer.Actions.Downloader.Config
         [JsonPropertyName("components")]
         public string[] Components { get; init; } = Array.Empty<string>();
 
+        [JsonPropertyName("parameters")]
         public Dictionary<string, string>? Parameters { get; init; } = new Dictionary<string, string>();
     }
 }
