@@ -49,6 +49,7 @@ namespace Abs.CommonCore.Installer
             parameterParam.AddAlias("-p");
             parameterParam.AllowMultipleArgumentsPerToken = true;
             downloadCommand.Add(parameterParam);
+            installCommand.Add(parameterParam);
 
             var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
             verifyOnlyParam.SetDefaultValue(false);
@@ -62,10 +63,10 @@ namespace Abs.CommonCore.Installer
                 await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, args);
             }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam);
 
-            installCommand.SetHandler(async (registryConfig, installerConfig, components, verifyOnly) =>
+            installCommand.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly) =>
             {
-                await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, verifyOnly, args);
-            }, registryParam, installConfigParam, componentParam, verifyOnlyParam);
+                await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, args);
+            }, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -90,13 +91,15 @@ namespace Abs.CommonCore.Installer
             await downloader.ExecuteAsync(components);
         }
 
-        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo installerConfig, string[] components, bool verifyOnly, string[] args)
+        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo installerConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
+            var configParameters = BuildConfigParameters(parameters);
+
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters);
             await installer.ExecuteAsync(components);
         }
 

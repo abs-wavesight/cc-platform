@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions.Installer
 {
-    public class ComponentInstaller
+    public class ComponentInstaller : ActionBase
     {
         private const string _pathEnvironmentVariable = "PATH";
 
@@ -17,15 +17,21 @@ namespace Abs.CommonCore.Installer.Actions.Installer
         private readonly InstallerConfig? _installerConfig;
         private readonly ComponentRegistryConfig _registryConfig;
 
-        public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, FileInfo registryConfig, FileInfo? installerConfig = null)
+        public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
+            FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
         {
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentInstaller>();
 
-            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName);
             _installerConfig = installerConfig != null
                 ? ConfigParser.LoadConfig<InstallerConfig>(installerConfig.FullName)
-                : null;
+            : null;
+
+            var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
+            MergeParameters(mergedParameters, parameters);
+
+            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName,
+                (c, t) => ReplaceConfigParameters(t, mergedParameters));
         }
 
         public async Task ExecuteAsync(string[]? specificComponents = null)

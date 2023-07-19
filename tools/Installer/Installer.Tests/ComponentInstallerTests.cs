@@ -30,7 +30,20 @@ namespace Installer.Tests
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
-        private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null)
+        [Fact]
+        public async Task ParameterizedConfig_InstallAction()
+        {
+            var paramKey = "$SOME_INSTALL_PARAM";
+            var paramValue = "Replacement";
+
+            var parameters = new Dictionary<string, string>() { { paramKey, paramValue } };
+            var initializer = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
+            await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
+
+            initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(paramValue, It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
         {
             var commandExecute = new Mock<ICommandExecutionService>();
 
@@ -39,7 +52,8 @@ namespace Installer.Tests
                 ? new FileInfo(installerFile)
                 : null;
 
-            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo);
+            parameters ??= new Dictionary<string, string>();
+            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters);
             return (commandExecute, downloader);
         }
     }
