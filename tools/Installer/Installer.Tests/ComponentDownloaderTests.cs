@@ -17,7 +17,7 @@ namespace Installer.Tests
         [Fact]
         public void InvalidDownloaderConfig_ThrowsException()
         {
-            Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_DownloaderConfig.json"));
+            Assert.Throws<ConfigException>(() => Initialize(@"Configs/Invalid_RegistryConfig.json", @"Configs/Invalid_DownloaderConfig.json"));
         }
 
         [Fact]
