@@ -15,7 +15,7 @@
 
             public const string ContainerPrefix = "container";
             public const string ContainerName = $"{ContainerPrefix}.name";
-            public const string ContainerApplication = $"{ContainerPrefix}.application";
+            public const string ContainerType = $"{ContainerPrefix}.type";
             public const string ContainerImage = $"{ContainerPrefix}.image";
         }
 
