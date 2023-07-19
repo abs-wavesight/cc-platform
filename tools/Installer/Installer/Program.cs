@@ -18,44 +18,45 @@ namespace Abs.CommonCore.Installer
             var downloadCommand = new Command("download", "Download components for installation");
             downloadCommand.TreatUnmatchedTokensAsErrors = true;
 
+            var installCommand = new Command("install", "Install components");
+            installCommand.TreatUnmatchedTokensAsErrors = true;
+
             var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
             registryParam.IsRequired = true;
             registryParam.AddAlias("-r");
             downloadCommand.Add(registryParam);
+            installCommand.Add(registryParam);
 
             var downloadConfigParam = new Option<FileInfo>("--download", "Location of download configuration");
             downloadConfigParam.IsRequired = false;
             downloadConfigParam.AddAlias("-d");
             downloadCommand.Add(downloadConfigParam);
 
+            var installConfigParam = new Option<FileInfo>("--install", "Location of install configuration");
+            installConfigParam.IsRequired = false;
+            installConfigParam.AddAlias("-i");
+            installCommand.Add(installConfigParam);
+
             var componentParam = new Option<string[]>("--component", "Specific component to process");
             componentParam.IsRequired = false;
             componentParam.AddAlias("-c");
             componentParam.AllowMultipleArgumentsPerToken = true;
             downloadCommand.Add(componentParam);
+            installCommand.Add(componentParam);
 
             var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
             verifyOnlyParam.SetDefaultValue(false);
             verifyOnlyParam.IsRequired = false;
             verifyOnlyParam.AddAlias("-v");
             downloadCommand.Add(verifyOnlyParam);
+            installCommand.Add(verifyOnlyParam);
 
             downloadCommand.SetHandler(async (registryConfig, downloaderConfig, components, verifyOnly) =>
             {
                 await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, verifyOnly, args);
             }, registryParam, downloadConfigParam, componentParam, verifyOnlyParam);
 
-            var installCommand = new Command("install", "Install components");
-            installCommand.TreatUnmatchedTokensAsErrors = true;
-            installCommand.Add(registryParam);
-            installCommand.Add(verifyOnlyParam);
-
-            var installConfigParam = new Option<FileInfo>("--install", "Location of install configuration");
-            installConfigParam.IsRequired = false;
-            installConfigParam.AddAlias("-i");
-            installCommand.Add(installConfigParam);
-
-            downloadCommand.SetHandler(async (registryConfig, installerConfig, components, verifyOnly) =>
+            installCommand.SetHandler(async (registryConfig, installerConfig, components, verifyOnly) =>
             {
                 await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, verifyOnly, args);
             }, registryParam, installConfigParam, componentParam, verifyOnlyParam);

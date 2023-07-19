@@ -25,7 +25,7 @@ namespace Installer.Tests
         public async Task ValidConfig_InstallAction()
         {
             var initializer = Initialize(@"Configs/RegistryConfig.json");
-            await initializer.Installer.ExecuteAsync(new [] { "RabbitMq" });
+            await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
