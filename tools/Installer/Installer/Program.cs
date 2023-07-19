@@ -33,16 +33,22 @@ namespace Abs.CommonCore.Installer
             componentParam.AllowMultipleArgumentsPerToken = true;
             downloadCommand.Add(componentParam);
 
+            var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
+            parameterParam.IsRequired = false;
+            parameterParam.AddAlias("-p");
+            parameterParam.AllowMultipleArgumentsPerToken = true;
+            downloadCommand.Add(parameterParam);
+
             var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
             verifyOnlyParam.SetDefaultValue(false);
             verifyOnlyParam.IsRequired = false;
             verifyOnlyParam.AddAlias("-v");
             downloadCommand.Add(verifyOnlyParam);
 
-            downloadCommand.SetHandler(async (registryConfig, downloaderConfig, components, verifyOnly) =>
+            downloadCommand.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly) =>
             {
-                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, verifyOnly, args);
-            }, registryParam, downloadConfigParam, componentParam, verifyOnlyParam);
+                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, args);
+            }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -51,14 +57,16 @@ namespace Abs.CommonCore.Installer
             return await root.InvokeAsync(args);
         }
 
-        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, bool verifyOnly, string[] args)
+        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
             var (_, loggerFactory) = ConfigureLogging(builder.Logging);
 
+            var configParameters = BuildConfigParameters(parameters);
+
             var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig);
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters);
             await downloader.ExecuteAsync(components);
         }
 
@@ -90,6 +98,17 @@ namespace Abs.CommonCore.Installer
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
             return (logger, loggerFactory);
+        }
+
+        private static Dictionary<string, string> BuildConfigParameters(string[] parameters)
+        {
+            return parameters
+                .Select(x =>
+                {
+                    var parts = x.Split(new char[] { ':' }, 2);
+                    return new KeyValuePair<string, string>(parts[0], parts[1]);
+                })
+                .ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

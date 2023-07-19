@@ -44,6 +44,19 @@ namespace Installer.Tests
         }
 
         [Fact]
+        public async Task ParameterizedConfig_FileDownloaded()
+        {
+            var paramKey = "$SOME_DOWNLOAD_PARAM";
+            var paramValue = "Replacement";
+
+            var parameters = new Dictionary<string, string>() { { paramKey, paramValue } };
+            var initializer = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
+            await initializer.Downloader.ExecuteAsync(new[] { "RabbitMq" });
+
+            initializer.DataRequest.Verify(x => x.RequestByteArrayAsync(paramValue), Times.Exactly(1));
+        }
+
+        [Fact]
         public async Task ValidConfig_CommandExecuted()
         {
             var initializer = Initialize(@"Configs/RegistryConfig.json");
@@ -52,7 +65,7 @@ namespace Installer.Tests
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
-        private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null)
+        private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
         {
             var dataRequest = new Mock<IDataRequestService>();
             var commandExecute = new Mock<ICommandExecutionService>();
@@ -62,7 +75,8 @@ namespace Installer.Tests
                 ? new FileInfo(downloaderFile)
                 : null;
 
-            var downloader = new ComponentDownloader(NullLoggerFactory.Instance, dataRequest.Object, commandExecute.Object, registryFileInfo, downloaderFileInfo);
+            parameters ??= new Dictionary<string, string>();
+            var downloader = new ComponentDownloader(NullLoggerFactory.Instance, dataRequest.Object, commandExecute.Object, registryFileInfo, downloaderFileInfo, parameters);
             return (dataRequest, commandExecute, downloader);
         }
     }

@@ -14,6 +14,11 @@
       "items": {
         "type": "string"
       }
+    },
+    "parameters": {
+      "type": "object",
+      "title": "The parameters to use to override the configuration",
+      "additionalProperties": { "type": "string" }
     }
   }
 }
