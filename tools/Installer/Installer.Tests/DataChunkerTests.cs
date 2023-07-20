@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Installer.Tests
 {
-    public class DataChunkerTests
+    public class DataChunkerTests : TestsBase
     {
         [Fact]
         public async Task DataChunked()
@@ -82,17 +82,6 @@ namespace Installer.Tests
                 File.Delete($"{tempFile}.part3");
                 File.Delete($"{tempFile}.part4");
             }
-        }
-
-        private byte[] BuildTestData(int size)
-        {
-            var data = new byte[size];
-            for (var x = 0; x < data.Length; x++)
-            {
-                data[x] = (byte)(DateTime.Now.Ticks % 255);
-            }
-
-            return data;
         }
     }
 }

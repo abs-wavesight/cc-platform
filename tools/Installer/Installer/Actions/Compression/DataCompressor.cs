@@ -12,14 +12,14 @@ namespace Abs.CommonCore.Installer.Actions.Compression
             _logger = loggerFactory.CreateLogger<DataCompressor>();
         }
 
-        public async Task CompressDirectory(DirectoryInfo source, FileInfo destination)
+        public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination)
         {
             await Task.Yield();
             File.Delete(destination.FullName);
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.Optimal, false);
         }
 
-        public async Task DecompressFile(FileInfo source, DirectoryInfo destination)
+        public async Task DecompressFileAsync(FileInfo source, DirectoryInfo destination)
         {
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);

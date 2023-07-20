@@ -259,7 +259,7 @@ namespace Abs.CommonCore.Installer
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataCompressor(loggerFactory);
-            await chunker.CompressDirectory(source, destination);
+            await chunker.CompressDirectoryAsync(source, destination);
         }
 
 
@@ -268,7 +268,7 @@ namespace Abs.CommonCore.Installer
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataCompressor(loggerFactory);
-            await chunker.DecompressFile(source, destination);
+            await chunker.DecompressFileAsync(source, destination);
         }
 
         private static (ILogger, ILoggerFactory) Initialize(string[] args)
