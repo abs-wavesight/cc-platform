@@ -12,6 +12,11 @@
             public const string Source = $"{Prefix}.source";
             public const string Destination = $"{Prefix}.destination";
             public const string Sink = $"{Prefix}.sink";
+
+            public const string ContainerPrefix = "container";
+            public const string ContainerName = $"{ContainerPrefix}.name";
+            public const string ContainerType = $"{ContainerPrefix}.type";
+            public const string ContainerImage = $"{ContainerPrefix}.image";
         }
 
         public static class MessageBus
@@ -38,9 +43,9 @@
             public const string SiteLogTopicExchangeName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.int-log.{QueueSuffix}";
 
-            public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.{{app}}-snk-log.{DirectExchangeSuffix}";
-            public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.{{app}}-snk-log.{TopicExchangeSuffix}";
-            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.{{app}}-snk-log.{QueueSuffix}";
+            public const string CentralLogDirectExchangeTemplate = $"{ResourcePrefix}.central.snk-log.{DirectExchangeSuffix}";
+            public const string CentralLogTopicExchangeTemplate = $"{ResourcePrefix}.central.snk-log.{TopicExchangeSuffix}";
+            public const string CentralLogQueueTemplate = $"{ResourcePrefix}.central.snk-log.{QueueSuffix}";
 
             public const string ConfigSiteSourceTemplate = $"{ResourcePrefix}.site.{{client}}-src-{{name}}.{QueueSuffix}";
             public const string ConfigSiteSinkTemplate = $"cc.{{client}}.site.snk-{{name}}.{QueueSuffix}";
