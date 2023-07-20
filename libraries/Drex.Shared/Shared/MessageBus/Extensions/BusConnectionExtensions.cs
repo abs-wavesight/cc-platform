@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Contracts.Json;
+﻿using Abs.CommonCore.Contracts.Json.Drex;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Extensions
 {

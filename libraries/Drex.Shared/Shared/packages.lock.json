@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.57, )",
-        "resolved": "1.0.57",
-        "contentHash": "q3RwkfvtdjpuDFMHKXO6JohYZR/Jtrcf2sPaRyOF672BCVjGwSVKBIO2qsYWsLOFz/aidR9ThMZ2xRasImB8cg==",
+        "requested": "[1.0.76, )",
+        "resolved": "1.0.76",
+        "contentHash": "DjETvsR02H5Ldpi8y5QRu21pgBxiMQ2ReUmAvV4zX1nSte073Ahlipcs+QDWC8PpnFvnLDf53nwC7IqA6euDNQ==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0"
@@ -14,9 +14,9 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.11, )",
-        "resolved": "1.0.11",
-        "contentHash": "UipI9JpLuudt/gHpGvHTJsf1WVZdnTrRraPo7YyU25p9XPVbmJZI7AoU1Hg0GMwFC6I0LazBiWXqZn1dphRbRw==",
+        "requested": "[1.0.19, )",
+        "resolved": "1.0.19",
+        "contentHash": "U2N8wEr3HsT2Pih2G+Ll2yqtff1Rt+ppp0xLtq8Y5ZI5GqQaVbO0tAfC5iJqgNuV0oCCLrfpo32f+ywCFaJf0A==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.57",
           "JsonSchema.Net": "4.1.1",
