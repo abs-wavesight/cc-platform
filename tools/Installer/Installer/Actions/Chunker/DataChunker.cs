@@ -58,9 +58,10 @@ namespace Abs.CommonCore.Installer.Actions.Chunker
             var files = Directory.GetFiles(source.FullName, "*.part?")
                 .OrderBy(x =>
                 {
-                    var extension = Path.GetExtension(x).Replace("part", "");
+                    var extension = Path.GetExtension(x).Replace(".part", "");
                     return int.Parse(extension);
-                });
+                })
+                .ToArray();
 
             destination.Delete();
             using (var destinationStream = destination.OpenWrite())
