@@ -2,16 +2,16 @@
 
 namespace Abs.CommonCore.Installer.Actions.Chunker
 {
-    public class ChunkerService
+    public class DataChunker
     {
         private readonly ILogger _logger;
 
-        public ChunkerService(ILoggerFactory loggerFactory)
+        public DataChunker(ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<ChunkerService>();
+            _logger = loggerFactory.CreateLogger<DataChunker>();
         }
 
-        public async Task ChunkFile(FileInfo source, DirectoryInfo destination, int maxSize)
+        public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize)
         {
             if (source.Exists == false)
                 throw new Exception("Source file does not exist");
@@ -50,7 +50,7 @@ namespace Abs.CommonCore.Installer.Actions.Chunker
             currentChunkFile.Close();
         }
 
-        public async Task UnchunkFile(DirectoryInfo source, FileInfo destination)
+        public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination)
         {
             if (source.Exists == false)
                 throw new Exception("Source location doesn't exist");

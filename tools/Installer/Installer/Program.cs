@@ -241,16 +241,16 @@ namespace Abs.CommonCore.Installer
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new ChunkerService(loggerFactory);
-            await chunker.ChunkFile(source, destination, size);
+            var chunker = new DataChunker(loggerFactory);
+            await chunker.ChunkFileAsync(source, destination, size);
         }
 
         private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new ChunkerService(loggerFactory);
-            await chunker.UnchunkFile(source, destination);
+            var chunker = new DataChunker(loggerFactory);
+            await chunker.UnchunkFileAsync(source, destination);
         }
 
         private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, string[] args)
