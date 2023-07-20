@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Installer.Actions.Chunker;
+using Abs.CommonCore.Installer.Actions.Compression;
 using Abs.CommonCore.Installer.Actions.Downloader;
 using Abs.CommonCore.Installer.Actions.Installer;
 using Abs.CommonCore.Installer.Services;
@@ -257,7 +258,7 @@ namespace Abs.CommonCore.Installer
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new CompressionService(loggerFactory);
+            var chunker = new DataCompressor(loggerFactory);
             await chunker.CompressDirectory(source, destination);
         }
 
@@ -266,7 +267,7 @@ namespace Abs.CommonCore.Installer
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new CompressionService(loggerFactory);
+            var chunker = new DataCompressor(loggerFactory);
             await chunker.DecompressFile(source, destination);
         }
 

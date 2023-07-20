@@ -23,10 +23,6 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Actions\Compression\" />
-	</ItemGroup>
-
   <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 
 </Project>
