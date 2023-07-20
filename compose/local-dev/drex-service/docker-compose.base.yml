@@ -18,3 +18,11 @@ services:
         source: ${PATH_TO_CC_DREX_REPO}/config/drex
         target: C:/app/config
         read_only: true
+      - type: volume
+        source: rabbitmq-local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: volume
+        source: rabbitmq-remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true

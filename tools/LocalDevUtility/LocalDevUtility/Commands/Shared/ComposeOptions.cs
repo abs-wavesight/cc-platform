@@ -18,11 +18,16 @@ public abstract class ComposeOptions
     public ComposeComponentMode? DrexService { get; set; }
 
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
+    [ComposeComponentDependency(nameof(Openssl))]
     public ComposeComponentMode? RabbitmqLocal { get; set; }
 
     [Description("Run a copy of rabbitmq with a different hostname and port to represent a remote instance (e.g. Central)")]
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
+    [ComposeComponentDependency(nameof(Openssl))]
     public ComposeComponentMode? RabbitmqRemote { get; set; }
+
+    [ComposeComponent(composePath: "openssl", imageName: "openssl")]
+    public ComposeComponentMode? Openssl { get; set; }
 
     [ComposeComponent(composePath: "vector", imageName: "vector", profile: Constants.Profiles.VectorSite, defaultVariant: "default")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]

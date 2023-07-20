@@ -1,0 +1,19 @@
+[ req ]
+default_bits           = 2048
+default_keyfile        = keyfile.pem
+distinguished_name     = req_distinguished_name
+attributes             = req_attributes
+prompt                 = no
+output_password        = 1234
+
+[ req_distinguished_name ]
+C                      = US
+ST                     = TX
+L                      = Spring
+O                      = American Bureau of Shipping
+
+CN                     = rabbitmq-local
+
+
+[ req_attributes ]
+challengePassword              = A challenge password

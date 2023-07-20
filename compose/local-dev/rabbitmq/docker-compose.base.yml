@@ -11,7 +11,7 @@ services:
     profiles: ['templates']
     restart: always
     volumes:
-      - &config_volume 
+      - &config_volume
         type: bind
         source: ${PATH_TO_CC_PLATFORM_REPO}/config/rabbitmq/
         target: C:/rabbitmq/config
@@ -22,28 +22,50 @@ services:
     container_name: rabbitmq-local
     hostname: rabbitmq-local
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5671:5671"
+      - "15671:15671"
     profiles: ['rabbitmq-local']
     volumes:
       - *config_volume
       - type: volume
         source: rabbitmq-local-storage
         target: C:/data/rabbitmq
+      - type: volume
+        source: rabbitmq-local-keys
+        target: C:/keys
+        read_only: true
+      - type: volume
+        source: rabbitmq-local-certs
+        target: C:/certs
+        read_only: true
+    depends_on:
+      cc.openssl-generate-certs:
+        condition: service_completed_successfully
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
     container_name: rabbitmq-remote
     hostname: rabbitmq-remote
     ports:
-      - "5673:5672"
-      - "15673:15672"
+      - "5681:5671"
+      - "15681:15671"
     profiles: ['rabbitmq-remote']
     volumes:
       - *config_volume
       - type: volume
         source: rabbitmq-remote-storage
         target: C:/data/rabbitmq
+      - type: volume
+        source: rabbitmq-remote-keys
+        target: C:/keys
+        read_only: true
+      - type: volume
+        source: rabbitmq-remote-certs
+        target: C:/certs
+        read_only: true
+    depends_on:
+      cc.openssl-generate-certs:
+        condition: service_completed_successfully
 
 volumes:
   rabbitmq-local-storage:
