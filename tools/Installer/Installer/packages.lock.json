@@ -2,11 +2,21 @@
   "version": 1,
   "dependencies": {
     "net7.0": {
+      "Abs.CommonCore.Contracts": {
+        "type": "Direct",
+        "requested": "[1.0.81-feature-ado-20443-installer-download, )",
+        "resolved": "1.0.81-feature-ado-20443-installer-download",
+        "contentHash": "WXMosBQubSLRhldJhmZUy00+28PoOVEdcpEo7Z/f+BpUft2Sa5lO7DPYjevnMT1qDUPbWk0D98pmfHi8yTqvpg==",
+        "dependencies": {
+          "Google.Protobuf": "3.23.3",
+          "Grpc.AspNetCore": "2.32.0"
+        }
+      },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.21-feature-ado-20443-installer-download, )",
-        "resolved": "1.0.21-feature-ado-20443-installer-download",
-        "contentHash": "jpaXCpunx+iR5Psdd5pabfEfuYypxWgIZhmaXsjLxmGoUbuzRnhcANVtVfDLxccXe//yhOppuRxmDlufAVPC1g==",
+        "requested": "[1.0.23-feature-ado-20443-installer-download, )",
+        "resolved": "1.0.23-feature-ado-20443-installer-download",
+        "contentHash": "PzGXPYC/5sMoDTpzKgBH4nZp6OEWA4vIBsjdmcTKrVFzHUTbHqA5MnRrTL+9Y+Hny124tcsZSCMerwiiRQEKSg==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.57",
           "JsonSchema.Net": "4.1.1",
@@ -75,15 +85,6 @@
         "requested": "[2.0.0-beta4.22272.1, )",
         "resolved": "2.0.0-beta4.22272.1",
         "contentHash": "1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg=="
-      },
-      "Abs.CommonCore.Contracts": {
-        "type": "Transitive",
-        "resolved": "1.0.57",
-        "contentHash": "q3RwkfvtdjpuDFMHKXO6JohYZR/Jtrcf2sPaRyOF672BCVjGwSVKBIO2qsYWsLOFz/aidR9ThMZ2xRasImB8cg==",
-        "dependencies": {
-          "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
-        }
       },
       "Google.Protobuf": {
         "type": "Transitive",
