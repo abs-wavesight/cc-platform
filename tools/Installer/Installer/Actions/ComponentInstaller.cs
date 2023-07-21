@@ -1,10 +1,10 @@
-﻿using Abs.CommonCore.Installer.Actions.Installer.Config;
+﻿using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Actions.Installer
+namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentInstaller : ActionBase
     {
@@ -13,8 +13,8 @@ namespace Abs.CommonCore.Installer.Actions.Installer
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
 
-        private readonly InstallerConfig? _installerConfig;
-        private readonly ComponentRegistryConfig _registryConfig;
+        private readonly InstallerComponentInstallerConfig? _installerConfig;
+        private readonly InstallerComponentRegistryConfig _registryConfig;
 
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
@@ -23,13 +23,13 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             _logger = loggerFactory.CreateLogger<ComponentInstaller>();
 
             _installerConfig = installerConfig != null
-                ? ConfigParser.LoadConfig<InstallerConfig>(installerConfig.FullName)
+                ? ConfigParser.LoadConfig<InstallerComponentInstallerConfig>(installerConfig.FullName)
                 : null;
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
             MergeParameters(mergedParameters, parameters);
 
-            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName,
+            _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
                 (c, t) => ReplaceConfigParameters(t, mergedParameters));
         }
 
@@ -45,17 +45,17 @@ namespace Abs.CommonCore.Installer.Actions.Installer
             VerifySourcesPresent(components);
 
             var actions = components
-                .Select(x => new { Component = x, Actions = x.Actions })
+                .Select(x => new { Component = x, x.Actions })
                 .SelectMany(x => x.Actions.Select(y => new
                 {
-                    Component = x.Component,
+                    x.Component,
                     RootLocation = Path.Combine(_registryConfig.Location, x.Component.Name),
                     Action = y
                 }))
-                .OrderByDescending(x => x.Action.Action == ActionType.Copy)
-                .ThenByDescending(x => x.Action.Action == ActionType.ExecuteImmediate)
-                .ThenByDescending(x => x.Action.Action == ActionType.Install)
-                .ThenByDescending(x => x.Action.Action == ActionType.Execute)
+                .OrderByDescending(x => x.Action.Action == ComponentActionAction.Copy)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
                 .ToArray();
 
             foreach (var action in actions)
@@ -78,7 +78,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
                     .ToArray();
                 }
 
-                if (_installerConfig?.Components.Length > 0)
+                if (_installerConfig?.Components.Count > 0)
                 {
                     return _installerConfig.Components
                         .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
@@ -98,7 +98,7 @@ namespace Abs.CommonCore.Installer.Actions.Installer
         {
             var missingFiles = components
                 .SelectMany(component => component.Actions, (component, action) => new { component, action })
-                .Where(t => t.action.Action == ActionType.Install || t.action.Action == ActionType.Copy)
+                .Where(t => t.action.Action == ComponentActionAction.Install || t.action.Action == ComponentActionAction.Copy)
                 .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
                 .Where(location => File.Exists(location) == false)
                 .ToArray();
@@ -111,10 +111,10 @@ namespace Abs.CommonCore.Installer.Actions.Installer
 
         private Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
         {
-            if (action.Action == ActionType.Execute || action.Action == ActionType.ExecuteImmediate) return RunExecuteCommandAsync(component, rootLocation, action);
-            if (action.Action == ActionType.Install) return RunInstallCommandAsync(component, rootLocation, action);
-            if (action.Action == ActionType.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
-            if (action.Action == ActionType.Copy) return RunCopyCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.Execute || action.Action == ComponentActionAction.ExecuteImmediate) return RunExecuteCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.Install) return RunInstallCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.Copy) return RunCopyCommandAsync(component, rootLocation, action);
             throw new Exception($"Unknown action command: {action.Action}");
         }
 

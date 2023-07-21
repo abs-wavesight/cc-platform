@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Installer.Actions.Compression;
+﻿using Abs.CommonCore.Installer.Actions;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Installer.Tests

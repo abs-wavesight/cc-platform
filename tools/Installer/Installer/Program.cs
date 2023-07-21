@@ -1,10 +1,6 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Installer.Actions;
-using Abs.CommonCore.Installer.Actions.Chunker;
-using Abs.CommonCore.Installer.Actions.Compression;
-using Abs.CommonCore.Installer.Actions.Downloader;
-using Abs.CommonCore.Installer.Actions.Installer;
 using Abs.CommonCore.Installer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Actions.Chunker
+namespace Abs.CommonCore.Installer.Actions
 {
     public class DataChunker
     {

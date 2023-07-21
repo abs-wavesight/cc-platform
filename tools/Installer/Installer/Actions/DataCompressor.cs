@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Actions.Compression
+namespace Abs.CommonCore.Installer.Actions
 {
     public class DataCompressor
     {
