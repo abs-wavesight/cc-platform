@@ -16,6 +16,8 @@ services:
     depends_on:
       cc.rabbitmq-local:
         condition: service_healthy
+    environment:
+      - LOG_RETENTION_PERIOD=7d
     volumes:
       - type: npipe
         source: \\.\pipe\docker_engine
