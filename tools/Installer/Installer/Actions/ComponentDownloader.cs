@@ -1,12 +1,10 @@
-﻿using Abs.CommonCore.Installer.Actions.Downloader.Config;
-using Abs.CommonCore.Installer.Config;
+﻿using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.Logging;
-using Component = Abs.CommonCore.Installer.Config.Component;
 
-namespace Abs.CommonCore.Installer.Actions.Downloader
+namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentDownloader : ActionBase
     {
@@ -14,8 +12,8 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
 
-        private readonly DownloaderConfig? _downloaderConfig;
-        private readonly ComponentRegistryConfig _registryConfig;
+        private readonly InstallerComponentDownloaderConfig? _downloaderConfig;
+        private readonly InstallerComponentRegistryConfig _registryConfig;
 
         public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters)
@@ -25,13 +23,13 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
             _logger = loggerFactory.CreateLogger<ComponentDownloader>();
 
             _downloaderConfig = downloaderConfig != null
-                ? ConfigParser.LoadConfig<DownloaderConfig>(downloaderConfig.FullName)
+                ? ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(downloaderConfig.FullName)
                 : null;
 
             var mergedParameters = _downloaderConfig?.Parameters ?? new Dictionary<string, string>();
             MergeParameters(mergedParameters, parameters);
 
-            _registryConfig = ConfigParser.LoadConfig<ComponentRegistryConfig>(registryConfig.FullName,
+            _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
                 (c, t) => ReplaceConfigParameters(t, mergedParameters));
         }
 
@@ -76,10 +74,10 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
             }
         }
 
-        private Task ProcessFileAsync(Component component, FileType fileType, string source, string destination)
+        private Task ProcessFileAsync(Component component, ComponentFileType fileType, string source, string destination)
         {
-            if (fileType == FileType.Container) return ProcessContainerFileAsync(component, source, destination);
-            if (fileType == FileType.File) return ProcessSimpleFileAsync(component, source, destination);
+            if (fileType == ComponentFileType.Container) return ProcessContainerFileAsync(component, source, destination);
+            if (fileType == ComponentFileType.File) return ProcessSimpleFileAsync(component, source, destination);
             throw new Exception($"Unknown file type '{fileType}'");
         }
 

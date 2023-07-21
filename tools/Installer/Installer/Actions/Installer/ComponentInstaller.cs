@@ -1,5 +1,4 @@
 ﻿using Abs.CommonCore.Installer.Actions.Installer.Config;
-using Abs.CommonCore.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;

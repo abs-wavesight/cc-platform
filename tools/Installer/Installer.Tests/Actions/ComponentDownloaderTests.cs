@@ -1,10 +1,10 @@
-﻿using Abs.CommonCore.Installer.Actions.Downloader;
+﻿using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
-namespace Installer.Tests.Actions.Downloader
+namespace Installer.Tests.Actions
 {
     public class ComponentDownloaderTests
     {
@@ -75,7 +75,7 @@ namespace Installer.Tests.Actions.Downloader
             var config = new FileInfo(@"Configs/DownloaderConfig.json");
             var parameters = new Dictionary<string, string>();
 
-            var expectedFile = @"c:\abs\installer\RabbitMq\download_file2";
+            var expectedFile = @"c:\abs\installer\RabbitMq\download_file";
             File.Delete(expectedFile);
 
             var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters);

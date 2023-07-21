@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Installer.Config;
+﻿using Abs.CommonCore.Contracts.Json.Installer;
 
 namespace Abs.CommonCore.Installer.Actions
 {
@@ -22,7 +22,7 @@ namespace Abs.CommonCore.Installer.Actions
             return text;
         }
 
-        protected Component[] DetermineComponents(ComponentRegistryConfig registryConfig, string[]? specificComponents, string[]? configComponents)
+        protected Component[] DetermineComponents(InstallerComponentRegistryConfig registryConfig, string[]? specificComponents, ICollection<string>? configComponents)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace Abs.CommonCore.Installer.Actions
                     .ToArray();
                 }
 
-                if (configComponents?.Length > 0)
+                if (configComponents?.Count > 0)
                 {
                     return configComponents
                         .Select(x => registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
