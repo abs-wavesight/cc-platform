@@ -1,5 +1,4 @@
-﻿using Abs.CommonCore.Platform.Extensions;
-using Xunit;
+﻿using Xunit;
 
 namespace Abs.CommonCore.Platform.Tests.Extensions
 {
