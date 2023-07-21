@@ -1,7 +1,7 @@
 ﻿using Abs.CommonCore.Installer.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Installer.Tests
+namespace Installer.Tests.Services
 {
     public class CommandExecutionTests
     {

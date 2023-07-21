@@ -17,8 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.57" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.11" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.76" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.19" />
 		<PackageReference Include="Polly" Version="7.2.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
