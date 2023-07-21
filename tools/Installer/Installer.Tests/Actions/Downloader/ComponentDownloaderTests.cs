@@ -4,7 +4,7 @@ using Abs.CommonCore.Platform.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
-namespace Installer.Tests
+namespace Installer.Tests.Actions.Downloader
 {
     public class ComponentDownloaderTests
     {
