@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Abs.CommonCore.Contracts.Json;
+using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
