@@ -42,6 +42,9 @@
 		<None Update="Configs\ParameterizedRegistryConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Configs\DownloadTest_RegistryConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Configs\RegistryConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

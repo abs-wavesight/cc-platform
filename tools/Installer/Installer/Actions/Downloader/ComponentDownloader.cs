@@ -2,6 +2,7 @@
 using Abs.CommonCore.Installer.Config;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.Logging;
 using Component = Abs.CommonCore.Installer.Config.Component;
 
@@ -46,19 +47,20 @@ namespace Abs.CommonCore.Installer.Actions.Downloader
 
             var components = DetermineComponents(_registryConfig, specificComponents, _downloaderConfig?.Components);
 
-            foreach (var component in components)
-            {
-                _logger.LogInformation($"Downloading component '{component.Name}'");
+            await components
+                .ForAllAsync(async component =>
+                {
+                    _logger.LogInformation($"Downloading component '{component.Name}'");
 
-                try
-                {
-                    await ExecuteComponentAsync(component);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Unable to download component '{component.Name}'", ex);
-                }
-            }
+                    try
+                    {
+                        await ExecuteComponentAsync(component);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"Unable to download component '{component.Name}'", ex);
+                    }
+                });
 
             _logger.LogInformation("Downloader complete");
         }

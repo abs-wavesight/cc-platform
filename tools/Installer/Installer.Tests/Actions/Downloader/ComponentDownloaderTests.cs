@@ -65,6 +65,25 @@ namespace Installer.Tests.Actions.Downloader
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
+        [Fact]
+        public async Task ValidConfig_RealFileDownloaded()
+        {
+            var loggerFactory = NullLoggerFactory.Instance;
+            var dataRequest = new DataRequestService(loggerFactory);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+            var registry = new FileInfo(@"Configs/DownloadTest_RegistryConfig.json");
+            var config = new FileInfo(@"Configs/DownloaderConfig.json");
+            var parameters = new Dictionary<string, string>();
+
+            var expectedFile = @"c:\abs\installer\RabbitMq\download_file2";
+            File.Delete(expectedFile);
+
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters);
+            await downloader.ExecuteAsync();
+
+            Assert.True(File.Exists(expectedFile));
+        }
+
         private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
         {
             var dataRequest = new Mock<IDataRequestService>();

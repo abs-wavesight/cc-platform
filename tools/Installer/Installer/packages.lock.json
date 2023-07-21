@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.11, )",
-        "resolved": "1.0.11",
-        "contentHash": "UipI9JpLuudt/gHpGvHTJsf1WVZdnTrRraPo7YyU25p9XPVbmJZI7AoU1Hg0GMwFC6I0LazBiWXqZn1dphRbRw==",
+        "requested": "[1.0.21-feature-ado-20443-installer-download, )",
+        "resolved": "1.0.21-feature-ado-20443-installer-download",
+        "contentHash": "jpaXCpunx+iR5Psdd5pabfEfuYypxWgIZhmaXsjLxmGoUbuzRnhcANVtVfDLxccXe//yhOppuRxmDlufAVPC1g==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.57",
           "JsonSchema.Net": "4.1.1",
