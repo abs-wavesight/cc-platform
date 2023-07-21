@@ -150,9 +150,13 @@ namespace Abs.CommonCore.Installer.Actions
         {
             _logger.LogInformation($"{component.Name}: Copying file '{action.Source}' to '{action.Destination}'");
             var directory = Path.GetDirectoryName(action.Destination)!;
-            Directory.CreateDirectory(directory);
 
-            await _commandExecutionService.ExecuteCommandAsync("copy", $"{action.Source} {action.Destination}", rootLocation);
+            if (string.IsNullOrWhiteSpace(directory) == false)
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            await _commandExecutionService.ExecuteCommandAsync("copy", $"\"{action.Source}\" \"{action.Destination}\"", rootLocation);
         }
     }
 }

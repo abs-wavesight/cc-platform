@@ -1,7 +1,7 @@
 ﻿using Abs.CommonCore.Installer.Actions;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Installer.Tests
+namespace Installer.Tests.Actions
 {
     public class DataCompressorTests : TestsBase
     {

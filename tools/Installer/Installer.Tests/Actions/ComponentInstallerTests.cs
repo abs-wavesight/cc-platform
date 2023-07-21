@@ -43,6 +43,29 @@ namespace Installer.Tests.Actions
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(paramValue, It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
+        [Fact]
+        public async Task ValidConfig_RealFileInstalled()
+        {
+            var loggerFactory = NullLoggerFactory.Instance;
+            var commandExecution = new CommandExecutionService(loggerFactory);
+            var registry = new FileInfo(@"Configs/InstallTest_RegistryConfig.json");
+            var config = new FileInfo(@"Configs/InstallerConfig.json");
+            var parameters = new Dictionary<string, string>();
+
+            var rootPath = @"c:\abs\installer\RabbitMq";
+            Directory.CreateDirectory(rootPath);
+
+            var sourcePath = Path.Combine(rootPath, "install_file");
+            var destinationPath = Path.Combine(rootPath, "install_file_2");
+
+            await File.WriteAllTextAsync(sourcePath, "This is some test content");
+
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters);
+            await installer.ExecuteAsync();
+
+            Assert.True(File.Exists(destinationPath));
+        }
+
         private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
         {
             var commandExecute = new Mock<ICommandExecutionService>();

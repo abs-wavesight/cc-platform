@@ -1,0 +1,16 @@
+﻿{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [],
+      "actions": [
+        {
+          "source": "install_file",
+          "destination": "install_file_2",
+          "action": "copy"
+        }
+      ]
+    }
+  ]
+}
