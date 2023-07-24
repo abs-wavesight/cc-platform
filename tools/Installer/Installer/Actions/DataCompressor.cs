@@ -16,7 +16,7 @@ namespace Abs.CommonCore.Installer.Actions
         {
             await Task.Yield();
             File.Delete(destination.FullName);
-            ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.Optimal, false);
+            ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
         }
 
         public async Task DecompressFileAsync(FileInfo source, DirectoryInfo destination)
