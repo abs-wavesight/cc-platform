@@ -53,10 +53,9 @@
           "action": "copy"
         },
 		{
-          "source": "c:\\config\\docker-compose.root.yml"          
+          "source": "c:\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
         },	
-		// This is automatically executed as the last priority command
 		{
           "source": "c:/config",
           "action": "runDockerCompose"
@@ -98,9 +97,9 @@
           "action": "copy"
         },
 		{
-          "source": "c:\\config\\docker-compose.rabbitmq.yml"          
+          "source": "c:\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
-        }		
+        }
       ]
     },
     {
@@ -137,10 +136,10 @@
           "destination": "c:\\config\\docker-compose.vector.yml",
           "action": "copy"
         },
-		{
-          "source": "c:\\config\\docker-compose.vector.yml"          
+        {
+          "source": "c:\\config\\docker-compose.vector.yml",
           "action": "replaceParameters"
-        },			
+        }
       ]
     },
     {
@@ -178,9 +177,9 @@
           "action": "copy"
         },
 		{
-          "source": "c:\\config\\docker-compose.drex.yml"          
+          "source": "c:\\config\\docker-compose.drex.yml",
           "action": "replaceParameters"
-        },			
+        }
       ]
     }
   ]
