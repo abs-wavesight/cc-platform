@@ -2,8 +2,6 @@
 {
     public static class TaskExtensions
     {
-        #region Public Methods
-
         public static Task WhenAllAsync(this IEnumerable<Task> tasks)
         {
             return Task.WhenAll(tasks);
@@ -23,7 +21,5 @@
         {
             return await await Task.WhenAny(tasks);
         }
-
-        #endregion Public Methods
     }
 }
