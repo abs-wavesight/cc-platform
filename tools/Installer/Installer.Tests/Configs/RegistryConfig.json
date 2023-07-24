@@ -120,11 +120,6 @@
           "action": "install"
         },
         {
-          "source": "vector-loki.toml",
-          "destination": "c:\\config\\vector\\vector-loki.toml",
-          "action": "copy"
-        },
-        {
           "source": "vector.toml",
           "destination": "c:\\config\\vector\\vector.toml",
           "action": "copy"
@@ -169,52 +164,6 @@
         {
           "source": "vector.tar",
           "action": "install"
-        },
-        {
-          "source": "vector-loki.toml",
-          "destination": "c:\\config\\vector\\vector-loki.toml",
-          "action": "copy"
-        },
-        {
-          "source": "vector.toml",
-          "destination": "c:\\config\\vector\\vector.toml",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.vector.yml",
-          "destination": "c:\\config\\docker-compose.vector.yml",
-          "action": "copy"
-        }
-      ]
-    },
-    {
-      "name": "Loki",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/loki:windows-2019",
-          "destination": "loki.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/install/docker-compose.loki.yml",
-          "destination": "docker-compose.loki.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/loki/cc-loki-config.yml",
-          "destination": "cc-loki-config.yml"
-        }
-      ],
-      "actions": [
-        {
-          "source": "vector.tar",
-          "action": "install"
-        },
-        {
-          "source": "vector-loki.toml",
-          "destination": "c:\\config\\vector\\vector-loki.toml",
-          "action": "copy"
         },
         {
           "source": "vector.toml",
