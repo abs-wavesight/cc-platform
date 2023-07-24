@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Contracts.Json.Installer;
+﻿using System.Text.Json;
+using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -81,12 +82,12 @@ namespace Abs.CommonCore.Installer.Actions
             try
             {
                 if (file.Type == ComponentFileType.Container) await ProcessContainerFileAsync(component, file.Source, file.Destination);
-                if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
+                else if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
                 else throw new Exception($"Unknown file type '{file.Type}'");
             }
             catch (Exception ex)
             {
-                var message = $"Unable to process download file. T:{file.Type}, S:{file.Source}, D:{file.Destination}";
+                var message = $"Unable to process download action. {JsonSerializer.Serialize(file)}";
                 throw new Exception(message, ex);
             }
         }

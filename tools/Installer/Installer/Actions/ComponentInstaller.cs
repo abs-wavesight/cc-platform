@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Contracts.Json.Installer;
+﻿using System.Text.Json;
+using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -113,15 +114,23 @@ namespace Abs.CommonCore.Installer.Actions
             }
         }
 
-        private Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
+        private async Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
         {
-            if (action.Action == ComponentActionAction.Execute || action.Action == ComponentActionAction.ExecuteImmediate) return RunExecuteCommandAsync(component, rootLocation, action);
-            if (action.Action == ComponentActionAction.Install) return RunInstallCommandAsync(component, rootLocation, action);
-            if (action.Action == ComponentActionAction.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
-            if (action.Action == ComponentActionAction.Copy) return RunCopyCommandAsync(component, rootLocation, action);
-            if (action.Action == ComponentActionAction.ReplaceParameters) return RunReplaceParametersCommandAsync(component, rootLocation, action);
-            if (action.Action == ComponentActionAction.RunDockerCompose) return RunDockerComposeCommandAsync(component, rootLocation, action);
-            throw new Exception($"Unknown action command: {action.Action}");
+            try
+            {
+                if (action.Action == ComponentActionAction.Execute || action.Action == ComponentActionAction.ExecuteImmediate) await RunExecuteCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Install) await RunInstallCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.UpdatePath) await RunUpdatePathCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Copy) await RunCopyCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.ReplaceParameters) await RunReplaceParametersCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.RunDockerCompose) await RunDockerComposeCommandAsync(component, rootLocation, action);
+                else throw new Exception($"Unknown action command: {action.Action}");
+            }
+            catch (Exception ex)
+            {
+                var message = $"Unable to process install action. {JsonSerializer.Serialize(action)}";
+                throw new Exception(message, ex);
+            }
         }
 
         private async Task RunExecuteCommandAsync(Component component, string rootLocation, ComponentAction action)
