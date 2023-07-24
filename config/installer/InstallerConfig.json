@@ -1,0 +1,11 @@
+﻿{
+  "components": [
+      "Docker",
+	  "RabbitMq",
+	  "Vector",
+	  "Drex"
+  ],
+  "parameters: {
+	"$WINDOWS_VERSION": "2019"
+  }
+}
