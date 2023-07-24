@@ -154,8 +154,23 @@
           "source": "../AdditionalFiles/client-config.json",
           "destination": "c:\\config\\client-config.json",
           "action": "copy"
+        },
+        {
+          "source": "docker-compose.drex.yml",
+          "destination": "c:\\config\\docker-compose.drex.yml",
+          "action": "copy"
         }
       ]
-    }
+    },
+    {
+      "name": "SystemInstall",
+      "files": [],
+      "actions": [
+        {
+          "source": "docker-compose -f c:/config/docker-compose.root.yml -f c:/config/docker-compose.rabbitmq.yml -f c:/config/docker-compose.vector.yml -f c:/config/docker-compose.drex.yml up --build",
+          "action": "execute"
+        }
+      ]
+    }	
   ]
 }
