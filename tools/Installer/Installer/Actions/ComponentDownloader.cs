@@ -68,10 +68,12 @@ namespace Abs.CommonCore.Installer.Actions
             var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
             Directory.CreateDirectory(rootLocation);
 
-            foreach (var file in component.Files)
-            {
-                await ProcessFileAsync(component, file.Type, file.Source, file.Destination);
-            }
+            // Assumes all files can be processed in any order
+            await component.Files
+                .ForAllAsync(async file =>
+                {
+                    await ProcessFileAsync(component, file.Type, file.Source, file.Destination);
+                });
         }
 
         private Task ProcessFileAsync(Component component, ComponentFileType fileType, string source, string destination)
