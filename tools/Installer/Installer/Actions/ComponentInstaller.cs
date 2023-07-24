@@ -15,6 +15,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         private readonly InstallerComponentInstallerConfig? _installerConfig;
         private readonly InstallerComponentRegistryConfig _registryConfig;
+        private readonly Dictionary<string, string> _allParameters;
 
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
@@ -28,6 +29,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
             MergeParameters(mergedParameters, parameters);
+            _allParameters = mergedParameters;
 
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
                 (c, t) => ReplaceConfigParameters(t, mergedParameters));
@@ -56,6 +58,8 @@ namespace Abs.CommonCore.Installer.Actions
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
                 .ToArray();
 
             foreach (var action in actions)
@@ -115,6 +119,8 @@ namespace Abs.CommonCore.Installer.Actions
             if (action.Action == ComponentActionAction.Install) return RunInstallCommandAsync(component, rootLocation, action);
             if (action.Action == ComponentActionAction.UpdatePath) return RunUpdatePathCommandAsync(component, rootLocation, action);
             if (action.Action == ComponentActionAction.Copy) return RunCopyCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.ReplaceParameters) return RunReplaceParametersCommandAsync(component, rootLocation, action);
+            if (action.Action == ComponentActionAction.RunDockerCompose) return RunDockerComposeCommandAsync(component, rootLocation, action);
             throw new Exception($"Unknown action command: {action.Action}");
         }
 
@@ -157,6 +163,28 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             await _commandExecutionService.ExecuteCommandAsync("copy", $"\"{action.Source}\" \"{action.Destination}\"", rootLocation);
+        }
+
+        private async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var text = await File.ReadAllTextAsync(action.Source);
+
+            foreach (var param in _allParameters)
+            {
+                text = text.Replace(param.Key, param.Value, StringComparison.OrdinalIgnoreCase);
+            }
+
+            await File.WriteAllTextAsync(action.Source, text);
+        }
+
+        private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
+
+            var arguments = configFiles
+                .Select(x => $"-f {x}");
+
+            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build", rootLocation);
         }
     }
 }

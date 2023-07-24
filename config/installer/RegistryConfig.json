@@ -51,6 +51,15 @@
           "source": "docker-compose.root.yml",
           "destination": "c:\\config\\docker-compose.root.yml",
           "action": "copy"
+        },
+		{
+          "source": "c:\\config\\docker-compose.root.yml"          
+          "action": "replaceParameters"
+        },	
+		// This is automatically executed as the last priority command
+		{
+          "source": "c:/config",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -87,7 +96,11 @@
           "source": "docker-compose.rabbitmq.yml",
           "destination": "c:\\config\\docker-compose.rabbitmq.yml",
           "action": "copy"
-        }
+        },
+		{
+          "source": "c:\\config\\docker-compose.rabbitmq.yml"          
+          "action": "replaceParameters"
+        }		
       ]
     },
     {
@@ -123,7 +136,11 @@
           "source": "docker-compose.vector.yml",
           "destination": "c:\\config\\docker-compose.vector.yml",
           "action": "copy"
-        }
+        },
+		{
+          "source": "c:\\config\\docker-compose.vector.yml"          
+          "action": "replaceParameters"
+        },			
       ]
     },
     {
@@ -159,18 +176,12 @@
           "source": "docker-compose.drex.yml",
           "destination": "c:\\config\\docker-compose.drex.yml",
           "action": "copy"
-        }
+        },
+		{
+          "source": "c:\\config\\docker-compose.drex.yml"          
+          "action": "replaceParameters"
+        },			
       ]
-    },
-    {
-      "name": "SystemInstall",
-      "files": [],
-      "actions": [
-        {
-          "source": "docker-compose -f c:/config/docker-compose.root.yml -f c:/config/docker-compose.rabbitmq.yml -f c:/config/docker-compose.vector.yml -f c:/config/docker-compose.drex.yml up --build",
-          "action": "execute"
-        }
-      ]
-    }	
+    }
   ]
 }

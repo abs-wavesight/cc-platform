@@ -11,6 +11,81 @@
           "action": "copy"
         }
       ]
+    },
+    {
+      "name": "CopyTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "x",
+          "destination": "y",
+          "action": "copy"
+        }
+      ]
+    },
+    {
+      "name": "InstallTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "x.tar",
+          "action": "install"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "x-action",
+          "action": "execute"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteImmediateTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "last",
+          "action": "execute"
+        },
+        {
+          "source": "first",
+          "action": "executeImmediate"
+        }
+      ]
+    },
+    {
+      "name": "UpdatePathTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "invalid-path-arg",
+          "action": "updatePath"
+        }
+      ]
+    },
+    {
+      "name": "ReplaceParametersTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "c:\\config\\params.json",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "RunDockerComposeTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "c://config",
+          "action": "runDockerCompose"
+        }
+      ]
     }
   ]
 }
