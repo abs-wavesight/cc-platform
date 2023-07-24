@@ -6,6 +6,6 @@
 	  "Drex"
   ],
   "parameters": {
-	"$WINDOWS_VERSION": "2019"
+	"$WINDOWS_VERSION": "windows-2019"
   }
 }
