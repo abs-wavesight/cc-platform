@@ -27,7 +27,11 @@
           "action": "copy"
         },
         {
-          "source": "tar -xf c:\\docker.zip",
+          "source": "net stop docker",
+          "action": "executeImmediate"
+        },		
+        {
+          "source": "tar -xf c:\\docker.zip -C c:\\docker",
           "action": "executeImmediate"
         },
         {
@@ -40,7 +44,7 @@
           "action": "executeImmediate"
         },
         {
-          "source": "Start-Service docker",
+          "source": "net start docker",
           "action": "executeImmediate"
         },
         {
@@ -67,7 +71,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:$WINDOWS_VERSION",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION",
           "destination": "rabbitmq.tar"
         },
         {
@@ -107,7 +111,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:$WINDOWS_VERSION",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION",
           "destination": "vector.tar"
         },
         {
@@ -147,7 +151,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:$WINDOWS_VERSION",
+          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION",
           "destination": "drex.tar"
         },
         {
@@ -162,12 +166,12 @@
           "action": "install"
         },
         {
-          "source": "../AdditionalFiles/site-config.json",
+          "source": "..\\AdditionalFiles\\site-config.json",
           "destination": "c:\\config\\site-config.json",
           "action": "copy"
         },
         {
-          "source": "../AdditionalFiles/client-config.json",
+          "source": "..\\AdditionalFiles\\client-config.json",
           "destination": "c:\\config\\client-config.json",
           "action": "copy"
         },

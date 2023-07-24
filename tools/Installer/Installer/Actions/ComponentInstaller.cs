@@ -191,7 +191,8 @@ namespace Abs.CommonCore.Installer.Actions
             var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
 
             var arguments = configFiles
-                .Select(x => $"-f {x}");
+                .Select(x => $"-f {x}")
+                .StringJoin(" ");
 
             await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build", rootLocation);
         }
