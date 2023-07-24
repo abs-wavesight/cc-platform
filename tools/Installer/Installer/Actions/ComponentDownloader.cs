@@ -82,7 +82,7 @@ namespace Abs.CommonCore.Installer.Actions
             {
                 if (file.Type == ComponentFileType.Container) await ProcessContainerFileAsync(component, file.Source, file.Destination);
                 if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
-                throw new Exception($"Unknown file type '{file.Type}'");
+                else throw new Exception($"Unknown file type '{file.Type}'");
             }
             catch (Exception ex)
             {
