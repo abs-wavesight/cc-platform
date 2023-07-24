@@ -6,7 +6,9 @@ public static class Constants
     public const string DockerComposeExecutionRootPath = "compose/local-dev";
     public const string EnvFileRelativePath = $"{DockerComposeExecutionRootPath}/.env";
     public const string ContainerRepository = "ghcr.io/abs-wavesight";
-    public const string LogsDirectoryName = "logs";
+    public const string LogsContainingDirectoryName = "logs";
+    public const string LogsSiteDirectoryName = "site";
+    public const string LogsCentralDirectoryName = "central";
     public const string NugetConfigFileName = "nuget.config";
     public const string DefaultDrexSiteConfigFileName = "drex-demo-site-alpha.site-config.json";
 
@@ -14,6 +16,8 @@ public static class Constants
     {
         public const string RabbitMqLocal = "rabbitmq-local";
         public const string RabbitMqRemote = "rabbitmq-remote";
+        public const string VectorSite = "vector-site";
+        public const string VectorCentral = "vector-central";
     }
 
     public static class ComposeEnvKeys

@@ -1,0 +1,10 @@
+# attempt to parse JSON but fail gracefully
+.message = parse_json(.message) ?? .message
+
+containerName = "unknown"
+if exists(.message.container_name) {
+  containerName = .message.container_name
+} else if exists(.message.message.container_name) {
+  containerName = .message.message.container_name
+}
+.container_name = containerName

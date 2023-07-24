@@ -3,5 +3,12 @@ version: '3'
 
 services:
 
-  cc.vector:
-    command: [ "-c", "C:\\config\\vector.toml", "--log-format", "json", "--color", "never" ]
+  cc.vector-template: &vector-variant-default
+    environment:
+      - VECTOR_CONFIG=C:/config/vector.toml
+
+  cc.vector-site:
+    <<: *vector-variant-default
+
+  cc.vector-central:
+    <<: *vector-variant-default

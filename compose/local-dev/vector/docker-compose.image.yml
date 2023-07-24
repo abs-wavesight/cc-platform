@@ -3,5 +3,16 @@ version: '3'
 
 services:
 
-  cc.vector:
+  cc.vector-template: # This is never used, but must be here in order to be a valid compose file
     image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
+
+  cc.vector-site:
+    # TODO RH: REVERT
+    # image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
+    image: vector-local:windows-${WINDOWS_VERSION}
+
+  cc.vector-central:
+    # TODO RH: REVERT
+    # image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
+    image: vector-local:windows-${WINDOWS_VERSION}
+

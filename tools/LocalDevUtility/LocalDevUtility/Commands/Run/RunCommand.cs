@@ -50,9 +50,12 @@ public static class RunCommand
             }
         }
 
-        using (CliStep.Start("Creating container logs directory"))
+        using (CliStep.Start("Creating container logs directories"))
         {
-            Directory.CreateDirectory(Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.LogsDirectoryName));
+            var containingDirectoryName = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.LogsContainingDirectoryName);
+            Directory.CreateDirectory(containingDirectoryName);
+            Directory.CreateDirectory(Path.Combine(containingDirectoryName, Constants.LogsSiteDirectoryName));
+            Directory.CreateDirectory(Path.Combine(containingDirectoryName, Constants.LogsCentralDirectoryName));
         }
 
         var composeCommandBuilder = DockerHelper.BuildComposeCommand(appConfig, runOptions);

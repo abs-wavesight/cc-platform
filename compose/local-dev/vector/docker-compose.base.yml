@@ -3,30 +3,62 @@ version: '3'
 
 services:
 
-  cc.vector:
-    container_name: vector
-    # necessary to change hostname for vector to process/include its own logs
-    # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
-    hostname: "vector"
+  cc.vector-template: &vector
+    environment:
+      - VECTOR_LOG_FORMAT=json
+      - VECTOR_COLOR=never
+      - LOG_RETENTION_PERIOD=7d
     logging:
       driver: local
-    ports:
-      - "8686:8686"
+    profiles: ['templates']
     restart: always
+
+  cc.vector-site:
+    <<: *vector
+    container_name: vector-site
+    # necessary to change hostname for vector to process/include its own logs
+    # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
     depends_on:
       cc.rabbitmq-local:
         condition: service_healthy
-    environment:
-      - LOG_RETENTION_PERIOD=7d
+    hostname: vector-site
+    ports:
+      - "8686:8686"
+    profiles: ['vector-site']
     volumes:
       - type: npipe
         source: \\.\pipe\docker_engine
         target: \\.\pipe\docker_engine
       - type: bind
-        source: ${PATH_TO_CC_PLATFORM_REPO}/config/vector/config
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/vector/config/site
         target: C:/config
         read_only: true
       - type: bind
-        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/
+        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/site/
+        target: C:/cc-logs
+        read_only: false # need to write logs to disk
+
+  cc.vector-central:
+    <<: *vector
+    container_name: vector-central
+    # necessary to change hostname for vector to process/include its own logs
+    # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
+    depends_on:
+      cc.rabbitmq-remote:
+        condition: service_healthy
+    hostname: vector-central
+    ports:
+      - "8687:8686"
+    profiles: ['vector-central']
+    volumes:
+      - type: npipe
+        source: \\.\pipe\docker_engine
+        target: \\.\pipe\docker_engine
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/vector/config/central
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/central/
         target: C:/cc-logs
         read_only: false # need to write logs to disk

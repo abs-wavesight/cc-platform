@@ -24,17 +24,21 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqRemote)]
     public ComposeComponentMode? RabbitmqRemote { get; set; }
 
-    [ComposeComponent(composePath: "vector", imageName: "vector", defaultVariant: "default")]
+    [ComposeComponent(composePath: "vector", imageName: "vector", profile: Constants.Profiles.VectorSite, defaultVariant: "default")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    public ComposeComponentMode? Vector { get; set; }
+    public ComposeComponentMode? VectorSite { get; set; }
+
+    [ComposeComponent(composePath: "vector", imageName: "vector", profile: Constants.Profiles.VectorCentral, defaultVariant: "default")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    public ComposeComponentMode? VectorCentral { get; set; }
 
     [ComposeComponent(composePath: "grafana", imageName: "grafana")]
-    [ComposeComponentDependency(nameof(Vector))]
+    [ComposeComponentDependency(nameof(VectorSite))]
     [ComposeComponentDependency(nameof(Loki))]
     public ComposeComponentMode? Grafana { get; set; }
 
     [ComposeComponent(composePath: "loki", imageName: "loki")]
-    [ComposeComponentDependency(dependencyPropertyName: nameof(Vector), variant: "loki")]
+    [ComposeComponentDependency(dependencyPropertyName: nameof(VectorSite), variant: "loki")]
     public ComposeComponentMode? Loki { get; set; }
 
 
@@ -42,10 +46,15 @@ public abstract class ComposeOptions
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     public ComposeComponentMode? Rabbitmq { get; set; }
 
+    [Description("Alias for \"vector-site\"")]
+    [ComposeComponentAlias(nameof(VectorSite))]
+    public ComposeComponentMode? Vector { get; set; }
+
     [Description("Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     [ComposeComponentAlias(nameof(RabbitmqRemote))]
-    [ComposeComponentAlias(nameof(Vector))]
+    [ComposeComponentAlias(nameof(VectorSite))]
+    [ComposeComponentAlias(nameof(VectorCentral))]
     public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]

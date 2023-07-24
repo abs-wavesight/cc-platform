@@ -3,7 +3,18 @@ version: '3'
 
 services:
 
-  cc.vector:
+  cc.vector-template: # This is never used, but must be here in order to be a valid compose file
+    image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
+
+  cc.vector-site:
+    build:
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/vector
+      dockerfile: Dockerfile
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "infrastructure"
+
+  cc.vector-central:
     build:
       context: ${PATH_TO_CC_PLATFORM_REPO}/containers/vector
       dockerfile: Dockerfile
