@@ -16,6 +16,6 @@ services:
       - "15672:15672"	
     volumes:	
       - type: bind	
-        source: c:/abs/config/rabbitmq	
+        source: $ABS_PATH/config/rabbitmq	
         target: C:/rabbitmq/config	
         read_only: true	

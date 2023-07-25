@@ -23,10 +23,10 @@ services:
         source: \\.\pipe\docker_engine	
         target: \\.\pipe\docker_engine	
       - type: bind	
-        source: c:/abs/config/vector	
+        source: $ABS_PATH/config/vector	
         target: C:/config	
         read_only: true	
       - type: bind	
-        source: c:/abs/logs/
+        source: $ABS_PATH/logs/
         target: C:/cc-logs	
         read_only: false # need to write logs to disk

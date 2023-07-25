@@ -1,5 +1,5 @@
 ﻿{
-  "location": "c:\\abs\\installer",
+  "location": "$ABS_PATH\\installer",
   "components": [
     {
       "name": "Docker",
@@ -68,15 +68,15 @@
         },		
         {
           "source": "docker-compose.root.yml",
-          "destination": "c:\\abs\\config\\docker-compose.root.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "copy"
         },
 		{
-          "source": "c:\\abs\\config\\docker-compose.root.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
         },			
 		{
-          "source": "c:\\abs\\config",
+          "source": "$ABS_PATH\\config",
           "action": "runDockerCompose"
         }
       ]
@@ -107,16 +107,16 @@
         },
         {
           "source": "cc-rabbitmq.conf",
-          "destination": "c:\\abs\\config\\rabbitmq\\cc-rabbitmq.conf",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\cc-rabbitmq.conf",
           "action": "copy"
         },
         {
           "source": "docker-compose.rabbitmq.yml",
-          "destination": "c:\\abs\\config\\docker-compose.rabbitmq.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "copy"
         },
 		{
-          "source": "c:\\abs\\config\\docker-compose.rabbitmq.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
         }
       ]
@@ -147,20 +147,20 @@
         },
         {
           "source": "vector.toml",
-          "destination": "c:\\abs\\config\\vector\\vector.toml",
+          "destination": "$ABS_PATH\\config\\vector\\vector.toml",
           "action": "copy"
         },
         {
           "source": "docker-compose.vector.yml",
-          "destination": "c:\\abs\\config\\docker-compose.vector.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.vector.yml",
           "action": "copy"
         },
         {
-          "source": "c:\\abs\\config\\docker-compose.vector.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.vector.yml",
           "action": "replaceParameters"
         },
         {
-          "source": "mkdir c:\\abs\\logs",          
+          "source": "mkdir $ABS_PATH\\logs",          
           "action": "execute"
         }
       ]
@@ -186,21 +186,21 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "c:\\abs\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "c:\\abs\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex\\",
           "action": "copy"
         },
         {
           "source": "docker-compose.drex.yml",
-          "destination": "c:\\abs\\config\\docker-compose.drex.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex.yml",
           "action": "copy"
         },
 		{
-          "source": "c:\\abs\\config\\docker-compose.drex.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.drex.yml",
           "action": "replaceParameters"
         }
       ]
