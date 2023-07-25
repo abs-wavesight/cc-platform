@@ -19,7 +19,7 @@ namespace Abs.CommonCore.Installer.Actions
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
         }
 
-        public async Task DecompressFileAsync(FileInfo source, DirectoryInfo destination)
+        public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination)
         {
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);

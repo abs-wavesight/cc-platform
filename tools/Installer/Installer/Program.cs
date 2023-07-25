@@ -19,7 +19,7 @@ namespace Abs.CommonCore.Installer
             var chunkCommand = SetupChunkCommand(args);
             var unchunkCommand = SetupUnchunkCommand(args);
             var compressCommand = SetupCompressCommand(args);
-            var decompressCommand = SetupDecompressCommand(args);
+            var uncompressCommand = SetupUncompressCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -28,7 +28,7 @@ namespace Abs.CommonCore.Installer
             root.Add(chunkCommand);
             root.Add(unchunkCommand);
             root.Add(compressCommand);
-            root.Add(decompressCommand);
+            root.Add(uncompressCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -191,24 +191,24 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
-        private static Command SetupDecompressCommand(string[] args)
+        private static Command SetupUncompressCommand(string[] args)
         {
-            var command = new Command("decompress", "Decompress a file back into directory structure");
+            var command = new Command("uncompress", "Uncompresses a file back into directory structure");
             command.TreatUnmatchedTokensAsErrors = true;
 
-            var sourceParam = new Option<FileInfo>("--source", "File to decompress");
+            var sourceParam = new Option<FileInfo>("--source", "File to uncompress");
             sourceParam.IsRequired = true;
             sourceParam.AddAlias("-s");
             command.Add(sourceParam);
 
-            var destParam = new Option<DirectoryInfo>("--dest", "Directory write contents to");
+            var destParam = new Option<DirectoryInfo>("--dest", "Directory to write contents to");
             destParam.IsRequired = true;
             destParam.AddAlias("-d");
             command.Add(destParam);
 
             command.SetHandler(async (source, dest) =>
             {
-                await ExecuteDecompressCommandAsync(source, dest, args);
+                await ExecuteUncompressCommandAsync(source, dest, args);
             }, sourceParam, destParam);
 
             return command;
@@ -260,12 +260,12 @@ namespace Abs.CommonCore.Installer
         }
 
 
-        private static async Task ExecuteDecompressCommandAsync(FileInfo source, DirectoryInfo destination, string[] args)
+        private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataCompressor(loggerFactory);
-            await chunker.DecompressFileAsync(source, destination);
+            await chunker.UncompressFileAsync(source, destination);
         }
 
         private static (ILogger, ILoggerFactory) Initialize(string[] args)

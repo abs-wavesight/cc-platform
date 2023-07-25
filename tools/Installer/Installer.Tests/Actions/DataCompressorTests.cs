@@ -46,13 +46,13 @@ namespace Installer.Tests.Actions
             var compressor = new DataCompressor(NullLoggerFactory.Instance);
             await compressor.CompressDirectoryAsync(compressTempDir, compressTempFileInfo);
 
-            var decompressTempDir = Directory.CreateTempSubdirectory("compressorTests");
-            await compressor.DecompressFileAsync(compressTempFileInfo, decompressTempDir);
+            var uncompressTempDir = Directory.CreateTempSubdirectory("compressorTests");
+            await compressor.UncompressFileAsync(compressTempFileInfo, uncompressTempDir);
 
-            var newFile1 = await File.ReadAllBytesAsync($"{decompressTempDir}\\file1");
-            var newFile2 = await File.ReadAllBytesAsync($"{decompressTempDir}\\file2");
-            var newFile3 = await File.ReadAllBytesAsync($"{decompressTempDir}\\file3");
-            var newFile4 = await File.ReadAllBytesAsync($"{decompressTempDir}\\file4");
+            var newFile1 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file1");
+            var newFile2 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file2");
+            var newFile3 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file3");
+            var newFile4 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file4");
 
             Assert.Equal(testData[0], newFile1);
             Assert.Equal(testData[1], newFile2);

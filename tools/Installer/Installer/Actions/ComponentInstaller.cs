@@ -10,7 +10,9 @@ namespace Abs.CommonCore.Installer.Actions
     public class ComponentInstaller : ActionBase
     {
         private const string _pathEnvironmentVariable = "PATH";
+        private const int _defaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
 
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
 
@@ -21,6 +23,7 @@ namespace Abs.CommonCore.Installer.Actions
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
         {
+            _loggerFactory = loggerFactory;
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentInstaller>();
 
@@ -60,7 +63,12 @@ namespace Abs.CommonCore.Installer.Actions
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.UpdatePath)
-                .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
+                .ThenByDescending(x =>
+                    x.Action.Action is ComponentActionAction.ReplaceParameters or
+                        ComponentActionAction.Chunk or
+                        ComponentActionAction.Unchunk or
+                        ComponentActionAction.Compress or
+                        ComponentActionAction.Uncompress)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
                 .ToArray();
 
@@ -138,6 +146,10 @@ namespace Abs.CommonCore.Installer.Actions
                 else if (action.Action == ComponentActionAction.UpdatePath) await RunUpdatePathCommandAsync(component, rootLocation, action);
                 else if (action.Action == ComponentActionAction.Copy) await RunCopyCommandAsync(component, rootLocation, action);
                 else if (action.Action == ComponentActionAction.ReplaceParameters) await RunReplaceParametersCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Chunk) await RunChunkCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Unchunk) await RunUnchunkCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Compress) await RunCompressCommandAsync(component, rootLocation, action);
+                else if (action.Action == ComponentActionAction.Uncompress) await RunUncompressCommandAsync(component, rootLocation, action);
                 else if (action.Action == ComponentActionAction.RunDockerCompose) await RunDockerComposeCommandAsync(component, rootLocation, action);
                 else throw new Exception($"Unknown action command: {action.Action}");
             }
@@ -201,6 +213,42 @@ namespace Abs.CommonCore.Installer.Actions
             await File.WriteAllTextAsync(action.Source, text);
         }
 
+        private async Task RunChunkCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var chunker = new DataChunker(_loggerFactory);
+
+            var source = new FileInfo(action.Source);
+            var destination = new DirectoryInfo(action.Destination);
+            await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize);
+        }
+
+        private async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var chunker = new DataChunker(_loggerFactory);
+
+            var source = new DirectoryInfo(action.Source);
+            var destination = new FileInfo(action.Destination);
+            await chunker.UnchunkFileAsync(source, destination);
+        }
+
+        private async Task RunCompressCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var compressor = new DataCompressor(_loggerFactory);
+
+            var source = new DirectoryInfo(action.Source);
+            var destination = new FileInfo(action.Destination);
+            await compressor.CompressDirectoryAsync(source, destination);
+        }
+
+        private async Task RunUncompressCommandAsync(Component component, string rootLocation, ComponentAction action)
+        {
+            var compressor = new DataCompressor(_loggerFactory);
+
+            var source = new FileInfo(action.Source);
+            var destination = new DirectoryInfo(action.Destination);
+            await compressor.UncompressFileAsync(source, destination);
+        }
+
         private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
@@ -209,7 +257,7 @@ namespace Abs.CommonCore.Installer.Actions
                 .Select(x => $"-f {x}")
                 .StringJoin(" ");
 
-            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
         }
     }
 }
