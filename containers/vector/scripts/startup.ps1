@@ -13,6 +13,8 @@ if ($Env:VECTOR_TEST -eq "true")
 {
   Write-Output "Running Vector tests..."
   & "C:\\Program Files\\Vector\\bin\\vector.exe" test ${Env:VECTOR_CONFIG}
+  Write-Output "LastExitCode: $LastExitCode"
+  exit $LastExitCode
 }
 else
 {

@@ -8,7 +8,8 @@ $BuildCommand = "docker build -f $RepoDirectory/containers/vector/Dockerfile -t 
 Write-Output "Docker Build Command: ${BuildCommand}"
 Invoke-Expression $BuildCommand
 
-$VectorVariants = @("site", "central")
+$TestExitCode = 0
+$VectorVariants = @("central", "site")
 foreach($VectorVariant in $VectorVariants)
 {
   $LocalConfigDirectory = "${RepoDirectory}/config/vector/config/$VectorVariant"
@@ -20,5 +21,15 @@ foreach($VectorVariant in $VectorVariants)
 
   $RunCommand = "docker run --mount type=bind,src=${LocalConfigDirectory},dst=C:/config --mount type=bind,src=${TestFileDirectory},dst=C:/tests -e VECTOR_LOG_FORMAT=json -e VECTOR_COLOR=never -e VECTOR_CONFIG=$ConfigFilesParameter -e VECTOR_TEST=true ${Image} test"
   Write-Output "Docker Run Command: ${RunCommand}"
-  Invoke-Expression ". { $RunCommand } 2>&1"
+  # Invoke-Expression ". { $RunCommand } 2>&1"
+  Invoke-Expression $RunCommand
+
+  # Capture error codes so the step will fail in CI
+  Write-Output "LastExitCode from $VectorVariant tests: $LastExitCode"
+  if ($LastExitCode -ne 0) {
+    $TestExitCode = $LastExitCode
+  }
 }
+
+Write-Output "Exiting with code: $TestExitCode"
+exit $TestExitCode
