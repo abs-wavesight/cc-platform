@@ -22,7 +22,7 @@
       ],
       "actions": [
         {
-          "source": "net stop docker",
+          "source": "net stop dockerd",
           "action": "executeImmediate"
         },		
         {
@@ -160,7 +160,7 @@
           "action": "replaceParameters"
         },
         {
-          "source": "mkdir $ABS_PATH\\logs",          
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
         }
       ]
