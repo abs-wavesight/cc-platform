@@ -31,4 +31,5 @@ type = "amqp"
 inputs = ["filter-container-logs-on-level"]
 connection_string = "amqp://rabbitmq-local:5672"
 encoding.codec = "json"
-exchange = "cc.drex.site.init-log.ed"
+exchange = "cc.drex.site.int-log.ed"
+routing_key = "cc.drex.site.int-log.q"

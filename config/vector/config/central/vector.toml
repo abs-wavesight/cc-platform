@@ -1,11 +1,8 @@
 [sources.rabbitmq]
 type = "amqp"
-connection_string = "amqp://guest:guest@rabbitmq-remote:5673"
-decoding.codec = "json"
-# compression = "gzip"
+connection_string = "amqp://rabbitmq-remote:5672"
+decoding.codec = "bytes"
 consumer = "vector"
-# exchange_key = "cc.drex.central.snk-log.ed"
-# routing_key_field = "cc.drex.central.snk-log.q"
 queue = "cc.drex.central.snk-log.q"
 
 [transforms.remap-site-logs]
