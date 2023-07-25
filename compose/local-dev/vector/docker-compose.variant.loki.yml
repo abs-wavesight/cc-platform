@@ -8,4 +8,4 @@ services:
       cc.loki:
         condition: service_healthy
     environment:
-      - VECTOR_CONFIG="C:\\config\\vector.toml,C:\\config\\vector-loki.toml"
+      - VECTOR_CONFIG=C:/config/vector.toml,C:/config/vector-loki.toml
