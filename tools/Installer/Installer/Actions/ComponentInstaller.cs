@@ -59,6 +59,7 @@ namespace Abs.CommonCore.Installer.Actions
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.UpdatePath)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
                 .ToArray();

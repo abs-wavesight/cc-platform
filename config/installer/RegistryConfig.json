@@ -22,23 +22,18 @@
       ],
       "actions": [
         {
-          "source": "docker.zip",
-          "destination": "c:\\docker.zip",
-          "action": "copy"
-        },
-        {
           "source": "net stop docker",
           "action": "executeImmediate"
         },		
         {
-          "source": "tar -xf c:\\docker.zip -C c:\\docker",
+          "source": "tar -xf docker.zip -C c:\\docker",
           "action": "executeImmediate"
         },
         {
           "source": "docker-compose.exe",
           "destination": "c:\\docker\\docker-compose.exe",
           "action": "copy"
-        },
+        },					
         {
           "source": "c:\\docker\\dockerd --register-service",
           "action": "executeImmediate"
@@ -47,10 +42,30 @@
           "source": "net start docker",
           "action": "executeImmediate"
         },
+		{
+          "source": "powershell -Command \"docker stop $(docker ps -a -q)\"",
+          "action": "executeImmediate"
+        },			
+		{
+          "source": "powershell -Command \"docker rm $(docker ps -a -q)\"",
+          "action": "executeImmediate"
+        },					
+		{
+          "source": "c:\\docker\\docker system prune -f",
+          "action": "executeImmediate"
+        },		
+        {
+          "source": "c:\\docker\\docker volume prune -f",
+          "action": "executeImmediate"
+        },				
+        {
+          "source": "c:\\docker\\docker network prune -f",
+          "action": "executeImmediate"
+        },
         {
           "source": "c:\\docker",
           "action": "updatePath"
-        },
+        },		
         {
           "source": "docker-compose.root.yml",
           "destination": "c:\\config\\docker-compose.root.yml",
@@ -59,7 +74,7 @@
 		{
           "source": "c:\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
-        },	
+        },			
 		{
           "source": "c:/config",
           "action": "runDockerCompose"
@@ -143,6 +158,10 @@
         {
           "source": "c:\\config\\docker-compose.vector.yml",
           "action": "replaceParameters"
+        },
+        {
+          "source": "mkdir c:\\logs",          
+          "action": "execute"
         }
       ]
     },
@@ -167,12 +186,12 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "c:\\config\\site-config.json",
+          "destination": "c:\\config\\drex\\site-config.json",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\client-config.json",
-          "destination": "c:\\config\\client-config.json",
+          "destination": "c:\\config\\drex\\client-config.json",
           "action": "copy"
         },
         {

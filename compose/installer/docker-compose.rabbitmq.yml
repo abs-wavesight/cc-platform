@@ -5,21 +5,17 @@ services:
   cc.rabbitmq:	
     container_name: rabbitmq
     image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION
-    hostname: rabbitmq	
+    hostname: rabbitmq-local
     environment:	
-      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\cc-rabbitmq.conf	
+      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf	
     logging:	
       driver: local    	
     restart: always	
     ports:	
       - "5672:5672"	
       - "15672:15672"	
-    profiles: ['rabbitmq']	
     volumes:	
-      - type: volume	
-        source: c:/config/rabbitmq/	
+      - type: bind	
+        source: c:/config/rabbitmq	
         target: C:/rabbitmq/config	
         read_only: true	
-
-volumes:	
-  rabbitmq-storage:

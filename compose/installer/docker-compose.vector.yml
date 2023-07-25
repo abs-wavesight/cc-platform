@@ -23,7 +23,7 @@ services:
         source: \\.\pipe\docker_engine	
         target: \\.\pipe\docker_engine	
       - type: bind	
-        source: c:/config/vector/config	
+        source: c:/config/vector	
         target: C:/config	
         read_only: true	
       - type: bind	

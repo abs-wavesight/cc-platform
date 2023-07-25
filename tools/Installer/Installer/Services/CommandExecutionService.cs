@@ -25,8 +25,6 @@ namespace Abs.CommonCore.Installer.Services
                 return;
             }
 
-            var isError = false;
-
             var process = new Process();
             process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
             process.StartInfo.Arguments = $"/C {command} {arguments}";

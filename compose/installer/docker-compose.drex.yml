@@ -9,7 +9,7 @@ services:
       - cc.vector	
       - cc.rabbitmq	
     environment:	
-      - SiteConfigFileName=c:/config/drex/site-config.json
+      - SiteConfigFileName=C:/app/config/site-config.json
     ports:	
       - "12345:5000"	
     restart: always	
