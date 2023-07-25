@@ -26,7 +26,7 @@
           "action": "executeImmediate"
         },		
         {
-          "source": "tar -xf docker.zip -C c:\\docker",
+          "source": "tar -xf docker.zip -C c:\\",
           "action": "executeImmediate"
         },
         {
@@ -76,7 +76,7 @@
           "action": "replaceParameters"
         },			
 		{
-          "source": "c:/config",
+          "source": "c:\\abs\\config",
           "action": "runDockerCompose"
         }
       ]
@@ -186,12 +186,12 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "c:\\abs\\config\\drex",
+          "destination": "c:\\abs\\config\\drex\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "c:\\abs\\config\\drex",
+          "destination": "c:\\abs\\config\\drex\\",
           "action": "copy"
         },
         {
