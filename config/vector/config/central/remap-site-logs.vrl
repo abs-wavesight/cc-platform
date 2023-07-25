@@ -23,4 +23,6 @@ if (exists(.message.MessageJson)) {
 .original_timestamp = del(.message.timestamp) # Just leave one this null if it's not found
 
 # Pull inner message up since other fields have been promoted
-.message = del(.message.message)
+if (exists(.message.message)) {
+  .message = del(.message.message)
+}
