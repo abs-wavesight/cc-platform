@@ -15,8 +15,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.82" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.26-feature-ado-20443-installer-download" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.86" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.29" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />

@@ -1,0 +1,21 @@
+---	
+version: '3'	
+
+services:	
+  cc.rabbitmq:	
+    container_name: rabbitmq
+    image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION
+    hostname: rabbitmq-local
+    environment:	
+      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf	
+    logging:	
+      driver: local    	
+    restart: always	
+    ports:	
+      - "5672:5672"	
+      - "15672:15672"	
+    volumes:	
+      - type: bind	
+        source: $ABS_PATH/config/rabbitmq	
+        target: C:/rabbitmq/config	
+        read_only: true	

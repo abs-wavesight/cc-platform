@@ -1,0 +1,12 @@
+﻿{
+  "components": [
+      "Docker",
+	  "RabbitMq",
+	  "Vector",
+	  "Drex"
+  ],
+  "parameters": {
+	"$WINDOWS_VERSION": "2019",
+	"$ABS_PATH": "c:/abs"
+  }
+}
