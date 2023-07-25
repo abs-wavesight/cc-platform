@@ -7,7 +7,8 @@
 
 # Replace envelope with inner message
 if (exists(.message.MessageJson)) {
-  .message = del(.message.MessageJson)
+  .message = parse_json(.message.MessageJson) ?? .message.MessageJson
+  del(.message.MessageJson)
 } else if (exists(.message.MessageString)) {
   .message = del(.message.MessageString)
 }

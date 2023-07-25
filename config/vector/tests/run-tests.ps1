@@ -1,7 +1,6 @@
 $ScriptDirectory = $(Split-Path $MyInvocation.MyCommand.Path)
 $RepoDirectory = (Get-Item $ScriptDirectory).Parent.Parent.Parent.FullName
 
-# $Image = "ghcr.io/abs-wavesight/vector:windows-2019"
 $Image = "vector-local-for-tests:windows-2019"
 
 # First, build a local docker image so we're testing the latest version of the image, rather than the one from the registry
@@ -9,9 +8,7 @@ $BuildCommand = "docker build -f $RepoDirectory/containers/vector/Dockerfile -t 
 Write-Output "Docker Build Command: ${BuildCommand}"
 Invoke-Expression $BuildCommand
 
-# TODO RH: Enable central
-# $VectorVariants = @("site", "central")
-$VectorVariants = @("site")
+$VectorVariants = @("site", "central")
 foreach($VectorVariant in $VectorVariants)
 {
   $LocalConfigDirectory = "${RepoDirectory}/config/vector/config/$VectorVariant"

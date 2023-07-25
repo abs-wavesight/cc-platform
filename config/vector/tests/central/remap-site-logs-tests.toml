@@ -1,0 +1,51 @@
+[[tests]]
+name = "remap-site-logs GIVEN .message.Site SHOULD remap to .site"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"Site": "the-site"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("the-site", .site)'
+
+[[tests]]
+name = "remap-site-logs GIVEN no .message.Site SHOULD set .site to 'unknown'"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"SomeOtherProperty": "the-site"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("unknown", .site)'
+
+[[tests]]
+name = "remap-site-logs GIVEN .message.MessageString SHOULD remap to .message"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageString": "xyz"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .message)'
+
+[[tests]]
+name = "remap-site-logs GIVEN .message.MessageJson SHOULD remap to .message"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "InnerMessage": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .message.InnerMessage)'
