@@ -16,7 +16,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/installer/docker-compose.root.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.root.yml",
           "destination": "docker-compose.root.yml"
         }
       ],
@@ -91,7 +91,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/installer/docker-compose.rabbitmq.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.rabbitmq.yml",
           "destination": "docker-compose.rabbitmq.yml"
         },
         {
@@ -131,7 +131,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/installer/docker-compose.vector.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
@@ -175,7 +175,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/installer/docker-compose.drex.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.drex.yml",
           "destination": "docker-compose.drex.yml"
         }
       ],
