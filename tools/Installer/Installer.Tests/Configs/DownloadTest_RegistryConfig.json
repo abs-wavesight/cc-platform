@@ -1,0 +1,16 @@
+﻿{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://www.abswavesight.com/index.html",
+          "destination": "download_file"
+        }
+      ],
+      "actions": []
+    }
+  ]
+}

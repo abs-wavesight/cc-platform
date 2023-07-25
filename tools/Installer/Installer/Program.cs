@@ -1,0 +1,114 @@
+﻿using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
+using Abs.CommonCore.Installer.Actions;
+using Abs.CommonCore.Installer.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+
+namespace Abs.CommonCore.Installer
+{
+    [ExcludeFromCodeCoverage]
+    internal class Program
+    {
+        public static async Task<int> Main(string[] args)
+        {
+            var downloadCommand = new Command("download", "Download components for installation");
+            downloadCommand.TreatUnmatchedTokensAsErrors = true;
+
+            var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
+            registryParam.IsRequired = true;
+            registryParam.AddAlias("-r");
+            downloadCommand.Add(registryParam);
+
+            var downloadConfigParam = new Option<FileInfo>("--download", "Location of download configuration");
+            downloadConfigParam.IsRequired = false;
+            downloadConfigParam.AddAlias("-d");
+            downloadCommand.Add(downloadConfigParam);
+
+            var componentParam = new Option<string[]>("--component", "Specific component to process");
+            componentParam.IsRequired = false;
+            componentParam.AddAlias("-c");
+            componentParam.AllowMultipleArgumentsPerToken = true;
+            downloadCommand.Add(componentParam);
+
+            var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
+            parameterParam.IsRequired = false;
+            parameterParam.AddAlias("-p");
+            parameterParam.AllowMultipleArgumentsPerToken = true;
+            downloadCommand.Add(parameterParam);
+
+            var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
+            verifyOnlyParam.SetDefaultValue(false);
+            verifyOnlyParam.IsRequired = false;
+            verifyOnlyParam.AddAlias("-v");
+            downloadCommand.Add(verifyOnlyParam);
+
+            downloadCommand.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly) =>
+            {
+                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, args);
+            }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam);
+
+            var root = new RootCommand("Installer for the Common Core platform");
+            root.TreatUnmatchedTokensAsErrors = true;
+            root.Add(downloadCommand);
+
+            return await root.InvokeAsync(args);
+        }
+
+        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
+        {
+            var builder = Host.CreateApplicationBuilder(args);
+            var (_, loggerFactory) = ConfigureLogging(builder.Logging);
+
+            var configParameters = BuildConfigParameters(parameters);
+
+            var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
+            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters);
+            await downloader.ExecuteAsync(components);
+        }
+
+        private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)
+        {
+            builder.ClearProviders();
+
+            // When debugging locally, simple console output is easier to read than JSON; but when deployed, we want structured JSON logs
+#if DEBUG
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
+                options.ColorBehavior = LoggerColorBehavior.Enabled;
+            });
+#else
+            builder.AddJsonConsole(options =>
+            {
+                options.TimestampFormat = "u";
+                options.IncludeScopes = true;
+            });
+#endif
+
+            var provider = builder.Services.BuildServiceProvider();
+            var logger = provider.GetRequiredService<ILogger<Program>>();
+            builder.Services.AddSingleton<ILogger>(logger);
+
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
+            return (logger, loggerFactory);
+        }
+
+        private static Dictionary<string, string> BuildConfigParameters(string[] parameters)
+        {
+            return parameters
+                .Select(x =>
+                {
+                    var parts = x.Split(new char[] { ':' }, 2);
+                    return new KeyValuePair<string, string>(parts[0], parts[1]);
+                })
+                .ToDictionary(x => x.Key, x => x.Value);
+        }
+    }
+}

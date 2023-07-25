@@ -1,0 +1,21 @@
+﻿{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "file",
+          "source": "$SOME_DOWNLOAD_PARAM",
+          "destination": "dest"
+        }
+      ],
+      "actions": [
+        {
+          "source": "$SOME_INSTALL_PARAM",          
+          "action": "execute"
+        }
+      ]
+    }
+  ]
+}
