@@ -14,9 +14,9 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.26-feature-ado-20443-installer-download, )",
-        "resolved": "1.0.26-feature-ado-20443-installer-download",
-        "contentHash": "0yhf/g0+eK/BhrGrFWMzL1znqIcFMUMtBV+gE0BJfnIwu3HqUkGnOYf3VHKddKMFUMjflTALJg5h1e9aq3CPtQ==",
+        "requested": "[1.0.29, )",
+        "resolved": "1.0.29",
+        "contentHash": "4cFs7bJdvQJE8dR9X+wiNWtLXPOlpLuk59zVcTtO8R+DTWPmpB0Ld5Bqh6a4J1OS7bW2wKjEqaLjKozhjK3dfw==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.57",
           "JsonSchema.Net": "4.1.1",
