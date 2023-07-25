@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Platform.RabbitMq
 {
-    public class RabbitConfigurer
+    public class RabbitConfigurer : IRabbitConfigurer
     {
         private readonly ILogger _logger;
         private const string _queue = "Queue";
@@ -30,27 +30,42 @@ namespace Abs.CommonCore.Platform.RabbitMq
                 foreach (var queue in exchange.Queues)
                 {
                     await CreateQueueAsync(busKey, exchange.Vhost, queue, cancellationToken);
-                    await CreateQueueBindingAsync(busKey, exchange.Vhost, exchange.Info.Name, queue.Name, new BindingInfo(queue.Name), cancellationToken);
+                    await CreateQueueBindingAsync(busKey, exchange.Vhost, exchange.Info.Name, queue.Name, queue.Name, cancellationToken);
                 }
             }
         }
 
-        public async Task CreateExchangeAsync(string busKey, string vhostName, ExchangeInfo exchangeInfo, CancellationToken cancellationToken = default)
+        public async Task CreateExchangeAsync(string busKey, string vhostName, string exName, string exType, bool autoDelete = false, bool isDurable = true, bool isInternal = false, CancellationToken cancellationToken = default)
+        {
+            var exchangeInfo = new ExchangeInfo(exName, exType, autoDelete, isDurable, isInternal);
+            await _managementClient.CreateExchangeAsync(vhostName, exchangeInfo, cancellationToken);
+            LogResourceCreation(busKey, _exchange, exchangeInfo.Name);
+        }
+
+        public async Task CreateQueueAsync(string busKey, string vhostName, string queueName, bool autoDelete = false, bool durable = true, CancellationToken cancellationToken = default)
+        {
+            var queueInfo = new QueueInfo(queueName, autoDelete, durable);
+            await _managementClient.CreateQueueAsync(vhostName, queueInfo, cancellationToken);
+            LogResourceCreation(busKey, _queue, queueInfo.Name);
+        }
+
+        public async Task CreateQueueBindingAsync(string busKey, string vhostName, string exchangeName, string queueName, string bindingName, CancellationToken cancellationToken = default)
+        {
+            var bindingInfo = new BindingInfo(bindingName);
+            await _managementClient.CreateQueueBindingAsync(vhostName, exchangeName, queueName, bindingInfo, cancellationToken);
+            LogResourceCreation(busKey, "Queue Binding", $"{exchangeName} -> {queueName}");
+        }
+
+        private async Task CreateExchangeAsync(string busKey, string vhostName, ExchangeInfo exchangeInfo, CancellationToken cancellationToken = default)
         {
             await _managementClient.CreateExchangeAsync(vhostName, exchangeInfo, cancellationToken);
             LogResourceCreation(busKey, _exchange, exchangeInfo.Name);
         }
 
-        public async Task CreateQueueAsync(string busKey, string vhostName, QueueInfo queueInfo, CancellationToken cancellationToken = default)
+        private async Task CreateQueueAsync(string busKey, string vhostName, QueueInfo queueInfo, CancellationToken cancellationToken = default)
         {
             await _managementClient.CreateQueueAsync(vhostName, queueInfo, cancellationToken);
             LogResourceCreation(busKey, _queue, queueInfo.Name);
-        }
-
-        public async Task CreateQueueBindingAsync(string busKey, string vhostName, string exchangeName, string queueName, BindingInfo bindingInfo, CancellationToken cancellationToken = default)
-        {
-            await _managementClient.CreateQueueBindingAsync(vhostName, exchangeName, queueName, bindingInfo, cancellationToken);
-            LogResourceCreation(busKey, "Queue Binding", $"{exchangeName} -> {queueName}");
         }
 
         private void LogResourceCreation(string busKey, string resourceType, string resourceName)
