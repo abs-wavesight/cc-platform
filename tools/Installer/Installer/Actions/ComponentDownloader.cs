@@ -86,7 +86,7 @@ namespace Abs.CommonCore.Installer.Actions
                 else throw new Exception($"Unknown file type '{file.Type}'");
             }
             catch (Exception ex)
-            {
+        {
                 var message = $"Unable to process download action. {JsonSerializer.Serialize(file)}";
                 throw new Exception(message, ex);
             }
