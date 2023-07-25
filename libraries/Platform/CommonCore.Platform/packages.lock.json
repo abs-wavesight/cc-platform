@@ -12,6 +12,16 @@
           "Grpc.AspNetCore": "2.32.0"
         }
       },
+      "EasyNetQ.Management.Client": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "hurgV4fHNKewdKR+E+sTkYnzf6PbiO8x0hfUWjluRm68rIrE0kUUFh9MhD6zC6qKMdsL0PQ/ZxZqfZWFqsBGzg==",
+        "dependencies": {
+          "System.Net.Http.Json": "6.0.0",
+          "System.Text.Json": "6.0.0"
+        }
+      },
       "JsonSchema.Net": {
         "type": "Direct",
         "requested": "[4.1.1, )",
@@ -280,6 +290,14 @@
         "type": "Transitive",
         "resolved": "4.5.3",
         "contentHash": "3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA=="
+      },
+      "System.Net.Http.Json": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "GbIV4y344kGOKjshAKCIDCMUTTW/hyUC42wV0Y5SXEdIbaKBIHBUxZ2MOe4/ZiV2svUAGfQ0c8LGtUExpOI8tg==",
+        "dependencies": {
+          "System.Text.Json": "6.0.0"
+        }
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
