@@ -15,6 +15,6 @@ services:
     restart: always	
     volumes:	
       - type: bind	
-        source: c:/config/drex	
+        source: c:/abs/config/drex	
         target: C:/app/config	
         read_only: true
