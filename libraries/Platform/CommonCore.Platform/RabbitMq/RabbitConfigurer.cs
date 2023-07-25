@@ -1,4 +1,5 @@
-﻿using EasyNetQ.Management.Client;
+﻿using Abs.CommonCore.Contracts.Json;
+using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
 
@@ -11,12 +12,13 @@ namespace Abs.CommonCore.Platform.RabbitMq
         private const string _exchange = "Exchange";
         private readonly IManagementClient _managementClient;
 
-        public RabbitConfigurer(ILogger logger, Uri address, string username, string password, TimeSpan timeout)
+        public RabbitConfigurer(ILogger logger, BusConnection busConnection, TimeSpan timeout)
         {
             _logger = logger;
+            var address = new Uri($"http://{busConnection.Host}:{busConnection.HttpPort}");
             _managementClient = new ManagementClient(address,
-                username,
-                password,
+                busConnection.Username,
+                busConnection.Password,
                 timeout: timeout);
         }
 
@@ -51,7 +53,7 @@ namespace Abs.CommonCore.Platform.RabbitMq
             LogResourceCreation(busKey, "Queue Binding", $"{exchangeName} -> {queueName}");
         }
 
-        public void LogResourceCreation(string busKey, string resourceType, string resourceName)
+        private void LogResourceCreation(string busKey, string resourceType, string resourceName)
         {
             _logger.LogInformation($"Created {busKey} RabbitMQ {resourceType}: {resourceName}");
         }
