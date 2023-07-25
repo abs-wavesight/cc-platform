@@ -14,7 +14,7 @@ public abstract class ComposeOptions
 {
     [ComposeComponent(composePath: "drex-service", imageName: "cc-drex-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    [ComposeComponentDependency(nameof(Vector))]
+    [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DrexService { get; set; }
 
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
