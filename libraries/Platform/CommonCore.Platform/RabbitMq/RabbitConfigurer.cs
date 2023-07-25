@@ -7,40 +7,47 @@ namespace Abs.CommonCore.Platform.RabbitMq
     public class RabbitConfigurer
     {
         private readonly ILogger _logger;
+        private const string _queue = "Queue";
+        private const string _exchange = "Exchange";
+        private readonly IManagementClient _managementClient;
 
-        public RabbitConfigurer(ILogger logger)
+        public RabbitConfigurer(ILogger logger, Uri address, string username, string password, TimeSpan timeout)
         {
             _logger = logger;
+            _managementClient = new ManagementClient(address,
+                username,
+                password,
+                timeout: timeout);
         }
 
-        public async Task CreateExchangesWithQueuesAsync(string busKey, IManagementClient managementClient, string vhost, List<Exchange> exchanges, CancellationToken cancellationToken = default)
+        public async Task CreateExchangesWithQueuesAsync(string busKey, List<RabbitConfigurerExchange> exchanges, CancellationToken cancellationToken = default)
         {
             foreach (var exchange in exchanges)
             {
-                await CreateExchangeAsync(busKey, managementClient, vhost, exchange.Info, cancellationToken);
+                await CreateExchangeAsync(busKey, exchange.Vhost, exchange.Info, cancellationToken);
                 foreach (var queue in exchange.Queues)
                 {
-                    await CreateQueueAsync(busKey, managementClient, vhost, queue, cancellationToken);
-                    await CreateQueueBindingAsync(busKey, managementClient, vhost, exchange.Info.Name, queue.Name, new BindingInfo(queue.Name), cancellationToken);
+                    await CreateQueueAsync(busKey, exchange.Vhost, queue, cancellationToken);
+                    await CreateQueueBindingAsync(busKey, exchange.Vhost, exchange.Info.Name, queue.Name, new BindingInfo(queue.Name), cancellationToken);
                 }
             }
         }
 
-        public async Task CreateExchangeAsync(string busKey, IManagementClient managementClient, string vhostName, ExchangeInfo exchangeInfo, CancellationToken cancellationToken = default)
+        public async Task CreateExchangeAsync(string busKey, string vhostName, ExchangeInfo exchangeInfo, CancellationToken cancellationToken = default)
         {
-            await managementClient.CreateExchangeAsync(vhostName, exchangeInfo, cancellationToken);
-            LogResourceCreation(busKey, "Exchange", exchangeInfo.Name);
+            await _managementClient.CreateExchangeAsync(vhostName, exchangeInfo, cancellationToken);
+            LogResourceCreation(busKey, _exchange, exchangeInfo.Name);
         }
 
-        public async Task CreateQueueAsync(string busKey, IManagementClient managementClient, string vhostName, QueueInfo queueInfo, CancellationToken cancellationToken = default)
+        public async Task CreateQueueAsync(string busKey, string vhostName, QueueInfo queueInfo, CancellationToken cancellationToken = default)
         {
-            await managementClient.CreateQueueAsync(vhostName, queueInfo, cancellationToken);
-            LogResourceCreation(busKey, "Queue", queueInfo.Name);
+            await _managementClient.CreateQueueAsync(vhostName, queueInfo, cancellationToken);
+            LogResourceCreation(busKey, _queue, queueInfo.Name);
         }
 
-        public async Task CreateQueueBindingAsync(string busKey, IManagementClient managementClient, string vhostName, string exchangeName, string queueName, BindingInfo bindingInfo, CancellationToken cancellationToken = default)
+        public async Task CreateQueueBindingAsync(string busKey, string vhostName, string exchangeName, string queueName, BindingInfo bindingInfo, CancellationToken cancellationToken = default)
         {
-            await managementClient.CreateQueueBindingAsync(vhostName, exchangeName, queueName, bindingInfo, cancellationToken);
+            await _managementClient.CreateQueueBindingAsync(vhostName, exchangeName, queueName, bindingInfo, cancellationToken);
             LogResourceCreation(busKey, "Queue Binding", $"{exchangeName} -> {queueName}");
         }
 
