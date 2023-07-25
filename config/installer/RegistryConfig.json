@@ -35,11 +35,11 @@
           "action": "copy"
         },					
         {
-          "source": "c:\\docker\\dockerd --register-service",
+          "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
         {
-          "source": "net start docker",
+          "source": "net start dockerd",
           "action": "executeImmediate"
         },
 		{
