@@ -9,7 +9,7 @@ namespace Abs.CommonCore.Platform.RabbitMq
             Info = new ExchangeInfo(name, type);
         }
 
-        public ExchangeInfo Info { get; set; } 
+        public ExchangeInfo Info { get; set; }
         public string Vhost { get; set; } = "/";
         public List<QueueInfo> Queues { get; set; } = new List<QueueInfo>();
     }
