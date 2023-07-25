@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Contracts.Json.Installer;
+﻿using System.Text.Json;
+using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -72,15 +73,23 @@ namespace Abs.CommonCore.Installer.Actions
             await component.Files
                 .ForAllAsync(async file =>
                 {
-                    await ProcessFileAsync(component, file.Type, file.Source, file.Destination);
+                    await ProcessFileAsync(component, file);
                 });
         }
 
-        private Task ProcessFileAsync(Component component, ComponentFileType fileType, string source, string destination)
+        private async Task ProcessFileAsync(Component component, ComponentFile file)
         {
-            if (fileType == ComponentFileType.Container) return ProcessContainerFileAsync(component, source, destination);
-            if (fileType == ComponentFileType.File) return ProcessSimpleFileAsync(component, source, destination);
-            throw new Exception($"Unknown file type '{fileType}'");
+            try
+            {
+                if (file.Type == ComponentFileType.Container) await ProcessContainerFileAsync(component, file.Source, file.Destination);
+                else if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
+                else throw new Exception($"Unknown file type '{file.Type}'");
+            }
+            catch (Exception ex)
+            {
+                var message = $"Unable to process download action. {JsonSerializer.Serialize(file)}";
+                throw new Exception(message, ex);
+            }
         }
 
         private async Task ProcessContainerFileAsync(Component component, string source, string destination)
