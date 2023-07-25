@@ -21,7 +21,6 @@ foreach($VectorVariant in $VectorVariants)
 
   $RunCommand = "docker run --mount type=bind,src=${LocalConfigDirectory},dst=C:/config --mount type=bind,src=${TestFileDirectory},dst=C:/tests -e VECTOR_LOG_FORMAT=json -e VECTOR_COLOR=never -e VECTOR_CONFIG=$ConfigFilesParameter -e VECTOR_TEST=true ${Image} test"
   Write-Output "Docker Run Command: ${RunCommand}"
-  # Invoke-Expression ". { $RunCommand } 2>&1"
   Invoke-Expression $RunCommand
 
   # Capture error codes so the step will fail in CI

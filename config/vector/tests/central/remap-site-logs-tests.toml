@@ -140,17 +140,3 @@ extract_from = "remap-site-logs"
 [[tests.outputs.conditions]]
 type = "vrl"
 source = 'assert_eq!("xyz", .original_timestamp)'
-
-# TODO RH: REMOVE
-[[tests]]
-name = "SHOULD FAIL"
-[[tests.inputs]]
-insert_at = "remap-site-logs"
-type = "log"
-[tests.inputs.log_fields]
-message = '{"MessageJson": { "timestamp": "xyz" }}'
-[[tests.outputs]]
-extract_from = "remap-site-logs"
-[[tests.outputs.conditions]]
-type = "vrl"
-source = 'assert_eq!("xyz!", .original_timestamp)'
