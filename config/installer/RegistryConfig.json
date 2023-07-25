@@ -186,12 +186,12 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "c:\\config\\drex\\site-config.json",
+          "destination": "c:\\config\\drex",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\client-config.json",
-          "destination": "c:\\config\\drex\\client-config.json",
+          "source": "..\\AdditionalFiles\\*.client-app-config.json",
+          "destination": "c:\\config\\drex",
           "action": "copy"
         },
         {

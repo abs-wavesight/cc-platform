@@ -106,13 +106,27 @@ namespace Abs.CommonCore.Installer.Actions
                 .SelectMany(component => component.Actions, (component, action) => new { component, action })
                 .Where(t => t.action.Action == ComponentActionAction.Install || t.action.Action == ComponentActionAction.Copy)
                 .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
-                .Where(location => File.Exists(location) == false)
+                .Where(location => VerifyFileExists(location) == false)
                 .ToArray();
 
             if (missingFiles.Any())
             {
                 throw new Exception($"Required installation files are missing: {missingFiles.StringJoin(", ")}");
             }
+        }
+
+        private bool VerifyFileExists(string location)
+        {
+            var directory = Path.GetDirectoryName(location)!;
+            var filename = Path.GetFileName(location);
+
+            if (filename.Contains('*') || filename.Contains('?'))
+            {
+                var files = Directory.GetFiles(directory, filename);
+                return files.Length > 0;
+            }
+
+            return File.Exists(location);
         }
 
         private async Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
