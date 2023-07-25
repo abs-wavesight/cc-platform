@@ -9,7 +9,6 @@ Write-Output "Running script to set up log retention scheduled task..."
 & "C:\\scripts\\create-scheduled-task.ps1" -LogsDir "C:\\cc-logs" -Before $LogRetentionPeriod
 
 # Run Vector
-Get-ChildItem -Path Env:
 if ($Env:VECTOR_TEST -eq "true")
 {
   Write-Output "Running Vector tests..."
@@ -17,5 +16,6 @@ if ($Env:VECTOR_TEST -eq "true")
 }
 else
 {
+  Write-Output "Running Vector..."
   & "C:\\Program Files\\Vector\\bin\\vector.exe"
 }
