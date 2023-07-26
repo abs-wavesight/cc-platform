@@ -1,6 +1,6 @@
 ﻿using EasyNetQ.Management.Client.Model;
 
-namespace Abs.CommonCore.Platform.RabbitMq
+namespace Abs.CommonCore.Platform.MessengerConfigurator
 {
     public class RabbitConfigurerExchange
     {
