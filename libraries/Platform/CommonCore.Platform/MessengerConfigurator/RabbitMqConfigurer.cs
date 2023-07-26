@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.Contracts.Json;
+﻿using Abs.CommonCore.Contracts.Json.Drex;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
