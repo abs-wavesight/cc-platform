@@ -1,5 +1,4 @@
-﻿using Abs.CommonCore.Contracts.Json.Drex;
-using EasyNetQ.Management.Client;
+﻿using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
 
@@ -51,7 +50,7 @@ namespace Abs.CommonCore.Platform.MessengerConfigurator
                 foreach (var queue in exchange.Deliverymen)
                 {
                     await CreateDeliverymanAsync(busKey, queue, exchange.Vhost, cancellationToken);
-                    await BindDistributorAndDeliverymenAsync(busKey, exchange.Vhost, exchange.Name, queue.Name, queue.Name, cancellationToken);
+                    await BindDistributorAndDeliverymenAsync(busKey, exchange.Name, queue.Name, queue.Name, exchange.Vhost, cancellationToken);
                 }
             }
         }
