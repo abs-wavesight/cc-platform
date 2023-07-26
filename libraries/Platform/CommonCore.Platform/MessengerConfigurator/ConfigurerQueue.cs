@@ -3,7 +3,7 @@
     /// <summary>
     /// Entity that delivers messages to cunsumer. Examples: Queue in RabbitMQ, Subscription in Azure Service Bus
     /// </summary>
-    public class MessageDeliveryman
+    public class ConfigurerQueue
     {
         public string Name { get; set; } = "";
 
