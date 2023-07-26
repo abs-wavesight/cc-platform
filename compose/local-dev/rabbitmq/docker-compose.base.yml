@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
@@ -10,6 +10,16 @@ services:
       driver: local
     profiles: ['templates']
     restart: always
+    entrypoint: ["powershell", "-c"]
+    command: ["Import-Certificate", "-CertStoreLocation", "Cert:\\LocalMachine\\root", "-FilePath", "C:\\certs\\rabbitmq.cer", ";",
+              "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"]
+    healthcheck:
+      # need to override health check command to ping amqp (TLS-protected) port 15671 instead of image's default amqp (non-TLS) port 15672
+      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://rabbitmq-local:15671" ]
+      interval: 5s
+      timeout: 10s
+      start_period: 30s
+      retries: 1
     volumes:
       - &config_volume
         type: bind
@@ -24,6 +34,7 @@ services:
     ports:
       - "5671:5671"
       - "15671:15671"
+      - "15672:15672"
     profiles: ['rabbitmq-local']
     volumes:
       - *config_volume

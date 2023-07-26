@@ -5,6 +5,7 @@ services:
     build:
       context: ../cc-platform/containers/openssl
     command: [ "pwsh", "C:\\config\\generate-certs.ps1" ]
+    container_name: openssl
     logging:
       driver: local
     volumes:

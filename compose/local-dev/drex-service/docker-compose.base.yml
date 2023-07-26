@@ -26,3 +26,7 @@ services:
         source: rabbitmq-remote-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/drex-service
+        target: C:/bootstrap
+        read_only: true

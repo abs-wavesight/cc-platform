@@ -29,7 +29,7 @@ path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log" # Remember to change fi
 [sinks.rabbitmq]
 type = "amqp"
 inputs = ["filter-container-logs-on-level"]
-connection_string = "amqp://rabbitmq-local:5672"
+connection_string = "amqps://rabbitmq-local:5671"
 encoding.codec = "json"
 exchange = "cc.drex.site.int-log.ed"
 routing_key = "cc.drex.site.int-log.q"
