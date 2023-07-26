@@ -11,19 +11,22 @@ namespace Installer.Tests.Actions
             var fullData = BuildTestData(16 * 1024);
 
             var tempFile = Path.GetTempFileName();
+            var tempFileName = Path.GetFileName(tempFile);
+            var destination = Directory.CreateTempSubdirectory("chunk");
             var expectedFiles = new[]
             {
-                $"{tempFile}.part1", $"{tempFile}.part2", $"{tempFile}.part3", $"{tempFile}.part4",
+                Path.Combine(destination.FullName, $"{tempFileName}.part1"),
+                Path.Combine(destination.FullName, $"{tempFileName}.part2"),
+                Path.Combine(destination.FullName, $"{tempFileName}.part3"),
+                Path.Combine(destination.FullName, $"{tempFileName}.part4"),
             };
 
             try
             {
                 await File.WriteAllBytesAsync(tempFile, fullData);
 
-                var destination = new DirectoryInfo(Path.GetTempPath());
-
                 var chunker = new DataChunker(NullLoggerFactory.Instance);
-                await chunker.ChunkFileAsync(new FileInfo(tempFile), destination, 1024);
+                await chunker.ChunkFileAsync(new FileInfo(tempFile), destination, 4096);
 
                 var writtenBytes = expectedFiles
                     .SelectMany(x => File.ReadAllBytes(x));
@@ -39,7 +42,6 @@ namespace Installer.Tests.Actions
                 {
                     File.Delete(file);
                 }
-
             }
         }
 

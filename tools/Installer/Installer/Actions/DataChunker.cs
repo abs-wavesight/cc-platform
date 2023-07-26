@@ -19,12 +19,14 @@ namespace Abs.CommonCore.Installer.Actions
             if (source.Length < maxSize)
                 return;
 
-            Directory.CreateDirectory(destination.Name);
+            Directory.CreateDirectory(destination.FullName);
 
             _logger.LogInformation($"Breaking {source.Name} file into chunks");
-            var buffer = new byte[4 * 1024];
+            var bufferSize = Math.Min(4 * 1024, maxSize);
+            var buffer = new byte[bufferSize];
             var currentChunkCount = 1;
-            var currentChunkFile = File.OpenWrite($"{source.FullName}.part{currentChunkCount}");
+            var chunkPath = Path.Combine(destination.FullName, source.Name);
+            var currentChunkFile = File.OpenWrite($"{chunkPath}.part{currentChunkCount}");
 
             using (var stream = source.OpenRead())
             {
@@ -34,20 +36,25 @@ namespace Abs.CommonCore.Installer.Actions
                 while (dataRead > 0)
                 {
                     dataRead = await stream.ReadAsync(buffer);
+
+                    if (dataRead == 0)
+                        break;
+
+                    currentChunkFile ??= File.OpenWrite($"{chunkPath}.part{currentChunkCount}");
                     await currentChunkFile.WriteAsync(buffer, 0, dataRead);
                     dataWritten += dataRead;
 
-                    if (dataWritten > maxSize)
+                    if (dataWritten >= maxSize)
                     {
                         currentChunkFile.Close();
                         dataWritten = 0;
                         currentChunkCount++;
-                        currentChunkFile = File.OpenWrite($"{source.FullName}.part{currentChunkCount}");
+                        currentChunkFile = null;
                     }
                 }
             }
 
-            currentChunkFile.Close();
+            currentChunkFile?.Close();
         }
 
         public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination)
