@@ -42,7 +42,7 @@ namespace Abs.CommonCore.Platform.MessengerConfigurator
             foreach (var queue in queues)
             {
                 await CreateQueueAsync(busKey, queue, cancellationToken);
-                await BindExchangeAndQueueAsync(busKey, exchange.Vhost, exchange.Name, queue.Name, queue.Name, cancellationToken);
+                await BindExchangeAndQueueAsync(busKey, exchange.Name, queue.Name, queue.Name, exchange.Vhost, cancellationToken);
             }
         }
 
