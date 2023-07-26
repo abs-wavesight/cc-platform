@@ -48,7 +48,7 @@ namespace Abs.CommonCore.Platform.MessengerConfigurator
             foreach (var exchange in distributors)
             {
                 await CreateDistributorAsync(busKey, exchange, cancellationToken);
-                foreach (var queue in exchange.Deliverymen)
+                foreach (var queue in exchange.Queues)
                 {
                     await CreateDeliverymanAsync(busKey, queue, exchange.Vhost, cancellationToken);
                     await BindDistributorAndDeliverymenAsync(busKey, exchange.Name, queue.Name, queue.Name, exchange.Vhost, cancellationToken);
