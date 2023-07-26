@@ -29,29 +29,29 @@ namespace Abs.CommonCore.Platform.MessengerConfigurator
             LogResourceCreation(busKey, "Queue Binding", $"{distributorName} -> {deliverymanName}");
         }
 
-        public async Task CreateDeliverymanAsync(string busKey, MessageDeliveryman deliveryman, string vhost = "/", CancellationToken cancellationToken = default)
+        public async Task CreateDeliverymanAsync(string busKey, ConfigurerQueue deliveryman, string vhost = "/", CancellationToken cancellationToken = default)
         {
             var queueInfo = DeliverymanToQueueInfo(deliveryman);
             await _managementClient.CreateQueueAsync(vhost, queueInfo, cancellationToken);
             LogResourceCreation(busKey, _queue, queueInfo.Name);
         }
 
-        public async Task CreateDistributorAsync(string busKey, MessageDistributor distributor, CancellationToken cancellationToken = default)
+        public async Task CreateDistributorAsync(string busKey, ConfigurerExchange distributor, CancellationToken cancellationToken = default)
         {
             var exchangeInfo = DistributorToExchangeInfo(distributor);
             await _managementClient.CreateExchangeAsync(distributor.Vhost, exchangeInfo, cancellationToken);
             LogResourceCreation(busKey, _exchange, exchangeInfo.Name);
         }
 
-        public async Task CreateDistributorsWithDeliveriesAsync(string busKey, List<MessageDistributor> distributors, CancellationToken cancellationToken = default)
+        public async Task CreateDistributorsWithDeliveriesAsync(string busKey, List<ConfigurerExchange> distributors, CancellationToken cancellationToken = default)
         {
             foreach (var exchange in distributors)
             {
                 await CreateDistributorAsync(busKey, exchange, cancellationToken);
-                foreach (var queue in exchange.Deliverymen)
+                foreach (var queue in exchange.Queues)
                 {
                     await CreateDeliverymanAsync(busKey, queue, exchange.Vhost, cancellationToken);
-                    await BindDistributorAndDeliverymenAsync(busKey, exchange.Vhost, exchange.Name, queue.Name, queue.Name, cancellationToken);
+                    await BindDistributorAndDeliverymenAsync(busKey, exchange.Name, queue.Name, queue.Name, exchange.Vhost, cancellationToken);
                 }
             }
         }
@@ -61,12 +61,12 @@ namespace Abs.CommonCore.Platform.MessengerConfigurator
             _logger.LogInformation($"Created {busKey} RabbitMQ {resourceType}: {resourceName}");
         }
 
-        private ExchangeInfo DistributorToExchangeInfo(MessageDistributor distributor)
+        private ExchangeInfo DistributorToExchangeInfo(ConfigurerExchange distributor)
         {
             return new ExchangeInfo(distributor.Name, distributor.Type, distributor.AutoDelete, distributor.Durable, distributor.Internal);
         }
 
-        private QueueInfo DeliverymanToQueueInfo(MessageDeliveryman deliveryman)
+        private QueueInfo DeliverymanToQueueInfo(ConfigurerQueue deliveryman)
         {
             return new QueueInfo(deliveryman.Name, deliveryman.AutoDelete, deliveryman.Durable);
         }
