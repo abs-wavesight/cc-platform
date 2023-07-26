@@ -5,6 +5,7 @@ namespace Abs.CommonCore.Installer.Actions
     public class DataChunker
     {
         private readonly ILogger _logger;
+        private const string ChunkName = "part";
 
         public DataChunker(ILoggerFactory loggerFactory)
         {
@@ -26,7 +27,7 @@ namespace Abs.CommonCore.Installer.Actions
             var buffer = new byte[bufferSize];
             var currentChunkCount = 1;
             var chunkPath = Path.Combine(destination.FullName, source.Name);
-            var currentChunkFile = File.OpenWrite($"{chunkPath}.part{currentChunkCount}");
+            var currentChunkFile = File.OpenWrite($"{chunkPath}.{ChunkName}{currentChunkCount}");
 
             using (var stream = source.OpenRead())
             {
@@ -40,7 +41,7 @@ namespace Abs.CommonCore.Installer.Actions
                     if (dataRead == 0)
                         break;
 
-                    currentChunkFile ??= File.OpenWrite($"{chunkPath}.part{currentChunkCount}");
+                    currentChunkFile ??= File.OpenWrite($"{chunkPath}.{ChunkName}{currentChunkCount}");
                     await currentChunkFile.WriteAsync(buffer, 0, dataRead);
                     dataWritten += dataRead;
 
@@ -62,10 +63,10 @@ namespace Abs.CommonCore.Installer.Actions
             if (source.Exists == false)
                 throw new Exception("Source location doesn't exist");
 
-            var files = Directory.GetFiles(source.FullName, "*.part?")
+            var files = Directory.GetFiles(source.FullName, $"*.{ChunkName}?")
                 .OrderBy(x =>
                 {
-                    var extension = Path.GetExtension(x).Replace(".part", "");
+                    var extension = Path.GetExtension(x).Replace($".{ChunkName}", "");
                     return int.Parse(extension);
                 })
                 .ToArray();
