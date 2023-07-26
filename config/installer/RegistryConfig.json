@@ -96,7 +96,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/rabbitmq/cc-rabbitmq.conf",
           "destination": "cc-rabbitmq.conf"
         }
       ],
