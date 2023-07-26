@@ -11,6 +11,6 @@
         public bool AutoDelete { get; set; } = false;
         public bool Durable { get; set; } = true;
         public bool Internal { get; set; } = false;
-        public List<ConfigurerQueue> Deliverymen { get; set; } = new List<ConfigurerQueue>();
+        public List<ConfigurerQueue> Queues { get; set; } = new List<ConfigurerQueue>();
     }
 }
