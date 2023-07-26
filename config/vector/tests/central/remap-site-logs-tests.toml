@@ -1,0 +1,142 @@
+[[tests]]
+name = "remap-site-logs GIVEN .message.Site SHOULD remap to .site"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"Site": "the-site"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("the-site", .site)'
+
+[[tests]]
+name = "remap-site-logs GIVEN no .message.Site SHOULD set .site to 'unknown'"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"SomeOtherProperty": "the-site"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("unknown", .site)'
+
+[[tests]]
+name = "remap-site-logs GIVEN .message.MessageString SHOULD remap to .message"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageString": "xyz"}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .message)'
+
+[[tests]]
+name = "remap-site-logs GIVEN .message.MessageJson SHOULD remap to .message"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "InnerMessage": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .message.InnerMessage)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner container_id SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "container_id": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .container_id)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner container_name SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "container_name": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .container_name)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner container_type SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "container_type": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .container_type)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner image SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "image": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .image)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner level SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "level": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .level)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner stream SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "stream": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .stream)'
+
+[[tests]]
+name = "remap-site-logs GIVEN inner timestamp SHOULD remap to top level"
+[[tests.inputs]]
+insert_at = "remap-site-logs"
+type = "log"
+[tests.inputs.log_fields]
+message = '{"MessageJson": { "timestamp": "xyz" }}'
+[[tests.outputs]]
+extract_from = "remap-site-logs"
+[[tests.outputs.conditions]]
+type = "vrl"
+source = 'assert_eq!("xyz", .original_timestamp)'

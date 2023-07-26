@@ -1,0 +1,18 @@
+[sources.rabbitmq]
+type = "amqp"
+connection_string = "amqp://rabbitmq-remote:5672"
+decoding.codec = "bytes"
+consumer = "vector"
+queue = "cc.drex.central.snk-log.q"
+
+[transforms.remap-site-logs]
+type = "remap"
+inputs = ["rabbitmq"]
+file = "./config/remap-site-logs.vrl"
+
+[sinks.disk]
+type = "file"
+inputs = ["remap-site-logs"]
+encoding.codec = "json"
+compression = "none"
+path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log"

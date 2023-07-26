@@ -1,0 +1,27 @@
+# attempt to decode and parse JSON but fail gracefully
+.message = decode_gzip(.message) ?? .message
+.message = parse_json(.message) ?? .message
+
+# Pull site out of outer envelope
+.site = if is_nullish(.message.Site) { "unknown" } else { del(.message.Site) }
+
+# Replace envelope with inner message
+if (exists(.message.MessageJson)) {
+  .message = del(.message.MessageJson)
+} else if (exists(.message.MessageString)) {
+  .message = del(.message.MessageString)
+}
+
+# Promote inner fields to top level
+.container_id = if is_nullish(.message.container_id) { "unknown" } else { del(.message.container_id) }
+.container_name = if is_nullish(.message.container_name) { "unknown" } else { del(.message.container_name) }
+.container_type = if is_nullish(.message.container_type) { "unknown" } else { del(.message.container_type) }
+.image = if is_nullish(.message.image) { "unknown" } else { del(.message.image) }
+.level = if is_nullish(.message.level) { "unknown" } else { del(.message.level) }
+.stream = if is_nullish(.message.stream) { "unknown" } else { del(.message.stream) }
+.original_timestamp = del(.message.timestamp) # Just leave one this null if it's not found
+
+# Pull inner message up since other fields have been promoted
+if (exists(.message.message)) {
+  .message = del(.message.message)
+}

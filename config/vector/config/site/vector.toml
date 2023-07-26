@@ -1,24 +1,8 @@
-#                                    __   __  __
-#                                    \ \ / / / /
-#                                     \ V / / /
-#                                      \_/  \/
-#
-#                                    V E C T O R
-#                                   Configuration
-#
-# ------------------------------------------------------------------------------
-# Website: https://vector.dev
-# Docs: https://vector.dev/docs
-# Chat: https://chat.vector.dev
-# ------------------------------------------------------------------------------
-
-# Change this to use a non-default directory for Vector data storage:
-# data_dir = "/var/lib/vector"
-
 [sources.container-logs]
 type = "docker_logs"
 # NOTE: Unfortunately, "include_labels" is all or nothing, so we cannot use it here to filter on "container_type"; instead, we must apply a filter condition in remap-container-logs
 # docker_host = "tcp://172.16.239.1:2376" # Necessary when running with Hyper-V containers on Windows, where the named pipe does not seem to work
+exclude_containers = ["vector"] # This is a prefix match, so "vector" will match "vector-site" and "vector-central"
 
 [transforms.remap-container-logs]
 type = "remap"
@@ -47,10 +31,5 @@ type = "amqp"
 inputs = ["filter-container-logs-on-level"]
 connection_string = "amqp://rabbitmq-local:5672"
 encoding.codec = "json"
-exchange = "cc.drex.site.init-log.ed"
-
-# Vector's GraphQL API (disabled by default)
-# Use a browser or `vector top` to view detailed information at http://localhost:8686
-# [api]
-# enabled = true
-# address = "127.0.0.1:8686"
+exchange = "cc.drex.site.int-log.ed"
+routing_key = "cc.drex.site.int-log.q"
