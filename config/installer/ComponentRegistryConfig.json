@@ -1,0 +1,63 @@
+﻿{
+  "location": "$ABS_PATH\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION",
+          "destination": "rabbitmq.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.rabbitmq.yml",
+          "destination": "docker-compose.rabbitmq.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/rabbitmq/cc-rabbitmq.conf",
+          "destination": "cc-rabbitmq.conf"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "name": "Vector",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION",
+          "destination": "vector.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector.yml",
+          "destination": "docker-compose.vector.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/vector.toml",
+          "destination": "vector.toml"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "name": "Drex",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION",
+          "destination": "drex.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.drex.yml",
+          "destination": "docker-compose.drex.yml"
+        }
+      ],
+      "actions": []
+    }
+  ]
+}
