@@ -88,7 +88,7 @@ jobs:
           
       - name: Download components       
         run: |
-          C:\abs\Installer.exe download -r ComponentRegistryConfig.json -c RabbitMq -p $WINDOWS_VERSION:${{ inputs.windows-version }}
+          .\Installer.exe download -r ComponentRegistryConfig.json -c RabbitMq -p $WINDOWS_VERSION:${{ inputs.windows-version }}
 
       - name: List contents
         run: |
