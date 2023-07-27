@@ -96,7 +96,7 @@ jobs:
           
       - name: Chunk contents
         run: |
-          .\Installer.exe chunk -s Release.zip -d .\
+          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
           
       - name: List contents
         run: |
