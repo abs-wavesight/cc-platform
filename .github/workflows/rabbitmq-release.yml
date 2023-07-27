@@ -92,4 +92,4 @@ jobs:
 
       - name: List contents
         run: |
-          cmd /r dir /s c:\abs
+          cmd /r dir /s c:\abs\installer
