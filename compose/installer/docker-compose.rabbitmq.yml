@@ -1,21 +1,27 @@
----	
-version: '3'	
+---
+version: '3.9'
 
-services:	
-  cc.rabbitmq:	
+services:
+  cc.rabbitmq:
     container_name: rabbitmq
     image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION
     hostname: rabbitmq-local
-    environment:	
-      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf	
-    logging:	
-      driver: local    	
-    restart: always	
-    ports:	
-      - "5672:5672"	
-      - "15672:15672"	
-    volumes:	
-      - type: bind	
-        source: $ABS_PATH/config/rabbitmq	
-        target: C:/rabbitmq/config	
-        read_only: true	
+    environment:
+      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf
+    logging:
+      driver: local
+    restart: always
+    ports:
+      - "5671:5671"
+      - "15671:15671"
+    healthcheck:
+      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://rabbitmq-local:15671" ]
+      interval: 5s
+      timeout: 10s
+      start_period: 45s
+      retries: 1
+    volumes:
+      - type: bind
+        source: $ABS_PATH/config/rabbitmq
+        target: C:/rabbitmq/config
+        read_only: true

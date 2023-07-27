@@ -15,12 +15,6 @@ ENV ERLANG_HOME="c:\\erlang" \
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-## Expose AMQP (non-TLS) ports
-#EXPOSE 5672 15672
-#
-## Expose AMQPS (TLS-protected) ports
-#EXPOSE 5671 15671
-
 # download and install erlang using silent install option, and remove installer when done
 # download and extract rabbitmq, and remove zip file when done
 # remove version from rabbitmq folder name
@@ -44,8 +38,6 @@ RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.c
 
 # enable managment plugin
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
-# Keep healthcheck timeout to 10s; 5s seems to be too short
-HEALTHCHECK --interval=5s --timeout=10s --start-period=30s --retries=1 CMD [ "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "http://localhost:15672" ]
 
 # run server when container starts - container will shutdown when this process ends
 CMD c:\rabbitmq\sbin\rabbitmq-server.bat

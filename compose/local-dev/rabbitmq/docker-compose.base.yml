@@ -14,11 +14,11 @@ services:
     command: ["Import-Certificate", "-CertStoreLocation", "Cert:\\LocalMachine\\root", "-FilePath", "C:\\certs\\rabbitmq.cer", ";",
               "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"]
     healthcheck:
-      # need to override health check command to ping amqp (TLS-protected) port 15671 instead of image's default amqp (non-TLS) port 15672
-      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://rabbitmq-local:15671" ]
+      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://localhost:15671" ]
       interval: 5s
       timeout: 10s
-      start_period: 30s
+      # start_period is set to 60s because it takes awhile to start up, especially when starting multiple instances of rabbitmq simultaneously
+      start_period: 60s
       retries: 1
     volumes:
       - &config_volume
@@ -34,7 +34,6 @@ services:
     ports:
       - "5671:5671"
       - "15671:15671"
-      - "15672:15672"
     profiles: ['rabbitmq-local']
     volumes:
       - *config_volume
