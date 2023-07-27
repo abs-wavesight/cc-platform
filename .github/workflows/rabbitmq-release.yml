@@ -90,6 +90,14 @@ jobs:
         run: |
           .\Installer.exe download -r ComponentRegistryConfig.json -c RabbitMq -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }}
 
+      - name: Compress contents
+        run: |
+          .\Installer.exe compress -s c:/abs/installer -d Release.zip
+          
+      - name: Chunk contents
+        run: |
+          .\Installer.exe chunk -s Release.zip -d .\
+          
       - name: List contents
         run: |
-          cmd /r dir /s c:\abs\installer
+          cmd /r dir *
