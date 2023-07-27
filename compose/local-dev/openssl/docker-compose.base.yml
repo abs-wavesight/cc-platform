@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 services:
   cc.openssl-generate-certs:
     build:
@@ -31,6 +31,6 @@ services:
         read_only: false
 volumes:
   rabbitmq-local-keys:
-  rabbitmq-remote-keys: # TODO convert to docker secrets
+  rabbitmq-remote-keys:
   rabbitmq-local-certs:
   rabbitmq-remote-certs:

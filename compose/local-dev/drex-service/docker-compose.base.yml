@@ -10,7 +10,7 @@ services:
       - cc.rabbitmq-local
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
-    entrypoint: ["cmd", "/C", "/Q", "call", "C:\\bootstrap\\bootstrap.bat" ]
+    entrypoint: ["cmd", "/C", "/Q", "call", "C:\\app\\config\\bootstrap.bat" ]
     ports:
       - "12345:5000"
     restart: always
@@ -26,8 +26,4 @@ services:
       - type: volume
         source: rabbitmq-remote-certs
         target: C:/rabbitmq-remote-certs
-        read_only: true
-      - type: bind
-        source: ${PATH_TO_CC_PLATFORM_REPO}/config/drex-service
-        target: C:/bootstrap
         read_only: true
