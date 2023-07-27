@@ -1,6 +1,0 @@
-﻿echo Importing rabbitmq certificates into root CA key store...
-certoc.exe -addstore root C:\rabbitmq-local-certs\rabbitmq.cer
-certoc.exe -addstore root C:\rabbitmq-remote-certs\rabbitmq.cer
-echo Imported rabbitmq certificates
-echo Staring D-REX...
-dotnet Abs.CommonCore.Drex.Console.dll %*
