@@ -2,6 +2,10 @@ name: RabbitMq Release
 
 on:
   workflow_dispatch:
+    push:
+      branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
     inputs:
       name:
         required: true
@@ -38,6 +42,7 @@ defaults:
 env:  
   ABS_NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }},
   ABS_NUGET_USERNAME: ${{ github.ACTOR }}
+  REGISTRY: ghcr.io
 
 jobs:
   run-vector-tests:
