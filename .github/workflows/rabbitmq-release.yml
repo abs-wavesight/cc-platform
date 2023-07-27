@@ -41,8 +41,8 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  run-vector-tests:
-    name: Run Vector Tests
+  release-component:
+    name: Release Component
     runs-on: windows-2019
 
     steps:
@@ -72,6 +72,7 @@ jobs:
                    
       - name: Get installer        
         run: |
+          New-Item -Path 'C:\abs' -ItemType Directory
           Start-BitsTransfer -Source "https://github.com/abs-wavesight/cc-platform/releases/download/Installer/ComponentRegistryConfig.json" -Destination C:\abs\ComponentRegistryConfig.json
           Start-BitsTransfer -Source "https://github.com/abs-wavesight/cc-platform/releases/download/Installer/Abs.CommonCore.Installer.exe" -Destination C:\abs\Installer.exe
           
