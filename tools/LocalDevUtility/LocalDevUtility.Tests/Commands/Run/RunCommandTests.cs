@@ -20,7 +20,7 @@ public class RunCommandTests
     [InlineData("run -m r --rabbitmq-local i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-remote i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-remote" })]
     [InlineData("run -m r --vector i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
-    [InlineData("run -m r --grafana i --openssl s", new[] { "cc.openssl-generate-certs", "cc.openssl-generate-certs", "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --grafana i --openssl s", new[] { "cc.openssl-generate-certs", "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --loki i --openssl s", new[] { "cc.openssl-generate-certs", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --drex-service i --openssl s", new[] { "cc.openssl-generate-certs", "cc.drex-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --deps i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
