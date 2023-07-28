@@ -10,7 +10,7 @@ services:
       - cc.rabbitmq-local
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
-    entrypoint: ["cmd", "/C", "/Q", "call", "C:\\app\\config\\bootstrap.bat" ]
+    entrypoint: ["cmd", "/Q", "/C", "call", "C:\\app\\config\\bootstrap.bat" ]
     ports:
       - "12345:5000"
     restart: always
