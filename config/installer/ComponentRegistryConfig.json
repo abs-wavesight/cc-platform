@@ -23,7 +23,7 @@
       "actions": []
     },
     {
-      "name": "Vector",
+      "name": "Vector-Site",
       "files": [
         {
           "type": "container",
@@ -32,17 +32,48 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector-site.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/vector.toml",
           "destination": "vector.toml"
+        },
+		{
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/remap-site-logs.vrl",
+          "destination": "remap-site-logs.vrl"
         }
       ],
       "actions": []
     },
+    {
+      "name": "Vector-Central",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION",
+          "destination": "vector.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector-central.yml",
+          "destination": "docker-compose.vector.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/central/vector.toml",
+          "destination": "vector.toml"
+        },
+		{
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/central/remap-site-logs.vrl",
+          "destination": "remap-site-logs.vrl"
+        }
+      ],
+      "actions": []
+    },	
     {
       "name": "Drex",
       "files": [
