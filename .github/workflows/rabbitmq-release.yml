@@ -39,66 +39,10 @@ env:
 jobs:
   release-component:
     name: Release Component
-    runs-on: windows-2019
-
-    steps:
-      - uses: actions/checkout@v3
-        name: Checkout branch
-
-      - name: Nuget - Set Nuget credentials
-        working-directory: ./
-        run: |
-          $AbsNugetUsername = "USERNAME"
-          echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-
-          $AbsNugetPassword = "${{ github.TOKEN }}"
-          echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append 
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 7.0.x
-
-      - name: Login to Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-                   
-      - name: Download installer
-        uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          version: tags/Installer
-          file: Abs.CommonCore.Installer.exe
-          target: Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}                   
-      
-      - name: Download installer config
-        uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          version: tags/Installer
-          file: ComponentRegistryConfig.json
-          target: ComponentRegistryConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}                   
-          
-      - name: Download components       
-        run: |
-          .\Installer.exe download -r ComponentRegistryConfig.json -c RabbitMq -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }}
-
-      - name: Compress contents
-        run: |
-          .\Installer.exe compress -s c:/abs/installer -d Release.zip
-          
-      - name: Chunk contents
-        run: |
-          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
-          
-      - name: Build release
-        uses: ncipollo/release-action@v1
-        with:
-          body: ${{ inputs.description }}
-          name: ${{ inputs.name }}
-          tag: ${{ inputs.tag }}
-          commit: main
-          artifacts: "Release.zip*"
+    uses: ./.github/workflows/shared-component-release.yml
+      with:
+        component_name: RabbitMq
+        name: ${{ inputs.names }}
+        tag: ${{ inputs.tag }}
+        description: ${{ inputs.description }}
+        windows-version: ${{ inputs.windows-version }}
