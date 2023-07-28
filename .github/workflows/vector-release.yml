@@ -3,14 +3,10 @@ name: Vector Release
 on:
   workflow_dispatch:
     inputs:
-      name:
+      version:
         required: true
         type: string
-        description: Name of the release
-      tag:
-        required: true
-        type: string
-        description: Unique tag for the release
+        description: Unique version for the release
       description:
         required: true
         type: string
@@ -32,8 +28,8 @@ jobs:
     name: Vector Release
     uses: ./.github/workflows/shared-component-release.yml
     with:
+      name: Vector Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: vector
-      name: ${{ inputs.names }}
-      tag: ${{ inputs.tag }}
+      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}

@@ -3,14 +3,14 @@ name: Shared - Component Release
 on:
   workflow_call:
     inputs:
+      name:
+        required: true
+        type: string
+        description: Name of the release    
       component_name:
         required: true
         type: string
         description: Name of the component to release      
-      name:
-        required: true
-        type: string
-        description: Name of the release
       tag:
         required: true
         type: string
@@ -30,6 +30,19 @@ jobs:
     runs-on: windows-2019
 
     steps:
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@master
+        with:
+          timeZone: UTC+8
+          format: 'YYYYMMDDHHmmss'
+          
+      - name: Build Tag
+        id: build-tag
+        uses: Entepotenz/change-string-case-action@v1
+        with:
+          string: ${{ inputs.tag }}-${{ steps.time.outputs.time }}
+          
       - uses: actions/checkout@v3
         name: Checkout branch
 
@@ -68,7 +81,7 @@ jobs:
           version: tags/Installer
           file: ComponentRegistryConfig.json
           target: ComponentRegistryConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}                   
+          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Download components       
         run: |
@@ -87,6 +100,6 @@ jobs:
         with:
           body: ${{ inputs.description }}
           name: ${{ inputs.name }}
-          tag: ${{ inputs.tag }}
+          tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
           artifacts: "Release.zip*"
