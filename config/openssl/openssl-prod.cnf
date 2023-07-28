@@ -1,0 +1,26 @@
+[ req ]
+default_bits           = 2048
+default_keyfile        = keyfile.pem
+distinguished_name     = req_distinguished_name
+attributes             = req_attributes
+req_extensions         = v3_req
+prompt                 = no
+output_password        = 1234
+
+[ req_distinguished_name ]
+C                      = US
+ST                     = TX
+L                      = Spring
+O                      = American Bureau of Shipping
+CN                     = rabbitmq-local
+
+[ req_attributes ]
+challengePassword              = A challenge password
+
+[v3_req]
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = localhost
+DNS.2 = rabbitmq-local

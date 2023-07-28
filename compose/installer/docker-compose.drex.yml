@@ -1,20 +1,24 @@
----	
-version: '3'	
+---
+version: '3'
 
-services:	
-  cc.drex-service:	
-    container_name: drex-service	
-    image: ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION	
-    depends_on:	
-      - cc.vector	
-      - cc.rabbitmq	
-    environment:	
+services:
+  cc.drex-service:
+    container_name: drex-service
+    image: ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION
+    depends_on:
+      - cc.vector
+      - cc.rabbitmq
+    environment:
       - SiteConfigFileName=C:/app/config/site-config.json
-    ports:	
-      - "12345:5000"	
-    restart: always	
-    volumes:	
-      - type: bind	
-        source: $ABS_PATH/config/drex	
-        target: C:/app/config	
+    ports:
+      - "12345:5000"
+    restart: always
+    volumes:
+      - type: bind
+        source: $ABS_PATH/config/drex
+        target: C:/app/config
+        read_only: true
+      - type: volume
+        source: rabbitmq-certs
+        target: C:/certs
         read_only: true

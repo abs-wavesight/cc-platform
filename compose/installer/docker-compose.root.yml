@@ -1,10 +1,10 @@
----	
-version: '3'	
-name: 'abs-cc'	
+---
+version: '3'
+name: 'abs-cc-prod'
 
-networks:	
-  default:	
-    ipam:	
-      driver: default	
-      config:	
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
         - subnet: 172.16.239.0/24

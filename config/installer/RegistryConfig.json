@@ -24,7 +24,7 @@
         {
           "source": "net stop dockerd",
           "action": "executeImmediate"
-        },		
+        },
         {
           "source": "tar -xf docker.zip -C c:\\",
           "action": "executeImmediate"
@@ -33,7 +33,7 @@
           "source": "docker-compose.exe",
           "destination": "c:\\docker\\docker-compose.exe",
           "action": "copy"
-        },					
+        },
         {
           "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
@@ -42,22 +42,22 @@
           "source": "net start dockerd",
           "action": "executeImmediate"
         },
-		{
+        {
           "source": "powershell -Command \"docker stop $(docker ps -a -q)\"",
           "action": "executeImmediate"
-        },			
-		{
+        },
+        {
           "source": "powershell -Command \"docker rm $(docker ps -a -q)\"",
           "action": "executeImmediate"
-        },					
-		{
+        },
+        {
           "source": "c:\\docker\\docker system prune -f",
           "action": "executeImmediate"
-        },		
+        },
         {
           "source": "c:\\docker\\docker volume prune -f",
           "action": "executeImmediate"
-        },				
+        },
         {
           "source": "c:\\docker\\docker network prune -f",
           "action": "executeImmediate"
@@ -65,19 +65,69 @@
         {
           "source": "c:\\docker",
           "action": "updatePath"
-        },		
+        },
         {
           "source": "docker-compose.root.yml",
           "destination": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "copy"
         },
-		{
+        {
           "source": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
-        },			
-		{
+        },
+        {
           "source": "$ABS_PATH\\config",
           "action": "runDockerCompose"
+        }
+      ]
+    },
+    {
+      "name": "OpenSSL",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION",
+          "destination": "openssl.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.openssl.yml",
+          "destination": "docker-compose.openssl.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/openssl/generate-certs-prod.ps1",
+          "destination": "generate-certs-prod.ps1"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/openssl/openssl-prod.cnf",
+          "destination": "openssl-prod.cnf"
+        }
+      ],
+      "actions": [
+        {
+          "source": "openssl.tar",
+          "action": "install"
+        },
+        {
+          "source": "generate-certs-prod.ps1",
+          "destination": "$ABS_PATH\\config\\openssl\\generate-certs-prod.ps1",
+          "action": "copy"
+        },
+        {
+          "source": "openssl-prod.cnf",
+          "destination": "$ABS_PATH\\config\\openssl\\openssl-prod.cnf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.openssl.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "action": "replaceParameters"
         }
       ]
     },
@@ -115,7 +165,7 @@
           "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "copy"
         },
-		{
+        {
           "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
         }
@@ -175,6 +225,11 @@
         },
         {
           "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/bootstrap.bat",
+          "destination": "drex-bootstrap.bat"
+        },
+        {
+          "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.drex.yml",
           "destination": "docker-compose.drex.yml"
         }
@@ -183,6 +238,11 @@
         {
           "source": "drex.tar",
           "action": "install"
+        },
+        {
+          "source": "drex-bootstrap.bat",
+          "destination": "$ABS_PATH\\config\\drex\\bootstrap.bat",
+          "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
@@ -199,7 +259,7 @@
           "destination": "$ABS_PATH\\config\\docker-compose.drex.yml",
           "action": "copy"
         },
-		{
+        {
           "source": "$ABS_PATH\\config\\docker-compose.drex.yml",
           "action": "replaceParameters"
         }
