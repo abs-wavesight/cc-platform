@@ -1,4 +1,4 @@
-name: RabbitMq Release
+name: Vector Release
 
 on:
   workflow_dispatch:
@@ -24,15 +24,15 @@ on:
         - 2022        
         
 concurrency:
-  group: rabbitmq-release
+  group: vector-release
   cancel-in-progress: true
 
 jobs:
   release-component:
-    name: RabbitMQ Release
+    name: Vector Release
     uses: ./.github/workflows/shared-component-release.yml
     with:
-      component_name: RabbitMq
+      component_name: vector
       name: ${{ inputs.names }}
       tag: ${{ inputs.tag }}
       description: ${{ inputs.description }}
