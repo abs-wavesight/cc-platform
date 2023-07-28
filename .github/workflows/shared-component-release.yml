@@ -21,20 +21,8 @@ on:
         description: Description of the release
       windows-version:
         required: true
-        type: choice
-        description: Windows version for the Release
-        options:
-        - 2019
-        - 2022
-        
-defaults:
-  run:
-    shell: pwsh
-
-env:  
-  ABS_NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }},
-  ABS_NUGET_USERNAME: ${{ github.ACTOR }}
-  REGISTRY: ghcr.io
+        type: string
+        description: Windows version for the Release  
 
 jobs:
   release-component:
