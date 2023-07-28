@@ -43,9 +43,6 @@ jobs:
         with:
           string: ${{ inputs.tag }}-${{ steps.time.outputs.time }}
           
-      - uses: actions/checkout@v3
-        name: Checkout branch
-
       - name: Nuget - Set Nuget credentials
         working-directory: ./
         run: |
@@ -94,6 +91,7 @@ jobs:
       - name: Chunk contents
         run: |
           .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
+          rm Release.zip
           
       - name: Build release
         uses: ncipollo/release-action@v1

@@ -1,4 +1,4 @@
-name: RabbitMq Release
+name: Central Release
 
 on:
   workflow_dispatch:
@@ -17,19 +17,103 @@ on:
         description: Windows version for the Release
         options:
         - 2019
-        - 2022    
+        - 2022
+      rabbitmq-tag:
+        required: true
+        type: string
+        description: Tag to use for RabbitMQ release
+      vexctor-central-tag:
+        required: true
+        type: string
+        description: Tag to use for Vector central release        
         
 concurrency:
-  group: rabbitmq-release
+  group: central-system-release
   cancel-in-progress: true
 
 jobs:
   release-component:
-    name: RabbitMQ Release
-    uses: ./.github/workflows/shared-component-release.yml
-    with:
-      name: RabbitMQ Release ${{ inputs.windows-version }} ${{ inputs.version }}
-      component_name: RabbitMq
-      tag: rabbitmq-${{ inputs.windows-version }}-${{ inputs.version }}
-      description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
+    name: Component Release
+    runs-on: windows-2019
+
+    steps:
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@master
+        with:
+          timeZone: UTC
+          format: 'YYYYMMDDHHmmss'
+          
+      - name: Build Tag
+        id: build-tag
+        uses: vishalmamidi/lowercase-action@v1
+        with:
+          string: central-system-${{ inputs.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
+          
+      - name: Nuget - Set Nuget credentials
+        working-directory: ./
+        run: |
+          $AbsNugetUsername = "USERNAME"
+          echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          $AbsNugetPassword = "${{ github.TOKEN }}"
+          echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append 
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+                   
+      - name: Download installer
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/Installer
+          file: Abs.CommonCore.Installer.exe
+          target: Installer.exe
+          token: ${{ secrets.GITHUB_TOKEN }}                   
+      
+      - name: Download installer config
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/Installer
+          file: SystemRegistryConfig.json
+          target: SystemRegistryConfig.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Download components       
+        run: |
+          .\Installer.exe download -r SystemRegistryConfig.json -c RabbitMQ -c Vector-Central -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RabbitReleaseTag:${{ inputs.windows-version }}
+
+      - name: Process RabbitMQ    
+        run: |
+          .\Installer.exe unchunk -s c:/abs/installer/RabbitMQ
+          .\Installer.exe uncompress -s c:/abs/installer/RabbitMQ/Release.zip -d c:/abs/installer/RabbitMQ
+
+      - name: Process Vector Central    
+        run: |
+          .\Installer.exe unchunk -s c:/abs/installer/Vector-Central
+          .\Installer.exe uncompress -s c:/abs/installer/Vector-Central/Release.zip -d c:/abs/installer/Vector-Central
+
+      - name: Compress contents
+        run: |
+          .\Installer.exe compress -s c:/abs/installer -d Release.zip
+          
+      - name: Chunk contents
+        run: |
+          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
+          
+      - name: Build release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ inputs.description }}
+          name: ${{ inputs.name }}
+          tag: ${{ steps.build-tag.outputs.lowercase }}
+          commit: main
+          artifacts: "Release.zip*"
