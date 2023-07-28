@@ -25,7 +25,7 @@ on:
       vector-central-tag:
         required: true
         type: string
-        description: Tag to use for Vector central release        
+        description: Tag to use for Vector central release
         
 concurrency:
   group: central-system-release

@@ -9,6 +9,11 @@ services:
     # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings	
     hostname: "vector"	
     image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION
+    environment:
+      - VECTOR_CONFIG=C:/config/vector.toml    
+      - VECTOR_LOG_FORMAT=json
+      - VECTOR_COLOR=never
+      - LOG_RETENTION_PERIOD=7d      
     logging:	
       driver: local	
     ports:	
