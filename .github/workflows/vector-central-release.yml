@@ -30,6 +30,6 @@ jobs:
     with:
       name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: vector-central
-      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
+      tag: vector-central-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
