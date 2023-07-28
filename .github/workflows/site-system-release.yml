@@ -1,4 +1,4 @@
-name: RabbitMq Release
+name: Central Site Release
 
 on:
   workflow_dispatch:

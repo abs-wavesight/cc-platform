@@ -1,4 +1,4 @@
-name: Central Release
+name: Central System Release
 
 on:
   workflow_dispatch:
