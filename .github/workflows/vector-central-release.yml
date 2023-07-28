@@ -1,4 +1,4 @@
-name: RabbitMq Release
+name: Vector Central Release
 
 on:
   workflow_dispatch:
@@ -17,19 +17,19 @@ on:
         description: Windows version for the Release
         options:
         - 2019
-        - 2022    
+        - 2022        
         
 concurrency:
-  group: rabbitmq-release
+  group: vector-central-release
   cancel-in-progress: true
 
 jobs:
   release-component:
-    name: RabbitMQ Release
+    name: Vector Central Release
     uses: ./.github/workflows/shared-component-release.yml
     with:
-      name: RabbitMQ Release ${{ inputs.windows-version }} ${{ inputs.version }}
-      component_name: RabbitMq
-      tag: rabbitmq-${{ inputs.windows-version }}-${{ inputs.version }}
+      name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
+      component_name: vector-central
+      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
