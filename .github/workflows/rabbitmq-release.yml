@@ -100,6 +100,5 @@ jobs:
           body: ${{ inputs.description }}
           name: ${{ inputs.name }}
           tag: ${{ inputs.tag }}
-          commit: true
+          commit: main
           artifacts: "Release.zip*"
-          bodyFile: "body.md"
