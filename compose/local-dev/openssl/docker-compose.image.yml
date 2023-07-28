@@ -1,5 +1,5 @@
 ﻿---
-version: '3'
+version: '3.9'
 
 services:
   cc.openssl-generate-certs:

@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
   cc.drex-service:
@@ -10,6 +10,14 @@ services:
       - cc.rabbitmq
     environment:
       - SiteConfigFileName=C:/app/config/site-config.json
+    entrypoint:
+      [
+        "cmd",
+        "/Q",
+        "/C",
+        "call",
+        "C:\\app\\config\\bootstrap.bat"
+      ]
     ports:
       - "12345:5000"
     restart: always
