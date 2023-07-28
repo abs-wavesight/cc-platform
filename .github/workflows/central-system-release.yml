@@ -22,7 +22,7 @@ on:
         required: true
         type: string
         description: Tag to use for RabbitMQ release
-      vexctor-central-tag:
+      vector-central-tag:
         required: true
         type: string
         description: Tag to use for Vector central release        
@@ -89,7 +89,7 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r SystemRegistryConfig.json -c RabbitMQ -c Vector-Central -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RabbitReleaseTag:${{ inputs.windows-version }}
+          .\Installer.exe download -r SystemRegistryConfig.json -c RabbitMQ -c Vector-Central -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
 
       - name: Process RabbitMQ    
         run: |
