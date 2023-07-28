@@ -27,15 +27,6 @@ concurrency:
   group: rabbitmq-release
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: pwsh
-
-env:  
-  ABS_NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }},
-  ABS_NUGET_USERNAME: ${{ github.ACTOR }}
-  REGISTRY: ghcr.io
-
 jobs:
   release-component:
     name: Release Component
