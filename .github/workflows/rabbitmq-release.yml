@@ -11,14 +11,10 @@ on:
         required: true
         type: string
         description: Unique tag for the release
-      version-number:
+      description:
         required: true
         type: string
-        description: Unique version number for the release
-      readme:
-        required: true
-        type: string
-        description: Link to Readme.md file for the Release
+        description: Description of the release
       windows-version:
         required: true
         type: choice
@@ -98,6 +94,12 @@ jobs:
         run: |
           .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
           
-      - name: List contents
-        run: |
-          cmd /r dir *
+      - name: Build release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ inputs.description }}
+          name: ${{ inputs.name }}
+          tag: ${{ inputs.tag }}
+          commit: true
+          artifacts: "Release.zip*"
+          bodyFile: "body.md"
