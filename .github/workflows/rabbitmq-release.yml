@@ -30,6 +30,6 @@ jobs:
     with:
       name: RabbitMQ Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: RabbitMq
-      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
+      tag: rabbitmq-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
