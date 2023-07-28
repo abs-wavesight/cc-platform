@@ -1,0 +1,35 @@
+name: Vector Central Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: Unique version for the release
+      description:
+        required: true
+        type: string
+        description: Description of the release
+      windows-version:
+        required: true
+        type: choice
+        description: Windows version for the Release
+        options:
+        - 2019
+        - 2022        
+        
+concurrency:
+  group: vector-central-release
+  cancel-in-progress: true
+
+jobs:
+  release-component:
+    name: Vector Central Release
+    uses: ./.github/workflows/shared-component-release.yml
+    with:
+      name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
+      component_name: vector-central
+      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
+      description: ${{ inputs.description }}
+      windows-version: ${{ inputs.windows-version }}
