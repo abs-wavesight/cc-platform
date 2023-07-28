@@ -92,7 +92,7 @@ jobs:
         with:
           version: tags/Installer
           file: CentralSystemDownloaderConfig.json
-          target: CentralSystemDownloaderConfig.json
+          target: SystemDownloaderConfig.json
           token: ${{ secrets.GITHUB_TOKEN }}          
           
       - name: Download installer install config
@@ -100,22 +100,20 @@ jobs:
         with:
           version: tags/Installer
           file: CentralSystemInstallerConfig.json
-          target: CentralSystemInstallerConfig.json
+          target: SystemInstallerConfig.json
           token: ${{ secrets.GITHUB_TOKEN }}              
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r SystemRegistryConfig.json -d CentralSystemDownloaderConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
+          .\Installer.exe download -r SystemRegistryConfig.json -d SystemDownloaderConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
 
-      - name: Process RabbitMQ    
+      - name: Process Components   
         run: |
-          .\Installer.exe unchunk -s c:/abs/installer/RabbitMQ
-          .\Installer.exe uncompress -s c:/abs/installer/RabbitMQ/Release.zip -d c:/abs/installer/RabbitMQ
-
-      - name: Process Vector Central    
-        run: |
-          .\Installer.exe unchunk -s c:/abs/installer/Vector-Central
-          .\Installer.exe uncompress -s c:/abs/installer/Vector-Central/Release.zip -d c:/abs/installer/Vector-Central
+          foreach($component in ("RabbitMQ", "Vector-Central")
+          {
+            .\Installer.exe unchunk -s c:/abs/installer/$component
+            .\Installer.exe uncompress -s c:/abs/installer/$component/Release.zip -d c:/abs/installer/$component          
+          }          
 
       - name: Compress contents
         run: |
@@ -133,4 +131,4 @@ jobs:
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
-          artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,CentralSystemInstallerConfig.json"
+          artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemInstallerConfig.json"
