@@ -39,7 +39,7 @@ jobs:
           
       - name: Build Tag
         id: build-tag
-        uses: Entepotenz/change-string-case-action@v1
+        uses: Entepotenz/change-string-case-action-min-dependencies@v1
         with:
           string: ${{ inputs.tag }}-${{ steps.time.outputs.time }}
           
