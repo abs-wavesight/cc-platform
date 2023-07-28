@@ -34,7 +34,7 @@ jobs:
         id: time
         uses: nanzm/get-time-action@master
         with:
-          timeZone: UTC+8
+          timeZone: UTC
           format: 'YYYYMMDDHHmmss'
           
       - name: Build Tag
