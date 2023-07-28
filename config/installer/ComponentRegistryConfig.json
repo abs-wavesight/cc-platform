@@ -42,8 +42,8 @@
         },
 		{
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/remap-site-logs.vrl",
-          "destination": "remap-site-logs.vrl"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/remap-container-logs.vrl",
+          "destination": "remap-container-logs.vrl"
         }
       ],
       "actions": []
