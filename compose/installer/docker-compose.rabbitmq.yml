@@ -15,10 +15,21 @@ services:
       - "5671:5671"
       - "15671:15671"
     healthcheck:
-      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://rabbitmq-local:15671" ]
-      interval: 5s
-      timeout: 10s
-      start_period: 45s
+      test:
+        [
+          "CMD",
+          "powershell",
+          "-Command",
+          "Invoke-WebRequest",
+          "-UseBasicParsing",
+          "-Method",
+          "HEAD",
+          "-Uri",
+          "https://rabbitmq-local:15671"
+        ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
       retries: 1
     depends_on:
       cc.openssl-generate-certs:

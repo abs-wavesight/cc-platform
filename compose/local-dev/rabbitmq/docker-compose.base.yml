@@ -8,17 +8,38 @@ services:
       RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\cc-rabbitmq.conf
     logging:
       driver: local
-    profiles: ['templates']
+    profiles: [ 'templates' ]
     restart: always
-    entrypoint: ["powershell", "-c"]
-    command: ["Import-Certificate", "-CertStoreLocation", "Cert:\\LocalMachine\\root", "-FilePath", "C:\\certs\\rabbitmq.cer", ";",
-              "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"]
+    entrypoint: [ "powershell", "-c" ]
+    command:
+      [
+        "Import-Certificate",
+        "-CertStoreLocation",
+        "Cert:\\LocalMachine\\root",
+        "-FilePath",
+        "C:\\certs\\rabbitmq.cer",
+        ";",
+        "cmd",
+        "/C",
+        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
+      ]
     healthcheck:
-      test: [ "CMD", "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "https://localhost:15671" ]
-      interval: 5s
-      timeout: 10s
-      # start_period is set to 60s because it takes awhile to start up, especially when starting multiple instances of rabbitmq simultaneously
-      start_period: 60s
+      test:
+        [
+          "CMD",
+          "powershell",
+          "-Command",
+          "Invoke-WebRequest",
+          "-UseBasicParsing",
+          "-Method",
+          "HEAD",
+          "-Uri",
+          "https://localhost:15671"
+        ]
+      interval: 10s
+      timeout: 15s
+      # start_period is set high because it takes awhile to start up, especially when starting multiple instances of rabbitmq simultaneously
+      start_period: 120s
       retries: 1
     volumes:
       - &config_volume
@@ -34,7 +55,7 @@ services:
     ports:
       - "5671:5671"
       - "15671:15671"
-    profiles: ['rabbitmq-local']
+    profiles: [ 'rabbitmq-local' ]
     volumes:
       - *config_volume
       - type: volume
@@ -59,7 +80,7 @@ services:
     ports:
       - "5681:5671"
       - "15681:15671"
-    profiles: ['rabbitmq-remote']
+    profiles: [ 'rabbitmq-remote' ]
     volumes:
       - *config_volume
       - type: volume
