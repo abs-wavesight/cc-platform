@@ -67,6 +67,7 @@ jobs:
       - name: Download installer
         uses: dsaltares/fetch-gh-release-asset@master
         with:
+          repo: 'abs-wavesight/cc-platform'
           version: tags/Installer
           file: Abs.CommonCore.Installer.exe
           target: Installer.exe
@@ -75,6 +76,7 @@ jobs:
       - name: Download installer config
         uses: dsaltares/fetch-gh-release-asset@master
         with:
+          repo: 'abs-wavesight/cc-platform'
           version: tags/Installer
           file: ComponentRegistryConfig.json
           target: ComponentRegistryConfig.json
