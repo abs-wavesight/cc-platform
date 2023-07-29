@@ -57,11 +57,11 @@ jobs:
           shell: pwsh
           run: |
             $output = @'
-            ${{ inputs.description }}
+${{ inputs.description }}
             
-            RabbitMQ: ${{ inputs.rabbitmq-tag }}
-            Vector Central: ${{ inputs.vector-central-tag }}
-            '@;
+RabbitMQ: ${{ inputs.rabbitmq-tag }}
+Vector Central: ${{ inputs.vector-central-tag }}
+'@;
             $output;
 
       - name: Nuget - Set Nuget credentials
