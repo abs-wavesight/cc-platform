@@ -56,7 +56,8 @@ jobs:
         with:
           shell: pwsh
           run: |
-            "${{ inputs.description }}`r`n`r`nRabbitMQ: ${{ inputs.rabbitmq-tag }}`r`nVector Central: ${{ inputs.vector-central-tag }}"            
+            $output = "${{ inputs.description }}`r`n`r`nRabbitMQ: ${{ inputs.rabbitmq-tag }}`r`nVector Central: ${{ inputs.vector-central-tag }}";
+            $output;
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
