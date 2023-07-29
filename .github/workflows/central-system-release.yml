@@ -52,7 +52,7 @@ jobs:
           
       - name: Build Release Body
         id: release_body
-        uses: mathiasvr/command-output@v2        
+        uses: mathiasvr/command-output@v2.0.0       
         with:
           shell: pwsh
           run: |
