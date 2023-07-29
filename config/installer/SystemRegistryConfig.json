@@ -93,16 +93,6 @@
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/Release.zip.part2",
           "destination": "c:/abs/temp/RabbitMQ/Release.zip.part2"
-        },		
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/docker-compose.rabbitmq.yml",
-          "destination": "docker-compose.rabbitmq.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
         }
       ],
       "actions": [
@@ -133,16 +123,6 @@
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/Release.zip",
           "destination": "c:/abs/temp/Vector-Site/Release.zip"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/docker-compose.vector.yml",
-          "destination": "docker-compose.vector.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/vector.toml",
-          "destination": "vector.toml"
         }
       ],
       "actions": [
@@ -177,16 +157,6 @@
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/Release.zip",
           "destination": "c:/abs/temp/Vector-Central/Release.zip"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/docker-compose.vector.yml",
-          "destination": "docker-compose.vector.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/vector.toml",
-          "destination": "vector.toml"
         }
       ],
       "actions": [
@@ -221,11 +191,6 @@
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/Release.zip",
           "destination": "c:/abs/temp/Drex/Release.zip"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/docker-compose.drex.yml",
-          "destination": "docker-compose.drex.yml"
         }
       ],
       "actions": [
