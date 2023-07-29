@@ -96,6 +96,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
             var containerFile = Path.Combine(rootLocation, destination);
+            var directory = Path.GetDirectoryName(containerFile)!;
+            Directory.CreateDirectory(directory);
 
             _logger.LogInformation($"Pulling image '{source}'");
             await _commandExecutionService.ExecuteCommandAsync("docker", $"pull {source}", rootLocation);
@@ -107,6 +109,8 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task ProcessSimpleFileAsync(Component component, string source, string destination)
         {
             var outputPath = Path.Combine(_registryConfig.Location, component.Name, destination);
+            var directory = Path.GetDirectoryName(outputPath)!;
+            Directory.CreateDirectory(directory);
 
             _logger.LogInformation($"Downloading file '{source}'");
             var data = await _dataRequestService.RequestByteArrayAsync(source);
