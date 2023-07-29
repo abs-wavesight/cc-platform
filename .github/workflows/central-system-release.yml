@@ -33,7 +33,7 @@ concurrency:
 
 jobs:
   release-component:
-    name: Component Release
+    name: System Release
     runs-on: windows-2019
 
     steps:
