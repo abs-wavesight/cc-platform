@@ -73,7 +73,7 @@ jobs:
           version: tags/Installer
           file: Abs.CommonCore.Installer.exe
           target: Installer.exe
-          token: ${{ secrets.FETCH_RELEASES_TOKEN }}   
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}   
       
       - name: Download installer config
         uses: dsaltares/fetch-gh-release-asset@master
@@ -82,7 +82,7 @@ jobs:
           version: tags/Installer
           file: ComponentRegistryConfig.json
           target: ComponentRegistryConfig.json
-          token: ${{ secrets.FETCH_RELEASES_TOKEN }}
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download components       
         run: |

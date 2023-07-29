@@ -87,7 +87,7 @@ jobs:
           version: tags/Installer
           file: Abs.CommonCore.Installer.exe
           target: Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}                   
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}                   
       
       - name: Download installer registry config
         uses: dsaltares/fetch-gh-release-asset@master
@@ -95,7 +95,7 @@ jobs:
           version: tags/Installer
           file: SystemRegistryConfig.json
           target: SystemRegistryConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download installer download config
         uses: dsaltares/fetch-gh-release-asset@master
@@ -103,7 +103,7 @@ jobs:
           version: tags/Installer
           file: CentralSystemDownloaderConfig.json
           target: SystemDownloaderConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}          
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}          
           
       - name: Download installer install config
         uses: dsaltares/fetch-gh-release-asset@master
@@ -111,7 +111,7 @@ jobs:
           version: tags/Installer
           file: CentralSystemInstallerConfig.json
           target: SystemInstallerConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}              
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}              
           
       - name: Download components       
         run: |
