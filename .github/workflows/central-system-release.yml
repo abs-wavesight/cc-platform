@@ -51,13 +51,14 @@ jobs:
           string: central-system-${{ inputs.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
           
       - name: Build Release Body
-        id: release_body
-        uses: mathiasvr/command-output@v2.0.0       
+        id: release_body        
+        uses: mkungla/actions-set-text-output@v1
         with:
-          shell: pwsh
-          run: |
-            $output = "${{ inputs.description }}`r`n`r`nRabbitMQ: ${{ inputs.rabbitmq-tag }}`r`nVector Central: ${{ inputs.vector-central-tag }}";
-            $output;
+          text: |
+            ${{ inputs.description }}
+            
+            RabbitMQ: ${{ inputs.rabbitmq-tag }}
+            Vector Central: ${{ inputs.vector-central-tag }}  
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
@@ -139,7 +140,7 @@ jobs:
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ steps.release_body.outputs.stdout }}
+          body: ${{ steps.release_body.outputs.value }}
           name: Central System Release ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
