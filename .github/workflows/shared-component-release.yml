@@ -71,7 +71,7 @@ jobs:
           version: tags/Installer
           file: Abs.CommonCore.Installer.exe
           target: Installer.exe
-          token: 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                
+          token: ${{ secrets.GITHUB_TOKEN }}                   
       
       - name: Download installer config
         uses: dsaltares/fetch-gh-release-asset@master
@@ -80,7 +80,7 @@ jobs:
           version: tags/Installer
           file: ComponentRegistryConfig.json
           target: ComponentRegistryConfig.json
-          token: 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
+          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Download components       
         run: |
