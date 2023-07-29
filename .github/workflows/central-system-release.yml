@@ -109,7 +109,7 @@ jobs:
 
       - name: Process Components   
         run: |
-          foreach($component in ("RabbitMQ", "Vector-Central")
+          foreach($component in ("RabbitMQ", "Vector-Central"))
           {
             .\Installer.exe unchunk -s c:/abs/installer/$component
             .\Installer.exe uncompress -s c:/abs/installer/$component/Release.zip -d c:/abs/installer/$component          
