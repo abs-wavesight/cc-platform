@@ -65,13 +65,16 @@ namespace Installer.Tests.Actions
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
-        [Fact]
-        public async Task ValidConfig_RealFileDownloaded()
+        [Theory]
+        [InlineData(@"Configs/DownloadTest_RegistryConfig.json")]
+        [InlineData(@"Configs/DownloadTest_GithubRawFileConfig.json")]
+        [InlineData(@"Configs/DownloadTest_GithubReleaseFileConfig.json")]
+        public async Task ValidConfig_RealFileDownloaded(string configPath)
         {
             var loggerFactory = NullLoggerFactory.Instance;
             var dataRequest = new DataRequestService(loggerFactory);
             var commandExecution = new CommandExecutionService(loggerFactory);
-            var registry = new FileInfo(@"Configs/DownloadTest_RegistryConfig.json");
+            var registry = new FileInfo(configPath);
             var config = new FileInfo(@"Configs/DownloaderConfig.json");
             var parameters = new Dictionary<string, string>();
 
@@ -82,6 +85,7 @@ namespace Installer.Tests.Actions
             await downloader.ExecuteAsync();
 
             Assert.True(File.Exists(expectedFile));
+            File.Delete(expectedFile);
         }
 
         private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
