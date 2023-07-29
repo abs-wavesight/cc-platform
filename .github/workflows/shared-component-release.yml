@@ -24,8 +24,6 @@ on:
         type: string
         description: Windows version for the Release  
 
-permissions: write-all
-
 jobs:
   release-component:
     name: Component Release
