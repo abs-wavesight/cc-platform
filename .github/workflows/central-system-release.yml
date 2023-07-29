@@ -52,13 +52,14 @@ jobs:
           
       - name: Build Release Body
         id: release_body
-        uses: dsaltares/fetch-gh-release-asset@master      
-        run: |
-          ${{ inputs.description }}
-          
-          RabbitMQ: ${{ inputs.rabbitmq-tag }}
-          Vector Central: ${{ inputs.vector-central-tag }}          
-          
+        uses: mkungla/actions-set-text-output@v1
+        with:
+          text: |
+            ${{ inputs.description }}
+            
+            RabbitMQ: ${{ inputs.rabbitmq-tag }}
+            Vector Central: ${{ inputs.vector-central-tag }}          
+
       - name: Nuget - Set Nuget credentials
         working-directory: ./
         run: |
