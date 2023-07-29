@@ -71,6 +71,11 @@ namespace Abs.CommonCore.Installer.Actions
                 })
                 .ToArray();
 
+            if (files.Length == 0)
+            {
+                return;
+            }
+
             destination.Delete();
             using (var destinationStream = destination.OpenWrite())
             {
