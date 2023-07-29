@@ -130,8 +130,8 @@ jobs:
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ inputs.description }}
-          name: ${{ inputs.name }}
+          body: "${{ inputs.description }}\r\n\RabbitMQ: ${{ inputs.rabbitmq-tag }}\r\nVector Central: ${{ inputs.vector-central-tag }}"
+          name: Central System Release ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
           artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemInstallerConfig.json"
