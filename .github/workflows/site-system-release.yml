@@ -40,7 +40,10 @@ jobs:
     name: Site System Release
     runs-on: windows-2019    
     
-    steps:    
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch      
+    
       - name: Build Release Body
         id: release_body        
         uses: mkungla/actions-set-text-output@v1
@@ -53,7 +56,7 @@ jobs:
             Drex: ${{ inputs.drex-tag }}
             
       - name: System Release             
-        uses: ./.github/workflows/shared-system-release.yml@feature/ADO-20640-github-action
+        uses: ./.github/workflows/shared-system-release.yml
         with:
           version: ${{ inputs.version }}
           windows-version: ${{ inputs.windows-version }}
