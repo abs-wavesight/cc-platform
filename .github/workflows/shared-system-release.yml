@@ -38,11 +38,7 @@ on:
       components-list: # "RabbitMQ", "Vector-Site", "Drex"
         required: true
         type: string
-        description: List of components to process      
-      components-list: # "RabbitMQ", "Vector-Site", "Drex"
-        required: true
-        type: string
-        description: List of components to process          
+        description: List of components to process        
       release-fetch-token: # secrets.FETCH_ALL_RELEASES_TOKEN
         required: true
         type: string
