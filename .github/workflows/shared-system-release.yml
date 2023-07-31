@@ -31,18 +31,14 @@ on:
         required: true
         type: string
         description: Name of the installer config file        
-     downloader-parameters: # -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
+      downloader-parameters: # -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
         required: true
         type: string
         description: Full parameter list for downloader command      
-     components-list: # "RabbitMQ", "Vector-Site", "Drex"
+      components-list: # "RabbitMQ", "Vector-Site", "Drex"
         required: true
         type: string
-        description: List of components to process
-     release-name-prefix: # Drex Release
-        required: true
-        type: string
-        description: Prefix to use for release name       
+        description: List of components to process      
 
 jobs:
   release-component:
@@ -122,7 +118,7 @@ jobs:
 
       - name: Process Components   
         run: |
-          foreach($component in (${{ inputs.components-list }}))
+          foreach($component in ${{ inputs.components-list }})
           {
             .\Installer.exe unchunk -s c:/abs/temp/$component -d c:/abs/temp/$component/Release.zip
             .\Installer.exe uncompress -s c:/abs/temp/$component/Release.zip -d c:/abs/installer          
