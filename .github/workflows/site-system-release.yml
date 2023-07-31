@@ -38,8 +38,7 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-    runs-on: windows-2019
-    secrets: inherit
+    runs-on: windows-2019    
     
     steps:
       - name: Build Release Body
@@ -64,4 +63,5 @@ jobs:
           downloader-config: SiteSystemDownloaderConfig.json
           installer-config: SiteSystemInstallerConfig.json
           downloader-parameters: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
-          components-list: ('RabbitMQ', 'Vector-Site', 'Drex')        
+          components-list: ('RabbitMQ', 'Vector-Site', 'Drex')      
+          release-fetch-token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
