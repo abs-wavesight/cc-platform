@@ -38,7 +38,7 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-    uses: abs-wavesight/cc-platform/.github/workflows/shared-system-release.yml@feature/ADO-20640-github-action 
+    uses: ./.github/workflows/shared-system-release.yml
     with:
       version: ${{ inputs.version }}
       windows-version: ${{ inputs.windows-version }}
