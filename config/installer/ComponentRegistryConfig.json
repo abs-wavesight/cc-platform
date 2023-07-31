@@ -20,7 +20,16 @@
           "destination": "cc-rabbitmq.conf"
         }
       ],
-      "actions": []
+      "actions": [
+	  	{
+          "source": "docker-compose.rabbitmq.yml",
+          "action": "replaceParameters"
+        },	
+	  	{
+          "source": "cc-rabbitmq.conf",
+          "action": "replaceParameters"
+        }		
+	  ]
     },
     {
       "name": "Vector-Site",
@@ -32,7 +41,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector-site.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20640-github-action/compose/installer/docker-compose.vector-site.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
@@ -46,7 +55,20 @@
           "destination": "remap-container-logs.vrl"
         }
       ],
-      "actions": []
+      "actions": [
+	  	{
+          "source": "docker-compose.vector.yml",
+          "action": "replaceParameters"
+        },	
+	  	{
+          "source": "vector.toml",
+          "action": "replaceParameters"
+        },
+	  	{
+          "source": "remap-container-logs.vrl",
+          "action": "replaceParameters"
+        }			
+	  ]
     },
     {
       "name": "Vector-Central",
@@ -58,7 +80,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector-central.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20640-github-action/compose/installer/docker-compose.vector-central.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
@@ -72,7 +94,20 @@
           "destination": "remap-site-logs.vrl"
         }
       ],
-      "actions": []
+      "actions": [
+	  	{
+          "source": "docker-compose.vector.yml",
+          "action": "replaceParameters"
+        },	
+	  	{
+          "source": "vector.toml",
+          "action": "replaceParameters"
+        },
+	  	{
+          "source": "remap-site-logs.vrl",
+          "action": "replaceParameters"
+        }			
+	  ]
     },	
     {
       "name": "Drex",
@@ -88,7 +123,12 @@
           "destination": "docker-compose.drex.yml"
         }
       ],
-      "actions": []
+      "actions": [
+	  	{
+          "source": "docker-compose.drex.yml",
+          "action": "replaceParameters"
+        }		
+	  ]
     }
   ]
 }
