@@ -14,15 +14,19 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize)
         {
+            _logger.LogInformation($"Chunking file '{source.FullName}' to folder '{destination.FullName}'");
+
             if (source.Exists == false)
                 throw new Exception("Source file does not exist");
 
             if (source.Length < maxSize)
+            {
+                _logger.LogInformation("Source file is under max size");
                 return;
+            }
 
             Directory.CreateDirectory(destination.FullName);
 
-            _logger.LogInformation($"Breaking {source.Name} file into chunks");
             var bufferSize = Math.Min(4 * 1024, maxSize);
             var buffer = new byte[bufferSize];
             var currentChunkCount = 1;
@@ -60,6 +64,8 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination)
         {
+            _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
+
             if (source.Exists == false)
                 throw new Exception("Source location doesn't exist");
 

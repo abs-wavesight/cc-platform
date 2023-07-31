@@ -14,6 +14,8 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination)
         {
+            _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
+
             await Task.Yield();
             File.Delete(destination.FullName);
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
@@ -21,6 +23,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination)
         {
+            _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
         }
