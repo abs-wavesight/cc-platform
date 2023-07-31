@@ -50,6 +50,9 @@ jobs:
     runs-on: windows-2019
 
     steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch    
+    
       - name: Get Time
         id: time
         uses: nanzm/get-time-action@master
