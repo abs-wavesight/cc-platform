@@ -38,20 +38,20 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-      uses: abs-wavesight/cc-platform/.github/workflows/shared-system-release.yml@feature/ADO-20640-github-action 
-      with:
-        version: ${{ inputs.version }}
-        windows-version: ${{ inputs.windows-version }}
-        tag-prefix: site-system          
-        release-name-prefix: Site System Release
-        downloader-config: SiteSystemDownloaderConfig.json
-        installer-config: SiteSystemInstallerConfig.json
-        downloader-parameters: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
-        components-list: ('RabbitMQ', 'Vector-Site', 'Drex')      
-        release-fetch-token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
-        release-body: |
-          ${{ inputs.description }}
-          
-          RabbitMQ: ${{ inputs.rabbitmq-tag }}
-          Vector Site: ${{ inputs.vector-site-tag }}  
-          Drex: ${{ inputs.drex-tag }}
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-system-release.yml@feature/ADO-20640-github-action 
+    with:
+      version: ${{ inputs.version }}
+      windows-version: ${{ inputs.windows-version }}
+      tag-prefix: site-system          
+      release-name-prefix: Site System Release
+      downloader-config: SiteSystemDownloaderConfig.json
+      installer-config: SiteSystemInstallerConfig.json
+      downloader-parameters: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
+      components-list: ('RabbitMQ', 'Vector-Site', 'Drex')      
+      release-fetch-token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+      release-body: |
+        ${{ inputs.description }}
+        
+        RabbitMQ: ${{ inputs.rabbitmq-tag }}
+        Vector Site: ${{ inputs.vector-site-tag }}  
+        Drex: ${{ inputs.drex-tag }}
