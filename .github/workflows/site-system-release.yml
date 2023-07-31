@@ -41,6 +41,9 @@ jobs:
     runs-on: windows-2019    
     
     steps:
+      - uses: actions/checkout@v3
+        name: Checkout branch      
+    
       - name: Build Release Body
         id: release_body        
         uses: mkungla/actions-set-text-output@v1
