@@ -55,3 +55,4 @@ jobs:
         RabbitMQ: ${{ inputs.rabbitmq-tag }}
         Vector Site: ${{ inputs.vector-site-tag }}  
         Drex: ${{ inputs.drex-tag }}
+    secrets: inherit
