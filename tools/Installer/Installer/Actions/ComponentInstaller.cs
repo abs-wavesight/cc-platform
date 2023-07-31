@@ -203,22 +203,23 @@ namespace Abs.CommonCore.Installer.Actions
 
         private async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
-            var text = await File.ReadAllTextAsync(action.Source);
+            var path = Path.Combine(rootLocation, action.Source);
+            var text = await File.ReadAllTextAsync(path);
 
             foreach (var param in _allParameters)
             {
                 text = text.Replace(param.Key, param.Value, StringComparison.OrdinalIgnoreCase);
             }
 
-            await File.WriteAllTextAsync(action.Source, text);
+            await File.WriteAllTextAsync(path, text);
         }
 
         private async Task RunChunkCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var chunker = new DataChunker(_loggerFactory);
 
-            var source = new FileInfo(action.Source);
-            var destination = new DirectoryInfo(action.Destination);
+            var source = new FileInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
             await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize);
         }
 
@@ -226,8 +227,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var chunker = new DataChunker(_loggerFactory);
 
-            var source = new DirectoryInfo(action.Source);
-            var destination = new FileInfo(action.Destination);
+            var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
             await chunker.UnchunkFileAsync(source, destination);
         }
 
@@ -235,8 +236,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var compressor = new DataCompressor(_loggerFactory);
 
-            var source = new DirectoryInfo(action.Source);
-            var destination = new FileInfo(action.Destination);
+            var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
             await compressor.CompressDirectoryAsync(source, destination);
         }
 
@@ -244,8 +245,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var compressor = new DataCompressor(_loggerFactory);
 
-            var source = new FileInfo(action.Source);
-            var destination = new DirectoryInfo(action.Destination);
+            var source = new FileInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
             await compressor.UncompressFileAsync(source, destination);
         }
 
