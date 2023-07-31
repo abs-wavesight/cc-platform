@@ -33,3 +33,4 @@ jobs:
       tag: vector-site-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
+    secrets: inherit
