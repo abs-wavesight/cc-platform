@@ -55,14 +55,14 @@ jobs:
       - name: System Release             
         uses: ./.github/workflows/shared-system-release.yml
         with:
-            version: ${{ inputs.version }}
-            windows-version: ${{ inputs.windows-version }}
-            tag-prefix: site-system
-            release-body: ${{ steps.release_body.outputs.value }}
-            release-name-prefix: Site System Release
-            downloader-config: SiteSystemDownloaderConfig.json
-            installer-config: SiteSystemInstallerConfig.json
-            downloader-parameters: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
-            components-list: "RabbitMQ", "Vector-Site", "Drex"
-            release-name-prefix: Site System Release
+          version: ${{ inputs.version }}
+          windows-version: ${{ inputs.windows-version }}
+          tag-prefix: site-system
+          release-body: ${{ steps.release_body.outputs.value }}
+          release-name-prefix: Site System Release
+          downloader-config: SiteSystemDownloaderConfig.json
+          installer-config: SiteSystemInstallerConfig.json
+          downloader-parameters: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
+          components-list: "RabbitMQ", "Vector-Site", "Drex"
+          release-name-prefix: Site System Release
         secrets: inherit

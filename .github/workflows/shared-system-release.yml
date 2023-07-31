@@ -7,10 +7,6 @@ on:
         required: true
         type: string
         description: Unique version for the release
-      description:
-        required: true
-        type: string
-        description: Description of the release
       windows-version:
         required: true
         type: string
