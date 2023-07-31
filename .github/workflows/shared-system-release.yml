@@ -57,6 +57,12 @@ jobs:
           timeZone: UTC
           format: 'YYYYMMDDHHmmss'
           
+      - name: Build Release Body
+        id: release_body        
+        uses: mkungla/actions-set-text-output@v1
+        with:
+          text: ${{ inputs.release-body }}
+          
       - name: Build Tag
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
@@ -143,7 +149,7 @@ jobs:
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ inputs.release-body }}
+          body: ${{ steps.release-body.outputs.value }}
           name: ${{ inputs.release-name-prefix }} ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
