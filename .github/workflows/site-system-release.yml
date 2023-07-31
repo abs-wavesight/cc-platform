@@ -56,7 +56,7 @@ jobs:
             Drex: ${{ inputs.drex-tag }}
             
       - name: System Release             
-        uses: ./.github/workflows/shared-system-release.yml
+        uses: abs-wavesight/cc-platform/.github/workflows/shared-system-release.yml@feature/ADO-20640-github-action 
         with:
           version: ${{ inputs.version }}
           windows-version: ${{ inputs.windows-version }}
