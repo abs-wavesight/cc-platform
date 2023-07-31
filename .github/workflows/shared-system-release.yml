@@ -118,7 +118,7 @@ jobs:
 
       - name: Process Components   
         run: |
-          foreach($component in ${{ inputs.components-list }})
+          foreach($component in (${{ inputs.components-list }}))
           {
             .\Installer.exe unchunk -s c:/abs/temp/$component -d c:/abs/temp/$component/Release.zip
             .\Installer.exe uncompress -s c:/abs/temp/$component/Release.zip -d c:/abs/installer          
