@@ -58,7 +58,7 @@ namespace Installer.Tests.Actions
 
                 if (string.IsNullOrWhiteSpace(configPath) == false)
                 {
-                    var config = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(configFile.FullName);
+                    var config = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(configFile!.FullName);
                     foreach (var param in config.Parameters)
                     {
                         Assert.Contains(param.Value, outputText);
