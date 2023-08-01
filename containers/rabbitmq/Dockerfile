@@ -40,7 +40,7 @@ RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.c
 # enable managment plugin
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
 # Keep healthcheck timeout to 10s; 5s seems to be too short
-HEALTHCHECK --interval=5s --timeout=10s --start-period=30s --retries=1 CMD [ "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "http://localhost:15672" ]
+HEALTHCHECK --interval=5s --timeout=10s --start-period=120s --retries=1 CMD [ "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "http://localhost:15672" ]
 
 # run server when container starts - container will shutdown when this process ends
 CMD c:\rabbitmq\sbin\rabbitmq-server.bat
