@@ -23,10 +23,6 @@ on:
         required: true
         type: string
         description: Windows version for the Release  
-      commit-sha: # 6ac75515362a8121594772b31437e8bea6fa16cd
-        required: true
-        type: string
-        description: Full SHA for the commit  		
       full-commit-sha: # 6ac75515362a8121594772b31437e8bea6fa16cd
         required: true
         type: string
