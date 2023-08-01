@@ -104,26 +104,18 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/Installer
-          file: SiteSystemDownloaderConfig.json
-          target: SystemDownloaderConfig.json
-          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}          
-
-      - name: Download installer install config
-        uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          version: tags/Installer
-          file: SiteSystemInstallerConfig.json
-          target: SystemInstallerConfig.json
-          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}              
+          file: SiteSystemConfig.json
+          target: SystemConfig.json
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}                     
 
       - name: Download components       
         run: |
-          .\Installer.exe download -r SystemRegistryConfig.json -d SystemDownloaderConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
+          .\Installer.exe download -r SystemRegistryConfig.json -d SystemConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
           
       - name: Process Components   
         run: |
-          .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemDownloaderConfig.json
-          .\Installer.exe uncompress -s c:/abs/temp/`$component/Release.zip -d c:/abs/installer -c SystemDownloaderConfig.json         
+          .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemConfig.json
+          .\Installer.exe uncompress -s c:/abs/temp/`$component/Release.zip -d c:/abs/installer -c SystemConfig.json         
           
       - name: Compress contents
         run: |
@@ -140,4 +132,4 @@ jobs:
           name: Site System Release ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
-          artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemInstallerConfig.json"
+          artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemConfig.json"
