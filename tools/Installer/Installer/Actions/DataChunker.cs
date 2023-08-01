@@ -58,6 +58,7 @@ namespace Abs.CommonCore.Installer.Actions
                         dataWritten = 0;
                         currentChunkCount++;
                         currentChunkFile = null;
+                        _logger.LogInformation($"Starting chunk {currentChunkCount}");
                     }
                 }
             }
@@ -98,6 +99,7 @@ namespace Abs.CommonCore.Installer.Actions
             {
                 foreach (var file in files)
                 {
+                    _logger.LogInformation($"Appending file: {file}");
                     using (var fileStream = File.OpenRead(file))
                     {
                         await fileStream.CopyToAsync(destinationStream);
