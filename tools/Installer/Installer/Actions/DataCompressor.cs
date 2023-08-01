@@ -16,6 +16,9 @@ namespace Abs.CommonCore.Installer.Actions
         {
             _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
 
+            if (Directory.Exists(source.FullName) == false)
+                throw new Exception("Source location does not exist");
+
             await Task.Yield();
             File.Delete(destination.FullName);
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
@@ -30,6 +33,10 @@ namespace Abs.CommonCore.Installer.Actions
         public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
         {
             _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
+
+            if (File.Exists(source.FullName) == false)
+                throw new Exception("Source location does not exist");
+
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
 

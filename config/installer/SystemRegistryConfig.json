@@ -87,12 +87,12 @@
         {
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/Release.zip.part1",
-          "destination": "c:/abs/temp/RabbitMQ/Release.zip.part1"
+          "destination": "c:/abs/temp/RabbitMq/Release.zip.part1"
         },
         {
           "type": "file",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/Release.zip.part2",
-          "destination": "c:/abs/temp/RabbitMQ/Release.zip.part2"
+          "destination": "c:/abs/temp/RabbitMq/Release.zip.part2"
         }
       ],
       "actions": [

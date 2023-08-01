@@ -16,8 +16,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             _logger.LogInformation($"Chunking file '{source.FullName}' to folder '{destination.FullName}'");
 
-            if (source.Exists == false)
-                throw new Exception("Source file does not exist");
+            if (File.Exists(source.FullName) == false)
+                throw new Exception("Source location does not exist");
 
             if (source.Length < maxSize)
             {
@@ -71,7 +71,7 @@ namespace Abs.CommonCore.Installer.Actions
         {
             _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
 
-            if (source.Exists == false)
+            if (Directory.Exists(source.FullName) == false)
                 throw new Exception("Source location doesn't exist");
 
             var files = Directory.GetFiles(source.FullName, $"*.{ChunkName}?")
