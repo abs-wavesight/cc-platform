@@ -119,11 +119,8 @@ jobs:
 
       - name: Process Components   
         run: |
-          foreach($component in ("RabbitMQ", "Vector-Central"))
-          {
-            .\Installer.exe unchunk -s c:/abs/temp/$component -d c:/abs/temp/$component/Release.zip
-            .\Installer.exe uncompress -s c:/abs/temp/$component/Release.zip -d c:/abs/installer        
-          }          
+          .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemDownloaderConfig.json
+          .\Installer.exe uncompress -s c:/abs/temp/`$component/Release.zip -d c:/abs/installer -c SystemDownloaderConfig.json
 
       - name: Compress contents
         run: |

@@ -1,7 +1,10 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
+using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,6 +15,8 @@ namespace Abs.CommonCore.Installer
     [ExcludeFromCodeCoverage]
     internal class Program
     {
+        private const string ComponentNamePlaceholder = "$component";
+
         public static async Task<int> Main(string[] args)
         {
             var downloadCommand = SetupDownloadCommand(args);
@@ -142,10 +147,15 @@ namespace Abs.CommonCore.Installer
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
 
-            command.SetHandler(async (source, dest, size, removeSource) =>
+            var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
+            configParam.IsRequired = false;
+            configParam.AddAlias("-c");
+            command.Add(configParam);
+
+            command.SetHandler(async (source, dest, size, removeSource, config) =>
             {
-                await ExecuteChunkCommandAsync(source, dest, size, removeSource, args);
-            }, sourceParam, destParam, sizeParam, removeSourceParam);
+                await ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args);
+            }, sourceParam, destParam, sizeParam, removeSourceParam, configParam);
 
             return command;
         }
@@ -170,10 +180,15 @@ namespace Abs.CommonCore.Installer
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
 
-            command.SetHandler(async (source, dest, removeSource) =>
+            var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
+            configParam.IsRequired = false;
+            configParam.AddAlias("-c");
+            command.Add(configParam);
+
+            command.SetHandler(async (source, dest, removeSource, config) =>
             {
-                await ExecuteUnchunkCommandAsync(source, dest, removeSource, args);
-            }, sourceParam, destParam, removeSourceParam);
+                await ExecuteUnchunkCommandAsync(source, dest, removeSource, config, args);
+            }, sourceParam, destParam, removeSourceParam, configParam);
 
             return command;
         }
@@ -198,10 +213,15 @@ namespace Abs.CommonCore.Installer
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
 
-            command.SetHandler(async (source, dest, removeSource) =>
+            var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
+            configParam.IsRequired = false;
+            configParam.AddAlias("-c");
+            command.Add(configParam);
+
+            command.SetHandler(async (source, dest, removeSource, config) =>
             {
-                await ExecuteCompressCommandAsync(source, dest, removeSource, args);
-            }, sourceParam, destParam, removeSourceParam);
+                await ExecuteCompressCommandAsync(source, dest, removeSource, config, args);
+            }, sourceParam, destParam, removeSourceParam, configParam);
 
             return command;
         }
@@ -226,10 +246,15 @@ namespace Abs.CommonCore.Installer
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
 
-            command.SetHandler(async (source, dest, removeSource) =>
+            var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
+            configParam.IsRequired = false;
+            configParam.AddAlias("-c");
+            command.Add(configParam);
+
+            command.SetHandler(async (source, dest, removeSource, config) =>
             {
-                await ExecuteUncompressCommandAsync(source, dest, removeSource, args);
-            }, sourceParam, destParam, removeSourceParam);
+                await ExecuteUncompressCommandAsync(source, dest, removeSource, config, args);
+            }, sourceParam, destParam, removeSourceParam, configParam);
 
             return command;
         }
@@ -255,37 +280,95 @@ namespace Abs.CommonCore.Installer
             await installer.ExecuteAsync(components);
         }
 
-        private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, string[] args)
+        private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataChunker(loggerFactory);
-            await chunker.ChunkFileAsync(source, destination, size, removeSource);
+            await ExecuteForComponentsAsync(source, destination, config,
+                async (s, d) =>
+                {
+                    await chunker.ChunkFileAsync(s, d, size, removeSource);
+                });
         }
 
-        private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, string[] args)
+        private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataChunker(loggerFactory);
-            await chunker.UnchunkFileAsync(source, destination, removeSource);
+            await ExecuteForComponentsAsync(source, destination, config,
+                async (s, d) =>
+                {
+                    await chunker.UnchunkFileAsync(s, d, removeSource);
+                });
         }
 
-        private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, string[] args)
+        private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new DataCompressor(loggerFactory);
-            await chunker.CompressDirectoryAsync(source, destination, removeSource);
+            var compressor = new DataCompressor(loggerFactory);
+            await ExecuteForComponentsAsync(source, destination, config,
+                async (s, d) =>
+                {
+                    await compressor.CompressDirectoryAsync(s, d, removeSource);
+                });
         }
 
 
-        private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, string[] args)
+        private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new DataCompressor(loggerFactory);
-            await chunker.UncompressFileAsync(source, destination, removeSource);
+            var compressor = new DataCompressor(loggerFactory);
+            await ExecuteForComponentsAsync(source, destination, config,
+                async (s, d) =>
+                {
+                    await compressor.UncompressFileAsync(s, d, removeSource);
+                });
+        }
+
+        private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
+        {
+            if (config == null)
+            {
+                await action(source, destination);
+                return;
+            }
+
+            var downloaderConfig = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(config.FullName);
+            var components = downloaderConfig.Components;
+
+            await components
+                .ForAllAsync(async c =>
+                {
+                    var s = source.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
+                    var d = destination.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
+
+                    await action(new FileInfo(s), new DirectoryInfo(d));
+                });
+        }
+
+        private static async Task ExecuteForComponentsAsync(DirectoryInfo source, FileInfo destination, FileInfo? config, Func<DirectoryInfo, FileInfo, Task> action)
+        {
+            if (config == null)
+            {
+                await action(source, destination);
+                return;
+            }
+
+            var downloaderConfig = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(config.FullName);
+            var components = downloaderConfig.Components;
+
+            await components
+                .ForAllAsync(async c =>
+                {
+                    var s = source.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
+                    var d = destination.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
+
+                    await action(new DirectoryInfo(s), new FileInfo(d));
+                });
         }
 
         private static (ILogger, ILoggerFactory) Initialize(string[] args)
