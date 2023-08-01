@@ -6,17 +6,17 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$SHORT_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$COMMIT_SHA",
           "destination": "rabbitmq.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
           "destination": "docker-compose.rabbitmq.yml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
           "destination": "cc-rabbitmq.conf"
         }
       ],
@@ -36,7 +36,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$SHORT_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$COMMIT_SHA",
           "destination": "vector.tar"
         },
         {
@@ -46,12 +46,12 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/config/vector/config/site/vector.toml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/config/vector/config/site/vector.toml",
           "destination": "vector.toml"
         },
 		{
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/config/vector/config/site/remap-container-logs.vrl",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/config/vector/config/site/remap-container-logs.vrl",
           "destination": "remap-container-logs.vrl"
         }
       ],
@@ -75,7 +75,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$SHORT_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$COMMIT_SHA",
           "destination": "vector.tar"
         },
         {
@@ -85,12 +85,12 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/config/vector/config/central/vector.toml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/config/vector/config/central/vector.toml",
           "destination": "vector.toml"
         },
 		{
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/config/vector/config/central/remap-site-logs.vrl",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/config/vector/config/central/remap-site-logs.vrl",
           "destination": "remap-site-logs.vrl"
         }
       ],
@@ -114,12 +114,12 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$SHORT_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$COMMIT_SHA",
           "destination": "drex.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$FULL_COMMIT_SHA/compose/installer/docker-compose.drex.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/compose/installer/docker-compose.drex.yml",
           "destination": "docker-compose.drex.yml"
         }
       ],

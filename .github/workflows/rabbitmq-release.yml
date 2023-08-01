@@ -18,11 +18,7 @@ on:
         options:
         - 2019
         - 2022
-      full-commit-sha: # 6ac75515362a8121594772b31437e8bea6fa16cd
-        required: true
-        type: string
-        description: Full SHA for the commit
-      short-commit-sha: # 6ac7551
+      commit-sha: # 6ac7551
         required: true
         type: string
         description: Short SHA for the commit        
@@ -41,6 +37,5 @@ jobs:
       tag: rabbitmq-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
-      full-commit-sha: ${{ inputs.full-commit-sha }}
-      short-commit-sha: ${{ inputs.short-commit-sha }}      
+      commit-sha: ${{ inputs.commit-sha }}   
     secrets: inherit

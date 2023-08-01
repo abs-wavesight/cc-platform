@@ -23,11 +23,7 @@ on:
         required: true
         type: string
         description: Windows version for the Release  
-      full-commit-sha: # 6ac75515362a8121594772b31437e8bea6fa16cd
-        required: true
-        type: string
-        description: Full SHA for the commit
-      short-commit-sha: # 6ac7551
+      commit-sha: # 6ac7551
         required: true
         type: string
         description: Short SHA for the commit
@@ -92,8 +88,8 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$FULL_COMMIT_SHA:${{ inputs.full-commit-sha }} -p `$SHORT_COMMIT_SHA:${{ inputs.short-commit-sha }}
-          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$FULL_COMMIT_SHA:${{ inputs.full-commit-sha }} -p `$SHORT_COMMIT_SHA:${{ inputs.short-commit-sha }}
+          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
+          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
 
       - name: Compress contents
         run: |
@@ -105,7 +101,7 @@ jobs:
       
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$FULL_COMMIT_SHA:${{ inputs.full-commit-sha }} -p `$SHORT_COMMIT_SHA:${{ inputs.short-commit-sha }}
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
       
       - name: Build release
         uses: ncipollo/release-action@v1
