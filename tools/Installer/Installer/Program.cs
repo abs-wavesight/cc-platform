@@ -25,6 +25,7 @@ namespace Abs.CommonCore.Installer
             var unchunkCommand = SetupUnchunkCommand(args);
             var compressCommand = SetupCompressCommand(args);
             var uncompressCommand = SetupUncompressCommand(args);
+            var releaseBodyCommand = SetupReleaseBodyCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -34,6 +35,7 @@ namespace Abs.CommonCore.Installer
             root.Add(unchunkCommand);
             root.Add(compressCommand);
             root.Add(uncompressCommand);
+            root.Add(releaseBodyCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -259,6 +261,35 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
+        private static Command SetupReleaseBodyCommand(string[] args)
+        {
+            var command = new Command("release-body", "Builds a release body based on configuration");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var configParam = new Option<FileInfo>("--config", $"Location of download configuration.");
+            configParam.IsRequired = false;
+            configParam.AddAlias("-c");
+            command.Add(configParam);
+
+            var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
+            parameterParam.IsRequired = false;
+            parameterParam.AddAlias("-p");
+            parameterParam.AllowMultipleArgumentsPerToken = true;
+            command.Add(parameterParam);
+
+            var outputParam = new Option<FileInfo>("--output", "Location to save release body to");
+            outputParam.IsRequired = true;
+            outputParam.AddAlias("-o");
+            command.Add(outputParam);
+
+            command.SetHandler(async (config, parameters, output) =>
+            {
+                await ExecuteReleaseBodyBuilderCommandAsync(config, parameters, output, args);
+            }, configParam, parameterParam, outputParam);
+
+            return command;
+        }
+
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -316,7 +347,6 @@ namespace Abs.CommonCore.Installer
                 });
         }
 
-
         private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -327,6 +357,15 @@ namespace Abs.CommonCore.Installer
                 {
                     await compressor.UncompressFileAsync(s, d, removeSource);
                 });
+        }
+
+        private static async Task ExecuteReleaseBodyBuilderCommandAsync(FileInfo? config, string[]? parameters, FileInfo output, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+            var configParameters = BuildConfigParameters(parameters);
+
+            var release = new ReleaseBodyBuilder(loggerFactory);
+            await release.BuildReleaseBodyAsync(config, configParameters, output);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
@@ -407,8 +446,13 @@ namespace Abs.CommonCore.Installer
             return (logger, loggerFactory);
         }
 
-        private static Dictionary<string, string> BuildConfigParameters(string[] parameters)
+        private static Dictionary<string, string> BuildConfigParameters(string[]? parameters)
         {
+            if (parameters == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
             return parameters
                 .Select(x =>
                 {
