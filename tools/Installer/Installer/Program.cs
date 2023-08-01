@@ -145,6 +145,7 @@ namespace Abs.CommonCore.Installer
             command.Add(sizeParam);
 
             var removeSourceParam = new Option<bool>("--remove-source", "Remove source file after processing");
+            removeSourceParam.SetDefaultValue(false);
             removeSourceParam.IsRequired = false;
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
@@ -178,6 +179,7 @@ namespace Abs.CommonCore.Installer
             command.Add(destParam);
 
             var removeSourceParam = new Option<bool>("--remove-source", "Remove source directory after processing");
+            removeSourceParam.SetDefaultValue(false);
             removeSourceParam.IsRequired = false;
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
@@ -211,6 +213,7 @@ namespace Abs.CommonCore.Installer
             command.Add(destParam);
 
             var removeSourceParam = new Option<bool>("--remove-source", "Remove source directory after processing");
+            removeSourceParam.SetDefaultValue(false);
             removeSourceParam.IsRequired = false;
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
@@ -244,6 +247,7 @@ namespace Abs.CommonCore.Installer
             command.Add(destParam);
 
             var removeSourceParam = new Option<bool>("--remove-source", "Remove source file after processing");
+            removeSourceParam.SetDefaultValue(false);
             removeSourceParam.IsRequired = false;
             removeSourceParam.AddAlias("-rs");
             command.Add(removeSourceParam);
