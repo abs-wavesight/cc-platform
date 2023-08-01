@@ -49,16 +49,6 @@ jobs:
         uses: vishalmamidi/lowercase-action@v1
         with:
           string: central-system-${{ inputs.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
-          
-      - name: Build Release Body
-        id: release_body        
-        uses: mkungla/actions-set-text-output@v1
-        with:
-          text: |
-            ${{ inputs.description }}
-            
-            RabbitMQ: ${{ inputs.rabbitmq-tag }}
-            Vector Central: ${{ inputs.vector-central-tag }}  
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
@@ -122,10 +112,14 @@ jobs:
         run: |
           .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs
          
+      - name: Build release body
+        run: |
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
+		 
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ steps.release_body.outputs.value }}
+          bodyFile: release_body.txt
           name: Central System Release ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main

@@ -94,11 +94,15 @@ jobs:
       - name: Chunk contents
         run: |
           .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
-          
+      
+      - name: Build release body
+        run: |
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }}
+      
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ inputs.description }}
+          bodyFile: release_body.txt
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
