@@ -13,24 +13,19 @@ services:
         source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssl
         target: C:/config
         read_only: true
-      - type: volume
-        source: rabbitmq-local-keys
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-keys
         target: C:/local-keys
-        read_only: false
-      - type: volume
-        source: rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
         target: C:/local-certs
-        read_only: false
-      - type: volume
-        source: rabbitmq-remote-keys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-keys
         target: C:/remote-keys
-        read_only: false
-      - type: volume
-        source: rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
         target: C:/remote-certs
-        read_only: false
-volumes:
-  rabbitmq-local-keys:
-  rabbitmq-remote-keys:
-  rabbitmq-local-certs:
-  rabbitmq-remote-certs:
+        read_only: true

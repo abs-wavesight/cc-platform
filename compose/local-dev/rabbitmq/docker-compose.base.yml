@@ -61,17 +61,14 @@ services:
       - type: volume
         source: rabbitmq-local-storage
         target: C:/data/rabbitmq
-      - type: volume
-        source: rabbitmq-local-keys
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-keys
         target: C:/keys
         read_only: true
-      - type: volume
-        source: rabbitmq-local-certs
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
-    depends_on:
-      cc.openssl-generate-certs:
-        condition: service_completed_successfully
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
@@ -86,17 +83,14 @@ services:
       - type: volume
         source: rabbitmq-remote-storage
         target: C:/data/rabbitmq
-      - type: volume
-        source: rabbitmq-remote-keys
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-keys
         target: C:/keys
         read_only: true
-      - type: volume
-        source: rabbitmq-remote-certs
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
         target: C:/certs
         read_only: true
-    depends_on:
-      cc.openssl-generate-certs:
-        condition: service_completed_successfully
 
 volumes:
   rabbitmq-local-storage:

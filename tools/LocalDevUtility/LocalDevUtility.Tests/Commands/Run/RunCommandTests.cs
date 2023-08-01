@@ -16,16 +16,17 @@ public class RunCommandTests
     }
 
     [Theory]
-    [InlineData("run -m r --rabbitmq i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local" })]
-    [InlineData("run -m r --rabbitmq-local i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local" })]
-    [InlineData("run -m r --rabbitmq-remote i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-remote" })]
-    [InlineData("run -m r --vector i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
-    [InlineData("run -m r --grafana i --openssl s", new[] { "cc.openssl-generate-certs", "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
-    [InlineData("run -m r --loki i --openssl s", new[] { "cc.openssl-generate-certs", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
-    [InlineData("run -m r --drex-service i --openssl s", new[] { "cc.openssl-generate-certs", "cc.drex-service", "cc.rabbitmq-local", "cc.vector-site" })]
-    [InlineData("run -m r --deps i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
-    [InlineData("run -m r --deps i --drex-service i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
-    [InlineData("run -m r --deps i --log-viz i --drex-service i --openssl s", new[] { "cc.openssl-generate-certs", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service", "cc.loki", "cc.grafana" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
+    [InlineData("run -m r --rabbitmq i", new[] { "cc.rabbitmq-local" })]
+    [InlineData("run -m r --rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
+    [InlineData("run -m r --rabbitmq-remote i", new[] { "cc.rabbitmq-remote" })]
+    [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --drex-service i", new[] { "cc.drex-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
+    [InlineData("run -m r --deps i --drex-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --deps i --log-viz i --drex-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service", "cc.loki", "cc.grafana" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
     {
         // Arrange

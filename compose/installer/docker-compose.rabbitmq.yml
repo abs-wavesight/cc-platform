@@ -31,9 +31,6 @@ services:
       timeout: 15s
       start_period: 120s
       retries: 1
-    depends_on:
-      cc.openssl-generate-certs:
-        condition: service_completed_successfully
     volumes:
       - type: bind
         source: $ABS_PATH/config/rabbitmq

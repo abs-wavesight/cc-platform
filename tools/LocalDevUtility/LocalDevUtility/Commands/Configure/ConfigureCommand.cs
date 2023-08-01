@@ -1,26 +1,21 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Extensions;
+using Abs.CommonCore.LocalDevUtility.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Configure;
 
 public static class ConfigureCommand
 {
-    public static async Task<int> Configure(ConfigureOptions configureOptions, ILogger logger)
+    public static async Task<int> Configure(ConfigureOptions configureOptions, ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var readAppConfig = await ReadConfig();
         if (configureOptions.PrintOnly == true)
         {
-            if (readAppConfig == null)
-            {
-                Console.WriteLine("Configuration was not found. Run \"configure\" command to initialize.");
-            }
-            else
-            {
-                Console.Write($"{nameof(readAppConfig.CommonCorePlatformRepositoryPath)}: {readAppConfig.CommonCorePlatformRepositoryPath}");
-            }
-
+            logger.LogInformation(readAppConfig == null
+                ? "Configuration was not found. Run \"configure\" command to initialize."
+                : $"{JsonSerializer.Serialize(readAppConfig, new JsonSerializerOptions { WriteIndented = true })}");
             return 0;
         }
 
@@ -45,18 +40,66 @@ public static class ConfigureCommand
             containerWindowsVersion = readAppConfig?.ContainerWindowsVersion;
         }
 
+        Console.Write($"Local path to use for storage of generated TLS certificates used by containers{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CertificatePath) ? $" ({readAppConfig.CertificatePath})" : "")}: ");
+        var certificatePath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(certificatePath))
+        {
+            certificatePath = readAppConfig?.CertificatePath;
+        }
+
+        Console.Write($"Generate certificates now (y/n)? (n): ");
+        var generateCertificatesNow = false;
+        var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(generateCertificatesNowInput))
+        {
+            var validPositiveValues = new List<string> { "y", "yes", "true" };
+            generateCertificatesNow = validPositiveValues.Contains(generateCertificatesNowInput.ToLowerInvariant());
+        }
+
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
-            ContainerWindowsVersion = containerWindowsVersion
+            ContainerWindowsVersion = containerWindowsVersion,
+            CertificatePath = certificatePath
         };
 
         ValidateConfigAndThrow(appConfig);
         var fileName = await SaveConfig(appConfig);
-        Console.WriteLine($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
+        logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
+
+        if (!generateCertificatesNow)
+        {
+            return 0;
+        }
+
+        using (CliStep.Start("Generating TLS certificates"))
+        {
+            // Ensure sub-directories exist
+            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalKeys));
+            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalCerts));
+            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteKeys));
+            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteCerts));
+
+            var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
+            var dockerCommand = $"docker pull {fullContainerName};";
+            dockerCommand += " docker run";
+            dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\"";
+            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
+            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
+            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
+            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
+            dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\"";
+            logger.LogInformation($"Running docker command: {dockerCommand}");
+            powerShellAdapter.RunPowerShellCommand(dockerCommand);
+        }
 
         return 0;
+    }
+
+    private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
+    {
+        return $" --mount \"type=bind,source={appConfig.CertificatePath}/{certDirectoryName},target=C:/{certDirectoryName}\"";
     }
 
     public static void ValidateConfigAndThrow(AppConfig? appConfig)
@@ -91,6 +134,11 @@ public static class ConfigureCommand
         if (appConfig.ContainerWindowsVersion != "2019" && appConfig.ContainerWindowsVersion != "2022")
         {
             errors.Add($"Container Windows version ({appConfig.ContainerWindowsVersion}) is invalid (must be either \"2019\" or \"2022\")");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CertificatePath) || !new DirectoryInfo(appConfig.CertificatePath).Exists)
+        {
+            errors.Add($"Certificate path ({appConfig.CertificatePath}) could not be found");
         }
 
         return errors;

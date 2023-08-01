@@ -37,8 +37,8 @@ services:
         source: ${PATH_TO_CC_PLATFORM_REPO}/logs/site/
         target: C:/cc-logs
         read_only: false # need to write logs to disk
-      - type: volume
-        source: rabbitmq-local-certs
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
 
@@ -66,7 +66,7 @@ services:
         source: ${PATH_TO_CC_PLATFORM_REPO}/logs/central/
         target: C:/cc-logs
         read_only: false # need to write logs to disk
-      - type: volume
-        source: rabbitmq-remote-certs
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
         target: C:/certs
         read_only: true
