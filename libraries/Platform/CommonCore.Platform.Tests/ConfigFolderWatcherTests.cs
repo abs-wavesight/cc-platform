@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Reflection;
+using Xunit;
 
 namespace Abs.CommonCore.Platform.Tests
 {
@@ -101,7 +102,8 @@ namespace Abs.CommonCore.Platform.Tests
 
         private string GetTestFolderPath()
         {
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), $"TestFolderToWatch_{DateTime.Now.Ticks}");
+            var currentDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+            var folderPath = Path.Combine(currentDirectoryPath, $"TestFolderToWatch_{DateTime.Now.Ticks}");
 
             if (!Directory.Exists(folderPath))
             {
