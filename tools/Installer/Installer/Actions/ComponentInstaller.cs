@@ -220,7 +220,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var source = new FileInfo(Path.Combine(rootLocation, action.Source));
             var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
-            await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize);
+            await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize, false);
         }
 
         private async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -229,7 +229,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
             var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
-            await chunker.UnchunkFileAsync(source, destination);
+            await chunker.UnchunkFileAsync(source, destination, false);
         }
 
         private async Task RunCompressCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -238,7 +238,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
             var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
-            await compressor.CompressDirectoryAsync(source, destination);
+            await compressor.CompressDirectoryAsync(source, destination, false);
         }
 
         private async Task RunUncompressCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -247,7 +247,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var source = new FileInfo(Path.Combine(rootLocation, action.Source));
             var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
-            await compressor.UncompressFileAsync(source, destination);
+            await compressor.UncompressFileAsync(source, destination, false);
         }
 
         private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)

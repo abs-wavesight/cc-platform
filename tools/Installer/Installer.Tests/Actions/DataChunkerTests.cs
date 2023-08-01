@@ -26,7 +26,7 @@ namespace Installer.Tests.Actions
                 await File.WriteAllBytesAsync(tempFile, fullData);
 
                 var chunker = new DataChunker(NullLoggerFactory.Instance);
-                await chunker.ChunkFileAsync(new FileInfo(tempFile), destination, 4096);
+                await chunker.ChunkFileAsync(new FileInfo(tempFile), destination, 4096, true);
 
                 var writtenBytes = expectedFiles
                     .SelectMany(x => File.ReadAllBytes(x));
@@ -35,10 +35,7 @@ namespace Installer.Tests.Actions
             }
             finally
             {
-                var allFiles = expectedFiles
-                    .Concat(new[] { tempFile });
-
-                foreach (var file in allFiles)
+                foreach (var file in expectedFiles)
                 {
                     File.Delete(file);
                 }
@@ -54,24 +51,20 @@ namespace Installer.Tests.Actions
             var file4 = BuildTestData(1024);
 
             var expectedData = file1.Concat(file2).Concat(file3).Concat(file4);
-            var tempFile = Path.GetTempFileName();
-            var tempDirectory = new DirectoryInfo(Path.GetTempPath());
+            var tempPath = Path.GetTempPath();
+            var tempDirectory = new DirectoryInfo(Path.Combine(tempPath, Guid.NewGuid().ToString()));
+            var tempFile = Path.Combine(tempDirectory.FullName, "testFile");
 
+            Directory.CreateDirectory(tempDirectory.FullName);
             try
             {
-                var files = Directory.GetFiles(tempDirectory.FullName, "*.part?");
-                foreach (var file in files)
-                {
-                    File.Delete(file);
-                }
-
                 await File.WriteAllBytesAsync($"{tempFile}.part1", file1);
                 await File.WriteAllBytesAsync($"{tempFile}.part2", file2);
                 await File.WriteAllBytesAsync($"{tempFile}.part3", file3);
                 await File.WriteAllBytesAsync($"{tempFile}.part4", file4);
 
                 var chunker = new DataChunker(NullLoggerFactory.Instance);
-                await chunker.UnchunkFileAsync(tempDirectory, new FileInfo(tempFile));
+                await chunker.UnchunkFileAsync(tempDirectory, new FileInfo(tempFile), false);
 
                 var writtenData = await File.ReadAllBytesAsync(tempFile);
                 Assert.Equal(expectedData, writtenData);

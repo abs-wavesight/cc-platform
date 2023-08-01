@@ -93,11 +93,7 @@ jobs:
           
       - name: Chunk contents
         run: |
-          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)          
-
-      - name: Remove extra files
-        run: |
-          if ([System.IO.File]::Exists('Release.zip.part1')) { rm Release.zip }
+          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
           
       - name: Build release
         uses: ncipollo/release-action@v1

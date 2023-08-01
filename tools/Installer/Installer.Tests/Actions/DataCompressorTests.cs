@@ -19,7 +19,7 @@ namespace Installer.Tests.Actions
             var tempFileInfo = new FileInfo(tempFile);
 
             var compressor = new DataCompressor(NullLoggerFactory.Instance);
-            await compressor.CompressDirectoryAsync(tempDir, tempFileInfo);
+            await compressor.CompressDirectoryAsync(tempDir, tempFileInfo, true);
 
             Assert.True(tempFileInfo.Exists);
             Assert.True(tempFileInfo.Length > 0);
@@ -44,10 +44,10 @@ namespace Installer.Tests.Actions
 
             // Not sure how else to verify
             var compressor = new DataCompressor(NullLoggerFactory.Instance);
-            await compressor.CompressDirectoryAsync(compressTempDir, compressTempFileInfo);
+            await compressor.CompressDirectoryAsync(compressTempDir, compressTempFileInfo, true);
 
             var uncompressTempDir = Directory.CreateTempSubdirectory("compressorTests");
-            await compressor.UncompressFileAsync(compressTempFileInfo, uncompressTempDir);
+            await compressor.UncompressFileAsync(compressTempFileInfo, uncompressTempDir, true);
 
             var newFile1 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file1");
             var newFile2 = await File.ReadAllBytesAsync($"{uncompressTempDir}\\file2");

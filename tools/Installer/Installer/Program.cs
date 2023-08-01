@@ -137,10 +137,15 @@ namespace Abs.CommonCore.Installer
             sizeParam.AddAlias("-sz");
             command.Add(sizeParam);
 
-            command.SetHandler(async (source, dest, size) =>
+            var removeSourceParam = new Option<bool>("--remove-source", "Remove source file after processing");
+            removeSourceParam.IsRequired = false;
+            removeSourceParam.AddAlias("-rs");
+            command.Add(removeSourceParam);
+
+            command.SetHandler(async (source, dest, size, removeSource) =>
             {
-                await ExecuteChunkCommandAsync(source, dest, size, args);
-            }, sourceParam, destParam, sizeParam);
+                await ExecuteChunkCommandAsync(source, dest, size, removeSource, args);
+            }, sourceParam, destParam, sizeParam, removeSourceParam);
 
             return command;
         }
@@ -160,10 +165,15 @@ namespace Abs.CommonCore.Installer
             destParam.AddAlias("-d");
             command.Add(destParam);
 
-            command.SetHandler(async (source, dest) =>
+            var removeSourceParam = new Option<bool>("--remove-source", "Remove source directory after processing");
+            removeSourceParam.IsRequired = false;
+            removeSourceParam.AddAlias("-rs");
+            command.Add(removeSourceParam);
+
+            command.SetHandler(async (source, dest, removeSource) =>
             {
-                await ExecuteUnchunkCommandAsync(source, dest, args);
-            }, sourceParam, destParam);
+                await ExecuteUnchunkCommandAsync(source, dest, removeSource, args);
+            }, sourceParam, destParam, removeSourceParam);
 
             return command;
         }
@@ -183,10 +193,15 @@ namespace Abs.CommonCore.Installer
             destParam.AddAlias("-d");
             command.Add(destParam);
 
-            command.SetHandler(async (source, dest) =>
+            var removeSourceParam = new Option<bool>("--remove-source", "Remove source directory after processing");
+            removeSourceParam.IsRequired = false;
+            removeSourceParam.AddAlias("-rs");
+            command.Add(removeSourceParam);
+
+            command.SetHandler(async (source, dest, removeSource) =>
             {
-                await ExecuteCompressCommandAsync(source, dest, args);
-            }, sourceParam, destParam);
+                await ExecuteCompressCommandAsync(source, dest, removeSource, args);
+            }, sourceParam, destParam, removeSourceParam);
 
             return command;
         }
@@ -206,10 +221,15 @@ namespace Abs.CommonCore.Installer
             destParam.AddAlias("-d");
             command.Add(destParam);
 
-            command.SetHandler(async (source, dest) =>
+            var removeSourceParam = new Option<bool>("--remove-source", "Remove source file after processing");
+            removeSourceParam.IsRequired = false;
+            removeSourceParam.AddAlias("-rs");
+            command.Add(removeSourceParam);
+
+            command.SetHandler(async (source, dest, removeSource) =>
             {
-                await ExecuteUncompressCommandAsync(source, dest, args);
-            }, sourceParam, destParam);
+                await ExecuteUncompressCommandAsync(source, dest, removeSource, args);
+            }, sourceParam, destParam, removeSourceParam);
 
             return command;
         }
@@ -235,37 +255,37 @@ namespace Abs.CommonCore.Installer
             await installer.ExecuteAsync(components);
         }
 
-        private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, string[] args)
+        private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataChunker(loggerFactory);
-            await chunker.ChunkFileAsync(source, destination, size);
+            await chunker.ChunkFileAsync(source, destination, size, removeSource);
         }
 
-        private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, string[] args)
+        private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataChunker(loggerFactory);
-            await chunker.UnchunkFileAsync(source, destination);
+            await chunker.UnchunkFileAsync(source, destination, removeSource);
         }
 
-        private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, string[] args)
+        private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataCompressor(loggerFactory);
-            await chunker.CompressDirectoryAsync(source, destination);
+            await chunker.CompressDirectoryAsync(source, destination, removeSource);
         }
 
 
-        private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, string[] args)
+        private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
             var chunker = new DataCompressor(loggerFactory);
-            await chunker.UncompressFileAsync(source, destination);
+            await chunker.UncompressFileAsync(source, destination, removeSource);
         }
 
         private static (ILogger, ILoggerFactory) Initialize(string[] args)

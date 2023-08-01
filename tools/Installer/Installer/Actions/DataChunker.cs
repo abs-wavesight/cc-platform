@@ -12,7 +12,7 @@ namespace Abs.CommonCore.Installer.Actions
             _logger = loggerFactory.CreateLogger<DataChunker>();
         }
 
-        public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize)
+        public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize, bool removeSource)
         {
             _logger.LogInformation($"Chunking file '{source.FullName}' to folder '{destination.FullName}'");
 
@@ -60,9 +60,10 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             currentChunkFile?.Close();
+            if (removeSource) source.Delete();
         }
 
-        public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination)
+        public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
         {
             _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
 
@@ -93,6 +94,8 @@ namespace Abs.CommonCore.Installer.Actions
                     }
                 }
             }
+
+            if (removeSource) source.Delete(true);
         }
     }
 }
