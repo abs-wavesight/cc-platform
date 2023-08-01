@@ -26,7 +26,7 @@ on:
         required: true
         type: string
         description: Tag to use for Vector central release
-        
+
 concurrency:
   group: central-system-release
   cancel-in-progress: true

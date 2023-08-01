@@ -29,7 +29,7 @@ on:
         required: true
         type: string
         description: Tag to use for Drex release        
-        
+
 concurrency:
   group: site-system-release
   cancel-in-progress: true

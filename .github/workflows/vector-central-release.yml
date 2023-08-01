@@ -26,7 +26,7 @@ on:
         required: true
         type: string
         description: Short SHA for the commit        
-        
+
 concurrency:
   group: vector-central-release
   cancel-in-progress: true

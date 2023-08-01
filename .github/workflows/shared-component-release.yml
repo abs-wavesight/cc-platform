@@ -31,7 +31,7 @@ on:
         required: true
         type: string
         description: Short SHA for the commit
-		
+
 jobs:
   release-component:
     name: Component Release
