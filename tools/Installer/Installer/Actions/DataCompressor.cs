@@ -17,7 +17,10 @@ namespace Abs.CommonCore.Installer.Actions
             _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
 
             if (Directory.Exists(source.FullName) == false)
-                throw new Exception("Source location does not exist");
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
 
             await Task.Yield();
             File.Delete(destination.FullName);
@@ -35,7 +38,10 @@ namespace Abs.CommonCore.Installer.Actions
             _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
 
             if (File.Exists(source.FullName) == false)
-                throw new Exception("Source location does not exist");
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
 
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
