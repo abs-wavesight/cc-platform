@@ -115,7 +115,7 @@ jobs:
       - name: Build release body
         run: |
           .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
-		 
+
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
