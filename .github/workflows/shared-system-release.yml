@@ -27,7 +27,7 @@ on:
         required: true
         type: string
         description: Full parameter list for components
-      release-name-prefix: Xyz Release
+      release-name-prefix: # Central System Release
         required: true
         type: string
         description: Prefix to use for release name       
