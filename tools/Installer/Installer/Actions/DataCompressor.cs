@@ -20,7 +20,11 @@ namespace Abs.CommonCore.Installer.Actions
             File.Delete(destination.FullName);
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
 
-            if (removeSource) source.Delete(true);
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source folder: '{source.FullName}'");
+                source.Delete(true);
+            }
         }
 
         public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
@@ -29,7 +33,11 @@ namespace Abs.CommonCore.Installer.Actions
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
 
-            if (removeSource) source.Delete();
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source file: '{source.FullName}'");
+                source.Delete();
+            }
         }
     }
 }

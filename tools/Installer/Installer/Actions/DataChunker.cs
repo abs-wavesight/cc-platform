@@ -60,7 +60,11 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             currentChunkFile?.Close();
-            if (removeSource) source.Delete();
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source file: '{source.FullName}'");
+                source.Delete();
+            }
         }
 
         public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
@@ -95,7 +99,11 @@ namespace Abs.CommonCore.Installer.Actions
                 }
             }
 
-            if (removeSource) source.Delete(true);
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source folder: '{source.FullName}'");
+                source.Delete(true);
+            }
         }
     }
 }
