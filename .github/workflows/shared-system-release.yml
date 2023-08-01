@@ -100,10 +100,6 @@ jobs:
         run: |
           .\Installer.exe download -r SystemRegistryConfig.json -d SystemConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
-      - name: Show files
-        run: |
-          cmd /c dir /s c:\abs
-
       - name: Process Components   
         run: |
           .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemConfig.json

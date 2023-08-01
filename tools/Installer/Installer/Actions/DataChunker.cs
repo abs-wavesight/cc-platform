@@ -18,8 +18,8 @@ namespace Abs.CommonCore.Installer.Actions
 
             if (File.Exists(source.FullName) == false)
             {
-               _logger.LogWarning($"Source location '{source.FullName}' does not exist");
-               return;
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
             }
 
             if (source.Length < maxSize)
