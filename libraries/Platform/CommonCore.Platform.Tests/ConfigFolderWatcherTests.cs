@@ -55,7 +55,7 @@ namespace Abs.CommonCore.Platform.Tests
             {
                 Task.Delay(1000).Wait();
             }
-            
+
             Assert.Equal(newFilePath, configWatcherResult);
         }
 
