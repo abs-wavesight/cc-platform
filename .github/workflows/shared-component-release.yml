@@ -19,14 +19,10 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
+      component-params: # -p ... -p ...
         required: true
         type: string
-        description: Windows version for the Release  
-      commit-sha: # 6ac7551
-        required: true
-        type: string
-        description: 7 character short SHA for the commit
+        description: Full parameter list for component
 
 jobs:
   release-component:
@@ -88,8 +84,8 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
-          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
+          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
 
       - name: Compress contents
         run: |
@@ -101,7 +97,7 @@ jobs:
       
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$COMMIT_SHA:${{ inputs.commit-sha }}
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
       
       - name: Build release
         uses: ncipollo/release-action@v1

@@ -18,10 +18,10 @@ on:
         options:
         - 2019
         - 2022
-      commit-sha: # 6ac7551
+      platform-commit-sha: # 6ac7551
         required: true
         type: string
-        description: 7 character short SHA for the commit
+        description: 7 character short SHA for the commit in cc-platform
 
 concurrency:
   group: vector-central-release
@@ -36,6 +36,5 @@ jobs:
       component_name: vector-central
       tag: vector-central-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
-      commit-sha: ${{ inputs.commit-sha }}    
+      component-params: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}  
     secrets: inherit
