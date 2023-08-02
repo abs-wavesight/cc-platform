@@ -1,4 +1,4 @@
-namespace Abs.CommonCore.Platform.Certificates;
+﻿namespace Abs.CommonCore.Platform.Certificates;
 
 public static class CertificateConstants
 {
