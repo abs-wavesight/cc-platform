@@ -41,7 +41,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20640-github-action/compose/installer/docker-compose.vector-site.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/$COMMIT_SHA/installer/docker-compose.vector-site.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
@@ -80,7 +80,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20640-github-action/compose/installer/docker-compose.vector-central.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$COMMIT_SHA/compose/installer/docker-compose.vector-central.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
