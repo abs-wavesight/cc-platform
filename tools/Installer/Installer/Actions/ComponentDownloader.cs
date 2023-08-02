@@ -12,6 +12,7 @@ namespace Abs.CommonCore.Installer.Actions
     public class ComponentDownloader : ActionBase
     {
         private const string ReleaseFileName = "Release.zip";
+        private const string AbsHeaderValue = "ABS";
 
         private readonly IDataRequestService _dataRequestService;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -136,7 +137,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var segments = source.GetGitHubPathSegments();
 
-            var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"));
+            var client = new GitHubClient(new Octokit.ProductHeaderValue(AbsHeaderValue));
             client.Credentials = new Credentials(_nugetEnvironmentVariable);
 
             var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
