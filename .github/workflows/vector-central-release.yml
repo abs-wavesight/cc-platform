@@ -21,7 +21,7 @@ on:
       commit-sha: # 6ac7551
         required: true
         type: string
-        description: Short SHA for the commit        
+        description: 7 character short SHA for the commit
 
 concurrency:
   group: vector-central-release
