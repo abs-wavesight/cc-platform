@@ -108,6 +108,12 @@ namespace Installer.Tests.Actions
             var releases = await client.Repository.Release.GetAll("abs-wavesight", "cc-platform");
             var vectorCentralRelease = releases.FirstOrDefault(x => x.TagName.StartsWith("vector-central"));
 
+            if (vectorCentralRelease == null)
+            {
+                // No releases to test
+                return;
+            }
+
             configText = configText
                 .Replace("$VECTOR_TAG", vectorCentralRelease!.TagName)
                 .Replace("$DESTINATION", expectedFilePath.Replace('\\', '/'));
