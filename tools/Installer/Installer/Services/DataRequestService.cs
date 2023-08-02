@@ -51,7 +51,7 @@ namespace Abs.CommonCore.Installer.Services
 
         private async Task<byte[]> DownloadGithubReleaseFileAsync(string source)
         {
-            var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"));
+            var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
             client.Credentials = new Credentials(_nugetEnvironmentVariable);
 
             var segments = source.GetGitHubPathSegments();
