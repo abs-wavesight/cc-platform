@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform.Certificates;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.Configure;
@@ -47,7 +48,7 @@ public static class ConfigureCommand
             certificatePath = readAppConfig?.CertificatePath;
         }
 
-        Console.Write($"Generate certificates now (y/n)? (n): ");
+        Console.Write($"Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(generateCertificatesNowInput))
@@ -92,6 +93,13 @@ public static class ConfigureCommand
             dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\"";
             logger.LogInformation($"Running docker command: {dockerCommand}");
             powerShellAdapter.RunPowerShellCommand(dockerCommand);
+        }
+
+        using (CliStep.Start("Installing TLS certificates", true))
+        {
+            const string rabbitMqCertName = "rabbitmq.cer";
+            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
+            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
         }
 
         return 0;
