@@ -10,13 +10,8 @@ services:
       - cc.rabbitmq-local
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
-    entrypoint: |
-      cmd /Q /C echo Importing rabbitmq certificates into root CA key store... && \
-      certoc.exe -addstore root C:\rabbitmq-local-certs\rabbitmq.cer && \
-      certoc.exe -addstore root C:\rabbitmq-remote-certs\rabbitmq.cer && \
-      echo Imported rabbitmq certificates && \
-      echo Starting D-REX... && \
-      dotnet Abs.CommonCore.Drex.Console.dll
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
     ports:
       - "12345:5000"
     restart: always
