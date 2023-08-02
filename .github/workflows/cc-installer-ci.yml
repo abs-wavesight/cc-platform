@@ -32,8 +32,8 @@ jobs:
     name: Build & Run Tests
     uses: ./.github/workflows/shared-dotnet-build.yml
     with:
-      solution-directory: tools/LocalDevUtility
-      solution-name: LocalDevUtility.sln
-      install-docker-compose: true
+      solution-directory: tools/Installer
+      solution-name: Installer.sln
+      install-docker-compose: false
       check-code-formatting: true
     secrets: inherit
