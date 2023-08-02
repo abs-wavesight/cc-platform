@@ -9,8 +9,8 @@ namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentInstaller : ActionBase
     {
-        private const string _pathEnvironmentVariable = "PATH";
-        private const int _defaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
+        private const string PathEnvironmentVariable = "PATH";
+        private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -181,11 +181,11 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             _logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
-            var path = Environment.GetEnvironmentVariable(_pathEnvironmentVariable, EnvironmentVariableTarget.Machine)
+            var path = Environment.GetEnvironmentVariable(PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
                        ?? "";
 
             if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
-            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {_pathEnvironmentVariable} \"%{_pathEnvironmentVariable}%;{action.Source}\"", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {PathEnvironmentVariable} \"%{PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
         }
 
         private async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -220,7 +220,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             var source = new FileInfo(Path.Combine(rootLocation, action.Source));
             var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
-            await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize, false);
+            await chunker.ChunkFileAsync(source, destination, DefaultMaxChunkSize, false);
         }
 
         private async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)

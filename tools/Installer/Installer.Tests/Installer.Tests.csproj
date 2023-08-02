@@ -33,6 +33,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Configs\DownloadTest_LatestVectorCentral_Release.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Configs\ParameterDownloaderConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

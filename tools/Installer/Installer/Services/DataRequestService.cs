@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
+using Abs.CommonCore.Installer.Extensions;
 using Microsoft.Extensions.Logging;
 using Octokit;
 
@@ -9,7 +10,6 @@ namespace Abs.CommonCore.Installer.Services
     public class DataRequestService : IDataRequestService
     {
         private readonly ILogger _logger;
-        private const string _nugetEnvironmentVariableName = "ABS_NUGET_PASSWORD";
         private readonly string? _nugetEnvironmentVariable;
         private readonly bool _verifyOnly;
 
@@ -18,7 +18,7 @@ namespace Abs.CommonCore.Installer.Services
         public DataRequestService(ILoggerFactory loggerFactory, bool verifyOnly = false)
         {
             _logger = loggerFactory.CreateLogger<DataRequestService>();
-            _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(_nugetEnvironmentVariableName);
+            _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
             _verifyOnly = verifyOnly;
 
             if (verifyOnly == false && string.IsNullOrWhiteSpace(_nugetEnvironmentVariable))
@@ -36,12 +36,12 @@ namespace Abs.CommonCore.Installer.Services
                 return Array.Empty<byte>();
             }
 
-            if (source.Contains("github.com") && source.Contains("/releases/"))
+            if (source.Contains("github.com", StringComparison.OrdinalIgnoreCase) && source.Contains("/releases/", StringComparison.OrdinalIgnoreCase))
             {
                 return await DownloadGithubReleaseFileAsync(source);
             }
 
-            if (source.Contains("raw.githubusercontent.com"))
+            if (source.Contains("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase))
             {
                 return await DownloadGithubRawFileAsync(source);
             }
@@ -54,7 +54,7 @@ namespace Abs.CommonCore.Installer.Services
             var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"));
             client.Credentials = new Credentials(_nugetEnvironmentVariable);
 
-            var segments = GetGitHubPathSegments(source);
+            var segments = source.GetGitHubPathSegments();
             var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
             var asset = release.Assets
                 .First(x => string.Equals(x.Name, segments.File));
@@ -62,17 +62,6 @@ namespace Abs.CommonCore.Installer.Services
             var uri = new Uri(asset.Url, UriKind.Absolute);
             var response = await client.Connection.Get<byte[]>(uri, new Dictionary<string, string>(), "application/octet-stream");
             return response.Body;
-        }
-
-        private (string Owner, string Repo, string Tag, string File) GetGitHubPathSegments(string source)
-        {
-            var uri = new Uri(source, UriKind.Absolute);
-            var segments = uri.Segments
-                .Select(x => x.Trim('/'))
-                .Where(x => x.Length > 0)
-                .ToArray();
-
-            return (segments[0], segments[1], segments[4], segments[5]);
         }
 
         private Task<byte[]> DownloadGithubRawFileAsync(string source)

@@ -85,14 +85,9 @@
       "name": "RabbitMq",
       "files": [
         {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/Release.zip.part1",
-          "destination": "c:/abs/temp/RabbitMq/Release.zip.part1"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/Release.zip.part2",
-          "destination": "c:/abs/temp/RabbitMq/Release.zip.part2"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
+          "destination": "c:/abs/temp/RabbitMq/"
         }
       ],
       "actions": [
@@ -120,9 +115,9 @@
       "name": "Vector-Site",
       "files": [
         {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/Release.zip",
-          "destination": "c:/abs/temp/Vector-Site/Release.zip"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Vector-Site/"
         }
       ],
       "actions": [
@@ -154,9 +149,9 @@
       "name": "Vector-Central",
       "files": [
         {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/Release.zip",
-          "destination": "c:/abs/temp/Vector-Central/Release.zip"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Vector-Central/"
         }
       ],
       "actions": [
@@ -188,9 +183,9 @@
       "name": "Drex",
       "files": [
         {
-          "type": "file",
-          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/Release.zip",
-          "destination": "c:/abs/temp/Drex/Release.zip"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex/"
         }
       ],
       "actions": [
