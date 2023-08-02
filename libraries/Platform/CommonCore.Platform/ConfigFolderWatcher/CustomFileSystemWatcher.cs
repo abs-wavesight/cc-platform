@@ -1,6 +1,6 @@
 ﻿namespace Abs.CommonCore.Platform.ConfigFolderWatcher
 {
-    public class CustomFileSystemWatcher : IDisposable
+    public class CustomFileSystemWatcher : ICustomFileSystemWatcher
     {
         private FileSystemWatcher? _fileSystemWatcher;
         (string, DateTime)? _newFileVerificator;
@@ -32,14 +32,19 @@
         public event EventHandler<string>? Deleted;
         public event EventHandler<Exception>? Failed;
 
-        private void InitFileSystemWatcher(string folderPath)
+        private FileSystemWatcher CreateFileSystemWatcher(string folderPath)
         {
-            _fileSystemWatcher = new FileSystemWatcher(folderPath)
+            return new FileSystemWatcher(folderPath)
             {
                 EnableRaisingEvents = true,
                 IncludeSubdirectories = false,
                 NotifyFilter = _notifyFilters
             };
+        }
+
+        private void InitFileSystemWatcher(string folderPath)
+        {
+            _fileSystemWatcher = CreateFileSystemWatcher(folderPath);
 
             foreach (var filter in _filters)
             {
@@ -135,6 +140,13 @@
             }
         }
 
-        public void Dispose() => _fileSystemWatcher?.Dispose();
+        public void Dispose()
+        {
+            if (_fileSystemWatcher != null)
+            {
+                _fileSystemWatcher.EnableRaisingEvents = false;
+                _fileSystemWatcher.Dispose();
+            }
+        }
     }
 }
