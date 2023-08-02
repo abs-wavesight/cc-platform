@@ -2,6 +2,37 @@
   "location": "$ABS_PATH\\installer",
   "components": [
     {
+      "name": "OpenSsl",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "destination": "openssl.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.openssl.yml",
+          "destination": "docker-compose.openssl.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssl/generate-certs-prod.ps1",
+          "destination": "generate-certs.ps1"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssl/openssl-prod.cnf",
+          "destination": "openssl-prod.cnf"
+        }
+      ],
+      "actions": [
+        {
+            "source": "docker-compose.openssl.yml",
+            "action": "replaceParameters"
+        }
+	    ]
+    },
+    {
       "name": "RabbitMq",
       "files": [
         {
