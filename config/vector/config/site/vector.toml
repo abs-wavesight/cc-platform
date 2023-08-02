@@ -1,7 +1,7 @@
 [sources.container-logs]
 type = "docker_logs"
 # NOTE: Unfortunately, "include_labels" is all or nothing, so we cannot use it here to filter on "container_type"; instead, we must apply a filter condition in remap-container-logs
-docker_host = "tcp://172.16.239.1:2376" # Necessary when running with Hyper-V containers on Windows, where the named pipe does not seem to work
+# docker_host = "tcp://172.16.239.1:2376" # Necessary when running with Hyper-V containers on Windows, where the named pipe does not seem to work
 exclude_containers = ["vector"] # This is a prefix match, so "vector" will match "vector-site" and "vector-central"
 
 [transforms.remap-container-logs]
