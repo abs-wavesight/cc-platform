@@ -29,7 +29,11 @@ on:
       drex-tag:
         required: true
         type: string
-        description: Tag to use for Drex release  
+        description: Tag to use for Drex release
+      openssl-tag:
+        required: true
+        type: string
+        description: Tag to use for OpenSsl release
 
 concurrency:
   group: site-system-release
@@ -45,6 +49,6 @@ jobs:
       windows-version: ${{ inputs.windows-version }}
       tag-prefix: site-system
       system-config: SiteSystemConfig.json
-      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }}
+      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }} -p `$OPENSSL_RELEASE_TAG:${{ inputs.openssl-tag }}
       release-name-prefix: Site System Release
     secrets: inherit
