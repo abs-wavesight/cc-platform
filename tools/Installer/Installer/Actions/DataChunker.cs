@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Abs.CommonCore.Platform.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
 {
@@ -109,8 +110,12 @@ namespace Abs.CommonCore.Installer.Actions
 
             if (removeSource)
             {
-                _logger.LogInformation($"Removing source folder: '{source.FullName}'");
-                source.Delete(true);
+                _logger.LogInformation($"Removing source files: '{files.StringJoin(", ")}'");
+
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                }
             }
         }
     }
