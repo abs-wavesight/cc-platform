@@ -41,7 +41,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/installer/docker-compose.vector-site.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.vector-site.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
