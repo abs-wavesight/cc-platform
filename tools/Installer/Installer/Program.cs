@@ -52,9 +52,9 @@ namespace Abs.CommonCore.Installer
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
-            var downloadConfigParam = new Option<FileInfo>("--download", "Location of download configuration");
+            var downloadConfigParam = new Option<FileInfo>("--config", "Location of download configuration");
             downloadConfigParam.IsRequired = false;
-            downloadConfigParam.AddAlias("-d");
+            downloadConfigParam.AddAlias("-dc");
             command.Add(downloadConfigParam);
 
             var componentParam = new Option<string[]>("--component", "Specific component to process");
@@ -93,9 +93,9 @@ namespace Abs.CommonCore.Installer
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
-            var installConfigParam = new Option<FileInfo>("--install", "Location of install configuration");
+            var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration");
             installConfigParam.IsRequired = false;
-            installConfigParam.AddAlias("-i");
+            installConfigParam.AddAlias("-ic");
             command.Add(installConfigParam);
 
             var componentParam = new Option<string[]>("--component", "Specific component to process");
