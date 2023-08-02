@@ -123,7 +123,7 @@
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from 'cc.openssl-generate-certs';\"",
+          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from cc.openssl-generate-certs\"",
           "action": "execute"
         }
       ]
