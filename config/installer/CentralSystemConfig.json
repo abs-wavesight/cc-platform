@@ -1,5 +1,6 @@
 ﻿{
   "components": [
+    "Certificates-Central",
     "Docker",
     "RabbitMq",
     "Vector-Central"

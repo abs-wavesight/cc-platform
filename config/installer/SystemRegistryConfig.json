@@ -2,6 +2,16 @@
   "location": "$ABS_PATH\\installer",
   "components": [
     {
+      "name": "Certificates-Central",
+      "actions": [
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
+          "action": "copy"
+        }
+      ]
+    },
+    {
       "name": "Docker",
       "files": [
         {
@@ -152,7 +162,7 @@
           "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "copy"
         },
-		{
+		    {
           "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
         }
