@@ -64,7 +64,7 @@ namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher
         {
             var currentDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
             var testFolderPath = Path.Combine(currentDirectoryPath, "IntegrationTestsRuntimeData");
-            
+
             if (!Directory.Exists(testFolderPath))
             {
                 throw new DirectoryNotFoundException(testFolderPath);
