@@ -17,8 +17,12 @@ on:
         description: Windows version for the Release
         options:
         - 2019
-        - 2022        
-        
+        - 2022
+      platform-commit-sha: # 6ac7551
+        required: true
+        type: string
+        description: 7 character short SHA for the commit in cc-platform
+
 concurrency:
   group: vector-central-release
   cancel-in-progress: true
@@ -30,6 +34,7 @@ jobs:
     with:
       name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: vector-central
-      tag: vector-${{ inputs.windows-version }}-${{ inputs.version }}
+      tag: vector-central-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
+      component-params: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}  
+    secrets: inherit
