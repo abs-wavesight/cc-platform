@@ -22,6 +22,7 @@ namespace Abs.CommonCore.Platform.Tests.ConfigFolderWatcher
         [Fact]
         public void AddedConfigFileTest()
         {
+            // Arrange
             var configWatcherResult = string.Empty;
             _configFolderWatcher.Added += (_, filePath) =>
             {
@@ -30,28 +31,34 @@ namespace Abs.CommonCore.Platform.Tests.ConfigFolderWatcher
 
             var newFilePath = Path.Combine(_configFolderPath, $"{DateTime.Now.Ticks}.json");
 
+            // Act
             _configFolderWatcherMock.Raise(w => w.Added += null, _configFolderWatcher, newFilePath);
 
+            // Assert
             Assert.Equal(newFilePath, configWatcherResult);
         }
 
         [Fact]
         public void ChangedConfigFileTest()
         {
+            // Arrange
             var configWatcherResult = string.Empty;
             _configFolderWatcher.Changed += (_, filePath) =>
             {
                 configWatcherResult = filePath;
             };
 
+            // Act
             _configFolderWatcherMock.Raise(w => w.Changed += null, _configFolderWatcher, _existingConfigFilePath);
 
+            // Assert
             Assert.Equal(_existingConfigFilePath, configWatcherResult);
         }
 
         [Fact]
         public void DeletedConfigFileTest()
         {
+            // Arrange
             var configWatcherResult = string.Empty;
             _configFolderWatcher.Deleted += (_, filePath) =>
             {
@@ -60,8 +67,10 @@ namespace Abs.CommonCore.Platform.Tests.ConfigFolderWatcher
 
             var filePathForDelete = Path.Combine(_configFolderPath, $"{DateTime.Now.Ticks}.json");
 
+            // Act
             _configFolderWatcherMock.Raise(w => w.Deleted += null, _configFolderWatcher, filePathForDelete);
 
+            // Assert
             Assert.Equal(filePathForDelete, configWatcherResult);
         }
     }

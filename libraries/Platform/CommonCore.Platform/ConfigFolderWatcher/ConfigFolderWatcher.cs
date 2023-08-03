@@ -11,6 +11,11 @@
         private readonly string[] _filters;
         private readonly NotifyFilters _notifyFilter;
 
+        public event EventHandler<string>? Changed;
+        public event EventHandler<string>? Added;
+        public event EventHandler<string>? Deleted;
+        public event EventHandler<Exception>? Failed;
+
         public ConfigFolderWatcher(string configFolderPath)
         {
             if (!Directory.Exists(configFolderPath))
@@ -30,10 +35,19 @@
             InitFileSystemWatcher(configFolderPath);
         }
 
-        public event EventHandler<string>? Changed;
-        public event EventHandler<string>? Added;
-        public event EventHandler<string>? Deleted;
-        public event EventHandler<Exception>? Failed;
+        public void Dispose()
+        {
+            if (_fileSystemWatcher != null)
+            {
+                _fileSystemWatcher.Created -= FileSystemWatcherOnCreated;
+                _fileSystemWatcher.Changed -= FileSystemWatcherOnChanged;
+                _fileSystemWatcher.Renamed -= FileSystemWatcherOnRenamed;
+                _fileSystemWatcher.Deleted -= FolderWatcherOnDeleted;
+                _fileSystemWatcher.Error -= FileSystemWathcerOnError;
+
+                _fileSystemWatcher.Dispose();
+            }
+        }
 
         private FileSystemWatcher CreateFileSystemWatcher(string folderPath)
         {
@@ -117,18 +131,21 @@
                 }
             }
 
-            if (_filesVerificators.TryGetValue(e.Name, out DateTime lastWriteTime))
+            if (!string.IsNullOrEmpty(e.Name))
             {
-                if (file.LastWriteTime.Ticks - lastWriteTime.Ticks <= 1000)
+                if (_filesVerificators.TryGetValue(e.Name, out DateTime lastWriteTime))
                 {
-                    isLastWriteTimeChanged = false;
-                }
+                    if (file.LastWriteTime.Ticks - lastWriteTime.Ticks <= 1000)
+                    {
+                        isLastWriteTimeChanged = false;
+                    }
 
-                _filesVerificators[e.Name] = file.LastWriteTime;
-            }
-            else
-            {
-                _filesVerificators.Add(e.Name, file.LastWriteTime);
+                    _filesVerificators[e.Name] = file.LastWriteTime;
+                }
+                else
+                {
+                    _filesVerificators.Add(e.Name, file.LastWriteTime);
+                }
             }
 
             if (isLastWriteTimeChanged)
@@ -140,20 +157,6 @@
         private void FileSystemWathcerOnError(object sender, ErrorEventArgs e)
         {
             Failed?.Invoke(this, e.GetException());
-        }
-
-        public void Dispose()
-        {
-            if (_fileSystemWatcher != null)
-            {
-                _fileSystemWatcher.Created -= FileSystemWatcherOnCreated;
-                _fileSystemWatcher.Changed -= FileSystemWatcherOnChanged;
-                _fileSystemWatcher.Renamed -= FileSystemWatcherOnRenamed;
-                _fileSystemWatcher.Deleted -= FolderWatcherOnDeleted;
-                _fileSystemWatcher.Error -= FileSystemWathcerOnError;
-
-                _fileSystemWatcher.Dispose();
-            }
         }
 
         private void FolderWatcherOnDeleted(object sender, FileSystemEventArgs e)
