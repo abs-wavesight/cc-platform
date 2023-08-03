@@ -1,0 +1,40 @@
+name: OpenSsl Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: Unique version for the release
+      description:
+        required: true
+        type: string
+        description: Description of the release
+      windows-version:
+        required: true
+        type: choice
+        description: Windows version for the Release
+        options:
+        - 2019
+        - 2022
+      platform-commit-sha: # 6ac7551
+        required: true
+        type: string
+        description: 7 character short SHA for the commit in cc-platform 
+
+concurrency:
+  group: openssl-release
+  cancel-in-progress: true
+
+jobs:
+  release-component:
+    name: OpenSSL Release
+    uses: ./.github/workflows/shared-component-release.yml
+    with:
+      name: OpenSSL Release ${{ inputs.windows-version }} ${{ inputs.version }}
+      component_name: OpenSsl
+      tag: openssl-${{ inputs.windows-version }}-${{ inputs.version }}
+      description: ${{ inputs.description }}
+      component-params: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}
+    secrets: inherit

@@ -2,6 +2,16 @@
   "location": "$ABS_PATH\\installer",
   "components": [
     {
+      "name": "Certificates-Central",
+      "actions": [
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
+          "action": "copy"
+        }
+      ]
+    },
+    {
       "name": "Docker",
       "files": [
         {
@@ -78,6 +88,53 @@
         {
           "source": "$ABS_PATH\\config",
           "action": "runDockerCompose"
+        }
+      ]
+    },
+    {
+      "name": "OpenSsl",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OPENSSL_RELEASE_TAG/",
+          "destination": "c:/abs/temp/OpenSsl/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "openssl.tar",
+          "action": "install"
+        },
+        {
+          "source": "generate-certs-prod.ps1",
+          "destination": "$ABS_PATH\\config\\openssl\\generate-certs-prod.ps1",
+          "action": "copy"
+        },
+        {
+          "source": "openssl-prod.cnf",
+          "destination": "$ABS_PATH\\config\\openssl\\openssl-prod.cnf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.openssl.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/local-keys')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/local-certs')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from cc.openssl-generate-certs\"",
+          "action": "execute"
         }
       ]
     },

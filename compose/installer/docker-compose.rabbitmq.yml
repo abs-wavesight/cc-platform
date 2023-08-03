@@ -6,16 +6,54 @@ services:
     container_name: rabbitmq
     image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION
     hostname: rabbitmq-local
-    environment:
-      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf
-    logging:
-      driver: local
+    entrypoint: [ "powershell", "-c" ]
+    command:
+      [
+        "Import-Certificate",
+        "-CertStoreLocation",
+        "Cert:\\LocalMachine\\root",
+        "-FilePath",
+        "C:\\certs\\rabbitmq.cer",
+        ";",
+        "cmd",
+        "/C",
+        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
+      ]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "powershell",
+          "-Command",
+          "Invoke-WebRequest",
+          "-UseBasicParsing",
+          "-Method",
+          "HEAD",
+          "-Uri",
+          "https://localhost:15671"
+        ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
+    environment:	
+      RABBITMQ_CONFIG_FILE: C:/rabbitmq/config/cc-rabbitmq.conf	
+    logging:	
+      driver: local    	
     restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - type: bind
-        source: $ABS_PATH/config/rabbitmq
+    ports:	
+      - "5671:5671"	
+      - "15671:15671"
+    volumes:	
+      - type: bind	
+        source: $ABS_PATH/config/rabbitmq	
         target: C:/rabbitmq/config
+        read_only: true	
+      - type: bind
+        source: $ABS_PATH/certificates/local-keys
+        target: C:/keys
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/certs
         read_only: true

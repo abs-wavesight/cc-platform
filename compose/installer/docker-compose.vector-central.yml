@@ -3,11 +3,9 @@ version: '3.9'
 
 services:
 
-  cc.vector:
-    container_name: vector
-    # necessary to change hostname for vector to process/include its own logs
-    # See https://vector.dev/docs/reference/configuration/sources/docker_logs/#warnings
-    hostname: "vector"
+  cc.vector:	
+    container_name: vector	
+    hostname: "vector"	
     image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION
     environment:
       - VECTOR_CONFIG=C:/config/vector.toml    
@@ -32,6 +30,9 @@ services:
         read_only: true	
       - type: bind	
         source: $ABS_PATH/logs/
-        target: C:/cc-logs
+        target: C:/cc-logs	
         read_only: false # need to write logs to disk
-        
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/certs
+        read_only: true
