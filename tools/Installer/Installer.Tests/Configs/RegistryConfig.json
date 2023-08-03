@@ -2,180 +2,25 @@
   "location": "c:\\abs\\installer",
   "components": [
     {
-      "name": "Docker",
-      "files": [
-        {
-          "type": "file",
-          "source": "https://download.docker.com/win/static/stable/x86_64/docker-24.0.4.zip",
-          "destination": "docker.zip"
-        },
-        {
-          "type": "file",
-          "source": "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-windows-x86_64.exe",
-          "destination": "docker-compose.exe"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/install/docker-compose.root.yml",
-          "destination": "docker-compose.root.yml"
-        }
-      ],
-      "actions": [
-        {
-          "source": "docker.zip",
-          "destination": "c:\\docker.zip",
-          "action": "copy"
-        },
-        {
-          "source": "tar -xf c:\\docker.zip",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "docker-compose.exe",
-          "destination": "c:\\docker\\docker-compose.exe",
-          "action": "copy"
-        },
-        {
-          "source": "c:\\docker\\dockerd --register-service",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "Start-Service docker",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "c:\\docker",
-          "action": "updatePath"
-        },
-        {
-          "source": "docker-compose.root.yml",
-          "destination": "c:\\config\\docker-compose.root.yml",
-          "action": "copy"
-        }
-      ]
-    },
-    {
       "name": "RabbitMq",
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-2019",
+          "source": "ghcr.io/fake/path",
           "destination": "rabbitmq.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/install/docker-compose.rabbitmq.yml",
-          "destination": "docker-compose.rabbitmq.yml"
+          "source": "https://fake/path/1",
+          "destination": "fake.file.yml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
+          "source": "https://fake/pat2",
+          "destination": "fake.file.conf"
         }
       ],
-      "actions": [
-        {
-          "source": "rabbitmq.tar",
-          "action": "install"
-        },
-        {
-          "source": "docker-compose.yml",
-          "destination": "c:\\config\\rabbitmq\\docker-compose.yml",
-          "action": "copy"
-        },
-        {
-          "source": "cc-rabbitmq.conf",
-          "destination": "c:\\config\\rabbitmq\\cc-rabbitmq.conf",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.rabbitmq.yml",
-          "destination": "c:\\config\\docker-compose.rabbitmq.yml",
-          "action": "copy"
-        }
-      ]
-    },
-    {
-      "name": "Vector",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-2019",
-          "destination": "vector.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/install/docker-compose.vector.yml",
-          "destination": "docker-compose.vector.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/vector/config/vector.toml",
-          "destination": "vector.toml"
-        }
-      ],
-      "actions": [
-        {
-          "source": "vector.tar",
-          "action": "install"
-        },
-        {
-          "source": "vector.toml",
-          "destination": "c:\\config\\vector\\vector.toml",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.vector.yml",
-          "destination": "c:\\config\\docker-compose.vector.yml",
-          "action": "copy"
-        }
-      ]
-    },
-    {
-      "name": "Drex",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-2019",
-          "destination": "drex.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/feature/ADO-20439-installer-install/compose/install/docker-compose.drex.yml",
-          "destination": "docker-compose.drex.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/drex-demo-site-alpha.site-config.json",
-          "destination": "drex-demo-site-alpha.site-config.json"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/drex-demo.client-app-config.json",
-          "destination": "drex-demo.client-app-config.json"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/scripts/clean-logs.ps1",
-          "destination": "clean-logs.ps1"
-        }
-      ],
-      "actions": [
-        {
-          "source": "vector.tar",
-          "action": "install"
-        },
-        {
-          "source": "vector.toml",
-          "destination": "c:\\config\\vector\\vector.toml",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.vector.yml",
-          "destination": "c:\\config\\docker-compose.vector.yml",
-          "action": "copy"
-        }
-      ]
+      "actions": []
     }
   ]
 }
