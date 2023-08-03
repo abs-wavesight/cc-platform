@@ -33,6 +33,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Configs\DownloadTest_LatestVectorCentral_Release.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\ParameterDownloaderConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\DownloadTest_GithubReleaseFileConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Configs\DownloadTest_GithubRawFileConfig.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Configs\InstallerConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

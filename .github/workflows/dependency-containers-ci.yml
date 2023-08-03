@@ -5,11 +5,15 @@ on:
     branches: [ "main" ]
     paths:
       - 'containers/**/*'
+      - 'compose/**/*'
+      - 'config/**/*'
       - '.github/workflows/dependency-containers-ci.yml'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'containers/**/*'
+      - 'compose/**/*'
+      - 'config/**/*'      
       - '.github/workflows/dependency-containers-ci.yml'
 
 env:

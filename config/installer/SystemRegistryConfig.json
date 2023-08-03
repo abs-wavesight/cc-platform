@@ -135,19 +135,9 @@
       "name": "RabbitMq",
       "files": [
         {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION",
-          "destination": "rabbitmq.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.rabbitmq.yml",
-          "destination": "docker-compose.rabbitmq.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
+          "destination": "c:/abs/temp/RabbitMq/"
         }
       ],
       "actions": [
@@ -172,22 +162,12 @@
       ]
     },
     {
-      "name": "Vector",
+      "name": "Vector-Site",
       "files": [
         {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION",
-          "destination": "vector.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.vector.yml",
-          "destination": "docker-compose.vector.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/vector/config/site/vector.toml",
-          "destination": "vector.toml"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Vector-Site/"
         }
       ],
       "actions": [
@@ -216,22 +196,46 @@
       ]
     },
     {
+      "name": "Vector-Central",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Vector-Central/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "vector.tar",
+          "action": "install"
+        },
+        {
+          "source": "vector.toml",
+          "destination": "$ABS_PATH\\config\\vector\\vector.toml",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.vector.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.vector.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.vector.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
+          "action": "execute"
+        }
+      ]
+    },	
+    {
       "name": "Drex",
       "files": [
         {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION",
-          "destination": "drex.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-drex/main/config/drex/bootstrap.bat",
-          "destination": "drex-bootstrap.bat"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.drex.yml",
-          "destination": "docker-compose.drex.yml"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex/"
         }
       ],
       "actions": [

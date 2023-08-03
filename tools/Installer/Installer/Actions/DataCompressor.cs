@@ -12,17 +12,45 @@ namespace Abs.CommonCore.Installer.Actions
             _logger = loggerFactory.CreateLogger<DataCompressor>();
         }
 
-        public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination)
+        public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
         {
+            _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
+
+            if (Directory.Exists(source.FullName) == false)
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
+
             await Task.Yield();
             File.Delete(destination.FullName);
             ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
+
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source folder: '{source.FullName}'");
+                source.Delete(true);
+            }
         }
 
-        public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination)
+        public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
         {
+            _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
+
+            if (File.Exists(source.FullName) == false)
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
+
             await Task.Yield();
             ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
+
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source file: '{source.FullName}'");
+                source.Delete();
+            }
         }
     }
 }
