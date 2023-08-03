@@ -4,7 +4,7 @@
     {
         private static readonly string[] ConfigFilesExtenstions = { "*.json", "*.config" };
         private static readonly NotifyFilters NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
-        
+
         private FileSystemWatcher? _fileSystemWatcher;
         (string, DateTime)? _newFileVerificator;
         Dictionary<string, DateTime> _filesVerificators = new();
