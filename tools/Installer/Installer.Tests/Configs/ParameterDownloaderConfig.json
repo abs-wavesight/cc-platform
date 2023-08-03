@@ -1,0 +1,8 @@
+﻿{
+  "components": [],
+  "parameters": {
+    "$SOME_KEY1": "KeyValue1",
+    "$SOME_KEY2": "KeyValue2",
+    "$SOME_KEY3": "KeyValue3"
+  }
+}

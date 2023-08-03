@@ -19,17 +19,17 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
+      component-params: # -p ... -p ...
         required: true
         type: string
-        description: Windows version for the Release  
+        description: Full parameter list for component
 
 jobs:
   release-component:
     name: Component Release
     runs-on: windows-2019
-
-    steps:
+    
+    steps:    
       - name: Get Time
         id: time
         uses: nanzm/get-time-action@master
@@ -43,16 +43,13 @@ jobs:
         with:
           string: ${{ inputs.tag }}-${{ steps.time.outputs.time }}
           
-      - uses: actions/checkout@v3
-        name: Checkout branch
-
       - name: Nuget - Set Nuget credentials
         working-directory: ./
         run: |
           $AbsNugetUsername = "USERNAME"
           echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-          $AbsNugetPassword = "${{ github.TOKEN }}"
+          $AbsNugetPassword = "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
           echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append 
 
       - name: Setup dotnet
@@ -70,22 +67,25 @@ jobs:
       - name: Download installer
         uses: dsaltares/fetch-gh-release-asset@master
         with:
+          repo: 'abs-wavesight/cc-platform'
           version: tags/Installer
           file: Abs.CommonCore.Installer.exe
           target: Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}                   
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}   
       
       - name: Download installer config
         uses: dsaltares/fetch-gh-release-asset@master
         with:
+          repo: 'abs-wavesight/cc-platform'
           version: tags/Installer
           file: ComponentRegistryConfig.json
           target: ComponentRegistryConfig.json
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }}
+          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
 
       - name: Compress contents
         run: |
@@ -93,12 +93,16 @@ jobs:
           
       - name: Chunk contents
         run: |
-          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024)
-          
+          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
+      
+      - name: Build release body
+        run: |
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+      
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          body: ${{ inputs.description }}
+          bodyFile: release_body.txt
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main

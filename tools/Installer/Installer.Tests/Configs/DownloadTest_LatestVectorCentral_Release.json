@@ -1,0 +1,16 @@
+﻿{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/tag/$VECTOR_TAG",
+          "destination": "$DESTINATION"
+        }
+      ],
+      "actions": []
+    }
+  ]
+}

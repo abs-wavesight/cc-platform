@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Abs.CommonCore.Platform.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
 {
@@ -12,17 +13,24 @@ namespace Abs.CommonCore.Installer.Actions
             _logger = loggerFactory.CreateLogger<DataChunker>();
         }
 
-        public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize)
+        public async Task ChunkFileAsync(FileInfo source, DirectoryInfo destination, int maxSize, bool removeSource)
         {
-            if (source.Exists == false)
-                throw new Exception("Source file does not exist");
+            _logger.LogInformation($"Chunking file '{source.FullName}' to folder '{destination.FullName}'");
+
+            if (File.Exists(source.FullName) == false)
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
 
             if (source.Length < maxSize)
+            {
+                _logger.LogInformation("Source file is under max size");
                 return;
+            }
 
             Directory.CreateDirectory(destination.FullName);
 
-            _logger.LogInformation($"Breaking {source.Name} file into chunks");
             var bufferSize = Math.Min(4 * 1024, maxSize);
             var buffer = new byte[bufferSize];
             var currentChunkCount = 1;
@@ -51,17 +59,28 @@ namespace Abs.CommonCore.Installer.Actions
                         dataWritten = 0;
                         currentChunkCount++;
                         currentChunkFile = null;
+                        _logger.LogInformation($"Starting chunk {currentChunkCount}");
                     }
                 }
             }
 
             currentChunkFile?.Close();
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source file: '{source.FullName}'");
+                source.Delete();
+            }
         }
 
-        public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination)
+        public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
         {
-            if (source.Exists == false)
-                throw new Exception("Source location doesn't exist");
+            _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
+
+            if (Directory.Exists(source.FullName) == false)
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
 
             var files = Directory.GetFiles(source.FullName, $"*.{ChunkName}?")
                 .OrderBy(x =>
@@ -71,15 +90,31 @@ namespace Abs.CommonCore.Installer.Actions
                 })
                 .ToArray();
 
+            if (files.Length == 0)
+            {
+                return;
+            }
+
             destination.Delete();
             using (var destinationStream = destination.OpenWrite())
             {
                 foreach (var file in files)
                 {
+                    _logger.LogInformation($"Appending file: {file}");
                     using (var fileStream = File.OpenRead(file))
                     {
                         await fileStream.CopyToAsync(destinationStream);
                     }
+                }
+            }
+
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source files: '{files.StringJoin(", ")}'");
+
+                foreach (var file in files)
+                {
+                    File.Delete(file);
                 }
             }
         }

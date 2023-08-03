@@ -18,7 +18,8 @@ services:
       driver: local	
     ports:	
       - "8686:8686"	
-    restart: always	    
+    restart: always	
+    command: [ "-c", "C:\\config\\vector.toml", "--log-format", "json", "--color", "never" ]	
     depends_on:	
       cc.rabbitmq:	
         condition: service_healthy	

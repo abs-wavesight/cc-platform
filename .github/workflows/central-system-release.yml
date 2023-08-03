@@ -1,4 +1,4 @@
-name: RabbitMq Release
+name: Central System Release
 
 on:
   workflow_dispatch:
@@ -17,19 +17,30 @@ on:
         description: Windows version for the Release
         options:
         - 2019
-        - 2022    
-        
+        - 2022
+      rabbitmq-tag:
+        required: true
+        type: string
+        description: Tag to use for RabbitMQ release
+      vector-central-tag:
+        required: true
+        type: string
+        description: Tag to use for Vector central release
+
 concurrency:
-  group: rabbitmq-release
+  group: central-system-release
   cancel-in-progress: true
 
 jobs:
   release-component:
-    name: RabbitMQ Release
-    uses: ./.github/workflows/shared-component-release.yml
+    name: Central System Release
+    uses: ./.github/workflows/shared-system-release.yml
     with:
-      name: RabbitMQ Release ${{ inputs.windows-version }} ${{ inputs.version }}
-      component_name: RabbitMq
-      tag: rabbitmq-${{ inputs.windows-version }}-${{ inputs.version }}
+      version: ${{ inputs.version }}
       description: ${{ inputs.description }}
       windows-version: ${{ inputs.windows-version }}
+      tag-prefix: central-system
+      system-config: CentralSystemConfig.json
+      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
+      release-name-prefix: Central System Release
+    secrets: inherit
