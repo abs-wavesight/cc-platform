@@ -1,6 +1,6 @@
 ﻿namespace Abs.CommonCore.Platform.ConfigFolderWatcher
 {
-    public interface ICustomFileSystemWatcher : IDisposable
+    public interface IConfigFolderWatcher : IDisposable
     {
         event EventHandler<string>? Changed;
         event EventHandler<string>? Added;
