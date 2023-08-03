@@ -26,6 +26,7 @@ namespace Abs.CommonCore.Installer
             var compressCommand = SetupCompressCommand(args);
             var uncompressCommand = SetupUncompressCommand(args);
             var releaseBodyCommand = SetupReleaseBodyCommand(args);
+            var configureRabbitCommand = SetupConfigureRabbitCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -36,6 +37,7 @@ namespace Abs.CommonCore.Installer
             root.Add(compressCommand);
             root.Add(uncompressCommand);
             root.Add(releaseBodyCommand);
+            root.Add(configureRabbitCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -294,6 +296,62 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
+        private static Command SetupConfigureRabbitCommand(string[] args)
+        {
+            var command = new Command("configure-rabbit", "Configures rabbit mq with credentials for configuration file");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var rabbitParam = new Option<Uri>("--rabbit", $"Uri to connect to rabbit mq");
+            rabbitParam.IsRequired = true;
+            rabbitParam.AddAlias("-r");
+            command.Add(rabbitParam);
+
+            var rabbitUsernameParam = new Option<string>("--rabbit-user", "Username to connect to rabbit");
+            rabbitUsernameParam.IsRequired = true;
+            rabbitUsernameParam.AddAlias("-ru");
+            command.Add(rabbitUsernameParam);
+
+            var rabbitPasswordParam = new Option<string>("--rabbit-password", "Password to connect to rabbit");
+            rabbitPasswordParam.IsRequired = true;
+            rabbitPasswordParam.AddAlias("-rp");
+            command.Add(rabbitPasswordParam);
+
+            var usernameParam = new Option<string>("--user", "Username to use for account");
+            usernameParam.IsRequired = true;
+            usernameParam.AddAlias("-u");
+            command.Add(usernameParam);
+
+            var passwordParam = new Option<string>("--password", "Password to use for account");
+            passwordParam.IsRequired = false;
+            passwordParam.AddAlias("-p");
+            command.Add(passwordParam);
+
+            var vhostParam = new Option<string>("--vhost", "Vhost to use for account");
+            passwordParam.IsRequired = false;
+            passwordParam.AddAlias("-v");
+            command.Add(passwordParam);
+
+            var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
+            drexSiteConfigParam.IsRequired = false;
+            drexSiteConfigParam.AddAlias("-dsc");
+            command.Add(drexSiteConfigParam);
+
+            var drexClientConfigParam = new Option<FileInfo>("--drex-client-config", "Path to drex client config to update");
+            drexClientConfigParam.IsRequired = false;
+            drexClientConfigParam.AddAlias("-dcc");
+            command.Add(drexClientConfigParam);
+
+            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password, vhost, 
+                drexSiteConfig, drexClientConfig) =>
+            {
+                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost, 
+                    drexSiteConfig, drexClientConfig, args);
+            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam, vhostParam, 
+                drexSiteConfigParam, drexClientConfigParam);
+
+            return command;
+        }
+
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -370,6 +428,28 @@ namespace Abs.CommonCore.Installer
 
             var release = new ReleaseBodyBuilder(loggerFactory);
             await release.BuildReleaseBodyAsync(config, configParameters, output);
+        }
+
+        private static async Task ExecuteConfigureRabbitCommandAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, string? vhost, FileInfo? drexSiteConfig, FileInfo? drexClientConfig, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+            var configurer = new RabbitConfigurer(loggerFactory);
+
+            var configCount = new[] { drexSiteConfig, drexClientConfig }
+                .Count(x => x != null);
+
+            if (configCount == 0) throw new Exception("No configuration file specified");
+            if (configCount > 1) throw new Exception("Multiple configuration files specified");
+
+            var credentials = await configurer.ConfigureRabbitAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost);
+
+            if (credentials == null)
+            {
+                return;
+            }
+
+            if (drexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(drexSiteConfig, credentials);
+            else if (drexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(drexClientConfig, credentials);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
