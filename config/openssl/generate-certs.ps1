@@ -39,12 +39,5 @@ function GenerateKeyAndCert() {
 GenerateKeyAndCert -KeysDir C:\local-keys -CertsDir C:\local-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl.cnf"
 GenerateKeyAndCert -KeysDir C:\remote-keys -CertsDir C:\remote-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl-rabbitmq-remote.cnf"
 
-# TODO remove after confirming this is not needed
-#if (!(Test-Path C:\local-certs\cacerts.pem) -or !(Test-Path C:\remote-certs\cacerts.pem)) {
-#  Write-Output "Creating certificate authority list with generated certificates"
-#  Get-Content C:\local-certs\rabbitmq.pem, C:\remote-certs\rabbitmq.pem | Out-File C:\local-certs\cacerts.pem
-#  Get-Content C:\local-certs\rabbitmq.pem, C:\remote-certs\rabbitmq.pem | Out-File C:\remote-certs\cacerts.pem
-#}
-
 Write-Verbose "Contents of certificate directories:"
 Get-ChildItem C:\local-keys, C:\local-certs, C:\remote-keys, C:\remote-certs > 4
