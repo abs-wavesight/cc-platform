@@ -25,11 +25,11 @@ defaults:
 jobs:
   dump-context:
     name: Dump Context
-    uses: ./.github/workflows/shared/shared-dump-context.yml
+    uses: ./.github/workflows/shared-dump-context.yml
 
   get_clean_branch_names:
     name: Get Clean Branch Names
-    uses: ./.github/workflows/shared/shared-get-clean-branch-names.yml
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
 
   clean-container-images:
     if: (((github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true) && needs.get_clean_branch_names.outputs.tagFriendlyBranchName != 'main') && inputs.image-names != '')

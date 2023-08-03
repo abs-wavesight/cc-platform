@@ -19,6 +19,6 @@ concurrency:
 jobs:
   clean-container-images:
     name: Clean Nuget Packages
-    uses: ./.github/workflows/shared/shared-cleanup-after-pr-merge.yml
+    uses: ./.github/workflows/shared-cleanup-after-pr-merge.yml
     with:
       nuget-package-names: "['Abs.CommonCore.Drex.Shared', 'Abs.CommonCore.Platform']"

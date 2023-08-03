@@ -38,7 +38,7 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-    uses: ./.github/workflows/shared/shared-system-release.yml
+    uses: ./.github/workflows/shared-system-release.yml
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}

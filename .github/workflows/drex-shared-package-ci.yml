@@ -26,11 +26,11 @@ defaults:
 jobs:
   dump-context:
     name: Dump Context
-    uses: ./.github/workflows/shared/shared-dump-context.yml
+    uses: ./.github/workflows/shared-dump-context.yml
 
   build:
     name: Build & Run Tests
-    uses: ./.github/workflows/shared/shared-dotnet-build.yml
+    uses: ./.github/workflows/shared-dotnet-build.yml
     with:
       solution-directory: libraries/Drex.Shared
       solution-name: Drex.Shared.sln
@@ -40,7 +40,7 @@ jobs:
   publish-nuget-package:
     name: Publish Nuget Package
     needs: [build]
-    uses: ./.github/workflows/shared/shared-publish-nuget-package.yml
+    uses: ./.github/workflows/shared-publish-nuget-package.yml
     with:
       solution-directory: libraries/Drex.Shared
       nuget-working-directory: libraries/Drex.Shared/Shared

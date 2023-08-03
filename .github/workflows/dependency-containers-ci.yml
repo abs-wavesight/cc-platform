@@ -27,7 +27,7 @@ concurrency:
 jobs:
   get_clean_branch_names:
     name: Get Clean Branch Names
-    uses: ./.github/workflows/shared/shared-get-clean-branch-names.yml
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
 
   filter-containers:
     runs-on: ubuntu-latest
