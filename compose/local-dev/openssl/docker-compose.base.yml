@@ -2,8 +2,6 @@
 version: '3.9'
 services:
   cc.openssl-generate-certs:
-    build:
-      context: ../cc-platform/containers/openssl
     command: [ "pwsh", "C:\\config\\generate-certs.ps1" ]
     container_name: openssl
     logging:
