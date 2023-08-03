@@ -82,56 +82,6 @@
       ]
     },
     {
-      "name": "OpenSSL",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION",
-          "destination": "openssl.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.openssl.yml",
-          "destination": "docker-compose.openssl.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/openssl/generate-certs-prod.ps1",
-          "destination": "generate-certs-prod.ps1"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/openssl/openssl-prod.cnf",
-          "destination": "openssl-prod.cnf"
-        }
-      ],
-      "actions": [
-        {
-          "source": "openssl.tar",
-          "action": "install"
-        },
-        {
-          "source": "generate-certs-prod.ps1",
-          "destination": "$ABS_PATH\\config\\openssl\\generate-certs-prod.ps1",
-          "action": "copy"
-        },
-        {
-          "source": "openssl-prod.cnf",
-          "destination": "$ABS_PATH\\config\\openssl\\openssl-prod.cnf",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.openssl.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.openssl.yml",
-          "action": "copy"
-        },
-        {
-          "source": "$ABS_PATH\\config\\docker-compose.openssl.yml",
-          "action": "replaceParameters"
-        }
-      ]
-    },
-    {
       "name": "RabbitMq",
       "files": [
         {
@@ -242,11 +192,6 @@
         {
           "source": "drex.tar",
           "action": "install"
-        },
-        {
-          "source": "drex-bootstrap.bat",
-          "destination": "$ABS_PATH\\config\\drex\\bootstrap.bat",
-          "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",

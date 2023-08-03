@@ -12,35 +12,10 @@ services:
       driver: local
     restart: always
     ports:
-      - "5671:5671"
-      - "15671:15671"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "powershell",
-          "-Command",
-          "Invoke-WebRequest",
-          "-UseBasicParsing",
-          "-Method",
-          "HEAD",
-          "-Uri",
-          "https://rabbitmq-local:15671"
-        ]
-      interval: 10s
-      timeout: 15s
-      start_period: 120s
-      retries: 1
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - type: bind
         source: $ABS_PATH/config/rabbitmq
         target: C:/rabbitmq/config
-        read_only: true
-      - type: volume
-        source: rabbitmq-cert
-        target: C:/certs
-        read_only: true
-      - type: volume
-        source: rabbitmq-key
-        target: C:/keys
         read_only: true

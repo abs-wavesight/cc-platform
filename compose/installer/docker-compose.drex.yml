@@ -10,14 +10,6 @@ services:
       - cc.rabbitmq
     environment:
       - SiteConfigFileName=C:/app/config/site-config.json
-    entrypoint:
-      [
-        "cmd",
-        "/Q",
-        "/C",
-        "call",
-        "C:\\app\\config\\bootstrap.bat"
-      ]
     ports:
       - "12345:5000"
     restart: always
@@ -25,8 +17,4 @@ services:
       - type: bind
         source: $ABS_PATH/config/drex
         target: C:/app/config
-        read_only: true
-      - type: volume
-        source: rabbitmq-certs
-        target: C:/certs
         read_only: true

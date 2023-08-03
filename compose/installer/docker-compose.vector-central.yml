@@ -34,7 +34,4 @@ services:
         source: $ABS_PATH/logs/
         target: C:/cc-logs
         read_only: false # need to write logs to disk
-      - type: volume
-        source: rabbitmq-cert
-        target: C:/certs
-        read_only: true
+        
