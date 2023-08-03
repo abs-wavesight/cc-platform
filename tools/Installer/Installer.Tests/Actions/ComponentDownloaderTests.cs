@@ -1,8 +1,10 @@
-﻿using Abs.CommonCore.Installer.Actions;
+﻿using Abs.CommonCore.Installer;
+using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Octokit;
 
 namespace Installer.Tests.Actions
 {
@@ -65,13 +67,16 @@ namespace Installer.Tests.Actions
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
-        [Fact]
-        public async Task ValidConfig_RealFileDownloaded()
+        [Theory]
+        [InlineData(@"Configs/DownloadTest_RegistryConfig.json")]
+        [InlineData(@"Configs/DownloadTest_GithubRawFileConfig.json")]
+        [InlineData(@"Configs/DownloadTest_GithubReleaseFileConfig.json")]
+        public async Task ValidConfig_RealFileDownloaded(string configPath)
         {
             var loggerFactory = NullLoggerFactory.Instance;
             var dataRequest = new DataRequestService(loggerFactory);
             var commandExecution = new CommandExecutionService(loggerFactory);
-            var registry = new FileInfo(@"Configs/DownloadTest_RegistryConfig.json");
+            var registry = new FileInfo(configPath);
             var config = new FileInfo(@"Configs/DownloaderConfig.json");
             var parameters = new Dictionary<string, string>();
 
@@ -82,6 +87,51 @@ namespace Installer.Tests.Actions
             await downloader.ExecuteAsync();
 
             Assert.True(File.Exists(expectedFile));
+            File.Delete(expectedFile);
+        }
+
+        [Fact]
+        public async Task DownloadLatest_Vector_Central_Release()
+        {
+            var configText = await File.ReadAllTextAsync(@"Configs/DownloadTest_LatestVectorCentral_Release.json");
+            var tempFile = Path.GetTempFileName();
+            var nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
+            var expectedFilePath = Path.Combine(Path.GetTempPath(), "Test_Release_Download");
+            var expectedFile = Path.Combine(expectedFilePath, "Release.zip");
+
+            Directory.CreateDirectory(expectedFilePath);
+            File.Delete(expectedFile);
+
+            var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"));
+            client.Credentials = new Credentials(nugetEnvironmentVariable);
+
+            var releases = await client.Repository.Release.GetAll("abs-wavesight", "cc-platform");
+            var vectorCentralRelease = releases.FirstOrDefault(x => x.TagName.StartsWith("vector-central"));
+
+            if (vectorCentralRelease == null)
+            {
+                // No releases to test
+                return;
+            }
+
+            configText = configText
+                .Replace("$VECTOR_TAG", vectorCentralRelease!.TagName)
+                .Replace("$DESTINATION", expectedFilePath.Replace('\\', '/'));
+
+            await File.WriteAllTextAsync(tempFile, configText);
+
+            var loggerFactory = NullLoggerFactory.Instance;
+            var dataRequest = new DataRequestService(loggerFactory);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+            var registry = new FileInfo(tempFile);
+            var config = new FileInfo(@"Configs/DownloaderConfig.json");
+            var parameters = new Dictionary<string, string>();
+
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters);
+            await downloader.ExecuteAsync();
+
+            Assert.True(File.Exists(expectedFile));
+            File.Delete(expectedFile);
         }
 
         private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)

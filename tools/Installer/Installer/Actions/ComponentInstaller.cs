@@ -9,8 +9,8 @@ namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentInstaller : ActionBase
     {
-        private const string _pathEnvironmentVariable = "PATH";
-        private const int _defaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
+        private const string PathEnvironmentVariable = "PATH";
+        private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -181,11 +181,11 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             _logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
-            var path = Environment.GetEnvironmentVariable(_pathEnvironmentVariable, EnvironmentVariableTarget.Machine)
+            var path = Environment.GetEnvironmentVariable(PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
                        ?? "";
 
             if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
-            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {_pathEnvironmentVariable} \"%{_pathEnvironmentVariable}%;{action.Source}\"", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {PathEnvironmentVariable} \"%{PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
         }
 
         private async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -203,50 +203,51 @@ namespace Abs.CommonCore.Installer.Actions
 
         private async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
-            var text = await File.ReadAllTextAsync(action.Source);
+            var path = Path.Combine(rootLocation, action.Source);
+            var text = await File.ReadAllTextAsync(path);
 
             foreach (var param in _allParameters)
             {
                 text = text.Replace(param.Key, param.Value, StringComparison.OrdinalIgnoreCase);
             }
 
-            await File.WriteAllTextAsync(action.Source, text);
+            await File.WriteAllTextAsync(path, text);
         }
 
         private async Task RunChunkCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var chunker = new DataChunker(_loggerFactory);
 
-            var source = new FileInfo(action.Source);
-            var destination = new DirectoryInfo(action.Destination);
-            await chunker.ChunkFileAsync(source, destination, _defaultMaxChunkSize);
+            var source = new FileInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
+            await chunker.ChunkFileAsync(source, destination, DefaultMaxChunkSize, false);
         }
 
         private async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var chunker = new DataChunker(_loggerFactory);
 
-            var source = new DirectoryInfo(action.Source);
-            var destination = new FileInfo(action.Destination);
-            await chunker.UnchunkFileAsync(source, destination);
+            var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
+            await chunker.UnchunkFileAsync(source, destination, false);
         }
 
         private async Task RunCompressCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var compressor = new DataCompressor(_loggerFactory);
 
-            var source = new DirectoryInfo(action.Source);
-            var destination = new FileInfo(action.Destination);
-            await compressor.CompressDirectoryAsync(source, destination);
+            var source = new DirectoryInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new FileInfo(Path.Combine(rootLocation, action.Destination));
+            await compressor.CompressDirectoryAsync(source, destination, false);
         }
 
         private async Task RunUncompressCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var compressor = new DataCompressor(_loggerFactory);
 
-            var source = new FileInfo(action.Source);
-            var destination = new DirectoryInfo(action.Destination);
-            await compressor.UncompressFileAsync(source, destination);
+            var source = new FileInfo(Path.Combine(rootLocation, action.Source));
+            var destination = new DirectoryInfo(Path.Combine(rootLocation, action.Destination));
+            await compressor.UncompressFileAsync(source, destination, false);
         }
 
         private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)

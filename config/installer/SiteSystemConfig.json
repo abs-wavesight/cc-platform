@@ -1,0 +1,11 @@
+﻿{
+  "components": [
+    "Docker",
+    "RabbitMq",
+    "Vector-Site",
+    "Drex"
+  ],
+  "parameters": {
+    "$ABS_PATH": "c:/abs"
+  }
+}

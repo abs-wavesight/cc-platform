@@ -1,20 +1,25 @@
 ﻿using System.Text.Json;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.Logging;
+using Octokit;
 
 namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentDownloader : ActionBase
     {
+        private const string ReleaseFileName = "Release.zip";
+
         private readonly IDataRequestService _dataRequestService;
         private readonly ICommandExecutionService _commandExecutionService;
         private readonly ILogger _logger;
 
         private readonly InstallerComponentDownloaderConfig? _downloaderConfig;
         private readonly InstallerComponentRegistryConfig _registryConfig;
+        private readonly string? _nugetEnvironmentVariable;
 
         public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters)
@@ -22,6 +27,7 @@ namespace Abs.CommonCore.Installer.Actions
             _dataRequestService = dataRequestService;
             _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<ComponentDownloader>();
+            _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
 
             _downloaderConfig = downloaderConfig != null
                 ? ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(downloaderConfig.FullName)
@@ -83,6 +89,7 @@ namespace Abs.CommonCore.Installer.Actions
             {
                 if (file.Type == ComponentFileType.Container) await ProcessContainerFileAsync(component, file.Source, file.Destination);
                 else if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
+                else if (file.Type == ComponentFileType.Release) await ProcessReleaseFileAsync(component, file.Source, file.Destination);
                 else throw new Exception($"Unknown file type '{file.Type}'");
             }
             catch (Exception ex)
@@ -96,6 +103,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
             var containerFile = Path.Combine(rootLocation, destination);
+            var directory = Path.GetDirectoryName(containerFile)!;
+            Directory.CreateDirectory(directory);
 
             _logger.LogInformation($"Pulling image '{source}'");
             await _commandExecutionService.ExecuteCommandAsync("docker", $"pull {source}", rootLocation);
@@ -107,12 +116,42 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task ProcessSimpleFileAsync(Component component, string source, string destination)
         {
             var outputPath = Path.Combine(_registryConfig.Location, component.Name, destination);
+            var directory = Path.GetDirectoryName(outputPath)!;
+            Directory.CreateDirectory(directory);
 
             _logger.LogInformation($"Downloading file '{source}'");
             var data = await _dataRequestService.RequestByteArrayAsync(source);
 
             _logger.LogInformation($"Saving file '{source}' to '{destination}'");
             await File.WriteAllBytesAsync(outputPath, data);
+        }
+
+        private async Task ProcessReleaseFileAsync(Component component, string source, string destination)
+        {
+            _logger.LogInformation($"Downloading release '{source}' to location '{destination}'");
+
+            var outputPath = Path.Combine(_registryConfig.Location, component.Name, destination);
+            var directory = Path.GetDirectoryName(outputPath)!;
+            Directory.CreateDirectory(directory);
+
+            var segments = source.GetGitHubPathSegments();
+
+            var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
+            client.Credentials = new Credentials(_nugetEnvironmentVariable);
+
+            var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
+            var files = release.Assets
+                .Where(x => x.Name.Contains(ReleaseFileName, StringComparison.OrdinalIgnoreCase))
+                .Select(x => new { Url = new Uri(x.Url, UriKind.Absolute), Filename = x.Name });
+
+            await files
+                .ForAllAsync(async file =>
+                {
+                    var response = await client.Connection.Get<byte[]>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
+                    var outputLocation = Path.Combine(outputPath, file.Filename);
+
+                    await File.WriteAllBytesAsync(outputLocation, response.Body);
+                });
         }
     }
 }

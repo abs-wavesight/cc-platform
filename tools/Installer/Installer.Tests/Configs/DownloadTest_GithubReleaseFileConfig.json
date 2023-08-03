@@ -1,0 +1,16 @@
+﻿{
+  "location": "c:\\abs\\installer",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/Installer/ComponentRegistryConfig.json",
+          "destination": "download_file"
+        }
+      ],
+      "actions": []
+    }
+  ]
+}
