@@ -30,7 +30,7 @@ concurrency:
 jobs:
   release-component:
     name: RabbitMQ Release
-    uses: ./.github/workflows/shared-component-release.yml
+    uses: ./.github/workflows/shared/shared-component-release.yml
     with:
       name: RabbitMQ Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: RabbitMq

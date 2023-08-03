@@ -26,7 +26,7 @@ concurrency:
 jobs:
   build-test-publish:
     name: Build, Test
-    uses: ./.github/workflows/shared-dotnet-build.yml
+    uses: ./.github/workflows/shared/shared-dotnet-build.yml
     with:
       solution-directory: tools/RabbitMqConfigure
       solution-name: RabbitMqConfigure.sln

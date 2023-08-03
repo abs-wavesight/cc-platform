@@ -1,4 +1,4 @@
-name: Vector Site Release
+name: Vector Central Release
 
 on:
   workflow_dispatch:
@@ -17,24 +17,24 @@ on:
         description: Windows version for the Release
         options:
         - 2019
-        - 2022      
+        - 2022
       platform-commit-sha: # 6ac7551
         required: true
         type: string
         description: 7 character short SHA for the commit in cc-platform
 
 concurrency:
-  group: vector-site-release
+  group: vector-central-release
   cancel-in-progress: true
 
 jobs:
   release-component:
-    name: Vector Site Release
-    uses: ./.github/workflows/shared-component-release.yml
+    name: Vector Central Release
+    uses: ./.github/workflows/shared/shared-component-release.yml
     with:
-      name: Vector Site Release ${{ inputs.windows-version }} ${{ inputs.version }}
-      component_name: vector-site
-      tag: vector-site-${{ inputs.windows-version }}-${{ inputs.version }}
+      name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
+      component_name: vector-central
+      tag: vector-central-${{ inputs.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
-      component-params: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}
+      component-params: -p `$WINDOWS_VERSION:${{ inputs.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}  
     secrets: inherit

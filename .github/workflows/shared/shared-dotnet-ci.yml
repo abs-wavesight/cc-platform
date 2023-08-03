@@ -58,15 +58,15 @@ defaults:
 jobs:
   dump-context:
     name: Dump Context
-    uses: ./.github/workflows/shared-dump-context.yml
+    uses: ./.github/workflows/shared/shared-dump-context.yml
 
   get_clean_branch_names:
     name: Get Clean Branch Names
-    uses: ./.github/workflows/shared-get-clean-branch-names.yml
+    uses: ./.github/workflows/shared/shared-get-clean-branch-names.yml
 
   build:
     name: Build & Run Tests
-    uses: ./.github/workflows/shared-dotnet-build.yml
+    uses: ./.github/workflows/shared/shared-dotnet-build.yml
     with:
       solution-directory: ${{ inputs.solution-directory }}
       solution-name: ${{ inputs.solution-name }}
