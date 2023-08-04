@@ -3,6 +3,7 @@
   "components": [
     {
       "name": "Certificates-Central",
+      "files": [],
       "actions": [
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.key",
@@ -15,7 +16,7 @@
           "action": "copy"
         },
         {
-          "source": "certutil.exe -addstore root '$ABS_PATH/certificates/local-certs/rabbitmq.cer'",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
           "action": "execute"
         }
       ]
