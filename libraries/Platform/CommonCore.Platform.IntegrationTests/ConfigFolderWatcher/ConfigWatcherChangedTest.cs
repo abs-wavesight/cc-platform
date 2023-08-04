@@ -11,7 +11,7 @@
         }
 
         [Fact]
-        public void IntegrationTest()
+        public void GivenJsonFile_WhenFileChanged_ShouldFireChangedEvent()
         {
             // Arrange
             var configWatcherResult = new List<string>();

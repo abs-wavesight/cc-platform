@@ -7,7 +7,7 @@ namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher
     {
         protected readonly string ConfigFolderPath;
         protected readonly IConfigFolderWatcher ConfigFolderWatcher;
-        protected readonly int DelayBetweenFileSystemOperations = 500;
+        protected readonly int DelayBetweenFileSystemOperations = 1000;
 
         protected BaseConfigWatcherTest()
         {

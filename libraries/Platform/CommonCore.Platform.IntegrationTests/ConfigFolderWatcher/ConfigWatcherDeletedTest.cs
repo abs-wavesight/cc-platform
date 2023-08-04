@@ -3,7 +3,7 @@
     public class ConfigFolderWatcherTest : BaseConfigWatcherTest
     {
         [Fact]
-        public void IntegrationTest()
+        public void GivenJsonFile_WhenFileDeleted_ShouldFireDeletedEvent()
         {
             var configWatcherResult = string.Empty;
             ConfigFolderWatcher.Deleted += (_, filePath) =>

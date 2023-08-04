@@ -3,7 +3,7 @@
     public class ConfigWatcherAddedTest : BaseConfigWatcherTest
     {
         [Fact]
-        public void IntegrationTest()
+        public void GivenJsonFile_WhenFileAdded_ShouldFireAddedEvent()
         {
             // Arrange
             var configWatcherResult = string.Empty;
@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public void ShouldNotBeTriggeredIntegrationTest()
+        public void GivenTextFile_WhenFileAdded_ShouldNotFireAddedEvent()
         {
             // Arrange
             var configWatcherResult = string.Empty;
