@@ -47,18 +47,27 @@ jobs:
             rabbitmq: 
               - .github/workflows/docker-build-publish.yml
               - containers/rabbitmq/**
+              - config/rabbitmq/**
+              - compose/installer/docker-compose.rabbitmq.yml
             vector: 
               - .github/workflows/docker-build-publish.yml
               - containers/vector/**
+              - config/vector/**
+              - compose/installer/docker-compose.vector-central.yml
+              - compose/installer/docker-compose.vector-site.yml
             loki:
               - .github/workflows/docker-build-publish.yml
               - containers/loki/**
+              - config/loki/**
             grafana: 
               - .github/workflows/docker-build-publish.yml
               - containers/grafana/**
+              - config/grafana/**
             openssl:
               - .github/workflows/docker-build-publish.yml
               - containers/openssl/**
+              - config/openssl/**
+              - compose/installer/docker-compose.openssl.yml
 
   build-containers:
     needs: [ filter-containers, get_clean_branch_names ]
