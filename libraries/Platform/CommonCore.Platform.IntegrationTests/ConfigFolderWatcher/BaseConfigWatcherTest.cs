@@ -19,7 +19,7 @@ namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher
         {
             var currentDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
             var testFolderPath = Path.Combine(currentDirectoryPath, "IntegrationTestsRuntimeData");
-            
+
             if (!Directory.Exists(testFolderPath))
             {
                 throw new DirectoryNotFoundException(testFolderPath);
@@ -40,7 +40,7 @@ namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher
             var newFileName = $"{filePrefix}{DateTime.Now.Ticks}.json";
             var newFilePath = Path.Combine(configFolderPath, newFileName);
 
-            using (StreamWriter sw = File.CreateText(newFilePath))
+            using (var sw = File.CreateText(newFilePath))
             {
                 sw.WriteLine("{}");
             }

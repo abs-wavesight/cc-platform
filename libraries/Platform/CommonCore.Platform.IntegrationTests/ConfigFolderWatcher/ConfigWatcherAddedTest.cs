@@ -35,7 +35,7 @@
             var newFilePath = Path.Combine(ConfigFolderPath, newFileName);
 
             // Act
-            using (StreamWriter sw = File.CreateText(newFilePath))
+            using (var sw = File.CreateText(newFilePath))
             {
                 sw.WriteLine("test new text file");
             }
