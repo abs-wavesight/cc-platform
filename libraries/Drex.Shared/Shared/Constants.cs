@@ -33,11 +33,11 @@
             public const string CentralClientDlqExchangeTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{TopicExchangeSuffix}";
             public const string CentralClientDlqTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{QueueSuffix}";
 
-            public const string SiteDlqDirectExchangeName = $"{ResourcePrefix}.site.{{client}}-internal-src-dlq.{DirectExchangeSuffix}";
-            public const string SiteDlqTopicExchangeName = $"{ResourcePrefix}.site.{{client}}-internal-src-dlq.{TopicExchangeSuffix}";
-            public const string SiteDlqName = $"{ResourcePrefix}.site.{{client}}-internal-src-dlq.{QueueSuffix}";
-            public const string CentralDlqName = $"{ResourcePrefix}.central.{{client}}-{{site}}-internal-src-dlq.{QueueSuffix}";
-            public const string CentralDlqExchangeName = $"{ResourcePrefix}.central.{{client}}-{{site}}-internal-src-dlq.{DirectExchangeSuffix}";
+            public const string SiteDlqDirectExchangeName = $"{ResourcePrefix}.site.internal-src-dlq.{DirectExchangeSuffix}";
+            public const string SiteDlqTopicExchangeName = $"{ResourcePrefix}.site.internal-src-dlq.{TopicExchangeSuffix}";
+            public const string SiteDlqName = $"{ResourcePrefix}.site.internal-src-dlq.{QueueSuffix}";
+            public const string CentralDlqName = $"{ResourcePrefix}.central.internal-src-dlq.{QueueSuffix}";
+            public const string CentralDlqExchangeName = $"{ResourcePrefix}.central.internal-src-dlq.{DirectExchangeSuffix}";
 
             public const string SiteLogDirectExchangeName = $"{ResourcePrefix}.site.int-log.{DirectExchangeSuffix}";
             public const string SiteLogTopicExchangeName = $"{ResourcePrefix}.site.int-log.{TopicExchangeSuffix}";
