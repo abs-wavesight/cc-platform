@@ -23,7 +23,7 @@
         {
             public const string InternalSourceDlqReservedName = "internal-src-dlq";
             public const string InfrastructureLogsReservedName = "int-log";
-            public const string SinkLogsReservedName = "int-log";
+            public const string SinkLogsReservedName = "snk-log";
 
             public const string ResourcePrefix = "cc.drex";
 
