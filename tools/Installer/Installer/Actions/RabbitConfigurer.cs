@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions.Models;
@@ -84,15 +85,15 @@ namespace Abs.CommonCore.Installer.Actions
 
             return new RabbitCredentials
             {
-                Username = username, 
-                Password = password, 
+                Username = username,
+                Password = password,
                 Vhost = vhost
             };
         }
 
         private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, string vhost)
         {
-            var existingUser = await client.GetUserAsync(username);
+            var existingUser = await GetUserAsync(client, username);
 
             if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase))
             {
@@ -102,6 +103,7 @@ namespace Abs.CommonCore.Installer.Actions
                 var response = Console.ReadLine();
                 if (string.Equals(response, username, StringComparison.OrdinalIgnoreCase) == false)
                 {
+                    Console.WriteLine("Aborting credential creation");
                     return false;
                 }
             }
@@ -121,6 +123,18 @@ namespace Abs.CommonCore.Installer.Actions
             return userRecord != null
                 ? true
                 : throw new Exception("Unable to create user");
+        }
+
+        private async Task<User?> GetUserAsync(IManagementClient client, string username)
+        {
+            try
+            {
+                return await client.GetUserAsync(username);
+            }
+            catch (UnexpectedHttpStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
         }
 
         private async Task SaveConfigAsync<T>(FileInfo location, T config)

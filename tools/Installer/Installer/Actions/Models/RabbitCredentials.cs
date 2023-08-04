@@ -2,8 +2,8 @@
 {
     public class RabbitCredentials
     {
-        public string Username { get; init; }
-        public string Password { get; init; }
-        public string Vhost { get; init; }
+        public string Username { get; init; } = "";
+        public string Password { get; init; } = "";
+        public string Vhost { get; init; } = "";
     }
 }

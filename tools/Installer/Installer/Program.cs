@@ -301,7 +301,7 @@ namespace Abs.CommonCore.Installer
             var command = new Command("configure-rabbit", "Configures rabbit mq with credentials for configuration file");
             command.TreatUnmatchedTokensAsErrors = true;
 
-            var rabbitParam = new Option<Uri>("--rabbit", $"Uri to connect to rabbit mq");
+            var rabbitParam = new Option<Uri>("--rabbit", $"Http uri to connect to rabbit mq");
             rabbitParam.IsRequired = true;
             rabbitParam.AddAlias("-r");
             command.Add(rabbitParam);
@@ -327,9 +327,9 @@ namespace Abs.CommonCore.Installer
             command.Add(passwordParam);
 
             var vhostParam = new Option<string>("--vhost", "Vhost to use for account");
-            passwordParam.IsRequired = false;
-            passwordParam.AddAlias("-v");
-            command.Add(passwordParam);
+            vhostParam.IsRequired = false;
+            vhostParam.AddAlias("-v");
+            command.Add(vhostParam);
 
             var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
             drexSiteConfigParam.IsRequired = false;
@@ -341,12 +341,12 @@ namespace Abs.CommonCore.Installer
             drexClientConfigParam.AddAlias("-dcc");
             command.Add(drexClientConfigParam);
 
-            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password, vhost, 
+            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password, vhost,
                 drexSiteConfig, drexClientConfig) =>
             {
-                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost, 
+                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost,
                     drexSiteConfig, drexClientConfig, args);
-            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam, vhostParam, 
+            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam, vhostParam,
                 drexSiteConfigParam, drexClientConfigParam);
 
             return command;
@@ -445,6 +445,7 @@ namespace Abs.CommonCore.Installer
 
             if (credentials == null)
             {
+                Console.WriteLine("No credentials added");
                 return;
             }
 
