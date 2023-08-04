@@ -6,7 +6,7 @@
       "files": [
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/installer/DownloaderConfig.json",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/installer/ComponentRegistryConfig.json",
           "destination": "download_file"
         }
       ],
