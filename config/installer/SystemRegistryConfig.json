@@ -5,9 +5,18 @@
       "name": "Certificates-Central",
       "actions": [
         {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
+          "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.key",
+          "action": "copy"
+        },
+        {
           "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
           "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
           "action": "copy"
+        },
+        {
+          "source": "certutil.exe -addstore root '$ABS_PATH/certificates/local-certs/rabbitmq.cer'",
+          "action": "execute"
         }
       ]
     },
@@ -133,7 +142,16 @@
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from cc.openssl-generate-certs\"",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/remote-certs')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer",
+          "action": "copy"
+        },
+        {
+          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from cc.openssl-generate-certs; certutil.exe -addstore root '$ABS_PATH/certificates/local-certs/rabbitmq.cer'; certutil.exe -addstore root '$ABS_PATH/certificates/remote-certs/rabbitmq.cer';\"",
           "action": "execute"
         }
       ]
