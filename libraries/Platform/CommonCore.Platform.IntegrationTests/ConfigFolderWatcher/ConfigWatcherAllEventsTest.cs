@@ -41,7 +41,7 @@
             ActAssertClearChangedEvent();
 
             ActAssertClearChangedEvent();
-            
+
             ActAssertClearDeletedEvent();
         }
 
