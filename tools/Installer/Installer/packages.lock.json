@@ -4,12 +4,13 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.92-feature-ado-21289-drex-vhost-access, )",
-        "resolved": "1.0.92-feature-ado-21289-drex-vhost-access",
-        "contentHash": "h5j/F34TbG3HhcrRMZ3Cmfx8PE4YIaiKxKAgxRwiFPz5ZG8mprBWo1Ce6kwarI9nyuESjBouPllvQpY6SCjyHQ==",
+        "requested": "[1.0.93-feature-ado-21289-drex-vhost-access, )",
+        "resolved": "1.0.93-feature-ado-21289-drex-vhost-access",
+        "contentHash": "rMccMXrXJjQtc1HzXNuzRIolviH6lVchFNSbG/7S6eoOQ7Sjyk56SNiqH8DxGIeAbUu/wrQgsyUCow3RmfiPUw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
+          "Grpc.AspNetCore": "2.32.0",
+          "Macross.Json.Extensions": "3.0.0"
         }
       },
       "Abs.CommonCore.Platform": {
@@ -35,6 +36,12 @@
           "System.Net.Http.Json": "6.0.0",
           "System.Text.Json": "6.0.0"
         }
+      },
+      "Macross.Json.Extensions": {
+        "type": "Direct",
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "Direct",

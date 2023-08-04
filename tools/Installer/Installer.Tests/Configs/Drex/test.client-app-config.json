@@ -1,0 +1,22 @@
+﻿{
+  "key": "test",
+  "siteSources": [
+    {
+      "type": "queue",
+      "name": "x"
+    }
+  ],
+  "siteSinks": [
+    {
+      "type": "queue",
+      "name": "x"
+    }
+  ],
+  "remoteSources": {},
+  "remoteSinks": {},
+  "clientCredentials": {
+    "username": "",
+    "password": "",
+    "vhost": ""
+  }
+}

@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Platform.Config;
@@ -142,11 +141,15 @@ namespace Abs.CommonCore.Installer.Actions
             var options = new JsonSerializerOptions(JsonSerializerOptions.Default)
             {
                 WriteIndented = true,
-                Converters = { new JsonStringEnumConverter() }
             };
 
             var json = JsonSerializer.Serialize(config, options);
             await File.WriteAllTextAsync(location.FullName, json);
         }
+    }
+
+    class LowercaseJsonNamingPolicy : JsonNamingPolicy
+    {
+        public override string ConvertName(string? name) => name?.ToLower() ?? "";
     }
 }

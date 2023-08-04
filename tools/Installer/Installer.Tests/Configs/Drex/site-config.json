@@ -1,0 +1,16 @@
+﻿{
+  "key": "site-alpha",
+  "remoteBuses": [
+    {
+      "key": "central",
+      "type": "rabbitmq",
+      "host": "rabbitmq-remote",
+      "port": 5672,
+      "httpPort": 15672,
+      "protocol": "amqp",
+      "username": "",
+      "password": "",
+      "vhost": ""
+    }
+  ]
+}

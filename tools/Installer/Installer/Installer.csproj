@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.92-feature-ado-21289-drex-vhost-access" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.93-feature-ado-21289-drex-vhost-access" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.29" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
@@ -29,6 +29,7 @@
     <PackageReference Include="Octokit.Extensions" Version="1.0.7" />
     <PackageReference Include="EasyNetQ.Management.Client" Version="2.0.0" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
+    <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
 	</ItemGroup>
 
   <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
