@@ -18,8 +18,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.93-feature-ado-21289-drex-vhost-access" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.29" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.96-feature-ado-21289-drex-vhost-access" />
+		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.89-feature-ado-21289-drex-vhost-access" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />

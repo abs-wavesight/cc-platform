@@ -14,9 +14,11 @@
   ],
   "remoteSources": {},
   "remoteSinks": {},
-  "clientCredentials": {
-    "username": "",
-    "password": "",
-    "vhost": ""
-  }
+  "credentials": [
+    {
+      "key": "local",
+      "username": "",
+      "password": ""
+    }
+  ]
 }

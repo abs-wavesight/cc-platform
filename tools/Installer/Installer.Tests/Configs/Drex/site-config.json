@@ -9,8 +9,7 @@
       "httpPort": 15672,
       "protocol": "amqp",
       "username": "",
-      "password": "",
-      "vhost": ""
+      "password": ""
     }
   ]
 }

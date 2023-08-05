@@ -16,7 +16,6 @@ namespace Installer.Tests.Actions
             {
                 Username = Guid.NewGuid().ToString(),
                 Password = Guid.NewGuid().ToString(),
-                Vhost = Guid.NewGuid().ToString()
             };
 
             var config = new FileInfo(@"Configs/Drex/site-config.json");
@@ -28,7 +27,6 @@ namespace Installer.Tests.Actions
             Assert.NotNull(parsedConfig);
             Assert.Contains(credentials.Username, configText);
             Assert.Contains(credentials.Password, configText);
-            Assert.Contains(credentials.Vhost, configText);
         }
 
 
@@ -40,11 +38,10 @@ namespace Installer.Tests.Actions
             {
                 Username = Guid.NewGuid().ToString(),
                 Password = Guid.NewGuid().ToString(),
-                Vhost = Guid.NewGuid().ToString()
             };
 
             var config = new FileInfo(@"Configs/Drex/test.client-app-config.json");
-            await configurer.UpdateDrexClientConfigAsync(config, credentials);
+            await configurer.UpdateDrexClientConfigAsync(config, "local", credentials);
 
             var configText = await File.ReadAllTextAsync(config.FullName);
             var parsedConfig = ConfigParser.LoadConfig<DrexClientAppConfig>(config.FullName);
@@ -52,7 +49,6 @@ namespace Installer.Tests.Actions
             Assert.NotNull(parsedConfig);
             Assert.Contains(credentials.Username, configText);
             Assert.Contains(credentials.Password, configText);
-            Assert.Contains(credentials.Vhost, configText);
         }
     }
 }

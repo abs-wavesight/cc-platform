@@ -326,11 +326,6 @@ namespace Abs.CommonCore.Installer
             passwordParam.AddAlias("-p");
             command.Add(passwordParam);
 
-            var vhostParam = new Option<string>("--vhost", "Vhost to use for account");
-            vhostParam.IsRequired = false;
-            vhostParam.AddAlias("-v");
-            command.Add(vhostParam);
-
             var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
             drexSiteConfigParam.IsRequired = false;
             drexSiteConfigParam.AddAlias("-dsc");
@@ -341,13 +336,18 @@ namespace Abs.CommonCore.Installer
             drexClientConfigParam.AddAlias("-dcc");
             command.Add(drexClientConfigParam);
 
-            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password, vhost,
-                drexSiteConfig, drexClientConfig) =>
+            var drexClientConfigKeyParam = new Option<string>("--drex-client-config-key", "Key to use for updating client config");
+            drexClientConfigKeyParam.IsRequired = false;
+            drexClientConfigKeyParam.AddAlias("-dcck");
+            command.Add(drexClientConfigKeyParam);
+
+            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password,
+                drexSiteConfig, drexClientConfig, drexClientConfigKey) =>
             {
-                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost,
-                    drexSiteConfig, drexClientConfig, args);
-            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam, vhostParam,
-                drexSiteConfigParam, drexClientConfigParam);
+                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password,
+                    drexSiteConfig, drexClientConfig, drexClientConfigKey, args);
+            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam,
+                drexSiteConfigParam, drexClientConfigParam, drexClientConfigKeyParam);
 
             return command;
         }
@@ -430,7 +430,7 @@ namespace Abs.CommonCore.Installer
             await release.BuildReleaseBodyAsync(config, configParameters, output);
         }
 
-        private static async Task ExecuteConfigureRabbitCommandAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, string? vhost, FileInfo? drexSiteConfig, FileInfo? drexClientConfig, string[] args)
+        private static async Task ExecuteConfigureRabbitCommandAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, FileInfo? drexSiteConfig, FileInfo? drexClientConfig, string? drexClientConfigKey, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
             var configurer = new RabbitConfigurer(loggerFactory);
@@ -440,8 +440,9 @@ namespace Abs.CommonCore.Installer
 
             if (configCount == 0) throw new Exception("No configuration file specified");
             if (configCount > 1) throw new Exception("Multiple configuration files specified");
+            if (drexClientConfig != null && string.IsNullOrWhiteSpace(drexClientConfigKey)) throw new Exception("Drex client config key must be specified");
 
-            var credentials = await configurer.ConfigureRabbitAsync(rabbit, rabbitUsername, rabbitPassword, username, password, vhost);
+            var credentials = await configurer.ConfigureRabbitAsync(rabbit, rabbitUsername, rabbitPassword, username, password);
 
             if (credentials == null)
             {
@@ -450,7 +451,7 @@ namespace Abs.CommonCore.Installer
             }
 
             if (drexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(drexSiteConfig, credentials);
-            else if (drexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(drexClientConfig, credentials);
+            else if (drexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(drexClientConfig, drexClientConfigKey, credentials);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

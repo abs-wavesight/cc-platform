@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Platform.Config;
@@ -12,6 +13,8 @@ namespace Abs.CommonCore.Installer.Actions
 {
     public class RabbitConfigurer
     {
+        private const string SystemVhost = "/";
+
         private readonly ILogger _logger;
 
         public RabbitConfigurer(ILoggerFactory loggerFactory)
@@ -19,12 +22,12 @@ namespace Abs.CommonCore.Installer.Actions
             _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
         }
 
-        public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, string? vhost)
+        public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password)
         {
             _logger.LogInformation($"Configuring RabbitMQ at '{rabbit}'");
             var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-            return await ConfigureRabbitAsync(client, username, password, vhost);
+            return await ConfigureRabbitAsync(client, username, password);
         }
 
         public async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
@@ -37,27 +40,28 @@ namespace Abs.CommonCore.Installer.Actions
 
             config.RemoteBuses[0].Username = credentials.Username;
             config.RemoteBuses[0].Password = credentials.Password;
-            config.RemoteBuses[0].Vhost = credentials.Vhost;
 
             await SaveConfigAsync(location, config);
         }
 
-        public async Task UpdateDrexClientConfigAsync(FileInfo location, RabbitCredentials credentials)
+        public async Task UpdateDrexClientConfigAsync(FileInfo location, string configKey, RabbitCredentials credentials)
         {
             _logger.LogInformation($"Updating Drex client config at '{location}'");
             var config = ConfigParser.LoadConfig<DrexClientAppConfig>(location.FullName);
 
-            config.ClientCredentials = new ClientCredentials
+            config.Credentials
+                .RemoveAll(x => string.Equals(x.Key.ToString(), configKey));
+
+            config.Credentials.Add(new ClientCredentials
             {
                 Username = credentials.Username,
                 Password = credentials.Password,
-                Vhost = credentials.Vhost
-            };
+            });
 
             await SaveConfigAsync(location, config);
         }
 
-        private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, string? vhost)
+        private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password)
         {
             // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
             password = string.IsNullOrWhiteSpace(password)
@@ -65,11 +69,7 @@ namespace Abs.CommonCore.Installer.Actions
                     .Next()
                 : password;
 
-            vhost = string.IsNullOrWhiteSpace(vhost)
-                ? username
-                : vhost;
-
-            var isAdded = await AddUserAccountAsync(client, username, password, vhost);
+            var isAdded = await AddUserAccountAsync(client, username, password);
 
             if (isAdded == false)
             {
@@ -79,18 +79,16 @@ namespace Abs.CommonCore.Installer.Actions
             Console.WriteLine("User account created.");
             Console.WriteLine($"User:     {username}");
             Console.WriteLine($"Password: {password}");
-            Console.WriteLine($"Vhost:    {vhost}");
             Console.WriteLine();
 
             return new RabbitCredentials
             {
                 Username = username,
                 Password = password,
-                Vhost = vhost
             };
         }
 
-        private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, string vhost)
+        private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password)
         {
             var existingUser = await GetUserAsync(client, username);
 
@@ -107,16 +105,17 @@ namespace Abs.CommonCore.Installer.Actions
                 }
             }
 
-            await client.CreateVhostAsync(vhost);
-            var vHost = await client.GetVhostAsync(vhost);
+            var vHost = await client.GetVhostAsync(SystemVhost);
 
             var user = UserInfo.ByPassword(username, password)
-                .AddTag(UserTags.Management)
-                .AddTag(UserTags.Policymaker)
-                .AddTag(UserTags.Monitoring);
+                .AddTag(UserTags.Management);
+
+            var permissionRegex = $"{Regex.Escape(Drex.Shared.Constants.MessageBus.InternalSourceDlqReservedName)}" +
+                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InfrastructureLogsReservedName)}" +
+                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.SinkLogsReservedName)}";
 
             await client.CreateUserAsync(user);
-            await client.CreatePermissionAsync(vHost, new PermissionInfo(user.Name));
+            await client.CreatePermissionAsync(vHost, new PermissionInfo(user.Name, permissionRegex, permissionRegex, permissionRegex));
 
             var userRecord = await client.GetUserAsync(username);
             return userRecord != null
@@ -146,10 +145,5 @@ namespace Abs.CommonCore.Installer.Actions
             var json = JsonSerializer.Serialize(config, options);
             await File.WriteAllTextAsync(location.FullName, json);
         }
-    }
-
-    class LowercaseJsonNamingPolicy : JsonNamingPolicy
-    {
-        public override string ConvertName(string? name) => name?.ToLower() ?? "";
     }
 }
