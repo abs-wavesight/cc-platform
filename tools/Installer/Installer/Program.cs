@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
+using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -326,6 +327,11 @@ namespace Abs.CommonCore.Installer
             passwordParam.AddAlias("-p");
             command.Add(passwordParam);
 
+            var updatePermissionsParam = new Option<bool>("--update-permissions", "Update the users permissions");
+            updatePermissionsParam.IsRequired = false;
+            updatePermissionsParam.AddAlias("-up");
+            command.Add(updatePermissionsParam);
+
             var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
             drexSiteConfigParam.IsRequired = false;
             drexSiteConfigParam.AddAlias("-dsc");
@@ -341,13 +347,23 @@ namespace Abs.CommonCore.Installer
             drexClientConfigKeyParam.AddAlias("-dcck");
             command.Add(drexClientConfigKeyParam);
 
-            command.SetHandler(async (rabbit, rabbitUsername, rabbitPassword, username, password,
-                drexSiteConfig, drexClientConfig, drexClientConfigKey) =>
+            command.SetHandler(async (context) =>
             {
-                await ExecuteConfigureRabbitCommandAsync(rabbit, rabbitUsername, rabbitPassword, username, password,
-                    drexSiteConfig, drexClientConfig, drexClientConfigKey, args);
-            }, rabbitParam, rabbitUsernameParam, rabbitPasswordParam, usernameParam, passwordParam,
-                drexSiteConfigParam, drexClientConfigParam, drexClientConfigKeyParam);
+                var arguments = new RabbitConfigureCommandArguments
+                {
+                    Rabbit = context.ParseResult.GetValueForOption(rabbitParam),
+                    RabbitUsername = context.ParseResult.GetValueForOption(rabbitUsernameParam),
+                    RabbitPassword = context.ParseResult.GetValueForOption(rabbitPasswordParam),
+                    Username = context.ParseResult.GetValueForOption(usernameParam),
+                    Password = context.ParseResult.GetValueForOption(passwordParam),
+                    UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
+                    DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
+                    DrexClientConfig = context.ParseResult.GetValueForOption(drexClientConfigParam),
+                    DrexClientConfigKey = context.ParseResult.GetValueForOption(drexClientConfigKeyParam)
+                };
+
+                await ExecuteConfigureRabbitCommandAsync(arguments, args);
+            });
 
             return command;
         }
@@ -430,19 +446,25 @@ namespace Abs.CommonCore.Installer
             await release.BuildReleaseBodyAsync(config, configParameters, output);
         }
 
-        private static async Task ExecuteConfigureRabbitCommandAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, FileInfo? drexSiteConfig, FileInfo? drexClientConfig, string? drexClientConfigKey, string[] args)
+        private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
             var configurer = new RabbitConfigurer(loggerFactory);
 
-            var configCount = new[] { drexSiteConfig, drexClientConfig }
+            if (arguments.UpdatePermissions)
+            {
+                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!);
+                return;
+            }
+
+            var configCount = new[] { arguments.DrexSiteConfig, arguments.DrexClientConfig }
                 .Count(x => x != null);
 
             if (configCount == 0) throw new Exception("No configuration file specified");
             if (configCount > 1) throw new Exception("Multiple configuration files specified");
-            if (drexClientConfig != null && string.IsNullOrWhiteSpace(drexClientConfigKey)) throw new Exception("Drex client config key must be specified");
+            if (arguments.DrexClientConfig != null && string.IsNullOrWhiteSpace(arguments.DrexClientConfigKey)) throw new Exception("Drex client config key must be specified");
 
-            var credentials = await configurer.ConfigureRabbitAsync(rabbit, rabbitUsername, rabbitPassword, username, password);
+            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password);
 
             if (credentials == null)
             {
@@ -450,8 +472,8 @@ namespace Abs.CommonCore.Installer
                 return;
             }
 
-            if (drexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(drexSiteConfig, credentials);
-            else if (drexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(drexClientConfig, drexClientConfigKey, credentials);
+            if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+            else if (arguments.DrexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(arguments.DrexClientConfig, arguments.DrexClientConfigKey!, credentials);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

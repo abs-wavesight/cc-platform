@@ -30,6 +30,14 @@ namespace Abs.CommonCore.Installer.Actions
             return await ConfigureRabbitAsync(client, username, password);
         }
 
+        public async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username)
+        {
+            _logger.LogInformation($"Updating user '{username}' permissions at '{rabbit}'");
+            var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
+
+            await UpdateUserPermissionsAsync(client, username);
+        }
+
         public async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
         {
             _logger.LogInformation($"Updating Drex site config at '{location}'");
@@ -105,22 +113,31 @@ namespace Abs.CommonCore.Installer.Actions
                 }
             }
 
-            var vHost = await client.GetVhostAsync(SystemVhost);
-
             var user = UserInfo.ByPassword(username, password)
                 .AddTag(UserTags.Management);
 
-            var permissionRegex = $"{Regex.Escape(Drex.Shared.Constants.MessageBus.InternalSourceDlqReservedName)}" +
-                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InfrastructureLogsReservedName)}" +
-                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.SinkLogsReservedName)}";
-
             await client.CreateUserAsync(user);
-            await client.CreatePermissionAsync(vHost, new PermissionInfo(user.Name, permissionRegex, permissionRegex, permissionRegex));
+            await UpdateUserPermissionsAsync(client, username);
 
             var userRecord = await client.GetUserAsync(username);
             return userRecord != null
                 ? true
                 : throw new Exception("Unable to create user");
+        }
+
+        private async Task UpdateUserPermissionsAsync(IManagementClient client, string username)
+        {
+            var user = await GetUserAsync(client, username);
+
+            if (user == null) throw new Exception("User account does not exist");
+
+            var permissionRegex = $"{Regex.Escape(username.ToLower())}" +
+                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InternalSourceDlqReservedName)}" +
+                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InfrastructureLogsReservedName)}" +
+                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.SinkLogsReservedName)}";
+
+            var vHost = await client.GetVhostAsync(SystemVhost);
+            await client.CreatePermissionAsync(vHost, new PermissionInfo(username, permissionRegex, permissionRegex, permissionRegex));
         }
 
         private async Task<User?> GetUserAsync(IManagementClient client, string username)
