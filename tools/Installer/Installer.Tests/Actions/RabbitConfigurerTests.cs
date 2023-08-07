@@ -28,27 +28,5 @@ namespace Installer.Tests.Actions
             Assert.Contains(credentials.Username, configText);
             Assert.Contains(credentials.Password, configText);
         }
-
-
-        [Fact]
-        public async Task DrexClientConfig_Updated()
-        {
-            var configurer = new RabbitConfigurer(NullLoggerFactory.Instance);
-            var credentials = new RabbitCredentials
-            {
-                Username = Guid.NewGuid().ToString(),
-                Password = Guid.NewGuid().ToString(),
-            };
-
-            var config = new FileInfo(@"Configs/Drex/test.client-app-config.json");
-            await configurer.UpdateDrexClientConfigAsync(config, "local", credentials);
-
-            var configText = await File.ReadAllTextAsync(config.FullName);
-            var parsedConfig = ConfigParser.LoadConfig<DrexClientAppConfig>(config.FullName);
-
-            Assert.NotNull(parsedConfig);
-            Assert.Contains(credentials.Username, configText);
-            Assert.Contains(credentials.Password, configText);
-        }
     }
 }

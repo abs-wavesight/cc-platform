@@ -448,7 +448,7 @@ namespace Abs.CommonCore.Installer
 
             if (arguments.UpdatePermissions)
             {
-                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!);
+                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
                 return;
             }
 

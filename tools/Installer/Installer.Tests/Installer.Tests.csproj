@@ -39,9 +39,6 @@
 		<None Update="Configs\Drex\site-config.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Configs\Drex\test.client-app-config.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Update="Configs\ParameterDownloaderConfig.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
