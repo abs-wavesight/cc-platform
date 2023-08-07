@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonCore.Platform", "CommonCore.Platform\CommonCore.Platform.csproj", "{604A0528-3F8A-4B14-9D4C-CC00E8B2C6A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonCore.Platform.Tests", "CommonCore.Platform.Tests\CommonCore.Platform.Tests.csproj", "{B5493168-45FA-4979-9022-E138B1C1AF0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonCore.Platform.Tests", "CommonCore.Platform.Tests\CommonCore.Platform.Tests.csproj", "{B5493168-45FA-4979-9022-E138B1C1AF0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonCore.Platform.IntegrationTests", "CommonCore.Platform.IntegrationTests\CommonCore.Platform.IntegrationTests.csproj", "{8DE6C43D-AE75-4B5B-80C8-DCD6BBAD1149}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B5493168-45FA-4979-9022-E138B1C1AF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5493168-45FA-4979-9022-E138B1C1AF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5493168-45FA-4979-9022-E138B1C1AF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DE6C43D-AE75-4B5B-80C8-DCD6BBAD1149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DE6C43D-AE75-4B5B-80C8-DCD6BBAD1149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DE6C43D-AE75-4B5B-80C8-DCD6BBAD1149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DE6C43D-AE75-4B5B-80C8-DCD6BBAD1149}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

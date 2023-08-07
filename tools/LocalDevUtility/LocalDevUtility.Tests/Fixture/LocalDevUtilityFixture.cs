@@ -40,11 +40,16 @@ public class LocalDevUtilityFixture
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
 
+        var dummyCertPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-certs");
+        Directory.CreateDirectory(Path.Combine(dummyCertPath, "local-keys"));
+        Directory.CreateDirectory(Path.Combine(dummyCertPath, "local-certs"));
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
-            ContainerWindowsVersion = "2019"
+            ContainerWindowsVersion = "2019",
+            CertificatePath = dummyCertPath
         };
     }
 

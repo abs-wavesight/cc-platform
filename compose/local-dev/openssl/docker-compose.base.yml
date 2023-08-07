@@ -1,0 +1,29 @@
+---
+version: '3.9'
+services:
+  cc.openssl-generate-certs:
+    command: [ "pwsh", "C:\\config\\generate-certs.ps1" ]
+    container_name: openssl
+    logging:
+      driver: local
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssl
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-keys
+        target: C:/local-keys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-keys
+        target: C:/remote-keys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/remote-certs
+        read_only: true

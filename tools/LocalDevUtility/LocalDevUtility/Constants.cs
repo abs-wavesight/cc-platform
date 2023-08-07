@@ -26,5 +26,14 @@ public static class Constants
         public const string PathToCommonCorePlatformRepository = "PATH_TO_CC_PLATFORM_REPO";
         public const string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
+        public const string PathToCertificates = "PATH_TO_CERTS";
+    }
+
+    public static class CertificateSubDirectories
+    {
+        public const string LocalKeys = "local-keys";
+        public const string LocalCerts = "local-certs";
+        public const string RemoteKeys = "remote-keys";
+        public const string RemoteCerts = "remote-certs";
     }
 }

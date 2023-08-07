@@ -24,6 +24,7 @@
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
 	</ItemGroup>
 
+
   <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 
 </Project>

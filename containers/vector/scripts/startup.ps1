@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'Stop'
+
 # Set up log cleanup scheduled task
 $LogRetentionPeriod = $env:LOG_RETENTION_PERIOD
 if ([string]::IsNullOrWhitespace($LogRetentionPeriod)) 

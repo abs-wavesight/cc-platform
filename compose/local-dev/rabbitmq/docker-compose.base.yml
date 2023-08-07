@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
@@ -8,10 +8,41 @@ services:
       RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\cc-rabbitmq.conf
     logging:
       driver: local
-    profiles: ['templates']
+    profiles: [ 'templates' ]
     restart: always
+    entrypoint: [ "powershell", "-c" ]
+    command:
+      [
+        "Import-Certificate",
+        "-CertStoreLocation",
+        "Cert:\\LocalMachine\\root",
+        "-FilePath",
+        "C:\\certs\\rabbitmq.cer",
+        ";",
+        "cmd",
+        "/C",
+        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
+      ]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "powershell",
+          "-Command",
+          "Invoke-WebRequest",
+          "-UseBasicParsing",
+          "-Method",
+          "HEAD",
+          "-Uri",
+          "https://localhost:15671"
+        ]
+      interval: 10s
+      timeout: 15s
+      # start_period is set high because it takes awhile to start up, especially when starting multiple instances of rabbitmq simultaneously
+      start_period: 120s
+      retries: 1
     volumes:
-      - &config_volume 
+      - &config_volume
         type: bind
         source: ${PATH_TO_CC_PLATFORM_REPO}/config/rabbitmq/
         target: C:/rabbitmq/config
@@ -24,26 +55,46 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    profiles: ['rabbitmq-local']
+      - "5671:5671"
+      - "15671:15671"
+    profiles: [ 'rabbitmq-local' ]
     volumes:
       - *config_volume
       - type: volume
         source: rabbitmq-local-storage
         target: C:/data/rabbitmq
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-keys
+        target: C:/keys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/certs
+        read_only: true
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
     container_name: rabbitmq-remote
     hostname: rabbitmq-remote
     ports:
-      - "5673:5672"
-      - "15673:15672"
-    profiles: ['rabbitmq-remote']
+      - "5682:5672"
+      - "15682:15672"
+      - "5681:5671"
+      - "15681:15671"
+    profiles: [ 'rabbitmq-remote' ]
     volumes:
       - *config_volume
       - type: volume
         source: rabbitmq-remote-storage
         target: C:/data/rabbitmq
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-keys
+        target: C:/keys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/certs
+        read_only: true
 
 volumes:
   rabbitmq-local-storage:

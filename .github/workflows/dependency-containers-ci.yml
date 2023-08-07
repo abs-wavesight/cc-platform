@@ -100,7 +100,7 @@ jobs:
           echo "SHORT_SHA=$tagFriendlySha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build and push Docker image
-        id: build-and-push-container		
+        id: build-and-push-container
         uses: mr-smithers-excellent/docker-build-push@v6
         env:
           BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
@@ -125,7 +125,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
             ${{ env.LABEL_PREFIX }}.container_type=infrastructure
           addTimestamp: true
-          platform: windows/amd64          
+          platform: windows/amd64
 
       - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
         env:

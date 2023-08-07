@@ -56,4 +56,17 @@ public class StringExtensionsTests
         // Assert
         result.Should().Be("test");
     }
+
+    [Fact]
+    public void TrimTrailingSlash_GivenEmptyString_ShouldReturnOriginalString()
+    {
+        // Arrange
+        var str = "";
+
+        // Act
+        var result = str.TrimTrailingSlash();
+
+        // Assert
+        result.Should().Be("");
+    }
 }
