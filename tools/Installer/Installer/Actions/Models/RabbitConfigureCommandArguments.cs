@@ -10,5 +10,6 @@
         public bool UpdatePermissions { get; init; }
         public FileInfo? DrexSiteConfig { get; init; }
         public bool SuperUser { get; init; }
+        public bool DrexUpdateEnvironment { get; init; }
     }
 }

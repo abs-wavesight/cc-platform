@@ -343,6 +343,12 @@ namespace Abs.CommonCore.Installer
             superUserParam.AddAlias("-su");
             command.Add(superUserParam);
 
+            var drexUpdateEnvironmentParam = new Option<bool>("--drex-update-env", "Updates the drex environment variables with the credentials");
+            drexUpdateEnvironmentParam.IsRequired = false;
+            drexUpdateEnvironmentParam.SetDefaultValue(false);
+            drexUpdateEnvironmentParam.AddAlias("-due");
+            command.Add(drexUpdateEnvironmentParam);
+
             command.SetHandler(async (context) =>
             {
                 var arguments = new RabbitConfigureCommandArguments
@@ -355,6 +361,7 @@ namespace Abs.CommonCore.Installer
                     UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
                     DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
                     SuperUser = context.ParseResult.GetValueForOption(superUserParam),
+                    DrexUpdateEnvironment = context.ParseResult.GetValueForOption(drexUpdateEnvironmentParam),
                 };
 
                 await ExecuteConfigureRabbitCommandAsync(arguments, args);
@@ -444,7 +451,8 @@ namespace Abs.CommonCore.Installer
         private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
-            var configurer = new RabbitConfigurer(loggerFactory);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+            var configurer = new RabbitConfigurer(loggerFactory, commandExecution);
 
             if (arguments.UpdatePermissions)
             {
@@ -461,6 +469,7 @@ namespace Abs.CommonCore.Installer
             }
 
             if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+            if (arguments.DrexUpdateEnvironment) await configurer.UpdateDrexEnvironmentVariablesAsync(credentials);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

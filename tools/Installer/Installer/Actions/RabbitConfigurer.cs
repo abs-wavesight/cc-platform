@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions.Models;
+using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
@@ -14,11 +15,16 @@ namespace Abs.CommonCore.Installer.Actions
     public class RabbitConfigurer
     {
         private const string SystemVhost = "/";
+        private const string LocalMessageBusUsername = "LocalMessageBus__Username";
+        private const string LocalMessageBusPassword = "LocalMessageBus__Password";
+
 
         private readonly ILogger _logger;
+        private readonly ICommandExecutionService _commandExecutionService;
 
-        public RabbitConfigurer(ILoggerFactory loggerFactory)
+        public RabbitConfigurer(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService)
         {
+            _commandExecutionService = commandExecutionService;
             _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
         }
 
@@ -50,6 +56,16 @@ namespace Abs.CommonCore.Installer.Actions
             config.RemoteBuses[0].Password = credentials.Password;
 
             await SaveConfigAsync(location, config);
+        }
+
+        public async Task UpdateDrexEnvironmentVariablesAsync(RabbitCredentials credentials)
+        {
+            Console.WriteLine("Updating Drex environment variables with credentials");
+
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {LocalMessageBusUsername} \"{credentials.Username}\"", "");
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {LocalMessageBusPassword} \"{credentials.Password}\"", "");
+
+            Console.WriteLine("Environment variables updated");
         }
 
         private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)

@@ -1,6 +1,7 @@
 ﻿using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
+using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -11,7 +12,8 @@ namespace Installer.Tests.Actions
         [Fact]
         public async Task DrexSiteConfig_Updated()
         {
-            var configurer = new RabbitConfigurer(NullLoggerFactory.Instance);
+            var commandExecution = new CommandExecutionService(NullLoggerFactory.Instance);
+            var configurer = new RabbitConfigurer(NullLoggerFactory.Instance, commandExecution);
             var credentials = new RabbitCredentials
             {
                 Username = Guid.NewGuid().ToString(),
