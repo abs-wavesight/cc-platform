@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using Abs.CommonCore.Contracts.Json.Drex;
+﻿using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Services;

@@ -4,19 +4,20 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.97-feature-ado-21289-drex-permissions, )",
-        "resolved": "1.0.97-feature-ado-21289-drex-permissions",
-        "contentHash": "UDPHDVg0gvSX9K8u93lzrnHehIECUwHDBIj0JspIv1rYwhDnZUsLGJmjzLhPlICaq5B4S8wnGDpwP8N6sroiiw==",
+        "requested": "[1.0.98-feature-ado-21289-drex-permissions, )",
+        "resolved": "1.0.98-feature-ado-21289-drex-permissions",
+        "contentHash": "VBcfyfaoeE9andyD/mRFinojzhiTAOhmPAGSBGT+HYNqaWOQqgMRmoK50lQt/Rof14FbIiEu9SYasgwdf6zm4w==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
+          "Grpc.AspNetCore": "2.32.0",
+          "Macross.Json.Extensions": "3.0.0"
         }
       },
       "Abs.CommonCore.Drex.Shared": {
         "type": "Direct",
-        "requested": "[1.0.98-feature-ado-21289-drex-vhost-access, )",
-        "resolved": "1.0.98-feature-ado-21289-drex-vhost-access",
-        "contentHash": "ZkhR01SrEmmn8aD9nCKy/weBK9e39EsULQKeglDJ3OlLnnU3D5QwPAT/rDvFlXo5Fn5Gq4GIRaFACSJ1RW/SKw==",
+        "requested": "[1.0.103-feature-ado-21289-drex-vhost-access, )",
+        "resolved": "1.0.103-feature-ado-21289-drex-vhost-access",
+        "contentHash": "82LVd6FZXO9/WMKn6oPKAQFAXUB4Z8OswlSB0r1bKhxo+f4sOs3eBh2cb3LwY9amdxnVsHsqSA0Y/jEQFXF8Mw==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.97-feature-ado-21289-drex-permissions",
           "Abs.CommonCore.Platform": "1.0.92-feature-ado-21289-drex-vhost-access",
