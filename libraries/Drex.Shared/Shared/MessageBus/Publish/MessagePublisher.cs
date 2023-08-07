@@ -20,7 +20,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
             string topicExchangeName,
             string busKey,
             ILoggerFactory loggerFactory,
-            Action<StandardConfigurer<ISerializer>>? serializerConfig = null)
+            Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
+            bool enableSsl = false)
         {
             BusKey = busKey;
             _bus = new Lazy<IBus>(() => Configure
@@ -31,7 +32,8 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
                     directExchangeName,
                     topicExchangeName,
                     loggerFactory,
-                    serializerConfig)
+                    serializerConfig,
+                    enableSsl)
                 .Start());
         }
 
