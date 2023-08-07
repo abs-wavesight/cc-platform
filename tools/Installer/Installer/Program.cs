@@ -26,6 +26,7 @@ namespace Abs.CommonCore.Installer
             var compressCommand = SetupCompressCommand(args);
             var uncompressCommand = SetupUncompressCommand(args);
             var releaseBodyCommand = SetupReleaseBodyCommand(args);
+            var uninstallCommand = SetupUninstallCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -36,6 +37,7 @@ namespace Abs.CommonCore.Installer
             root.Add(compressCommand);
             root.Add(uncompressCommand);
             root.Add(releaseBodyCommand);
+            root.Add(uninstallCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -294,6 +296,29 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
+        private static Command SetupUninstallCommand(string[] args)
+        {
+            var command = new Command("uninstall", "Uninstalls all installed components");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var dockerParam = new Option<DirectoryInfo>("--docker", "Path to docker location");
+            dockerParam.IsRequired = false;
+            dockerParam.AddAlias("-d");
+            command.Add(dockerParam);
+
+            var pathParam = new Option<DirectoryInfo>("--path", "Path to the installation location");
+            pathParam.IsRequired = false;
+            pathParam.AddAlias("-p");
+            command.Add(pathParam);
+
+            command.SetHandler(async (config, parameters, output) =>
+            {
+                await ExecuteUninstallCommandAsync(config, parameters, output, args);
+            }, dockerParam, pathParam);
+
+            return command;
+        }
+
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -370,6 +395,14 @@ namespace Abs.CommonCore.Installer
 
             var release = new ReleaseBodyBuilder(loggerFactory);
             await release.BuildReleaseBodyAsync(config, configParameters, output);
+        }
+
+        private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+
+            var release = new Uninstaller(loggerFactory);
+            await release.BuildReleaseBodyAsync(dockerLocation, installPath);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
