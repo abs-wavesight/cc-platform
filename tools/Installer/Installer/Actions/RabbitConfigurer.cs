@@ -24,7 +24,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password)
         {
-            _logger.LogInformation($"Configuring RabbitMQ at '{rabbit}'");
+            Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
             var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
             return await ConfigureRabbitAsync(client, username, password);
@@ -32,7 +32,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username)
         {
-            _logger.LogInformation($"Updating user '{username}' permissions at '{rabbit}'");
+            Console.WriteLine($"Updating user '{username}' permissions at '{rabbit}'");
             var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
             await UpdateUserPermissionsAsync(client, username);
@@ -40,7 +40,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
         {
-            _logger.LogInformation($"Updating Drex site config at '{location}'");
+            Console.WriteLine($"Updating Drex site config at '{location}'");
             var config = ConfigParser.LoadConfig<DrexSiteConfig>(location.FullName);
 
             if (config.RemoteBuses.Count == 0) throw new Exception("No connections to modify.");
@@ -54,7 +54,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task UpdateDrexClientConfigAsync(FileInfo location, string configKey, RabbitCredentials credentials)
         {
-            _logger.LogInformation($"Updating Drex client config at '{location}'");
+            Console.WriteLine($"Updating Drex client config at '{location}'");
             var config = ConfigParser.LoadConfig<DrexClientAppConfig>(location.FullName);
 
             config.Credentials
