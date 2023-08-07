@@ -24,7 +24,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
             Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
             bool enableSsl = false)
         {
-            var configurer = rebusConfigurer
+            return rebusConfigurer
                 .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
                 .Transport(t =>
                 {
@@ -37,7 +37,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                             directExchangeName: directExchangeName,
                             topicExchangeName: topicExchangeName)
                         .Declarations(declareExchanges: false, declareInputQueue: false);
-
                     if (enableSsl)
                     {
                         rabbitMqOptions.Ssl(new SslSettings(true, sourceMessageBusConnectionInfo.Host));
@@ -79,7 +78,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                             directExchangeName: directExchangeName,
                             topicExchangeName: topicExchangeName)
                         .Declarations(declareExchanges: false, declareInputQueue: false);
-
                     if (enableSsl)
                     {
                         rabbitMqOptions.Ssl(new SslSettings(true, busConnection.Host));
