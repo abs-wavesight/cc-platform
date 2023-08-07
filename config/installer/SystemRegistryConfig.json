@@ -152,7 +152,15 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"cd '$ABS_PATH/config'; docker-compose -f docker-compose.openssl.yml up --exit-code-from cc.openssl-generate-certs; certutil.exe -addstore root '$ABS_PATH/certificates/local-certs/rabbitmq.cer'; certutil.exe -addstore root '$ABS_PATH/certificates/remote-certs/rabbitmq.cer';\"",
+          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
+          "action": "execute"
+        },
+        {
+          "source": "powershell -Command \"certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"\"",
+          "action": "execute"
+        },
+        {
+          "source": "powershell -Command \"certutil.exe -addstore root \"$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer\"\"",
           "action": "execute"
         }
       ]

@@ -17,7 +17,7 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssl/generate-certs-prod.ps1",
-          "destination": "generate-certs.ps1"
+          "destination": "generate-certs-prod.ps1"
         },
         {
           "type": "file",

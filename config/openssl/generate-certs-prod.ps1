@@ -33,4 +33,4 @@ function GenerateKeyAndCert() {
   }
 }
 
-GenerateKeyAndCert -KeysDir C:\key -CertsDir C:\cert -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl-prod.cnf"
+GenerateKeyAndCert -KeysDir C:\local-keys -CertsDir C:\local-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl-prod.cnf"
