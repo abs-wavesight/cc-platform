@@ -156,11 +156,11 @@
           "action": "execute"
         },
         {
-          "source": "powershell -Command \"certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"\"",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
           "action": "execute"
         },
         {
-          "source": "powershell -Command \"certutil.exe -addstore root \"$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer\"\"",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer\"",
           "action": "execute"
         }
       ]
