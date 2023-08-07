@@ -35,6 +35,7 @@ jobs:
       solution-directory: libraries/Platform
       solution-name: CommonCore.Platform.sln
       check-code-formatting: true
+      run-integration-tests: true
     secrets: inherit
 
   publish-nuget-package:
