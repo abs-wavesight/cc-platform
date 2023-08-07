@@ -49,12 +49,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                     // o.LogPipeline(verbose: true);
                 })
                 .SetSerialization(serializerConfig);
-
-            if (enableSsl)
-            {
-            }
-
-            return configurer;
         }
 
         public static RebusConfigurer ConfigureRebusPublisher(
