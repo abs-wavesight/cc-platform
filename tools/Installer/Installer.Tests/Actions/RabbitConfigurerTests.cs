@@ -1,9 +1,11 @@
-﻿using Abs.CommonCore.Contracts.Json.Drex;
+﻿using System.Windows.Input;
+using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace Installer.Tests.Actions
 {
@@ -29,6 +31,23 @@ namespace Installer.Tests.Actions
             Assert.NotNull(parsedConfig);
             Assert.Contains(credentials.Username, configText);
             Assert.Contains(credentials.Password, configText);
+        }
+
+        [Fact]
+        public async Task Update_Environment_Updated()
+        {
+            var commandExecution = new Mock<ICommandExecutionService>();
+            var configurer = new RabbitConfigurer(NullLoggerFactory.Instance, commandExecution.Object);
+            var credentials = new RabbitCredentials
+            {
+                Username = Guid.NewGuid().ToString(),
+                Password = Guid.NewGuid().ToString(),
+            };
+
+            await configurer.UpdateDrexEnvironmentVariablesAsync(credentials);
+
+            commandExecution
+                .Verify(x => x.ExecuteCommandAsync("setx", It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
     }
 }
