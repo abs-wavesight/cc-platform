@@ -4,13 +4,12 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.96-feature-ado-21289-drex-vhost-access, )",
-        "resolved": "1.0.96-feature-ado-21289-drex-vhost-access",
-        "contentHash": "1fZ4bChQ9LCIAgmYOO9ot2zUyzgk8inqJQC5u/fcZwqk7IwIPqX2qsABh4MXzenDeF7/Wj4CmmP0CEBIgUgQlQ==",
+        "requested": "[1.0.97-feature-ado-21289-drex-permissions, )",
+        "resolved": "1.0.97-feature-ado-21289-drex-permissions",
+        "contentHash": "UDPHDVg0gvSX9K8u93lzrnHehIECUwHDBIj0JspIv1rYwhDnZUsLGJmjzLhPlICaq5B4S8wnGDpwP8N6sroiiw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0",
-          "Macross.Json.Extensions": "3.0.0"
+          "Grpc.AspNetCore": "2.32.0"
         }
       },
       "EasyNetQ.Management.Client": {
@@ -170,11 +169,6 @@
         "dependencies": {
           "Json.More.Net": "1.8.0"
         }
-      },
-      "Macross.Json.Extensions": {
-        "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "Transitive",
