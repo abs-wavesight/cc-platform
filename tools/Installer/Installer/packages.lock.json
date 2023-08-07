@@ -4,23 +4,22 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.96-feature-ado-21289-drex-vhost-access, )",
-        "resolved": "1.0.96-feature-ado-21289-drex-vhost-access",
-        "contentHash": "1fZ4bChQ9LCIAgmYOO9ot2zUyzgk8inqJQC5u/fcZwqk7IwIPqX2qsABh4MXzenDeF7/Wj4CmmP0CEBIgUgQlQ==",
+        "requested": "[1.0.97-feature-ado-21289-drex-permissions, )",
+        "resolved": "1.0.97-feature-ado-21289-drex-permissions",
+        "contentHash": "UDPHDVg0gvSX9K8u93lzrnHehIECUwHDBIj0JspIv1rYwhDnZUsLGJmjzLhPlICaq5B4S8wnGDpwP8N6sroiiw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0",
-          "Macross.Json.Extensions": "3.0.0"
+          "Grpc.AspNetCore": "2.32.0"
         }
       },
       "Abs.CommonCore.Drex.Shared": {
         "type": "Direct",
-        "requested": "[1.0.89-feature-ado-21289-drex-vhost-access, )",
-        "resolved": "1.0.89-feature-ado-21289-drex-vhost-access",
-        "contentHash": "sLbrD8iyAV9300l4g0hfZOzHNOToxEJ3de0zWbwxBdgYDlxDAdfi5xSLVtYBcF1GoLCoFELmFa7srzz7jaj4ow==",
+        "requested": "[1.0.98-feature-ado-21289-drex-vhost-access, )",
+        "resolved": "1.0.98-feature-ado-21289-drex-vhost-access",
+        "contentHash": "ZkhR01SrEmmn8aD9nCKy/weBK9e39EsULQKeglDJ3OlLnnU3D5QwPAT/rDvFlXo5Fn5Gq4GIRaFACSJ1RW/SKw==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.95-feature-ado-21289-drex-vhost-access",
-          "Abs.CommonCore.Platform": "1.0.50",
+          "Abs.CommonCore.Contracts": "1.0.97-feature-ado-21289-drex-permissions",
+          "Abs.CommonCore.Platform": "1.0.92-feature-ado-21289-drex-vhost-access",
           "Microsoft.Extensions.Configuration": "7.0.0",
           "Microsoft.Extensions.Configuration.Binder": "7.0.4",
           "Microsoft.Extensions.Configuration.Json": "7.0.0",
@@ -137,10 +136,10 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Transitive",
-        "resolved": "1.0.50",
-        "contentHash": "RHLiSsFUQAnaJTCH4472+O5mUsd3eJJy2r2AUocOyThOF7DEZ4V8q4QiocEHfum12n5wsB7nLVKIvdoaDTxMgA==",
+        "resolved": "1.0.92-feature-ado-21289-drex-vhost-access",
+        "contentHash": "cvJDCv6TSf9aVW7UvD9XifjKztWGfqiQkcND2Hl5cmSf/2XtsT7D21qCboVhZprw7ed8O+eJN+HR8wVsQFilnw==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.88",
+          "Abs.CommonCore.Contracts": "1.0.97-feature-ado-21289-drex-permissions",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",

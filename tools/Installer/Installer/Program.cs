@@ -337,15 +337,11 @@ namespace Abs.CommonCore.Installer
             drexSiteConfigParam.AddAlias("-dsc");
             command.Add(drexSiteConfigParam);
 
-            var drexClientConfigParam = new Option<FileInfo>("--drex-client-config", "Path to drex client config to update");
-            drexClientConfigParam.IsRequired = false;
-            drexClientConfigParam.AddAlias("-dcc");
-            command.Add(drexClientConfigParam);
-
-            var drexClientConfigKeyParam = new Option<string>("--drex-client-config-key", "Key to use for updating client config");
-            drexClientConfigKeyParam.IsRequired = false;
-            drexClientConfigKeyParam.AddAlias("-dcck");
-            command.Add(drexClientConfigKeyParam);
+            var superUserParam = new Option<bool>("--super-user", "Indicates the account is for a super user");
+            superUserParam.IsRequired = false;
+            superUserParam.SetDefaultValue(false);
+            superUserParam.AddAlias("-su");
+            command.Add(superUserParam);
 
             command.SetHandler(async (context) =>
             {
@@ -358,8 +354,7 @@ namespace Abs.CommonCore.Installer
                     Password = context.ParseResult.GetValueForOption(passwordParam),
                     UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
                     DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
-                    DrexClientConfig = context.ParseResult.GetValueForOption(drexClientConfigParam),
-                    DrexClientConfigKey = context.ParseResult.GetValueForOption(drexClientConfigKeyParam)
+                    SuperUser = context.ParseResult.GetValueForOption(superUserParam),
                 };
 
                 await ExecuteConfigureRabbitCommandAsync(arguments, args);
@@ -457,14 +452,7 @@ namespace Abs.CommonCore.Installer
                 return;
             }
 
-            var configCount = new[] { arguments.DrexSiteConfig, arguments.DrexClientConfig }
-                .Count(x => x != null);
-
-            if (configCount == 0) throw new Exception("No configuration file specified");
-            if (configCount > 1) throw new Exception("Multiple configuration files specified");
-            if (arguments.DrexClientConfig != null && string.IsNullOrWhiteSpace(arguments.DrexClientConfigKey)) throw new Exception("Drex client config key must be specified");
-
-            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password);
+            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
 
             if (credentials == null)
             {
@@ -473,7 +461,6 @@ namespace Abs.CommonCore.Installer
             }
 
             if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
-            else if (arguments.DrexClientConfig != null) await configurer.UpdateDrexClientConfigAsync(arguments.DrexClientConfig, arguments.DrexClientConfigKey!, credentials);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

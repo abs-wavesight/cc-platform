@@ -9,7 +9,6 @@
         public string? Password { get; init; }
         public bool UpdatePermissions { get; init; }
         public FileInfo? DrexSiteConfig { get; init; }
-        public FileInfo? DrexClientConfig { get; init; }
-        public string? DrexClientConfigKey { get; init; }
+        public bool SuperUser { get; init; }
     }
 }

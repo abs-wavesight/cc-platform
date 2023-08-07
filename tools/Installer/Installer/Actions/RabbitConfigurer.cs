@@ -22,20 +22,20 @@ namespace Abs.CommonCore.Installer.Actions
             _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
         }
 
-        public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password)
+        public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, bool isSuperUser)
         {
             Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
             var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-            return await ConfigureRabbitAsync(client, username, password);
+            return await ConfigureRabbitAsync(client, username, password, isSuperUser);
         }
 
-        public async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username)
+        public async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, bool isSuperUser)
         {
             Console.WriteLine($"Updating user '{username}' permissions at '{rabbit}'");
             var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-            await UpdateUserPermissionsAsync(client, username);
+            await UpdateUserPermissionsAsync(client, username, isSuperUser);
         }
 
         public async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
@@ -52,24 +52,7 @@ namespace Abs.CommonCore.Installer.Actions
             await SaveConfigAsync(location, config);
         }
 
-        public async Task UpdateDrexClientConfigAsync(FileInfo location, string configKey, RabbitCredentials credentials)
-        {
-            Console.WriteLine($"Updating Drex client config at '{location}'");
-            var config = ConfigParser.LoadConfig<DrexClientAppConfig>(location.FullName);
-
-            config.Credentials
-                .RemoveAll(x => string.Equals(x.Key.ToString(), configKey));
-
-            config.Credentials.Add(new ClientCredentials
-            {
-                Username = credentials.Username,
-                Password = credentials.Password,
-            });
-
-            await SaveConfigAsync(location, config);
-        }
-
-        private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password)
+        private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)
         {
             // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
             password = string.IsNullOrWhiteSpace(password)
@@ -77,7 +60,7 @@ namespace Abs.CommonCore.Installer.Actions
                     .Next()
                 : password;
 
-            var isAdded = await AddUserAccountAsync(client, username, password);
+            var isAdded = await AddUserAccountAsync(client, username, password, isSuperUser);
 
             if (isAdded == false)
             {
@@ -96,7 +79,7 @@ namespace Abs.CommonCore.Installer.Actions
             };
         }
 
-        private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password)
+        private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, bool isSuperUser)
         {
             var existingUser = await GetUserAsync(client, username);
 
@@ -117,7 +100,7 @@ namespace Abs.CommonCore.Installer.Actions
                 .AddTag(UserTags.Management);
 
             await client.CreateUserAsync(user);
-            await UpdateUserPermissionsAsync(client, username);
+            await UpdateUserPermissionsAsync(client, username, isSuperUser);
 
             var userRecord = await client.GetUserAsync(username);
             return userRecord != null
@@ -125,19 +108,22 @@ namespace Abs.CommonCore.Installer.Actions
                 : throw new Exception("Unable to create user");
         }
 
-        private async Task UpdateUserPermissionsAsync(IManagementClient client, string username)
+        private async Task UpdateUserPermissionsAsync(IManagementClient client, string username, bool isSuperUser)
         {
             var user = await GetUserAsync(client, username);
 
             if (user == null) throw new Exception("User account does not exist");
 
-            var permissionRegex = $"{Regex.Escape(username.ToLower())}" +
-                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InternalSourceDlqReservedName)}" +
-                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.InfrastructureLogsReservedName)}" +
-                                  $"|{Regex.Escape(Drex.Shared.Constants.MessageBus.SinkLogsReservedName)}";
+            var permissionRegex = isSuperUser
+                ? ".*"
+                : $"{Regex.Escape(username.ToLower())}";
+
+            var configurePermissions = isSuperUser
+                ? ".*"
+                : "";
 
             var vHost = await client.GetVhostAsync(SystemVhost);
-            await client.CreatePermissionAsync(vHost, new PermissionInfo(username, permissionRegex, permissionRegex, permissionRegex));
+            await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
         }
 
         private async Task<User?> GetUserAsync(IManagementClient client, string username)
