@@ -3,7 +3,8 @@
     "Docker",
     "RabbitMq",
     "Vector-Site",
-    "Drex"
+    "Drex",
+    "OpenSsl"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs"

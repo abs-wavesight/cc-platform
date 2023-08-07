@@ -1,6 +1,7 @@
 [sources.rabbitmq]
 type = "amqp"
-connection_string = "amqp://rabbitmq-remote:5672"
+connection_string = "amqps://rabbitmq-remote:5671"
+tls.ca_file = "C:\\certs\\rabbitmq.cer"
 decoding.codec = "bytes"
 consumer = "vector"
 queue = "cc.drex.central.snk-log.q"

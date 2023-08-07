@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
@@ -10,6 +10,8 @@ services:
       - cc.rabbitmq-local
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
     ports:
       - "12345:5000"
     restart: always
@@ -17,4 +19,12 @@ services:
       - type: bind
         source: ${PATH_TO_CC_DREX_REPO}/config/drex
         target: C:/app/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
         read_only: true

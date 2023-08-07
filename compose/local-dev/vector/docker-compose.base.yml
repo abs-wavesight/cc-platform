@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
@@ -10,7 +10,7 @@ services:
       - LOG_RETENTION_PERIOD=7d
     logging:
       driver: local
-    profiles: ['templates']
+    profiles: [ 'templates' ]
     restart: always
 
   cc.vector-site:
@@ -24,7 +24,7 @@ services:
     hostname: vector-site
     ports:
       - "8686:8686"
-    profiles: ['vector-site']
+    profiles: [ 'vector-site' ]
     volumes:
       - type: npipe
         source: \\.\pipe\docker_engine
@@ -37,6 +37,10 @@ services:
         source: ${PATH_TO_CC_PLATFORM_REPO}/logs/site/
         target: C:/cc-logs
         read_only: false # need to write logs to disk
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/certs
+        read_only: true
 
   cc.vector-central:
     <<: *vector
@@ -49,7 +53,7 @@ services:
     hostname: vector-central
     ports:
       - "8687:8686"
-    profiles: ['vector-central']
+    profiles: [ 'vector-central' ]
     volumes:
       - type: npipe
         source: \\.\pipe\docker_engine
@@ -62,3 +66,7 @@ services:
         source: ${PATH_TO_CC_PLATFORM_REPO}/logs/central/
         target: C:/cc-logs
         read_only: false # need to write logs to disk
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/certs
+        read_only: true

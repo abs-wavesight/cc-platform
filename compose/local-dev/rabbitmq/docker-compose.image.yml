@@ -1,9 +1,10 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
-  cc.rabbitmq-template: # This is never used, but must be here in order to be a valid compose file
+  cc.rabbitmq-template:
+    # This is never used, but must be here in order to be a valid compose file
     image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
 
   cc.rabbitmq-local:

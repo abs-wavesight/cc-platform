@@ -12,6 +12,9 @@ namespace Abs.CommonCore.LocalDevUtility.Commands.Shared;
 
 public abstract class ComposeOptions
 {
+    [ComposeComponent(composePath: "openssl", imageName: "openssl")]
+    public ComposeComponentMode? Openssl { get; set; }
+
     [ComposeComponent(composePath: "drex-service", imageName: "cc-drex-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]

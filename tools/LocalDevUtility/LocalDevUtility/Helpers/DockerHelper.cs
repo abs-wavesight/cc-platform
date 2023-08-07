@@ -47,6 +47,7 @@ public static class DockerHelper
             {Constants.ComposeEnvKeys.WindowsVersion, appConfig.ContainerWindowsVersion!},
             {Constants.ComposeEnvKeys.PathToCommonCorePlatformRepository, appConfig.CommonCorePlatformRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository, appConfig.CommonCoreDrexRepositoryPath!},
+            {Constants.ComposeEnvKeys.PathToCertificates, appConfig.CertificatePath!},
         };
         if (additionalOptions != null)
         {

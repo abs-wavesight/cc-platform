@@ -15,18 +15,16 @@ ENV ERLANG_HOME="c:\\erlang" \
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-EXPOSE 5672 15672
-
 # download and install erlang using silent install option, and remove installer when done
 # download and extract rabbitmq, and remove zip file when done
 # remove version from rabbitmq folder name
 RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -OutFile "c:\\erlang_install.exe" ; \
-        Start-Process -Wait -FilePath "c:\\erlang_install.exe" -ArgumentList /S, /D=$env:ERLANG_HOME ; \
-        Remove-Item -Force -Path "C:\\erlang_install.exe" ; \
+    Start-Process -Wait -FilePath "c:\\erlang_install.exe" -ArgumentList /S, /D=$env:ERLANG_HOME ; \
+    Remove-Item -Force -Path "C:\\erlang_install.exe" ; \
     Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v$env:RABBITMQ_VERSION/rabbitmq-server-windows-$env:RABBITMQ_VERSION.zip" -OutFile "c:\\rabbitmq.zip" ; \
-        Expand-Archive -Path "c:\\rabbitmq.zip" -DestinationPath "c:\\" ; \
-        Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
-        Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
+    Expand-Archive -Path "c:\\rabbitmq.zip" -DestinationPath "c:\\" ; \
+    Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
+    Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
 
 # Copy handle.exe utility and add to PATH
 RUN mkdir "C:\\rabbitmq\\utilities"
@@ -39,8 +37,6 @@ RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.c
 
 # enable managment plugin
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
-# Keep healthcheck timeout to 10s; 5s seems to be too short
-HEALTHCHECK --interval=5s --timeout=10s --start-period=120s --retries=1 CMD [ "powershell", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "http://localhost:15672" ]
 
 # run server when container starts - container will shutdown when this process ends
 CMD c:\rabbitmq\sbin\rabbitmq-server.bat

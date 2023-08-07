@@ -9,10 +9,7 @@ public static class StringExtensions
 
     public static string TrimTrailingSlash(this string str)
     {
-        var trimmed = str.Trim();
-        return trimmed[^1] is '/' or '\\'
-            ? trimmed[..^1]
-            : trimmed;
+        return str.Trim().TrimEnd('\\').TrimEnd('/');
     }
 
     public static string ToForwardSlashes(this string str)

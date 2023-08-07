@@ -1,9 +1,10 @@
 ---
-version: '3'
+version: '3.9'
 
 services:
 
-  cc.vector-template: # This is never used, but must be here in order to be a valid compose file
+  cc.vector-template:
+    # This is never used, but must be here in order to be a valid compose file
     image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
 
   cc.vector-site:
@@ -11,4 +12,3 @@ services:
 
   cc.vector-central:
     image: ghcr.io/abs-wavesight/vector:windows-${WINDOWS_VERSION}
-

@@ -16,6 +16,7 @@ public class RunCommandTests
     }
 
     [Theory]
+    [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
     [InlineData("run -m r --rabbitmq i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-remote i", new[] { "cc.rabbitmq-remote" })]

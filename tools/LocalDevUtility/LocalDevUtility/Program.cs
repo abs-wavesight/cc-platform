@@ -43,7 +43,7 @@ public class Program
         AnsiConsole.Write(new Rule("Local Dev Utility"));
 
         var root = BuildRootCommand();
-        root.AddCommand(BuildConfigureCommand(logger));
+        root.AddCommand(BuildConfigureCommand(logger, powerShellAdapter));
         root.AddCommand(BuildRunCommand(logger, powerShellAdapter));
         root.AddCommand(BuildStopCommand(logger, powerShellAdapter));
         return await root.InvokeAsync(args ?? Array.Empty<string>());
@@ -59,7 +59,7 @@ public class Program
         return root;
     }
 
-    private static Command BuildConfigureCommand(ILogger logger)
+    private static Command BuildConfigureCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
         var command = new Command("configure", "Configure the utility via interactive prompts. Must be run at least once before using \"run\".");
 
@@ -73,7 +73,7 @@ public class Program
         command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) =>
         {
             return await TryExecuteCommandAsync(
-                async () => await ConfigureCommand.Configure(configureOptions, logger),
+                async () => await ConfigureCommand.Configure(configureOptions, logger, powerShellAdapter),
                 logger);
         });
 

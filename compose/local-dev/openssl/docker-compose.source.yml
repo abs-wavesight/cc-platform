@@ -1,10 +1,9 @@
 ---
 version: '3.9'
-
 services:
-  cc.grafana:
+  cc.openssl-generate-certs:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/grafana
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/openssl
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"

@@ -11,7 +11,6 @@ ARG DOTNET_TAG=7.0-nanoserver-1809
 FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS vector
 # Running with elevated privileges to read from the docker daemon named pipe
 USER containeradministrator
-COPY ./scripts C:/scripts
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 # Preferring `RUN Invoke-WebRequest` vs `ADD` due to preferable caching behavior.
@@ -19,5 +18,6 @@ RUN Invoke-WebRequest -UseBasicParsing -Uri https://packages.timber.io/vector/0.
     Expand-Archive -LiteralPath vector.zip -DestinationPath "$Env:ProgramFiles\\Vector"
 RUN New-Item -Path 'C:\' -Name 'config' -ItemType Directory -Force
 RUN New-Item -Path 'C:\' -Name 'cc-logs' -ItemType Directory -Force
+COPY ./scripts C:/scripts
 
 ENTRYPOINT ["pwsh", "-File", "C:\\scripts\\startup.ps1"]

@@ -22,15 +22,22 @@ function GenerateKeyAndCert() {
   if ((Test-Path "${KeysDir}\${FileNamePrefix}.key") -and (Test-Path "${CertsDir}\${FileNamePrefix}.pem")) {
     Write-Output "Found existing key & certificate"
 
-  }
-  else {
+  } else {
     Write-Output "Generating RSA private key & X.509 certificate in ${dir}"
     openssl req -newkey rsa:2048 -nodes -keyout ${KeysDir}\${FileNamePrefix}.key -x509 -days 36500 -outform PEM -out ${CertsDir}\${FileNamePrefix}.pem -text -config $ConfigFilePath -extensions v3_req
 
     # We also need to convert the certificate to a PKCS#12 format (*.pfx) or DER (*.cer)
     # so it can be imported into a Windows certificate trust store.
     openssl x509 -in ${CertsDir}\${FileNamePrefix}.pem -out ${CertsDir}\${FileNamePrefix}.cer
+
+    # Print certificate contents to verbose output stream
+    openssl x509 -in ${CertsDir}\${FileNamePrefix}.pem -noout -text > 4
   }
 }
 
-GenerateKeyAndCert -KeysDir C:\local-keys -CertsDir C:\local-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl-prod.cnf"
+# include -Verbose flag to also print certificate contents
+GenerateKeyAndCert -KeysDir C:\local-keys -CertsDir C:\local-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl.cnf"
+GenerateKeyAndCert -KeysDir C:\remote-keys -CertsDir C:\remote-certs -FileNamePrefix rabbitmq -ConfigFilePath "C:\config\openssl-rabbitmq-remote.cnf"
+
+Write-Verbose "Contents of certificate directories:"
+Get-ChildItem C:\local-keys, C:\local-certs, C:\remote-keys, C:\remote-certs > 4
