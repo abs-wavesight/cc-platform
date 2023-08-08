@@ -88,7 +88,7 @@ jobs:
           target: SystemRegistryConfig.json
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
-      - name: Download installer download config
+      - name: Download installer system config
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/Installer
@@ -96,7 +96,7 @@ jobs:
           target: SystemConfig.json
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}                          
 
-      - name: Download installer download config
+      - name: Download installer uninstaller
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/Installer
