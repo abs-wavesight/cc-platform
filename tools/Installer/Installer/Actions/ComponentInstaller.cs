@@ -9,7 +9,6 @@ namespace Abs.CommonCore.Installer.Actions
 {
     public class ComponentInstaller : ActionBase
     {
-        private const string PathEnvironmentVariable = "PATH";
         private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
 
         private readonly ILoggerFactory _loggerFactory;
@@ -181,11 +180,11 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             _logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
-            var path = Environment.GetEnvironmentVariable(PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
+            var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable, EnvironmentVariableTarget.Machine) 
                        ?? "";
 
             if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
-            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {PathEnvironmentVariable} \"%{PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"%{Constants.PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
         }
 
         private async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)

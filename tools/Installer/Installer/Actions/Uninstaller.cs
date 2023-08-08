@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Installer.Services;
+﻿using System;
+using Abs.CommonCore.Installer.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
@@ -105,6 +106,19 @@ namespace Abs.CommonCore.Installer.Actions
             await _commandExecutionService.ExecuteCommandAsync("net", "stop dockerd", "");
             Directory.Delete(dockerLocation.FullName, true);
             await _commandExecutionService.ExecuteCommandAsync("sc", "delete dockerd", "");
+
+            var path = Environment.GetEnvironmentVariable("PATH")!;
+            var dockerPath = $"{dockerLocation.FullName};";
+
+            if (path.Contains(dockerPath, StringComparison.OrdinalIgnoreCase))
+            {
+                path = path
+                    .Replace(dockerPath, "", StringComparison.OrdinalIgnoreCase);
+
+                await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"{path}\"", "");
+            }
+
+
 
             Console.WriteLine("Docker removed");
         }
