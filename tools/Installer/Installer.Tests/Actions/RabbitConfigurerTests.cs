@@ -11,7 +11,7 @@ namespace Installer.Tests.Actions
     public class RabbitConfigurerTests
     {
         [Fact]
-        public async Task DrexSiteConfig_Updated()
+        public async Task UpdateDrexSiteConfig_GivenCredentials_SiteConfigUpdated()
         {
             var commandExecution = new CommandExecutionService(NullLoggerFactory.Instance);
             var configurer = new RabbitConfigurer(NullLoggerFactory.Instance, commandExecution);
@@ -33,7 +33,7 @@ namespace Installer.Tests.Actions
         }
 
         [Fact]
-        public async Task Update_Environment_Updated()
+        public async Task GenerateCredentials_EnvironmentVariables_Updated()
         {
             var commandExecution = new Mock<ICommandExecutionService>();
             var configurer = new RabbitConfigurer(NullLoggerFactory.Instance, commandExecution.Object);
