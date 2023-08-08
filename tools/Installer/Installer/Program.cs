@@ -311,9 +311,9 @@ namespace Abs.CommonCore.Installer
             pathParam.AddAlias("-p");
             command.Add(pathParam);
 
-            command.SetHandler(async (config, parameters, output) =>
+            command.SetHandler(async (docker, path) =>
             {
-                await ExecuteUninstallCommandAsync(config, parameters, output, args);
+                await ExecuteUninstallCommandAsync(docker, path, args);
             }, dockerParam, pathParam);
 
             return command;
@@ -400,9 +400,10 @@ namespace Abs.CommonCore.Installer
         private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
+            var commandExecution = new CommandExecutionService(loggerFactory);
 
-            var release = new Uninstaller(loggerFactory);
-            await release.BuildReleaseBodyAsync(dockerLocation, installPath);
+            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+            await uninstaller.UninstallSystemAsync(dockerLocation, installPath);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
