@@ -4,12 +4,13 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.90, )",
-        "resolved": "1.0.90",
-        "contentHash": "5Oqh59USbTqeTGu+z6dvaIORElV5bNgOzzgrcAMBBvG61DtQKN7CeilM090zmjLredh5PPwwbOibYGCqW1tqig==",
+        "requested": "[1.0.101, )",
+        "resolved": "1.0.101",
+        "contentHash": "O7UR3l9YJuoVIy4k+WT6A7huFEq/tmS5adWWocKWlYUfD/XXKeMsznHYnTdQhik4iPQMDvhZc58H9Ot1KzcQaw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
+          "Grpc.AspNetCore": "2.32.0",
+          "Macross.Json.Extensions": "3.0.0"
         }
       },
       "Abs.CommonCore.Platform": {
@@ -218,6 +219,11 @@
           "Json.More.Net": "1.8.0",
           "JsonPointer.Net": "3.0.1"
         }
+      },
+      "Macross.Json.Extensions": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
