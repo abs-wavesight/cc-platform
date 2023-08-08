@@ -33,7 +33,7 @@ namespace Installer.Tests.Actions
         }
 
         [Fact]
-        public async Task GenerateCredentials_EnvironmentVariables_Updated()
+        public async Task GenerateCredentials_UpdateFile_FileUpdated()
         {
             var commandExecution = new Mock<ICommandExecutionService>();
             var configurer = new RabbitConfigurer(NullLoggerFactory.Instance, commandExecution.Object);
@@ -43,10 +43,15 @@ namespace Installer.Tests.Actions
                 Password = Guid.NewGuid().ToString(),
             };
 
-            await configurer.UpdateDrexEnvironmentVariablesAsync(credentials);
+            var credentialsFile = Path.GetTempFileName();
+            await File.WriteAllTextAsync(credentialsFile, "Username: $USERNAME\r\nPassword: $PASSWORD");
 
-            commandExecution
-                .Verify(x => x.ExecuteCommandAsync("setx", It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+            await configurer.UpdateCredentialsFileAsync(credentials, new FileInfo(credentialsFile));
+
+            var text = await File.ReadAllTextAsync(credentialsFile);
+
+            Assert.Contains(credentials.Username, text);
+            Assert.Contains(credentials.Password, text);
         }
     }
 }

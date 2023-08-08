@@ -343,11 +343,10 @@ namespace Abs.CommonCore.Installer
             superUserParam.AddAlias("-su");
             command.Add(superUserParam);
 
-            var drexUpdateEnvironmentParam = new Option<bool>("--drex-update-env", "Updates the drex environment variables with the credentials");
-            drexUpdateEnvironmentParam.IsRequired = false;
-            drexUpdateEnvironmentParam.SetDefaultValue(false);
-            drexUpdateEnvironmentParam.AddAlias("-due");
-            command.Add(drexUpdateEnvironmentParam);
+            var credentialsFileParam = new Option<FileInfo>("--credentials-file", "Updates the file with the generated credentials");
+            credentialsFileParam.IsRequired = false;
+            credentialsFileParam.AddAlias("-cf");
+            command.Add(credentialsFileParam);
 
             command.SetHandler(async (context) =>
             {
@@ -361,7 +360,7 @@ namespace Abs.CommonCore.Installer
                     UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
                     DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
                     SuperUser = context.ParseResult.GetValueForOption(superUserParam),
-                    DrexUpdateEnvironment = context.ParseResult.GetValueForOption(drexUpdateEnvironmentParam),
+                    CredentialsFile = context.ParseResult.GetValueForOption(credentialsFileParam),
                 };
 
                 await ExecuteConfigureRabbitCommandAsync(arguments, args);
@@ -469,7 +468,7 @@ namespace Abs.CommonCore.Installer
             }
 
             if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
-            if (arguments.DrexUpdateEnvironment) await configurer.UpdateDrexEnvironmentVariablesAsync(credentials);
+            if (arguments.CredentialsFile != null) await configurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

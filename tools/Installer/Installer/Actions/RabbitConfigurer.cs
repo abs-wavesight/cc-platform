@@ -15,9 +15,8 @@ namespace Abs.CommonCore.Installer.Actions
     public class RabbitConfigurer
     {
         private const string SystemVhost = "/";
-        private const string LocalMessageBusUsername = "LocalMessageBus__Username";
-        private const string LocalMessageBusPassword = "LocalMessageBus__Password";
-
+        private const string UsernamePlaceholder = "$USERNAME";
+        private const string PasswordPlaceholder = "$PASSWORD";
 
         private readonly ILogger _logger;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -58,14 +57,18 @@ namespace Abs.CommonCore.Installer.Actions
             await SaveConfigAsync(location, config);
         }
 
-        public async Task UpdateDrexEnvironmentVariablesAsync(RabbitCredentials credentials)
+        public async Task UpdateCredentialsFileAsync(RabbitCredentials credentials, FileInfo file)
         {
-            Console.WriteLine("Updating Drex environment variables with credentials");
+            Console.WriteLine($"Updating credentials file: {file.FullName}");
 
-            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {LocalMessageBusUsername} \"{credentials.Username}\"", "");
-            await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {LocalMessageBusPassword} \"{credentials.Password}\"", "");
+            var text = await File.ReadAllTextAsync(file.FullName);
+            text = text
+                .Replace(UsernamePlaceholder, credentials.Username)
+                .Replace(PasswordPlaceholder, credentials.Password);
 
-            Console.WriteLine("Environment variables updated");
+            await File.WriteAllTextAsync(file.FullName, text);
+
+            Console.WriteLine("Credentials file updated");
         }
 
         private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)
