@@ -30,7 +30,6 @@ public static class RunCommand
             var nugetConfigCopyTargets = new[]
             {
                 Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "service"),
-                Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "file-shipping-service"),
                 Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "demo"),
                 Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "client")
             };

@@ -15,14 +15,15 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "openssl", imageName: "openssl")]
     public ComposeComponentMode? Openssl { get; set; }
 
-    [ComposeComponent(composePath: "drex-service", imageName: "cc-drex-service")]
+    [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
-    public ComposeComponentMode? DrexService { get; set; }
+    public ComposeComponentMode? DrexMessageService { get; set; }
 
     [ComposeComponent(composePath: "drex-file-service", imageName: "cc-drex-file-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
+    [ComposeComponentDependency(nameof(DrexMessageService))]
     public ComposeComponentMode? DrexFileService { get; set; }
 
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
@@ -72,15 +73,15 @@ public abstract class ComposeOptions
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
-        .Where(_ => _.PropertyType == typeof(ComposeComponentMode?) || _.PropertyType == typeof(ComposeComponentMode))
-        .Select(_ => _.Name)
+        .Where(i => i.PropertyType == typeof(ComposeComponentMode?) || i.PropertyType == typeof(ComposeComponentMode))
+        .Select(i => i.Name)
         .ToList();
 
     public static List<string> NonAliasComponentPropertyNames => ComponentPropertyNames
-        .Where(_ => !typeof(RunOptions).GetRunComponentAliases(_).Any())
+        .Where(s => !typeof(RunOptions).GetRunComponentAliases(s).Any())
         .ToList();
 
     public static List<string> AliasComponentPropertyNames => ComponentPropertyNames
-        .Where(_ => typeof(RunOptions).GetRunComponentAliases(_).Any())
+        .Where(s => typeof(RunOptions).GetRunComponentAliases(s).Any())
         .ToList();
 }
