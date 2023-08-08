@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.98-feature-ado-21289-drex-permissions" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.101" />
 		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.103-feature-ado-21289-drex-vhost-access" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
