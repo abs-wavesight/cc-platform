@@ -1,5 +1,4 @@
-﻿using System;
-using Abs.CommonCore.Installer.Services;
+﻿using Abs.CommonCore.Installer.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;

@@ -180,7 +180,7 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             _logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
-            var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable, EnvironmentVariableTarget.Machine) 
+            var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
                        ?? "";
 
             if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
