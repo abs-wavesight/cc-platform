@@ -27,6 +27,15 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks": "7.0.5"
         }
       },
+      "Abs.Messaging": {
+        "type": "Direct",
+        "requested": "[1.0.11, )",
+        "resolved": "1.0.11",
+        "contentHash": "m01k4yXkY4z+V22wZrsGDz2C2pPnNvxsUop+ZOatSc2GdQxSa6OkMh02e9W5389DgsbJ2CWneHa/E1HTOgKquQ==",
+        "dependencies": {
+          "Google.Protobuf": "3.23.3"
+        }
+      },
       "Microsoft.Extensions.Configuration": {
         "type": "Direct",
         "requested": "[7.0.0, )",
