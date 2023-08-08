@@ -106,7 +106,7 @@ namespace Abs.CommonCore.Installer.Actions
             Directory.Delete(dockerLocation.FullName, true);
             await _commandExecutionService.ExecuteCommandAsync("sc", "delete dockerd", "");
 
-            var path = Environment.GetEnvironmentVariable("PATH")!;
+            var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable)!;
 
             if (path.Contains(dockerLocation.FullName, StringComparison.OrdinalIgnoreCase))
             {
