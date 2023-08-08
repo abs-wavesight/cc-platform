@@ -19,22 +19,23 @@ namespace Abs.CommonCore.Installer.Actions
             _commandExecutionService = commandExecutionService;
         }
 
-        public async Task UninstallSystemAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath)
+        public async Task UninstallSystemAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker)
         {
             Console.WriteLine("Starting uninstallation process");
-            await UninstallSystemComponentsAsync(dockerLocation, installPath);
+            await UninstallSystemComponentsAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         }
 
-        private async Task UninstallSystemComponentsAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath)
+        private async Task UninstallSystemComponentsAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker)
         {
-            var removeComponents = ReadBoolean("Remove system components");
+            // Null used by unit tests to skip check - False is default command line value since bool? seems not supported
+            var removeComponents = removeSystem != null && (removeSystem.Value || ReadBoolean("Remove system components"));
             if (removeComponents) await UninstallSystemComponentsAsync();
 
-            var removeConfiguration = ReadBoolean("Remove configuration files");
+            var removeConfiguration = removeConfig != null && (removeConfig.Value || ReadBoolean("Remove configuration files"));
             if (removeConfiguration) await UninstallConfigurationAsync(installPath);
 
-            var removeDocker = ReadBoolean("Remove docker");
-            if (removeDocker) await UninstallDockerAsync(dockerLocation);
+            var removeDockerItems = removeDocker != null && (removeDocker.Value || ReadBoolean("Remove docker"));
+            if (removeDockerItems) await UninstallDockerAsync(dockerLocation);
         }
 
         private async Task UninstallSystemComponentsAsync()
@@ -78,6 +79,8 @@ namespace Abs.CommonCore.Installer.Actions
 
         private async Task UninstallConfigurationAsync(DirectoryInfo? installPath)
         {
+            await Task.Yield();
+
             if (installPath == null || installPath.Exists == false)
             {
                 installPath = ReadDirectoryPath("Enter installation location");

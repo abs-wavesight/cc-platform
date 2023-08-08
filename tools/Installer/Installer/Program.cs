@@ -311,10 +311,25 @@ namespace Abs.CommonCore.Installer
             pathParam.AddAlias("-p");
             command.Add(pathParam);
 
-            command.SetHandler(async (docker, path) =>
+            var removeSystemParam = new Option<bool>("--remove-system", "Indicates to remove system components");
+            removeSystemParam.IsRequired = false;
+            removeSystemParam.SetDefaultValue(false);
+            command.Add(removeSystemParam);
+
+            var removeConfigParam = new Option<bool>("--remove-config", "Indicates to remove configuration files");
+            removeConfigParam.IsRequired = false; ;
+            removeConfigParam.SetDefaultValue(false);
+            command.Add(removeConfigParam);
+
+            var removeDockerParam = new Option<bool>("--remove-docker", "Indicates to remove docker");
+            removeDockerParam.IsRequired = false;
+            removeDockerParam.SetDefaultValue(false);
+            command.Add(removeDockerParam);
+
+            command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) =>
             {
-                await ExecuteUninstallCommandAsync(docker, path, args);
-            }, dockerParam, pathParam);
+                await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args);
+            }, dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
 
             return command;
         }
@@ -397,13 +412,13 @@ namespace Abs.CommonCore.Installer
             await release.BuildReleaseBodyAsync(config, configParameters, output);
         }
 
-        private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, string[] args)
+        private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
             var commandExecution = new CommandExecutionService(loggerFactory);
 
             var uninstaller = new Uninstaller(loggerFactory, commandExecution);
-            await uninstaller.UninstallSystemAsync(dockerLocation, installPath);
+            await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
