@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Abs.Messaging;
+using Google.Protobuf;
 using Rebus.Extensions;
 using Rebus.Messages;
 using Rebus.Serialization;
