@@ -29,12 +29,21 @@ namespace Abs.CommonCore.Installer.Actions
         {
             // Null used by unit tests to skip check - False is default command line value since bool? seems not supported
             var removeComponents = removeSystem != null && (removeSystem.Value || ReadBoolean("Remove system components"));
-            if (removeComponents) await UninstallSystemComponentsAsync();
-
             var removeConfiguration = removeConfig != null && (removeConfig.Value || ReadBoolean("Remove configuration files"));
-            if (removeConfiguration) await UninstallConfigurationAsync(installPath);
-
             var removeDockerItems = removeDocker != null && (removeDocker.Value || ReadBoolean("Remove docker"));
+
+            if (installPath == null || installPath.Exists == false)
+            {
+                installPath = ReadDirectoryPath("Enter installation location");
+            }
+
+            if (dockerLocation == null || dockerLocation.Exists == false)
+            {
+                dockerLocation = ReadDirectoryPath("Enter docker location");
+            }
+
+            if (removeComponents) await UninstallSystemComponentsAsync();
+            if (removeConfiguration) await UninstallConfigurationAsync(installPath);
             if (removeDockerItems) await UninstallDockerAsync(dockerLocation);
         }
 
@@ -77,14 +86,9 @@ namespace Abs.CommonCore.Installer.Actions
             Console.WriteLine("System components removed");
         }
 
-        private async Task UninstallConfigurationAsync(DirectoryInfo? installPath)
+        private async Task UninstallConfigurationAsync(DirectoryInfo installPath)
         {
             await Task.Yield();
-
-            if (installPath == null || installPath.Exists == false)
-            {
-                installPath = ReadDirectoryPath("Enter installation location");
-            }
 
             Console.WriteLine("Removing configuration file");
 
@@ -94,13 +98,8 @@ namespace Abs.CommonCore.Installer.Actions
             Console.WriteLine("Configuration files removed");
         }
 
-        private async Task UninstallDockerAsync(DirectoryInfo? dockerLocation)
+        private async Task UninstallDockerAsync(DirectoryInfo dockerLocation)
         {
-            if (dockerLocation == null || dockerLocation.Exists == false)
-            {
-                dockerLocation = ReadDirectoryPath("Enter docker location");
-            }
-
             Console.WriteLine("Removing docker");
 
             await _commandExecutionService.ExecuteCommandAsync("net", "stop dockerd", "");
