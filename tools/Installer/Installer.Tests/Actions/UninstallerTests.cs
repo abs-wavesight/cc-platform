@@ -1,6 +1,7 @@
 ﻿
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
@@ -19,7 +20,7 @@ namespace Installer.Tests.Actions
             var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
             await uninstaller.UninstallSystemAsync(null, testPath, null, true, null);
 
-            Assert.False(Directory.Exists(config));
+            Directory.Exists(config).Should().BeFalse();
         }
 
         [Fact]
@@ -31,7 +32,7 @@ namespace Installer.Tests.Actions
             var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
             await uninstaller.UninstallSystemAsync(testPath, null, null, null, true);
 
-            Assert.False(Directory.Exists(testPath.FullName));
+            Directory.Exists(testPath.FullName).Should().BeFalse();
             commandExecution.Verify(x => x.ExecuteCommandAsync("net", "stop dockerd", It.IsAny<string>()), Times.Once);
             commandExecution.Verify(x => x.ExecuteCommandAsync("sc", "delete dockerd", It.IsAny<string>()), Times.Once);
         }
