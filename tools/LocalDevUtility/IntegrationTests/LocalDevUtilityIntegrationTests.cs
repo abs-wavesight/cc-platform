@@ -19,6 +19,7 @@ public class LocalDevUtilityIntegrationTests
 
     [Theory]
     [InlineData("--rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
+    [InlineData("--drex-file-service i", new[] { "cc.drex-file-service", "cc.rabbitmq-local", "cc.vector-site" })]
     // [InlineData("--deps i --drex-service i --log-viz i", new []{"cc.vector", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.grafana", "cc.loki", "cc.drex-service"})]
     public async Task Utility_GivenValidRunCommand_ShouldStartExpectedComposeServices(string componentParameters, string[] expectedServices)
     {
@@ -43,9 +44,9 @@ public class LocalDevUtilityIntegrationTests
             var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
 
             // Assert
-            var composeUpCommand = runCommandOutput.Single(_ => _.Contains("docker-compose ") && _.Contains(" up "));
+            var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
             var upIndex = composeUpCommand.IndexOf(" up ", StringComparison.InvariantCultureIgnoreCase);
-            var composeCommandPart = composeUpCommand.Substring(0, upIndex);
+            var composeCommandPart = composeUpCommand[..upIndex];
 
             var statusCommand = $"{composeCommandPart} ps --all --format json";
             var stopwatch = Stopwatch.StartNew();
@@ -60,14 +61,14 @@ public class LocalDevUtilityIntegrationTests
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
-                    expectedServices.Should().AllSatisfy(_ => statusCommandJsonResult!.Should().Contain(j => j.Service == _));
+                    expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
-                        .Where(_ => _.Project == "abs-cc").Should()
-                        .AllSatisfy(_ =>
+                        .Where(i => i.Project == "abs-cc").Should()
+                        .AllSatisfy(i =>
                         {
-                            _.State.Should().Be("running");
-                            _.Health.Should().BeOneOf("healthy", string.Empty);
-                            _.ExitCode.Should().Be(0);
+                            i.State.Should().Be("running");
+                            i.Health.Should().BeOneOf("healthy", string.Empty);
+                            i.ExitCode.Should().Be(0);
                         });
 
                     allServicesAreStoodUp = true;
