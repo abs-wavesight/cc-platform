@@ -2,7 +2,7 @@
 version: '3.9'
 services:
   cc.openssl-generate-certs:
-    image: ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION
+    image: ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
     command: [ "pwsh", "C:\\config\\generate-certs-prod.ps1" ]
     container_name: openssl
     logging:
