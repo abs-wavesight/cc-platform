@@ -3,7 +3,7 @@ version: '3.9'
 
 services:
 
-  cc.drex-service:
+  cc.drex-message-service:
     build:
       context: ${PATH_TO_CC_DREX_REPO}
       dockerfile: service/DrexMessage.Dockerfile
