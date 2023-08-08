@@ -2,6 +2,22 @@
   "location": "$ABS_PATH\\installer",
   "components": [
     {
+      "name": "Installer",
+      "files": [],
+      "actions": [
+        {
+          "source": "Installer.exe",
+          "destination": "$ABS_PATH\\Installer.exe",
+          "action": "copy"
+        },
+        {
+          "source": "Uninstall.cmd",
+          "destination": "$ABS_PATH\\Uninstall.cmd",
+          "action": "copy"
+        },		
+      ]
+    },    
+	{
       "name": "Certificates-Central",
       "files": [],
       "actions": [
