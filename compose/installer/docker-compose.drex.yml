@@ -4,7 +4,7 @@ version: '3.9'
 services:
   cc.drex-service:
     container_name: drex-service
-    image: ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION
+    image: ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA
     depends_on:
       - cc.vector
       - cc.rabbitmq
