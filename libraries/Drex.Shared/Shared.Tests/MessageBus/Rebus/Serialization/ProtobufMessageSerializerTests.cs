@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Abs.CommonCore.Contracts.Proto.Disco.Data;
+﻿using Abs.CommonCore.Contracts.Proto.Disco.Data;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization;
 using Abs.Messaging;
 using FluentAssertions;
