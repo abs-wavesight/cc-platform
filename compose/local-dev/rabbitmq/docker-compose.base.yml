@@ -5,7 +5,7 @@ services:
 
   cc.rabbitmq-template: &rabbitmq
     environment:
-      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\cc-rabbitmq.conf
+      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
     logging:
       driver: local
     profiles: [ 'templates' ]

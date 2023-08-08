@@ -252,11 +252,13 @@ namespace Abs.CommonCore.Installer.Actions
         private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
             var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
+            var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
 
             var arguments = configFiles
                 .Select(x => $"-f {x}")
                 .StringJoin(" ");
 
+            if (envFile.Length == 1) arguments = "--env-file environment.env " + arguments;
             await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
         }
     }

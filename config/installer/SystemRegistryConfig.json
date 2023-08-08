@@ -54,7 +54,12 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.root.yml",
           "destination": "docker-compose.root.yml"
-        }
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/environment.env",
+          "destination": "docker-compose.root.yml"
+        }		
       ],
       "actions": [
         {
@@ -107,6 +112,11 @@
           "destination": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "copy"
         },
+        {
+          "source": "environment.env",
+          "destination": "$ABS_PATH\\config\\environment.env",
+          "action": "copy"
+        },		
         {
           "source": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "replaceParameters"

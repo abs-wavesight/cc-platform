@@ -20,6 +20,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Handlers
         /// </summary>
         public virtual async Task Handle(Message<T> message)
         {
+            await Task.Yield();
             _logger.LogInformation($"{message.Payload.GetType().Name} Received message: {message.JsonPayload}");
         }
     }
