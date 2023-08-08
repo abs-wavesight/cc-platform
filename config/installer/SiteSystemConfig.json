@@ -4,7 +4,8 @@
     "RabbitMq",
     "Vector-Site",
     "Drex",
-    "OpenSsl"
+    "OpenSsl",
+	"Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs"

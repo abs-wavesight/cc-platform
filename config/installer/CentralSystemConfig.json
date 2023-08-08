@@ -3,7 +3,8 @@
     "Certificates-Central",
     "Docker",
     "RabbitMq",
-    "Vector-Central"
+    "Vector-Central",
+	"Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs"

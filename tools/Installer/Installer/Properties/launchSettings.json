@@ -2,7 +2,7 @@
   "profiles": {
     "Installer": {
       "commandName": "Project",
-      "commandLineArgs": "install -r C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\RegistryConfig.json -i C:\\ABS\\cc-platform\\tools\\Installer\\Installer.Tests\\Configs\\InstallerConfig.json -v"
+      "commandLineArgs": "uninstall"
     }
   }
 }

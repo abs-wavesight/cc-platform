@@ -26,6 +26,7 @@ namespace Abs.CommonCore.Installer
             var compressCommand = SetupCompressCommand(args);
             var uncompressCommand = SetupUncompressCommand(args);
             var releaseBodyCommand = SetupReleaseBodyCommand(args);
+            var uninstallCommand = SetupUninstallCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -36,6 +37,7 @@ namespace Abs.CommonCore.Installer
             root.Add(compressCommand);
             root.Add(uncompressCommand);
             root.Add(releaseBodyCommand);
+            root.Add(uninstallCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -294,6 +296,44 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
+        private static Command SetupUninstallCommand(string[] args)
+        {
+            var command = new Command("uninstall", "Uninstalls all installed components");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var dockerParam = new Option<DirectoryInfo>("--docker", "Path to docker location");
+            dockerParam.IsRequired = false;
+            dockerParam.AddAlias("-d");
+            command.Add(dockerParam);
+
+            var pathParam = new Option<DirectoryInfo>("--path", "Path to the installation location");
+            pathParam.IsRequired = false;
+            pathParam.AddAlias("-p");
+            command.Add(pathParam);
+
+            var removeSystemParam = new Option<bool>("--remove-system", "Indicates to remove system components");
+            removeSystemParam.IsRequired = false;
+            removeSystemParam.SetDefaultValue(false);
+            command.Add(removeSystemParam);
+
+            var removeConfigParam = new Option<bool>("--remove-config", "Indicates to remove configuration files");
+            removeConfigParam.IsRequired = false; ;
+            removeConfigParam.SetDefaultValue(false);
+            command.Add(removeConfigParam);
+
+            var removeDockerParam = new Option<bool>("--remove-docker", "Indicates to remove docker");
+            removeDockerParam.IsRequired = false;
+            removeDockerParam.SetDefaultValue(false);
+            command.Add(removeDockerParam);
+
+            command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) =>
+            {
+                await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args);
+            }, dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
+
+            return command;
+        }
+
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -370,6 +410,15 @@ namespace Abs.CommonCore.Installer
 
             var release = new ReleaseBodyBuilder(loggerFactory);
             await release.BuildReleaseBodyAsync(config, configParameters, output);
+        }
+
+        private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+
+            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+            await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
