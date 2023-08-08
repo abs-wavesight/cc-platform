@@ -6,7 +6,7 @@ services:
   cc.vector:	
     container_name: vector	
     hostname: "vector"	
-    image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION
+    image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
     environment:
       - VECTOR_CONFIG=C:/config/vector.toml    
       - VECTOR_LOG_FORMAT=json

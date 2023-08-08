@@ -4,7 +4,7 @@ version: '3.9'
 services:
   cc.rabbitmq:
     container_name: rabbitmq
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION
+    image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
     hostname: rabbitmq-local
     entrypoint: [ "powershell", "-c" ]
     command:
