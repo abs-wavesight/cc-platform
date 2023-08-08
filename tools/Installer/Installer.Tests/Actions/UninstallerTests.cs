@@ -9,7 +9,7 @@ namespace Installer.Tests.Actions
     public class UninstallerTests : TestsBase
     {
         [Fact]
-        public async Task Configuration_Removed()
+        public async Task Uninstall_Configuration_ConfigurationRemoved()
         {
             var testPath = Directory.CreateTempSubdirectory("uninstall_test");
             var config = Path.Combine(testPath.FullName, "config");
@@ -19,11 +19,11 @@ namespace Installer.Tests.Actions
             var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
             await uninstaller.UninstallSystemAsync(null, testPath, null, true, null);
 
-            Assert.True(Directory.Exists(config) == false);
+            Assert.False(Directory.Exists(config));
         }
 
         [Fact]
-        public async Task Docker_Removed()
+        public async Task Uninstall_Docker_DockerRemoved()
         {
             var testPath = Directory.CreateTempSubdirectory("uninstall_test");
 
@@ -31,7 +31,9 @@ namespace Installer.Tests.Actions
             var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
             await uninstaller.UninstallSystemAsync(testPath, null, null, null, true);
 
-            Assert.True(Directory.Exists(testPath.FullName) == false);
+            Assert.False(Directory.Exists(testPath.FullName));
+            commandExecution.Verify(x => x.ExecuteCommandAsync("net", "stop dockerd", It.IsAny<string>()), Times.Once);
+            commandExecution.Verify(x => x.ExecuteCommandAsync("sc", "delete dockerd", It.IsAny<string>()), Times.Once);
         }
     }
 }
