@@ -1,4 +1,6 @@
 ﻿using Abs.CommonCore.Installer.Services;
+using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
