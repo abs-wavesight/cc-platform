@@ -1,0 +1,7 @@
+---
+version: '3.9'
+
+services:
+
+  cc.drex-file-service:
+    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-${WINDOWS_VERSION}

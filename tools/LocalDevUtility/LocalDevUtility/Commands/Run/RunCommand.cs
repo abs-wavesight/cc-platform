@@ -27,7 +27,7 @@ public static class RunCommand
 
         using (CliStep.Start("Copying nuget.config files to component directories"))
         {
-            var nugetConfigCopyTargets = new List<string>
+            var nugetConfigCopyTargets = new[]
             {
                 Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "service"),
                 Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, "demo"),

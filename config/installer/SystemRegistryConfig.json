@@ -251,6 +251,11 @@
           "action": "copy"
         },
         {
+          "source": "remap-container-logs.vrl",
+          "destination": "$ABS_PATH\\config\\vector\\remap-container-logs.vrl",
+          "action": "copy"
+        },
+        {
           "source": "docker-compose.vector.yml",
           "destination": "$ABS_PATH\\config\\docker-compose.vector.yml",
           "action": "copy"
@@ -282,6 +287,11 @@
         {
           "source": "vector.toml",
           "destination": "$ABS_PATH\\config\\vector\\vector.toml",
+          "action": "copy"
+        },
+        {
+          "source": "remap-site-logs.vrl",
+          "destination": "$ABS_PATH\\config\\vector\\remap-site-logs.vrl",
           "action": "copy"
         },
         {

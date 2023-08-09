@@ -21,7 +21,8 @@ public static class DockerHelper
 
     public static StringBuilder BuildComposeCommand(AppConfig appConfig, ComposeOptions composeOptions)
     {
-        var executionRootPath = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.DockerComposeExecutionRootPath);
+        var executionRootPath = Path.GetFullPath(
+            Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.DockerComposeExecutionRootPath));
 
         var composeCommandBuilder = new StringBuilder();
         composeCommandBuilder.Append($"cd \"{executionRootPath}\"; docker-compose -f docker-compose.root.yml");
