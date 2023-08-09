@@ -402,6 +402,7 @@ TestResults/
 .nuget/
 Coverage/
 logs/
+sftproot/
 /.gitignore
 nuget.config
 !/nuget.config

@@ -68,6 +68,11 @@ jobs:
               - containers/openssl/**
               - config/openssl/**
               - compose/installer/docker-compose.openssl.yml
+            openssh:
+              - .github/workflows/docker-build-publish.yml
+              - containers/openssh/**
+              - config/openssh/**
+              - compose/installer/docker-compose.openssh.yml
 
   build-containers:
     needs: [ filter-containers, get_clean_branch_names ]
