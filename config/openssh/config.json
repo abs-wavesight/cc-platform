@@ -1,0 +1,7 @@
+{
+  "clients": [
+    "test_client",
+    "elogs"
+  ],
+  "defaultPassword": "P@ssword"
+}
