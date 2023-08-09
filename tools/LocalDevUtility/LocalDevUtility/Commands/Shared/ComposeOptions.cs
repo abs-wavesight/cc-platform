@@ -15,6 +15,9 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "openssl", imageName: "openssl")]
     public ComposeComponentMode? Openssl { get; set; }
 
+    [ComposeComponent(composePath: "openssh", imageName: "openssh")]
+    public ComposeComponentMode? Openssh { get; set; }
+
     [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
@@ -24,6 +27,7 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
     [ComposeComponentDependency(nameof(DrexMessageService))]
+    [ComposeComponentDependency(nameof(Openssh))]
     public ComposeComponentMode? DrexFileService { get; set; }
 
     [ComposeComponent(composePath: "rabbitmq", imageName: "rabbitmq", profile: Constants.Profiles.RabbitMqLocal)]
@@ -59,11 +63,12 @@ public abstract class ComposeOptions
     [ComposeComponentAlias(nameof(VectorSite))]
     public ComposeComponentMode? Vector { get; set; }
 
-    [Description("Alias for \"rabbitmq\", \"rabbitmq-remote\", and \"vector\"")]
+    [Description("Alias for \"rabbitmq-local\", \"rabbitmq-remote\", \"vector-site\", \"vector-central\", and \"openssh\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     [ComposeComponentAlias(nameof(RabbitmqRemote))]
     [ComposeComponentAlias(nameof(VectorSite))]
     [ComposeComponentAlias(nameof(VectorCentral))]
+    [ComposeComponentAlias(nameof(Openssh))]
     public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]
