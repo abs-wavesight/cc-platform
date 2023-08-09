@@ -63,7 +63,7 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/environment.env",
-          "destination": "docker-compose.root.yml"
+          "destination": "environment.env"
         }		
       ],
       "actions": [
