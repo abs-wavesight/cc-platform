@@ -32,6 +32,11 @@
           "action": "copy"
         },
         {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
+          "action": "copy"
+        },
+        {
           "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
           "action": "execute"
         }
@@ -175,6 +180,11 @@
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
           "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {
