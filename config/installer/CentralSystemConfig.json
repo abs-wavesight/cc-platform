@@ -7,6 +7,7 @@
 	"Installer"
   ],
   "parameters": {
-    "$ABS_PATH": "c:/abs"
+    "$ABS_PATH": "c:/abs",
+	"$RABBIT_LOCATION": "remote"
   }
 }
