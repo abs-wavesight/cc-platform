@@ -8,6 +8,7 @@ services:
     depends_on:
       - cc.vector-site
       - cc.rabbitmq-local
+      - cc.openssh
       - cc.drex-message-service
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}

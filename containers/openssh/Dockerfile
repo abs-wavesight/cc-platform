@@ -25,9 +25,8 @@ FROM openssh
 COPY ./scripts C:/scripts
 
 RUN cd C:/scripts; ./install.ps1
-RUN mkdir C:/ProgramData/ssh
-
-RUN mkdir C:/config
-RUN mkdir C:/sftproot
+RUN New-Item -Path "C:/ProgramData" -Name "ssh" -ItemType "directory" -Force
+RUN New-Item -Path "C:/" -Name "config" -ItemType "directory" -Force
+RUN New-Item -Path "C:/" -Name "sftproot" -ItemType "directory" -Force
 
 ENTRYPOINT ["pwsh", "-File", "C:\\scripts\\startup.ps1"]

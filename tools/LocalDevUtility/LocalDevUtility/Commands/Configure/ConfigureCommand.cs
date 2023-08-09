@@ -48,6 +48,13 @@ public static class ConfigureCommand
             certificatePath = readAppConfig?.CertificatePath;
         }
 
+        Console.Write($"Local path to use for SFTP (OpenSSH) root -- will be created if it does not exist{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SftpRootPath) ? $" ({readAppConfig.SftpRootPath})" : "")}: ");
+        var sftpRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(sftpRootPath))
+        {
+            sftpRootPath = readAppConfig?.SftpRootPath;
+        }
+
         Console.Write("Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
@@ -62,10 +69,20 @@ public static class ConfigureCommand
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
-            CertificatePath = certificatePath
+            CertificatePath = certificatePath,
+            SftpRootPath = sftpRootPath!
         };
 
         ValidateConfigAndThrow(appConfig);
+
+        if (!Directory.Exists(appConfig.SftpRootPath))
+        {
+            using (CliStep.Start("Creating SFTP root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SftpRootPath!);
+            }
+        }
+
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
 
@@ -147,6 +164,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CertificatePath) || !new DirectoryInfo(appConfig.CertificatePath).Exists)
         {
             errors.Add($"Certificate path ({appConfig.CertificatePath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath))
+        {
+            errors.Add($"SFTP root path ({appConfig.SftpRootPath}) is required");
         }
 
         return errors;

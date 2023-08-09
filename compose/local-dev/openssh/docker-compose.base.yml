@@ -1,0 +1,32 @@
+---
+version: '3.9'
+services:
+  cc.openssh:
+    container_name: openssh
+    entrypoint: [
+      "pwsh", 
+      "-Command", 
+      "C:/scripts/create-drex-user.ps1",
+      "-Username",
+      "drex",
+      "-Password",
+      "P@ssword",
+      ";",
+      "pwsh", 
+      "-Command", 
+      "C:/scripts/startup.ps1", 
+      ";"
+    ]
+    logging:
+      driver: local
+    ports:
+      - 1022:22
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssh
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: ${SFTP_ROOT_PATH}
+        target: C:/sftproot
+        read_only: false

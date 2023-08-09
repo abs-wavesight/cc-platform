@@ -14,6 +14,9 @@ try
   Write-Output "`nCopying OpenSSH config files..."
   Copy-Item "C:/config/sshd.config" -Destination "C:/ProgramData/ssh" -Force
 
+  Write-Output "`nCreating DREX local user group..."
+  & net localgroup "drex_group" /ADD
+
   $Config = Get-Content -Path "C:/config/config.json" -Raw | ConvertFrom-Json
   foreach($ClientName in $Config.clients)
   {
@@ -21,7 +24,8 @@ try
     & net USER $ClientName $Config.defaultPassword /ADD && net localgroup "Administrators" $ClientName /ADD
 
     Write-Output "`nCreating directory for client $ClientName..."
-    & mkdir C:/sftproot/$($ClientName)
+    New-Item -Path "C:/sftproot" -Name $ClientName -ItemType "directory" -Force
+
     
     Write-Output "`Adding match user block for client $ClientName..."
     $MatchUserBlock = @"
@@ -52,7 +56,7 @@ Match User ${ClientName}
   Start-Service ssh-agent
   Start-Service sshd
 
-  & "C:/working/spinner.exe" service sshd -d -t C:\ProgramData\ssh\logs\sshd.log
+  & "C:/working/spinner.exe" service sshd -t C:\ProgramData\ssh\logs\sshd.log
 }
 catch
 {
