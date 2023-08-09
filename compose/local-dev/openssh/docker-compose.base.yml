@@ -1,0 +1,18 @@
+---
+version: '3.9'
+services:
+  cc.openssh:
+    container_name: openssh
+    logging:
+      driver: local
+    ports:
+      - 1022:22
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssh
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/sftproot
+        target: C:/sftproot
+        read_only: false
