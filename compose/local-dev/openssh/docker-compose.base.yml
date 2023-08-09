@@ -27,6 +27,6 @@ services:
         target: C:/config
         read_only: true
       - type: bind
-        source: ${PATH_TO_CC_PLATFORM_REPO}/sftproot
+        source: ${SFTP_ROOT_PATH}
         target: C:/sftproot
         read_only: false
