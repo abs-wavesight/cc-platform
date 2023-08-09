@@ -1,0 +1,19 @@
+# Forcing SFTP functionality, needed for ChrootDirectory parameter below
+ForceCommand internal-sftp 
+Subsystem  sftp   sftp-server.exe -d c:\sftproot\
+
+# Specify the default folder the user sees after SFTP authentication. Without this, users will see C:\users\myuser\ as default folder, which is not usually preferable
+
+Match User drex
+ChrootDirectory c:\sftproot\
+
+Match User sample-client
+ChrootDirectory c:\sftproot\sample_client\
+
+# Disable tunneling, authentication agent, TCP and X11 forwarding.
+# Below parameters are recommended as best practice to prevent certain security bypassing
+PermitTunnel no
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+GatewayPorts no

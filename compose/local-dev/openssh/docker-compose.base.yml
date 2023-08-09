@@ -1,0 +1,13 @@
+---
+version: '3.9'
+services:
+  cc.openssh:
+    # command: [ "pwsh", "C:\\config\\generate-certs.ps1" ]
+    container_name: openssh
+    logging:
+      driver: local
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssh
+        target: C:/ProgramData/ssh
+        read_only: true
