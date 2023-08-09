@@ -24,7 +24,8 @@ try
     & net USER $ClientName $Config.defaultPassword /ADD && net localgroup "Administrators" $ClientName /ADD
 
     Write-Output "`nCreating directory for client $ClientName..."
-    & mkdir C:/sftproot/$($ClientName)
+    New-Item -Path "C:/sftproot" -Name $ClientName -ItemType "directory" -Force
+
     
     Write-Output "`Adding match user block for client $ClientName..."
     $MatchUserBlock = @"
