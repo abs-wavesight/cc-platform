@@ -27,4 +27,4 @@ New-Item -Type Directory ~\\.ssh > $null
 $sshKey | Out-File $keyPath -Encoding Ascii
 
 Write-Output "Setting sshd service restart behavior"
-sc.exe failure sshd reset= 86400 actions= restart/500
+sc.exe failure sshd reset= 86400 actions= reboot/500
