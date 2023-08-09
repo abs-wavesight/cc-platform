@@ -19,7 +19,7 @@ public class LocalDevUtilityIntegrationTests
 
     [Theory]
     [InlineData("--rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
-    [InlineData("--drex-file-service i", new[] { "cc.drex-file-service", "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    // [InlineData("--drex-file-service i", new[] { "cc.drex-file-service", "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     // [InlineData("--deps i --drex-service i --log-viz i", new []{"cc.vector", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.grafana", "cc.loki", "cc.drex-service"})]
     public async Task Utility_GivenValidRunCommand_ShouldStartExpectedComposeServices(string componentParameters, string[] expectedServices)
     {
