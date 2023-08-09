@@ -14,7 +14,7 @@
           "source": "Uninstall.cmd",
           "destination": "$ABS_PATH\\Uninstall.cmd",
           "action": "copy"
-        },		
+        }
       ]
     },    
 	{
