@@ -157,12 +157,12 @@
           "action": "copy"
         },
         {
-          "source": "docker-compose.openssl.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "source": "manual-docker-compose.openssl.yml",
+          "destination": "$ABS_PATH\\config\\manual-docker-compose.openssl.yml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.openssl.yml",
+          "source": "$ABS_PATH\\config\\manual-docker-compose.openssl.yml",
           "action": "replaceParameters"
         },
         {
@@ -188,7 +188,7 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
+          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
           "action": "execute"
         },
         {
