@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
+using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -26,6 +27,8 @@ namespace Abs.CommonCore.Installer
             var compressCommand = SetupCompressCommand(args);
             var uncompressCommand = SetupUncompressCommand(args);
             var releaseBodyCommand = SetupReleaseBodyCommand(args);
+            var configureRabbitCommand = SetupConfigureRabbitCommand(args);
+            var uninstallCommand = SetupUninstallCommand(args);
 
             var root = new RootCommand("Installer for the Common Core platform");
             root.TreatUnmatchedTokensAsErrors = true;
@@ -36,6 +39,8 @@ namespace Abs.CommonCore.Installer
             root.Add(compressCommand);
             root.Add(uncompressCommand);
             root.Add(releaseBodyCommand);
+            root.Add(configureRabbitCommand);
+            root.Add(uninstallCommand);
 
             var result = await root.InvokeAsync(args);
             await Task.Delay(1000);
@@ -294,6 +299,116 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
+        private static Command SetupConfigureRabbitCommand(string[] args)
+        {
+            var command = new Command("configure-rabbit", "Configures rabbit mq with credentials for configuration file");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var rabbitParam = new Option<Uri>("--rabbit", $"Http uri to connect to rabbit mq");
+            rabbitParam.IsRequired = true;
+            rabbitParam.AddAlias("-r");
+            command.Add(rabbitParam);
+
+            var rabbitUsernameParam = new Option<string>("--rabbit-user", "Username to connect to rabbit");
+            rabbitUsernameParam.IsRequired = true;
+            rabbitUsernameParam.AddAlias("-ru");
+            command.Add(rabbitUsernameParam);
+
+            var rabbitPasswordParam = new Option<string>("--rabbit-password", "Password to connect to rabbit");
+            rabbitPasswordParam.IsRequired = true;
+            rabbitPasswordParam.AddAlias("-rp");
+            command.Add(rabbitPasswordParam);
+
+            var usernameParam = new Option<string>("--user", "Username to use for account");
+            usernameParam.IsRequired = true;
+            usernameParam.AddAlias("-u");
+            command.Add(usernameParam);
+
+            var passwordParam = new Option<string>("--password", "Password to use for account");
+            passwordParam.IsRequired = false;
+            passwordParam.AddAlias("-p");
+            command.Add(passwordParam);
+
+            var updatePermissionsParam = new Option<bool>("--update-permissions", "Update the users permissions");
+            updatePermissionsParam.IsRequired = false;
+            updatePermissionsParam.AddAlias("-up");
+            command.Add(updatePermissionsParam);
+
+            var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
+            drexSiteConfigParam.IsRequired = false;
+            drexSiteConfigParam.AddAlias("-dsc");
+            command.Add(drexSiteConfigParam);
+
+            var superUserParam = new Option<bool>("--super-user", "Indicates the account is for a super user");
+            superUserParam.IsRequired = false;
+            superUserParam.SetDefaultValue(false);
+            superUserParam.AddAlias("-su");
+            command.Add(superUserParam);
+
+            var credentialsFileParam = new Option<FileInfo>("--credentials-file", "Updates the file with the generated credentials");
+            credentialsFileParam.IsRequired = false;
+            credentialsFileParam.AddAlias("-cf");
+            command.Add(credentialsFileParam);
+
+            command.SetHandler(async (context) =>
+            {
+                var arguments = new RabbitConfigureCommandArguments
+                {
+                    Rabbit = context.ParseResult.GetValueForOption(rabbitParam),
+                    RabbitUsername = context.ParseResult.GetValueForOption(rabbitUsernameParam),
+                    RabbitPassword = context.ParseResult.GetValueForOption(rabbitPasswordParam),
+                    Username = context.ParseResult.GetValueForOption(usernameParam),
+                    Password = context.ParseResult.GetValueForOption(passwordParam),
+                    UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
+                    DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
+                    SuperUser = context.ParseResult.GetValueForOption(superUserParam),
+                    CredentialsFile = context.ParseResult.GetValueForOption(credentialsFileParam),
+                };
+
+                await ExecuteConfigureRabbitCommandAsync(arguments, args);
+            });
+
+            return command;
+        }
+
+        private static Command SetupUninstallCommand(string[] args)
+        {
+            var command = new Command("uninstall", "Uninstalls all installed components");
+            command.TreatUnmatchedTokensAsErrors = true;
+
+            var dockerParam = new Option<DirectoryInfo>("--docker", "Path to docker location");
+            dockerParam.IsRequired = false;
+            dockerParam.AddAlias("-d");
+            command.Add(dockerParam);
+
+            var pathParam = new Option<DirectoryInfo>("--path", "Path to the installation location");
+            pathParam.IsRequired = false;
+            pathParam.AddAlias("-p");
+            command.Add(pathParam);
+
+            var removeSystemParam = new Option<bool>("--remove-system", "Indicates to remove system components");
+            removeSystemParam.IsRequired = false;
+            removeSystemParam.SetDefaultValue(false);
+            command.Add(removeSystemParam);
+
+            var removeConfigParam = new Option<bool>("--remove-config", "Indicates to remove configuration files");
+            removeConfigParam.IsRequired = false; ;
+            removeConfigParam.SetDefaultValue(false);
+            command.Add(removeConfigParam);
+
+            var removeDockerParam = new Option<bool>("--remove-docker", "Indicates to remove docker");
+            removeDockerParam.IsRequired = false;
+            removeDockerParam.SetDefaultValue(false);
+            command.Add(removeDockerParam);
+
+            command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) =>
+            {
+                await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args);
+            }, dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
+
+            return command;
+        }
+
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
@@ -370,6 +485,39 @@ namespace Abs.CommonCore.Installer
 
             var release = new ReleaseBodyBuilder(loggerFactory);
             await release.BuildReleaseBodyAsync(config, configParameters, output);
+        }
+
+        private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+            var configurer = new RabbitConfigurer(loggerFactory, commandExecution);
+
+            if (arguments.UpdatePermissions)
+            {
+                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
+                return;
+            }
+
+            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
+
+            if (credentials == null)
+            {
+                Console.WriteLine("No credentials added");
+                return;
+            }
+
+            if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+            if (arguments.CredentialsFile != null) await configurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+        }
+
+        private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
+        {
+            var (_, loggerFactory) = Initialize(args);
+            var commandExecution = new CommandExecutionService(loggerFactory);
+
+            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+            await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)

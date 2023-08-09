@@ -88,13 +88,21 @@ jobs:
           target: SystemRegistryConfig.json
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
-      - name: Download installer download config
+      - name: Download installer system config
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/Installer
           file: ${{ inputs.system-config }}
           target: SystemConfig.json
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}                          
+
+      - name: Download installer uninstaller
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/Installer
+          file: Uninstall.cmd
+          target: Uninstall.cmd
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}    
           
       - name: Download components       
         run: |
@@ -104,6 +112,11 @@ jobs:
         run: |
           .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemConfig.json
           .\Installer.exe uncompress -s c:/abs/temp/`$component/Release.zip -d c:/abs/installer -c SystemConfig.json
+
+      - name: Bundle installer
+        run: |
+          xcopy Installer.exe c:\abs\installer
+          xcopy Uninstall.cmd c:\abs\installer
 
       - name: Compress contents
         run: |

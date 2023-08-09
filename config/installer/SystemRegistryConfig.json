@@ -2,6 +2,22 @@
   "location": "$ABS_PATH\\installer",
   "components": [
     {
+      "name": "Installer",
+      "files": [],
+      "actions": [
+        {
+          "source": "Installer.exe",
+          "destination": "$ABS_PATH\\Installer.exe",
+          "action": "copy"
+        },
+        {
+          "source": "Uninstall.cmd",
+          "destination": "$ABS_PATH\\Uninstall.cmd",
+          "action": "copy"
+        }
+      ]
+    },    
+	{
       "name": "Certificates-Central",
       "files": [],
       "actions": [
@@ -13,6 +29,11 @@
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
           "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {
@@ -38,7 +59,12 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/docker-compose.root.yml",
           "destination": "docker-compose.root.yml"
-        }
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/environment.env",
+          "destination": "environment.env"
+        }		
       ],
       "actions": [
         {
@@ -91,6 +117,11 @@
           "destination": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "copy"
         },
+        {
+          "source": "environment.env",
+          "destination": "$ABS_PATH\\config\\environment.env",
+          "action": "copy"
+        },		
         {
           "source": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
@@ -149,6 +180,11 @@
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
           "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {

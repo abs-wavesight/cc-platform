@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "RabbitMqConfigure": {
-      "commandName": "Project",
-      "commandLineArgs": "-u guest -p guest -c test -l https://rabbitmq-local:15671 -r https://rabbitmq-remote:15671"
-    }
-  }
-}

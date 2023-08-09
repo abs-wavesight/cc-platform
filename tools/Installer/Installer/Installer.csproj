@@ -18,8 +18,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.90" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.101" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.29" />
+		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
@@ -27,6 +28,9 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Octokit" Version="7.1.0" />
     <PackageReference Include="Octokit.Extensions" Version="1.0.7" />
+    <PackageReference Include="EasyNetQ.Management.Client" Version="2.0.0" />
+    <PackageReference Include="PasswordGenerator" Version="2.1.0" />
+    <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
 	</ItemGroup>
 
   <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />

@@ -15,7 +15,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Extensions
                 Scheme = busConnection.Protocol.ToString().ToLower(),
                 UserName = busConnection.Username,
                 Password = busConnection.Password,
-                Path = busConnection.Vhost
             }.ToString();
         }
 
@@ -30,7 +29,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Extensions
                 Protocol = Enum.Parse<BusConnectionProtocol>(uri.Scheme, true),
                 Username = uri.UserName,
                 Password = uri.Password,
-                Vhost = uri.Path.Trim('/')
             };
         }
     }
