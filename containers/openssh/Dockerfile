@@ -8,7 +8,6 @@ ENV SPINNER_VERSION 1.0.8
 USER containeradministrator
 WORKDIR C:/working
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-# ADD https://github.com/PowerShell/Win32-OpenSSH/releases/download/v9.2.2.0p1-Beta/OpenSSH-Win64.zip OpenSSH-Win64.zip
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
     Invoke-WebRequest $('https://github.com/PowerShell/Win32-OpenSSH/releases/download/v{0}/OpenSSH-Win64.zip' -f $env:OPENSSH_VERSION) -OutFile openssh.zip -UseBasicParsing; \
@@ -27,9 +26,6 @@ COPY ./scripts C:/scripts
 
 RUN cd C:/scripts; ./install.ps1
 RUN mkdir C:/ProgramData/ssh
-
-# TODO RH: REMOVE THESE USERS FROM DOCKERFILE
-RUN net USER drex "P@ssword" /ADD && net localgroup "Administrators" "drex" /ADD
 
 RUN mkdir C:/config
 RUN mkdir C:/sftproot
