@@ -48,7 +48,7 @@ public static class ConfigureCommand
             certificatePath = readAppConfig?.CertificatePath;
         }
 
-        Console.Write($"Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
+        Console.Write("Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(generateCertificatesNowInput))
