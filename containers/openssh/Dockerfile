@@ -30,6 +30,4 @@ RUN mkdir C:/ProgramData/ssh
 RUN mkdir C:/config
 RUN mkdir C:/sftproot
 
-CMD Start-Sleep 5 ; ./spinner.exe service sshd -t C:\ProgramData\ssh\logs\sshd.log
-
 ENTRYPOINT ["pwsh", "-File", "C:\\scripts\\startup.ps1"]
