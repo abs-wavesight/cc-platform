@@ -21,4 +21,4 @@ jobs:
     name: Clean Container Images
     uses: ./.github/workflows/shared-cleanup-after-pr-merge.yml
     with:
-      image-names: "['rabbitmq', 'vector', 'loki', 'grafana']"
+      image-names: "['rabbitmq', 'vector', 'loki', 'grafana', 'openssl', 'openssh']"
