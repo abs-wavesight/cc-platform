@@ -11,8 +11,8 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.openssl.yml",
-          "destination": "docker-compose.openssl.yml"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/manual-docker-compose.openssl.yml",
+          "destination": "manual-docker-compose.openssl.yml"
         },
         {
           "type": "file",
@@ -27,7 +27,7 @@
       ],
       "actions": [
         {
-            "source": "docker-compose.openssl.yml",
+            "source": "manual-docker-compose.openssl.yml",
             "action": "replaceParameters"
         }
 	    ]

@@ -82,7 +82,6 @@ public class PowerShellAdapter : IPowerShellAdapter
         colorStack.Push("navy");
         colorStack.Push("olive");
         colorStack.Push("green");
-        colorStack.Push("maroon");
 
         // Regex to extract the starting string including the container name from the following: "my-container-name_1  | the log message goes here"
         var containerNameRegex = new Regex(@"[\w-]+?\s+\|\s+");

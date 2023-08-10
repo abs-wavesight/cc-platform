@@ -17,16 +17,19 @@ public class RunCommandTests
 
     [Theory]
     [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
+    [InlineData("run -m r --openssh i", new[] { "cc.openssh" })]
     [InlineData("run -m r --rabbitmq i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-remote i", new[] { "cc.rabbitmq-remote" })]
     [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
-    [InlineData("run -m r --drex-service i", new[] { "cc.drex-service", "cc.rabbitmq-local", "cc.vector-site" })]
-    [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
-    [InlineData("run -m r --deps i --drex-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
-    [InlineData("run -m r --deps i --log-viz i --drex-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-service", "cc.loki", "cc.grafana" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --drex-message-service i", new[] { "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --drex-file-service i", new[] { "cc.drex-file-service", "cc.rabbitmq-local", "cc.vector-site", "cc.drex-message-service", "cc.openssh" })]
+    [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.openssh" })]
+    [InlineData("run -m r --deps i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.openssh" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --deps i --drex-file-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.drex-file-service", "cc.openssh" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --deps i --log-viz i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.loki", "cc.grafana", "cc.openssh" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
     {
         // Arrange
@@ -43,38 +46,34 @@ public class RunCommandTests
         AssertSpecificExpectedComposeFilesArePresent(composeCommandPart, specificExpectedComposeFiles);
     }
 
-    private string AssertComposeCommandWasExecutedAndExtractComposeCommandPart(LocalDevUtilityFixture fixture)
+    private static string AssertComposeCommandWasExecutedAndExtractComposeCommandPart(LocalDevUtilityFixture fixture)
     {
         fixture.ActualPowerShellCommands.Should().HaveCountGreaterThan(0);
-        var composeUpCommand = fixture.ActualPowerShellCommands.Single(_ => _.Contains("docker-compose ") && _.Contains(" up "));
+        var composeUpCommand = fixture.ActualPowerShellCommands.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
         var upIndex = composeUpCommand.IndexOf(" up ", StringComparison.InvariantCultureIgnoreCase);
-        return composeUpCommand.Substring(0, upIndex);
+        return composeUpCommand[..upIndex];
     }
 
     private void AssertComposeConfigIsValid(LocalDevUtilityFixture fixture, string composeCommandPart)
     {
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(1));
-        _testOutput.WriteLine($"Compose Config Output:\n{string.Join("\n", configCommandOutput)}");
+        _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: abs-cc");
     }
 
-    private void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, string[] expectedServices)
+    private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(1));
-        configServicesCommandOutput.Should().HaveCount(expectedServices.Length);
-        configServicesCommandOutput.Should().AllSatisfy(_ => expectedServices.Should().Contain(_));
+        configServicesCommandOutput.Should().HaveCount(expectedServices.Count);
+        configServicesCommandOutput.Should().AllSatisfy(s => expectedServices.Should().Contain(s));
     }
 
-    private void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, string[]? specificExpectedComposeFiles)
+    private static void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, IEnumerable<string>? specificExpectedComposeFiles)
     {
-        if (specificExpectedComposeFiles == null)
-        {
-            return;
-        }
-
-        specificExpectedComposeFiles.Should().AllSatisfy(_ => composeCommandPart.Should().Contain(_));
+        specificExpectedComposeFiles?.Should()
+            .AllSatisfy(s => composeCommandPart.Should().Contain(s));
     }
 }

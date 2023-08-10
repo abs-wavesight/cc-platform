@@ -21,7 +21,8 @@ public static class DockerHelper
 
     public static StringBuilder BuildComposeCommand(AppConfig appConfig, ComposeOptions composeOptions)
     {
-        var executionRootPath = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.DockerComposeExecutionRootPath);
+        var executionRootPath = Path.GetFullPath(
+            Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.DockerComposeExecutionRootPath));
 
         var composeCommandBuilder = new StringBuilder();
         composeCommandBuilder.Append($"cd \"{executionRootPath}\"; docker-compose -f docker-compose.root.yml");
@@ -48,6 +49,7 @@ public static class DockerHelper
             {Constants.ComposeEnvKeys.PathToCommonCorePlatformRepository, appConfig.CommonCorePlatformRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository, appConfig.CommonCoreDrexRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCertificates, appConfig.CertificatePath!},
+            {Constants.ComposeEnvKeys.SftpRootPath, appConfig.SftpRootPath!},
         };
         if (additionalOptions != null)
         {
