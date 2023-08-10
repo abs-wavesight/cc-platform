@@ -7,10 +7,10 @@ namespace Abs.CommonCore.Drex.Shared.Extensions
     {
         public static Dictionary<string, object> ToLogScopeData(this Message message)
         {
-            var scopeData = new Dictionary<string, object>
+            Dictionary<string, object> scopeData = new()
             {
                 { "message-id", message.GetMessageId() },
-                { "message-type", message.GetMessageType() }
+                { "message-raw-type", message.GetMessageType() }
             };
 
             foreach (var (key, value) in message.Headers)
@@ -18,7 +18,7 @@ namespace Abs.CommonCore.Drex.Shared.Extensions
                 var keyToUse = key;
                 if (keyToUse.StartsWith(Constants.MessageHeaders.Prefix))
                 {
-                    keyToUse = keyToUse.Substring(Constants.MessageHeaders.Prefix.Length + 1);
+                    keyToUse = keyToUse[(Constants.MessageHeaders.Prefix.Length + 1)..];
                 }
 
                 scopeData.Add(keyToUse, value);
