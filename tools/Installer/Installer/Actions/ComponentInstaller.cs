@@ -305,7 +305,8 @@ namespace Abs.CommonCore.Installer.Actions
 
                 if (healthyCount == totalContainers)
                 {
-                    break;
+                    _logger.LogInformation("All containers are healthy");
+                    return;
                 }
 
                 await Task.Delay(checkInterval);
