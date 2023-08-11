@@ -16,6 +16,11 @@
             public const string ContainerName = $"{ContainerPrefix}.name";
             public const string ContainerType = $"{ContainerPrefix}.type";
             public const string ContainerImage = $"{ContainerPrefix}.image";
+
+            [Obsolete("Replaced with MessageType")]
+            public const string Source = $"{Prefix}.source";
+            [Obsolete("Replaced with MessageType")]
+            public const string Sink = $"{Prefix}.sink";
         }
 
         public static class MessageBus
