@@ -36,7 +36,6 @@ namespace Abs.CommonCore.Installer.Services
 
             process.ErrorDataReceived += (sender, args) =>
             {
-                // Intentional not logged to error
                 if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data);
             };
             process.OutputDataReceived += (sender, args) =>

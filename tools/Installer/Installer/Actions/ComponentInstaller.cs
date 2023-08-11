@@ -1,8 +1,11 @@
 ﻿using System.Text.Json;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
+using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
@@ -10,6 +13,8 @@ namespace Abs.CommonCore.Installer.Actions
     public class ComponentInstaller : ActionBase
     {
         private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
+        private const string ReleaseZipName = "Release.zip";
+        private const string AdditionalFilesName = "AdditionalFiles";
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -31,11 +36,11 @@ namespace Abs.CommonCore.Installer.Actions
                 : null;
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
-            MergeParameters(mergedParameters, parameters);
+            mergedParameters.MergeParameters(parameters);
             _allParameters = mergedParameters;
 
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
-                (c, t) => ReplaceConfigParameters(t, mergedParameters));
+                (c, t) => t.ReplaceConfigParameters(mergedParameters));
         }
 
         public async Task ExecuteAsync(string[]? specificComponents = null)
@@ -46,6 +51,8 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             _logger.LogInformation("Starting installer");
+            await ExpandReleaseZipFile();
+
             var components = DetermineComponents(specificComponents);
             VerifySourcesPresent(components);
 
@@ -259,7 +266,80 @@ namespace Abs.CommonCore.Installer.Actions
                 .StringJoin(" ");
 
             if (envFile.Length == 1) arguments = "--env-file environment.env " + arguments;
-            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach -e COMPOSE_STATUS_STDOUT=1", rootLocation);
+
+            await WaitForDockerContainersHealthyAsync(configFiles, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+        }
+
+        private async Task WaitForDockerContainersHealthyAsync(string[] configFiles, TimeSpan totalTime, TimeSpan checkInterval)
+        {
+            _logger.LogInformation($"Waiting for {configFiles.Length} containers to be healthy");
+            var start = DateTime.UtcNow;
+            var client = new DockerClientConfiguration()
+                .CreateClient();
+
+            while (DateTime.UtcNow.Subtract(start) < totalTime)
+            {
+                var containers = await client.Containers
+                    .ListContainersAsync(new ContainersListParameters
+                    {
+                        All = true
+                    });
+
+                var healthyCount = 0;
+
+                foreach (var container in containers.OrderBy(x => x.Image))
+                {
+                    var isHealthy = container.Status is "healthy" or "running";
+                    if (isHealthy)
+                    {
+                        healthyCount++;
+                    }
+
+                    var logLevel = isHealthy
+                        ? LogLevel.Information
+                        : LogLevel.Error;
+
+                    _logger.Log(logLevel, $"Container '{container.Image}': {container.Status}");
+                }
+
+                if (healthyCount == configFiles.Length)
+                {
+                    break;
+                }
+
+                await Task.Delay(checkInterval);
+            }
+
+            _logger.LogError("Not all containers are healthy");
+        }
+
+        private async Task ExpandReleaseZipFile()
+        {
+            _logger.LogInformation("Preparing install components");
+
+            var current = Directory.GetCurrentDirectory();
+            var files = Directory.GetFiles(current, $"{ReleaseZipName}*", SearchOption.TopDirectoryOnly);
+
+            if (files.Length == 0)
+            {
+                return;
+            }
+
+            var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
+            var installLocation = new DirectoryInfo(_registryConfig.Location);
+
+            _logger.LogInformation("Unchunking release files");
+            var chunker = new DataChunker(_loggerFactory);
+            await chunker.UnchunkFileAsync(new DirectoryInfo(current), releaseZip, false);
+
+            _logger.LogInformation("Uncompressing release file");
+            var compressor = new DataCompressor(_loggerFactory);
+            await compressor.UncompressFileAsync(releaseZip, installLocation, false);
+
+            _logger.LogInformation($"Creating {AdditionalFilesName} folder");
+            var path = Path.Combine(_registryConfig.Location, AdditionalFilesName);
+            Directory.CreateDirectory(path);
         }
     }
 }

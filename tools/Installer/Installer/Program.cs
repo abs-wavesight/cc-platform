@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
+using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -54,11 +55,13 @@ namespace Abs.CommonCore.Installer
 
             var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
             registryParam.IsRequired = true;
+            registryParam.SetDefaultValue("SystemRegistryConfig.json");
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
             var downloadConfigParam = new Option<FileInfo>("--config", "Location of download configuration");
             downloadConfigParam.IsRequired = false;
+            registryParam.SetDefaultValue("SystemConfig.json");
             downloadConfigParam.AddAlias("-dc");
             command.Add(downloadConfigParam);
 
@@ -95,11 +98,13 @@ namespace Abs.CommonCore.Installer
 
             var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
             registryParam.IsRequired = true;
+            registryParam.SetDefaultValue("SystemRegistryConfig.json");
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
             var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration");
             installConfigParam.IsRequired = false;
+            registryParam.SetDefaultValue("SystemConfig.json");
             installConfigParam.AddAlias("-ic");
             command.Add(installConfigParam);
 
@@ -411,8 +416,9 @@ namespace Abs.CommonCore.Installer
 
         private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
-            var (_, loggerFactory) = Initialize(args);
             var configParameters = BuildConfigParameters(parameters);
+            var filePath = BuildDownloadLogFileLocation(registryConfig, downloaderConfig, configParameters);
+            var (_, loggerFactory) = Initialize(filePath, args);
 
             var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
@@ -422,8 +428,9 @@ namespace Abs.CommonCore.Installer
 
         private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo installerConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
-            var (_, loggerFactory) = Initialize(args);
             var configParameters = BuildConfigParameters(parameters);
+            var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters);
+            var (_, loggerFactory) = Initialize(filePath, args);
 
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
             var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters);
@@ -568,26 +575,28 @@ namespace Abs.CommonCore.Installer
             return ConfigureLogging(builder.Logging);
         }
 
-        private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder)
+        private static (ILogger, ILoggerFactory) Initialize(string filePath, string[] args)
+        {
+            var builder = Host.CreateApplicationBuilder(args);
+            return ConfigureLogging(builder.Logging, filePath);
+        }
+
+        private static (ILogger, ILoggerFactory) ConfigureLogging(ILoggingBuilder builder, string filePath = "")
         {
             builder.ClearProviders();
 
-            // When debugging locally, simple console output is easier to read than JSON; but when deployed, we want structured JSON logs
-#if DEBUG
             builder.AddSimpleConsole(options =>
             {
                 options.IncludeScopes = true;
                 options.SingleLine = true;
-                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff";
                 options.ColorBehavior = LoggerColorBehavior.Enabled;
             });
-#else
-            builder.AddJsonConsole(options =>
+
+            if (string.IsNullOrWhiteSpace(filePath) == false)
             {
-                options.TimestampFormat = "u";
-                options.IncludeScopes = true;
-            });
-#endif
+                builder.AddFile(filePath);
+            }
 
             var provider = builder.Services.BuildServiceProvider();
             var logger = provider.GetRequiredService<ILogger<Program>>();
@@ -596,6 +605,42 @@ namespace Abs.CommonCore.Installer
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
             return (logger, loggerFactory);
+        }
+
+        private static string BuildInstallLogFileLocation(FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> configParameters)
+        {
+            var config = installerConfig != null
+                ? ConfigParser.LoadConfig<InstallerComponentInstallerConfig>(installerConfig.FullName)
+                : null;
+
+            configParameters
+                .MergeParameters(config?.Parameters);
+
+            return BuildLogFileLocation(registryConfig, configParameters, "download");
+        }
+
+        private static string BuildDownloadLogFileLocation(FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> configParameters)
+        {
+            var config = downloaderConfig != null
+                ? ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(downloaderConfig.FullName)
+                : null;
+
+            configParameters
+                .MergeParameters(config?.Parameters);
+
+            return BuildLogFileLocation(registryConfig, configParameters, "download");
+        }
+
+        private static string BuildLogFileLocation(FileInfo registryConfig, Dictionary<string, string> configParameters, string name)
+        {
+            var registry = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName);
+            var root = registry.Location
+                .ReplaceConfigParameters(configParameters);
+
+            Directory.CreateDirectory(root);
+            var fileName = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.{name}.log";
+
+            return Path.Combine(root, fileName);
         }
 
         private static Dictionary<string, string> BuildConfigParameters(string[]? parameters)

@@ -19,5 +19,15 @@ namespace Abs.CommonCore.Installer.Extensions
 
             return (segments[0], segments[1], segments[4], file);
         }
+
+        public static string ReplaceConfigParameters(this string text, Dictionary<string, string> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                text = text.Replace(parameter.Key, parameter.Value, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return text;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Platform.Config;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,7 @@ namespace Abs.CommonCore.Installer.Actions
                 : null;
 
             var mergedParameters = config?.Parameters ?? new Dictionary<string, string>();
-            MergeParameters(mergedParameters, parameters ?? new Dictionary<string, string>());
+            mergedParameters = mergedParameters.MergeParameters(parameters);
 
             await CreateBodyAsync(mergedParameters, output);
         }

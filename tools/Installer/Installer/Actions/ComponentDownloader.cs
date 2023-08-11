@@ -34,10 +34,10 @@ namespace Abs.CommonCore.Installer.Actions
                 : null;
 
             var mergedParameters = _downloaderConfig?.Parameters ?? new Dictionary<string, string>();
-            MergeParameters(mergedParameters, parameters);
+            mergedParameters.MergeParameters(parameters);
 
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
-                (c, t) => ReplaceConfigParameters(t, mergedParameters));
+                (c, t) => t.ReplaceConfigParameters(mergedParameters));
         }
 
         public async Task ExecuteAsync(string[]? specificComponents = null)

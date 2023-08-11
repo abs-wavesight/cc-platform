@@ -66,8 +66,8 @@
           "destination": "environment.env"
         }		
       ],
-      "actions": [
-        {
+      "actions": [   
+		{
           "source": "net stop dockerd",
           "action": "executeImmediate"
         },
@@ -81,6 +81,10 @@
           "action": "copy"
         },
         {
+          "source": "powershell -Command Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart",
+          "action": "executeImmediate"
+        },            
+		{
           "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
