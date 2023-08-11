@@ -266,31 +266,31 @@ namespace Abs.CommonCore.Installer.Actions
                 .StringJoin(" ");
 
             if (envFile.Length == 1) arguments = "--env-file environment.env " + arguments;
-            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach -e COMPOSE_STATUS_STDOUT=1", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
 
-            await WaitForDockerContainersHealthyAsync(configFiles, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+            var containerCount = configFiles
+                .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
+
+            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
         }
 
-        private async Task WaitForDockerContainersHealthyAsync(string[] configFiles, TimeSpan totalTime, TimeSpan checkInterval)
+        private async Task WaitForDockerContainersHealthyAsync(int totalContainers, TimeSpan totalTime, TimeSpan checkInterval)
         {
-            _logger.LogInformation($"Waiting for {configFiles.Length} containers to be healthy");
+            _logger.LogInformation($"Waiting for {totalContainers} containers to be healthy");
             var start = DateTime.UtcNow;
             var client = new DockerClientConfiguration()
                 .CreateClient();
 
             while (DateTime.UtcNow.Subtract(start) < totalTime)
             {
-                var containers = await client.Containers
-                    .ListContainersAsync(new ContainersListParameters
-                    {
-                        All = true
-                    });
-
+                var containers = await LoadContainerInfoAsync(client);
                 var healthyCount = 0;
+
+                if (containers.Length == 0) _logger.LogWarning("No containers found");
 
                 foreach (var container in containers.OrderBy(x => x.Image))
                 {
-                    var isHealthy = container.Status is "healthy" or "running";
+                    var isHealthy = CheckContainerHealthy(container, TimeSpan.FromSeconds(30));
                     if (isHealthy)
                     {
                         healthyCount++;
@@ -298,12 +298,12 @@ namespace Abs.CommonCore.Installer.Actions
 
                     var logLevel = isHealthy
                         ? LogLevel.Information
-                        : LogLevel.Error;
+                        : LogLevel.Warning;
 
-                    _logger.Log(logLevel, $"Container '{container.Image}': {container.Status}");
+                    _logger.Log(logLevel, $"Container '{container.Name.Trim('/')}': {(isHealthy ? "Healthy" : "Unhealthy")}");
                 }
 
-                if (healthyCount == configFiles.Length)
+                if (healthyCount == totalContainers)
                 {
                     break;
                 }
@@ -312,6 +312,36 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             _logger.LogError("Not all containers are healthy");
+        }
+
+        private async Task<ContainerInspectResponse[]> LoadContainerInfoAsync(DockerClient client)
+        {
+            var containers = await client.Containers
+                .ListContainersAsync(new ContainersListParameters
+                {
+                    All = true
+                });
+
+            var containerInfo = await containers
+                .SelectAsync(async c => await client.Containers.InspectContainerAsync(c.ID));
+
+            return containerInfo
+                .ToArray();
+        }
+
+        private bool CheckContainerHealthy(ContainerInspectResponse container, TimeSpan containerHealthyTime)
+        {
+            var startTime = string.IsNullOrWhiteSpace(container.State.StartedAt)
+                ? DateTime.MaxValue
+                : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
+
+            if (container.State.Running &&
+                (container.State.Health != null && container.State.Health.Status == "healthy") || DateTime.UtcNow.Subtract(startTime) > containerHealthyTime)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private async Task ExpandReleaseZipFile()

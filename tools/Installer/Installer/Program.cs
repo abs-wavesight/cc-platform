@@ -55,13 +55,12 @@ namespace Abs.CommonCore.Installer
 
             var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
             registryParam.IsRequired = true;
-            registryParam.SetDefaultValue("SystemRegistryConfig.json");
+            registryParam.SetDefaultValue(new FileInfo("SystemRegistryConfig.json"));
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
             var downloadConfigParam = new Option<FileInfo>("--config", "Location of download configuration");
             downloadConfigParam.IsRequired = false;
-            registryParam.SetDefaultValue("SystemConfig.json");
             downloadConfigParam.AddAlias("-dc");
             command.Add(downloadConfigParam);
 
@@ -98,13 +97,12 @@ namespace Abs.CommonCore.Installer
 
             var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
             registryParam.IsRequired = true;
-            registryParam.SetDefaultValue("SystemRegistryConfig.json");
+            registryParam.SetDefaultValue(new FileInfo("SystemRegistryConfig.json"));
             registryParam.AddAlias("-r");
             command.Add(registryParam);
 
             var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration");
             installConfigParam.IsRequired = false;
-            registryParam.SetDefaultValue("SystemConfig.json");
             installConfigParam.AddAlias("-ic");
             command.Add(installConfigParam);
 
@@ -414,75 +412,105 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
-        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
+        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
+            var config = new FileInfo("SystemConfig.json");
+            if (downloaderConfig == null && config.Exists)
+            {
+                downloaderConfig = config;
+            }
+
             var configParameters = BuildConfigParameters(parameters);
             var filePath = BuildDownloadLogFileLocation(registryConfig, downloaderConfig, configParameters);
             var (_, loggerFactory) = Initialize(filePath, args);
 
-            var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
-            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters);
-            await downloader.ExecuteAsync(components);
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
+                var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+                var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters);
+                await downloader.ExecuteAsync(components);
+            }, true);
         }
 
-        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo installerConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
+        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
         {
+            var config = new FileInfo("SystemConfig.json");
+            if (installerConfig == null && config.Exists)
+            {
+                installerConfig = config;
+            }
+
             var configParameters = BuildConfigParameters(parameters);
             var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters);
             var (_, loggerFactory) = Initialize(filePath, args);
 
-            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters);
-            await installer.ExecuteAsync(components);
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+                var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters);
+                await installer.ExecuteAsync(components);
+            }, true);
         }
 
         private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new DataChunker(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await chunker.ChunkFileAsync(s, d, size, removeSource);
-                });
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var chunker = new DataChunker(loggerFactory);
+                await ExecuteForComponentsAsync(source, destination, config,
+                    async (s, d) =>
+                    {
+                        await chunker.ChunkFileAsync(s, d, size, removeSource);
+                    });
+            });
         }
 
         private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var chunker = new DataChunker(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await chunker.UnchunkFileAsync(s, d, removeSource);
-                });
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var chunker = new DataChunker(loggerFactory);
+                await ExecuteForComponentsAsync(source, destination, config,
+                    async (s, d) =>
+                    {
+                        await chunker.UnchunkFileAsync(s, d, removeSource);
+                    });
+            });
         }
 
         private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var compressor = new DataCompressor(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await compressor.CompressDirectoryAsync(s, d, removeSource);
-                });
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var compressor = new DataCompressor(loggerFactory);
+                await ExecuteForComponentsAsync(source, destination, config,
+                    async (s, d) =>
+                    {
+                        await compressor.CompressDirectoryAsync(s, d, removeSource);
+                    });
+            });
         }
 
         private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, FileInfo? config, string[] args)
         {
             var (_, loggerFactory) = Initialize(args);
 
-            var compressor = new DataCompressor(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await compressor.UncompressFileAsync(s, d, removeSource);
-                });
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var compressor = new DataCompressor(loggerFactory);
+                await ExecuteForComponentsAsync(source, destination, config,
+                    async (s, d) =>
+                    {
+                        await compressor.UncompressFileAsync(s, d, removeSource);
+                    });
+            });
         }
 
         private static async Task ExecuteReleaseBodyBuilderCommandAsync(FileInfo? config, string[]? parameters, FileInfo output, string[] args)
@@ -490,8 +518,11 @@ namespace Abs.CommonCore.Installer
             var (_, loggerFactory) = Initialize(args);
             var configParameters = BuildConfigParameters(parameters);
 
-            var release = new ReleaseBodyBuilder(loggerFactory);
-            await release.BuildReleaseBodyAsync(config, configParameters, output);
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var release = new ReleaseBodyBuilder(loggerFactory);
+                await release.BuildReleaseBodyAsync(config, configParameters, output);
+            });
         }
 
         private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
@@ -500,22 +531,25 @@ namespace Abs.CommonCore.Installer
             var commandExecution = new CommandExecutionService(loggerFactory);
             var configurer = new RabbitConfigurer(loggerFactory, commandExecution);
 
-            if (arguments.UpdatePermissions)
+            await ExecuteCommandAsync(loggerFactory, async () =>
             {
-                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
-                return;
-            }
+                if (arguments.UpdatePermissions)
+                {
+                    await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
+                    return;
+                }
 
-            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
+                var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
 
-            if (credentials == null)
-            {
-                Console.WriteLine("No credentials added");
-                return;
-            }
+                if (credentials == null)
+                {
+                    Console.WriteLine("No credentials added");
+                    return;
+                }
 
-            if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
-            if (arguments.CredentialsFile != null) await configurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+                if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+                if (arguments.CredentialsFile != null) await configurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+            });
         }
 
         private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
@@ -523,8 +557,29 @@ namespace Abs.CommonCore.Installer
             var (_, loggerFactory) = Initialize(args);
             var commandExecution = new CommandExecutionService(loggerFactory);
 
-            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
-            await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
+            await ExecuteCommandAsync(loggerFactory, async () =>
+            {
+                var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+                await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
+            });
+        }
+
+        private static async Task ExecuteCommandAsync(ILoggerFactory loggerFactory, Func<Task> action, bool logError = false)
+        {
+            try
+            {
+                await action();
+            }
+            catch (Exception ex)
+            {
+                if (logError)
+                {
+                    var logger = loggerFactory.CreateLogger<Program>();
+                    logger.LogError(ex, "Error executing command");
+                }
+
+                throw new Exception("Unable to execute command", ex);
+            }
         }
 
         private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
@@ -589,7 +644,7 @@ namespace Abs.CommonCore.Installer
             {
                 options.IncludeScopes = true;
                 options.SingleLine = true;
-                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff";
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
                 options.ColorBehavior = LoggerColorBehavior.Enabled;
             });
 
@@ -616,7 +671,7 @@ namespace Abs.CommonCore.Installer
             configParameters
                 .MergeParameters(config?.Parameters);
 
-            return BuildLogFileLocation(registryConfig, configParameters, "download");
+            return BuildLogFileLocation(registryConfig, configParameters, "install");
         }
 
         private static string BuildDownloadLogFileLocation(FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> configParameters)
