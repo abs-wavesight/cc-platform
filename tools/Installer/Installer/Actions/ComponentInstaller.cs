@@ -270,7 +270,7 @@ namespace Abs.CommonCore.Installer.Actions
                 .Select(x => $"-f {x}")
                 .StringJoin(" ");
 
-            if (envFile.Length == 1) arguments = "--env-file environment.env " + arguments;
+            if (envFile.Length == 1) arguments = $"--env-file {envFile[0]} " + arguments;
             await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
 
             var containerCount = configFiles
