@@ -83,7 +83,7 @@ namespace Installer.Tests.Actions
             var expectedFile = @"c:\abs\installer\RabbitMq\download_file";
             File.Delete(expectedFile);
 
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters);
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters, false);
             await downloader.ExecuteAsync();
 
             Assert.True(File.Exists(expectedFile));
@@ -127,7 +127,7 @@ namespace Installer.Tests.Actions
             var config = new FileInfo(@"Configs/DownloaderConfig.json");
             var parameters = new Dictionary<string, string>();
 
-            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters);
+            var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters, false);
             await downloader.ExecuteAsync();
 
             Assert.True(File.Exists(expectedFile));
@@ -145,7 +145,7 @@ namespace Installer.Tests.Actions
                 : null;
 
             parameters ??= new Dictionary<string, string>();
-            var downloader = new ComponentDownloader(NullLoggerFactory.Instance, dataRequest.Object, commandExecute.Object, registryFileInfo, downloaderFileInfo, parameters);
+            var downloader = new ComponentDownloader(NullLoggerFactory.Instance, dataRequest.Object, commandExecute.Object, registryFileInfo, downloaderFileInfo, parameters, false);
             return (dataRequest, commandExecute, downloader);
         }
     }

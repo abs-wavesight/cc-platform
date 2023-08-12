@@ -22,7 +22,7 @@ namespace Abs.CommonCore.Installer.Actions
         private readonly string? _nugetEnvironmentVariable;
 
         public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService,
-            FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters)
+            FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
         {
             _dataRequestService = dataRequestService;
             _commandExecutionService = commandExecutionService;
@@ -35,6 +35,11 @@ namespace Abs.CommonCore.Installer.Actions
 
             var mergedParameters = _downloaderConfig?.Parameters ?? new Dictionary<string, string>();
             mergedParameters.MergeParameters(parameters);
+
+            if (promptForMissingParameters)
+            {
+                ReadMissingParameters(mergedParameters);
+            }
 
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
                 (c, t) => t.ReplaceConfigParameters(mergedParameters));

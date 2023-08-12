@@ -82,10 +82,16 @@ namespace Abs.CommonCore.Installer
             verifyOnlyParam.AddAlias("-v");
             command.Add(verifyOnlyParam);
 
-            command.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly) =>
+            var noPromptParam = new Option<bool>("--no-prompt", "Indicates to not prompt for missing parameters");
+            noPromptParam.SetDefaultValue(false);
+            noPromptParam.IsRequired = false;
+            noPromptParam.AddAlias("-np");
+            command.Add(noPromptParam);
+
+            command.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt) =>
             {
-                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, args);
-            }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam);
+                await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt, args);
+            }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
             return command;
         }
@@ -124,10 +130,16 @@ namespace Abs.CommonCore.Installer
             verifyOnlyParam.AddAlias("-v");
             command.Add(verifyOnlyParam);
 
-            command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly) =>
+            var noPromptParam = new Option<bool>("--no-prompt", "Indicates to not prompt for missing parameters");
+            noPromptParam.SetDefaultValue(false);
+            noPromptParam.IsRequired = false;
+            noPromptParam.AddAlias("-np");
+            command.Add(noPromptParam);
+
+            command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt) =>
             {
-                await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, args);
-            }, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam);
+                await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args);
+            }, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
             return command;
         }
@@ -412,7 +424,7 @@ namespace Abs.CommonCore.Installer
             return command;
         }
 
-        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
+        private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
         {
             var config = new FileInfo("SystemConfig.json");
             if (downloaderConfig == null && config.Exists)
@@ -423,17 +435,18 @@ namespace Abs.CommonCore.Installer
             var configParameters = BuildConfigParameters(parameters);
             var filePath = BuildDownloadLogFileLocation(registryConfig, downloaderConfig, configParameters);
             var (_, loggerFactory) = Initialize(filePath, args);
+            var promptForMissingParameters = !noPrompt;
 
             await ExecuteCommandAsync(loggerFactory, async () =>
             {
                 var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
                 var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-                var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters);
+                var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registryConfig, downloaderConfig, configParameters, promptForMissingParameters);
                 await downloader.ExecuteAsync(components);
             }, true);
         }
 
-        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string[] components, string[] parameters, bool verifyOnly, string[] args)
+        private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
         {
             var config = new FileInfo("SystemConfig.json");
             if (installerConfig == null && config.Exists)
@@ -444,11 +457,12 @@ namespace Abs.CommonCore.Installer
             var configParameters = BuildConfigParameters(parameters);
             var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters);
             var (_, loggerFactory) = Initialize(filePath, args);
+            var promptForMissingParameters = !noPrompt;
 
             await ExecuteCommandAsync(loggerFactory, async () =>
             {
                 var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-                var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters);
+                var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters, promptForMissingParameters);
                 await installer.ExecuteAsync(components);
             }, true);
         }

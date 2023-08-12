@@ -31,5 +31,17 @@ namespace Abs.CommonCore.Installer.Actions
 
             throw new Exception("No components found to use");
         }
+
+        protected void ReadMissingParameters(Dictionary<string, string> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                if (string.IsNullOrWhiteSpace(parameter.Value))
+                {
+                    Console.Write($"Enter value for parameter '{parameter.Key}': ");
+                    parameters[parameter.Key] = Console.ReadLine() ?? "";
+                }
+            }
+        }
     }
 }

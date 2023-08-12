@@ -122,12 +122,16 @@
           "action": "copy"
         },
         {
+          "source": "$ABS_PATH\\config\\docker-compose.root.yml",
+          "action": "replaceParameters"
+        },		
+        {
           "source": "environment.env",
           "destination": "$ABS_PATH\\config\\environment.env",
           "action": "copy"
-        },		
-        {
-          "source": "$ABS_PATH\\config\\docker-compose.root.yml",
+        },	
+		{
+          "source": "$ABS_PATH\\config\\environment.env",
           "action": "replaceParameters"
         },
         {

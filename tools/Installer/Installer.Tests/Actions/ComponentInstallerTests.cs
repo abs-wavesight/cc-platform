@@ -161,7 +161,7 @@ namespace Installer.Tests.Actions
 
             await File.WriteAllTextAsync(sourcePath, "This is some test content");
 
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters, false);
             await installer.ExecuteAsync();
 
             Assert.True(File.Exists(destinationPath));
@@ -177,7 +177,7 @@ namespace Installer.Tests.Actions
                 : null;
 
             parameters ??= new Dictionary<string, string>();
-            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters);
+            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters, false);
             return (commandExecute, downloader);
         }
     }

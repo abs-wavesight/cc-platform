@@ -25,7 +25,7 @@ namespace Abs.CommonCore.Installer.Actions
         private readonly Dictionary<string, string> _allParameters;
 
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
-            FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
+            FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
         {
             _loggerFactory = loggerFactory;
             _commandExecutionService = commandExecutionService;
@@ -37,8 +37,13 @@ namespace Abs.CommonCore.Installer.Actions
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
             mergedParameters.MergeParameters(parameters);
-            _allParameters = mergedParameters;
 
+            if (promptForMissingParameters)
+            {
+                ReadMissingParameters(mergedParameters);
+            }
+
+            _allParameters = mergedParameters;
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
                 (c, t) => t.ReplaceConfigParameters(mergedParameters));
         }

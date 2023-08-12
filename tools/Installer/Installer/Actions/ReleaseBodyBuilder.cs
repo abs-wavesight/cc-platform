@@ -35,6 +35,7 @@ namespace Abs.CommonCore.Installer.Actions
 
             foreach (var parameter in parameters)
             {
+                if (string.IsNullOrWhiteSpace(parameter.Value)) continue;
                 body.AppendLine($"{FormatKey(parameter.Key)}: {parameter.Value}");
             }
 
