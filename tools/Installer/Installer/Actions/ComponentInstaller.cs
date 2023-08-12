@@ -341,7 +341,7 @@ namespace Abs.CommonCore.Installer.Actions
                 ? DateTime.MaxValue
                 : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
 
-            if (container.State.Running && container.State.Restarting == false && 
+            if (container.State.Running && container.State.Restarting == false &&
                 (container.State.Health != null && container.State.Health.Status == "healthy") || DateTime.UtcNow.Subtract(startTime) > containerHealthyTime)
             {
                 return true;
