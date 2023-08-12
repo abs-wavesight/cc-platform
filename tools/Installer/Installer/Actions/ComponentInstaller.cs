@@ -50,8 +50,6 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task ExecuteAsync(string[]? specificComponents = null)
         {
-            await WaitForDockerContainersHealthyAsync(3, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
-
             if (string.IsNullOrWhiteSpace(_registryConfig.Location))
             {
                 throw new Exception("Location must be specified");
