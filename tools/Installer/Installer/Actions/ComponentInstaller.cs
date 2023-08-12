@@ -50,6 +50,8 @@ namespace Abs.CommonCore.Installer.Actions
 
         public async Task ExecuteAsync(string[]? specificComponents = null)
         {
+            await WaitForDockerContainersHealthyAsync(3, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+
             if (string.IsNullOrWhiteSpace(_registryConfig.Location))
             {
                 throw new Exception("Location must be specified");
@@ -341,8 +343,14 @@ namespace Abs.CommonCore.Installer.Actions
                 ? DateTime.MaxValue
                 : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
 
+            if (container.State.Health != null && string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
             if (container.State.Running && container.State.Restarting == false &&
-                (container.State.Health != null && container.State.Health.Status == "healthy") || DateTime.UtcNow.Subtract(startTime) > containerHealthyTime)
+                (container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase) ||
+                 DateTime.UtcNow.Subtract(startTime) > containerHealthyTime))
             {
                 return true;
             }
