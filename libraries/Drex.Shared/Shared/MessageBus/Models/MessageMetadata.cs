@@ -20,14 +20,6 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
         [Description(Constants.MessageHeaders.MessageType)]
         public string? MessageType { get; set; }
 
-        [Obsolete("Replaced with MessageType")]
-        [Description(Constants.MessageHeaders.Source)]
-        public string? Source { get; set; }
-
-        [Obsolete("Replaced with MessageType")]
-        [Description(Constants.MessageHeaders.Sink)]
-        public string? Sink { get; set; }
-
         private MessageMetadata(IReadOnlyDictionary<string, string> headers)
         {
             headers.TryGetValue(GetType().GetDescription(nameof(Client))!, out var client);
