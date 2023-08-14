@@ -707,7 +707,7 @@ namespace Abs.CommonCore.Installer
                 .ReplaceConfigParameters(configParameters);
 
             Directory.CreateDirectory(root);
-            var fileName = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.{name}.log";
+            var fileName = $"{{Date}}{DateTime.Now.ToString("HHmmss")}.{name}.log";
 
             return Path.Combine(root, fileName);
         }
