@@ -112,17 +112,14 @@ namespace Installer.Tests.Actions
             await File.WriteAllTextAsync(@"c:\\config\\test-app2\\docker-compose.test-app2.yml", "Invalid content");
 
             var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
+            initializer.Installer.WaitForDockerContainersHealthy = false;
             await initializer.Installer.ExecuteAsync(new[] { "RunDockerComposeTest" });
 
-            var command = "";
             var args = "";
-            var directory = "";
             initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string, string>((c, a, d) =>
+                .Callback<string, string, string>((_, a, _) =>
                 {
-                    command = c;
                     args = a;
-                    directory = d;
                 });
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -161,7 +158,7 @@ namespace Installer.Tests.Actions
 
             await File.WriteAllTextAsync(sourcePath, "This is some test content");
 
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters, false);
             await installer.ExecuteAsync();
 
             Assert.True(File.Exists(destinationPath));
@@ -177,7 +174,7 @@ namespace Installer.Tests.Actions
                 : null;
 
             parameters ??= new Dictionary<string, string>();
-            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters);
+            var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters, false);
             return (commandExecute, downloader);
         }
     }

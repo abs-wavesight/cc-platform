@@ -106,7 +106,7 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r SystemRegistryConfig.json -dc SystemConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
+          .\Installer.exe download -np -r SystemRegistryConfig.json -dc SystemConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
       - name: Process Components   
         run: |
