@@ -116,8 +116,6 @@ namespace Abs.CommonCore.Installer.Actions
                 await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"{path}\"", "");
             }
 
-
-
             Console.WriteLine("Docker removed");
         }
 
