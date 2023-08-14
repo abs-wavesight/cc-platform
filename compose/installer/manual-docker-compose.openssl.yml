@@ -9,14 +9,14 @@ services:
       driver: local
     volumes:
       - type: bind
-        source: $ABS_PATH/config/openssl
+        source: $#ABS_PATH/config/openssl
         target: C:/config
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/local-keys
+        source: $#ABS_PATH/certificates/local-keys
         target: C:/local-keys
         read_only: false
       - type: bind
-        source: $ABS_PATH/certificates/local-certs
+        source: $#ABS_PATH/certificates/local-certs
         target: C:/local-certs
         read_only: false

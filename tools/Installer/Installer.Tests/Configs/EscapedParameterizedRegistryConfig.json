@@ -1,0 +1,15 @@
+﻿{
+  "location": "$ROOT_LOCATION",
+  "components": [
+    {
+      "name": "RabbitMq",
+      "files": [],
+      "actions": [
+        {
+          "source": "dummy",
+          "action": "replaceParameters"
+        }
+      ]
+    }
+  ]
+}

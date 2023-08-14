@@ -30,7 +30,7 @@
             "source": "manual-docker-compose.openssl.yml",
             "action": "replaceParameters"
         }
-	    ]
+	  ]
     },
     {
       "name": "RabbitMq",

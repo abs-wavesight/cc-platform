@@ -46,14 +46,14 @@ services:
       - "15671:15671"
     volumes:	
       - type: bind	
-        source: $ABS_PATH/config/rabbitmq	
+        source: $#ABS_PATH/config/rabbitmq	
         target: C:/rabbitmq/config
         read_only: true	
       - type: bind
-        source: $ABS_PATH/certificates/local-keys
+        source: $#ABS_PATH/certificates/local-keys
         target: C:/keys
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/local-certs
+        source: $#ABS_PATH/certificates/local-certs
         target: C:/certs
         read_only: true

@@ -132,13 +132,26 @@ namespace Installer.Tests.Actions
         public async Task ParameterizedConfig_InstallAction()
         {
             var paramKey = "$SOME_INSTALL_PARAM";
+            var escapedParamKey = "$#SOME_INSTALL_PARAM";
             var paramValue = "Replacement";
 
-            var parameters = new Dictionary<string, string>() { { paramKey, paramValue } };
-            var initializer = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
-            await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
+            var rootLocation = Directory.CreateTempSubdirectory("install_test").FullName;
+            var installLocation = Path.Combine(rootLocation, "RabbitMq");
+            Directory.CreateDirectory(installLocation);
+            var dummyFile = Path.Combine(installLocation, "dummy");
+            await File.WriteAllTextAsync(dummyFile, escapedParamKey);
 
-            initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(paramValue, It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            rootLocation = rootLocation.Replace("\\", "/");
+            var parameters = new Dictionary<string, string>() { { "$ROOT_LOCATION", rootLocation }, { paramKey, paramValue } };
+            var initializer = Initialize(@"Configs/EscapedParameterizedRegistryConfig.json", parameters: parameters);
+
+            await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
+            var fileText = await File.ReadAllTextAsync(dummyFile);
+            Assert.DoesNotContain(paramValue, fileText);
+
+            await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
+            fileText = await File.ReadAllTextAsync(dummyFile);
+            Assert.Contains(paramValue, fileText);
         }
 
         [Fact]

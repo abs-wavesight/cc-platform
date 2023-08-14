@@ -15,6 +15,7 @@ namespace Abs.CommonCore.Installer.Actions
         private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
         private const string ReleaseZipName = "Release.zip";
         private const string AdditionalFilesName = "AdditionalFiles";
+        private const char ParameterEscapeChar = '#';
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -222,6 +223,13 @@ namespace Abs.CommonCore.Installer.Actions
             foreach (var param in _allParameters)
             {
                 text = text.Replace(param.Key, param.Value, StringComparison.OrdinalIgnoreCase);
+                if (char.IsAsciiLetterOrDigit(param.Key[0]))
+                {
+                    continue;
+                }
+
+                var escaped = param.Key.Insert(1, ParameterEscapeChar.ToString());
+                text = text.Replace(escaped, param.Key, StringComparison.OrdinalIgnoreCase);
             }
 
             await File.WriteAllTextAsync(path, text);

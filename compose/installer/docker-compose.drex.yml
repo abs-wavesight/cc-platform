@@ -19,14 +19,14 @@ services:
     restart: always	
     volumes:	
       - type: bind	
-        source: $ABS_PATH/config/drex	
+        source: $#ABS_PATH/config/drex	
         target: C:/app/config	
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/local-certs
+        source: $#ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-local-certs
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/remote-certs
+        source: $#ABS_PATH/certificates/remote-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
