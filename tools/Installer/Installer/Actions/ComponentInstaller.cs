@@ -317,7 +317,7 @@ namespace Abs.CommonCore.Installer.Actions
                 await Task.Delay(checkInterval);
             }
 
-            _logger.LogError("Not all containers are healthy");
+            throw new Exception("Not all containers are healthy");
         }
 
         private async Task<ContainerInspectResponse[]> LoadContainerInfoAsync(DockerClient client)
