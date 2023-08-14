@@ -24,6 +24,8 @@ namespace Abs.CommonCore.Installer.Actions
         private readonly InstallerComponentRegistryConfig _registryConfig;
         private readonly Dictionary<string, string> _allParameters;
 
+        public bool WaitForDockerContainersHealthy { get; set; } = true;
+
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
             FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
         {
@@ -276,7 +278,10 @@ namespace Abs.CommonCore.Installer.Actions
             var containerCount = configFiles
                 .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
 
-            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+            if (WaitForDockerContainersHealthy)
+            {
+                await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+            }
         }
 
         private async Task WaitForDockerContainersHealthyAsync(int totalContainers, TimeSpan totalTime, TimeSpan checkInterval)

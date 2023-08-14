@@ -112,17 +112,14 @@ namespace Installer.Tests.Actions
             await File.WriteAllTextAsync(@"c:\\config\\test-app2\\docker-compose.test-app2.yml", "Invalid content");
 
             var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
+            initializer.Installer.WaitForDockerContainersHealthy = false;
             await initializer.Installer.ExecuteAsync(new[] { "RunDockerComposeTest" });
 
-            var command = "";
             var args = "";
-            var directory = "";
             initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string, string>((c, a, d) =>
+                .Callback<string, string, string>((_, a, _) =>
                 {
-                    command = c;
                     args = a;
-                    directory = d;
                 });
 
             initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
