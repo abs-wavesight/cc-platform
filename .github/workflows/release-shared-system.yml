@@ -36,9 +36,6 @@ jobs:
   release-component:
     name: System Release
     runs-on: windows-2019
-    strategy:
-      matrix:
-        windows-version: [ "2019", "2022" ]
 
     steps:
       - name: Get Time
