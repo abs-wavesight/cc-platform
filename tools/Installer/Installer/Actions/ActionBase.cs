@@ -3,6 +3,8 @@ using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Services;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable CA1416
+
 namespace Abs.CommonCore.Installer.Actions
 {
     public abstract class ActionBase
