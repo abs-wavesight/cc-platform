@@ -4,8 +4,6 @@ version: '3.9'
 services:
 
   cc.rabbitmq-template: &rabbitmq
-    environment:
-      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
     logging:
       driver: local
     profiles: [ 'templates' ]
@@ -51,6 +49,9 @@ services:
   cc.rabbitmq-local:
     <<: *rabbitmq
     container_name: rabbitmq-local
+    environment:
+      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_LOCATION: local
     hostname: rabbitmq-local
     ports:
       - "5672:5672"
@@ -75,6 +76,9 @@ services:
   cc.rabbitmq-remote:
     <<: *rabbitmq
     container_name: rabbitmq-remote
+    environment:
+      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_LOCATION: remote
     hostname: rabbitmq-remote
     ports:
       - "5682:5672"

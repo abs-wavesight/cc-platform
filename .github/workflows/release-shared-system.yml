@@ -11,14 +11,14 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
-        required: true
-        type: string
-        description: Windows version for the Release
       tag-prefix:
         required: true
         type: string
         description: Prefix to use for tag
+      windows-version:
+        required: true
+        type: string
+        description: Windows version for the Release
       system-config:
         required: true
         type: string
@@ -35,21 +35,14 @@ on:
 jobs:
   release-component:
     name: System Release
-    runs-on: windows-2019
+    runs-on: windows-${{ inputs.windows-version }}
 
-    steps:
-      - name: Get Time
-        id: time
-        uses: nanzm/get-time-action@master
-        with:
-          timeZone: UTC
-          format: 'YYYYMMDDHHmmss'
-          
+    steps:          
       - name: Build Tag
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: ${{ inputs.tag-prefix }}-${{ inputs.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
+          string: ${{ inputs.tag-prefix }}-${{ inputs.windows-version }}-${{ inputs.version }}
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
@@ -102,7 +95,7 @@ jobs:
           version: tags/Installer
           file: Uninstall.cmd
           target: Uninstall.cmd
-          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}    
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download components       
         run: |

@@ -11,26 +11,19 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
-        required: true
-        type: choice
-        description: Windows version for the Release
-        options:
-        - 2019
-        - 2022
-      rabbitmq-tag:
+      rabbitmq-version:
         required: true
         type: string
         description: Tag to use for RabbitMQ release
-      vector-site-tag:
+      vector-site-version:
         required: true
         type: string
         description: Tag to use for Vector site release
-      drex-tag:
+      drex-version:
         required: true
         type: string
         description: Tag to use for Drex release
-      openssl-tag:
+      openssl-version:
         required: true
         type: string
         description: Tag to use for OpenSSL release
@@ -42,13 +35,16 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-    uses: ./.github/workflows/shared-system-release.yml
+    uses: ./.github/workflows/release-shared-system.yml
+    strategy:
+      matrix:
+        windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
       tag-prefix: site-system
+      windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json
-      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }} -p `$OPENSSL_RELEASE_TAG:${{ inputs.openssl-tag }}
+      component-params: -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ inputs.rabbitmq-version }} -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ inputs.vector-site-version }} -p `$DREX_RELEASE_TAG:drex-${{ matrix.windows-version }}-${{ inputs.drex-version }} -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ inputs.openssl-version }}
       release-name-prefix: Site System Release
     secrets: inherit

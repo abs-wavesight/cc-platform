@@ -234,6 +234,16 @@
           "action": "copy"
         },
         {
+          "source": "local.definitions.json",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",
+          "action": "copy"
+        },
+        {
+          "source": "remote.definitions.json",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\remote\\remote.definitions.json",
+          "action": "copy"
+        },
+        {
           "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
         }

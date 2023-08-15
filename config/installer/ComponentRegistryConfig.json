@@ -49,6 +49,16 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
           "destination": "cc-rabbitmq.conf"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/local/local.definitions.json",
+          "destination": "local.definitions.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/remote/remote.definitions.json",
+          "destination": "remote.definitions.json"
         }
       ],
       "actions": [
