@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Installer.Services;
+﻿using System.ServiceProcess;
+using Abs.CommonCore.Installer.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
@@ -93,7 +94,7 @@ namespace Abs.CommonCore.Installer.Actions
             Console.WriteLine("Removing configuration file");
 
             var configLocation = Path.Combine(installPath.FullName, "config");
-            Directory.Delete(configLocation, true);
+            DeleteRecursiveDirectory(configLocation);
 
             Console.WriteLine("Configuration files removed");
         }
@@ -102,10 +103,8 @@ namespace Abs.CommonCore.Installer.Actions
         {
             Console.WriteLine("Removing docker");
 
-            await _commandExecutionService.ExecuteCommandAsync("net", "stop dockerd", "");
-            Directory.Delete(dockerLocation.FullName, true);
-            await _commandExecutionService.ExecuteCommandAsync("sc", "delete dockerd", "");
-
+            await RemoveWindowsServiceAsync("dockerd", true);
+            DeleteRecursiveDirectory(dockerLocation.FullName);
             var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable)!;
 
             if (path.Contains(dockerLocation.FullName, StringComparison.OrdinalIgnoreCase))
@@ -175,6 +174,62 @@ namespace Abs.CommonCore.Installer.Actions
             if (text == "n") return false;
 
             return null;
+        }
+
+        private async Task RemoveWindowsServiceAsync(string name, bool retry)
+        {
+            var service = GetWindowsServiceByName(name);
+
+            if (service == null)
+            {
+                _logger.LogInformation($"Service '{name}' does not exist");
+                return;
+            }
+
+            await _commandExecutionService.ExecuteCommandAsync("net", "stop dockerd", "");
+            await Task.Delay(1000);
+            service.Refresh();
+            service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+
+            await _commandExecutionService.ExecuteCommandAsync("sc", "delete dockerd", "");
+            await Task.Delay(1000);
+
+            service = GetWindowsServiceByName(name);
+            if (service != null && retry)
+            {
+                _logger.LogInformation($"Service '{name}' still exists. Retrying removal.");
+                await Task.Delay(5000);
+                await RemoveWindowsServiceAsync(name, false);
+            }
+        }
+
+        private ServiceController? GetWindowsServiceByName(string name)
+        {
+            return System.ServiceProcess.ServiceController
+                .GetServices()
+                .FirstOrDefault(x => x.DisplayName == name);
+        }
+
+        private void DeleteRecursiveDirectory(string path)
+        {
+            _logger.LogInformation($"Deleting directory '{path}' recursively");
+            foreach (string directory in Directory.GetDirectories(path))
+            {
+                DeleteRecursiveDirectory(directory);
+            }
+
+            try
+            {
+                Directory.Delete(path, true);
+            }
+            catch (IOException)
+            {
+                Directory.Delete(path, true);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Directory.Delete(path, true);
+            }
         }
     }
 }
