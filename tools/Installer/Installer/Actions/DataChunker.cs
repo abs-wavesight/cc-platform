@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
 {
-    public class DataChunker
+    public class DataChunker : ActionBase
     {
         private readonly ILogger _logger;
         private const string ChunkName = "part";

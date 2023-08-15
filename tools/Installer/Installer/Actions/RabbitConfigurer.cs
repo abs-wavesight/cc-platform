@@ -12,7 +12,7 @@ using PasswordGenerator;
 
 namespace Abs.CommonCore.Installer.Actions
 {
-    public class RabbitConfigurer
+    public class RabbitConfigurer : ActionBase
     {
         private const string SystemVhost = "/";
         private const string UsernamePlaceholder = "$USERNAME";
