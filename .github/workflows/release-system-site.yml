@@ -36,11 +36,15 @@ jobs:
   release-component:
     name: Site System Release
     uses: ./.github/workflows/release-shared-system.yml
+    strategy:
+      matrix:
+        windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
       tag-prefix: site-system
+      windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json
-      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }} -p `$OPENSSL_RELEASE_TAG:${{ inputs.openssl-tag }}
+      component-params: -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:drex-${{ matrix.windows-version }}-${{ inputs.drex-tag }} -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ inputs.openssl-tag }}
       release-name-prefix: Site System Release
     secrets: inherit

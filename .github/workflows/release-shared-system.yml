@@ -15,6 +15,10 @@ on:
         required: true
         type: string
         description: Prefix to use for tag
+      windows-version:
+        required: true
+        type: string
+        description: Windows version for the Release
       system-config:
         required: true
         type: string
@@ -48,7 +52,7 @@ jobs:
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: ${{ inputs.tag-prefix }}-${{ matrix.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
+          string: ${{ inputs.tag-prefix }}-${{ inputs.windows-version }}-${{ inputs.version }}-${{ steps.time.outputs.time }}
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
@@ -101,11 +105,11 @@ jobs:
           version: tags/Installer
           file: Uninstall.cmd
           target: Uninstall.cmd
-          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}    
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download components       
         run: |
-          .\Installer.exe download -np -r SystemRegistryConfig.json -dc SystemConfig.json -p `$WINDOWS_VERSION:${{ matrix.windows-version }} ${{ inputs.component-params }}
+          .\Installer.exe download -np -r SystemRegistryConfig.json -dc SystemConfig.json -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
       - name: Process Components   
         run: |
@@ -127,13 +131,13 @@ jobs:
          
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ matrix.windows-version }} ${{ inputs.component-params }}
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
           bodyFile: release_body.txt
-          name: ${{ inputs.release-name-prefix }} ${{ matrix.windows-version }} ${{ inputs.version }}
+          name: ${{ inputs.release-name-prefix }} ${{ inputs.windows-version }} ${{ inputs.version }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
           artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemConfig.json"

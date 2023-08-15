@@ -28,11 +28,15 @@ jobs:
   release-component:
     name: Central System Release
     uses: ./.github/workflows/release-shared-system.yml
+    strategy:
+      matrix:
+        windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
       tag-prefix: central-system
+      windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemConfig.json
-      component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
+      component-params: -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ inputs.vector-central-tag }}
       release-name-prefix: Central System Release
     secrets: inherit
