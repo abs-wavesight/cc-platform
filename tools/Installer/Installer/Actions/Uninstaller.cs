@@ -186,12 +186,12 @@ namespace Abs.CommonCore.Installer.Actions
                 return;
             }
 
-            await _commandExecutionService.ExecuteCommandAsync("net", "stop dockerd", "");
+            await _commandExecutionService.ExecuteCommandAsync("net", $"stop {name}", "");
             await Task.Delay(1000);
             service.Refresh();
             service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
 
-            await _commandExecutionService.ExecuteCommandAsync("sc", "delete dockerd", "");
+            await _commandExecutionService.ExecuteCommandAsync("sc", $"delete {name}", "");
             await Task.Delay(1000);
 
             service = GetWindowsServiceByName(name);
@@ -200,6 +200,11 @@ namespace Abs.CommonCore.Installer.Actions
                 _logger.LogInformation($"Service '{name}' still exists. Retrying removal.");
                 await Task.Delay(5000);
                 await RemoveWindowsServiceAsync(name, false);
+            }
+
+            if (service == null)
+            {
+                _logger.LogInformation($"Service '{name}' deleted");
             }
         }
 
