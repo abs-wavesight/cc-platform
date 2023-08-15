@@ -3,6 +3,7 @@ using Abs.CommonCore.Installer.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
+#pragma warning disable CA1416
 
 namespace Abs.CommonCore.Installer.Actions
 {
