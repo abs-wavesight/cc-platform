@@ -30,7 +30,7 @@ concurrency:
 jobs:
   release-component:
     name: Vector Central Release
-    uses: ./.github/workflows/shared-component-release.yml
+    uses: ./.github/workflows/release-shared-component.yml
     with:
       name: Vector Central Release ${{ inputs.windows-version }} ${{ inputs.version }}
       component_name: vector-central
