@@ -23,11 +23,15 @@ on:
         required: true
         type: string
         description: Full parameter list for component
+      windows-version:
+        required: true
+        type: string
+        description: Windows version for the Release
 
 jobs:
   release-component:
     name: Component Release
-    runs-on: windows-2019
+    runs-on: windows-${{ inputs.windows-version }}
     
     steps:    
       - name: Get Time
