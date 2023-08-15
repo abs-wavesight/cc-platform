@@ -11,13 +11,6 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
-        required: true
-        type: choice
-        description: Windows version for the Release
-        options:
-        - 2019
-        - 2022
       rabbitmq-tag:
         required: true
         type: string
@@ -34,11 +27,10 @@ concurrency:
 jobs:
   release-component:
     name: Central System Release
-    uses: ./.github/workflows/shared-system-release.yml
+    uses: ./.github/workflows/release-shared-system.yml
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
       tag-prefix: central-system
       system-config: CentralSystemConfig.json
       component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}

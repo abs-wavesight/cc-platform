@@ -11,13 +11,6 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
-        required: true
-        type: choice
-        description: Windows version for the Release
-        options:
-        - 2019
-        - 2022
       rabbitmq-tag:
         required: true
         type: string
@@ -42,11 +35,10 @@ concurrency:
 jobs:
   release-component:
     name: Site System Release
-    uses: ./.github/workflows/shared-system-release.yml
+    uses: ./.github/workflows/release-shared-system.yml
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
       tag-prefix: site-system
       system-config: SiteSystemConfig.json
       component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_SITE_RELEASE_TAG:${{ inputs.vector-site-tag }} -p `$DREX_RELEASE_TAG:${{ inputs.drex-tag }} -p `$OPENSSL_RELEASE_TAG:${{ inputs.openssl-tag }}
