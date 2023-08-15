@@ -4,16 +4,14 @@ Function Add-PathVariable {
   )
   Write-Output "Adding ${AddPath} to PATH"
   if (Test-Path $AddPath){
-      $RegexAddPath = [regex]::Escape($AddPath)
-      $ArrPath = $env:Path -split ';' | Where-Object {$_ -notMatch "^$RegexAddPath\\?"}
-      $env:Path = ($ArrPath + $AddPath) -join ';'
-      Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $env:Path
+      $Path = [Environment]::GetEnvironmentVariable("PATH", "Machine") + [IO.Path]::PathSeparator + $AddPath;
+      [Environment]::SetEnvironmentVariable("Path", $Path, "Machine");
   } else {
       Throw "'$AddPath' is not a valid path."
   }
 }
 
-Write-Output "Before PATH: ${Env:Path}"
+Write-Output "Before PATH: $([Environment]::GetEnvironmentVariable("PATH", "Machine"))"
 $ScriptDirectory = $( Split-Path $MyInvocation.MyCommand.Path )
 Add-PathVariable "${ScriptDirectory}\"
-Write-Output "After PATH: ${Env:Path}"
+Write-Output "After PATH: $([Environment]::GetEnvironmentVariable("PATH", "Machine"))"

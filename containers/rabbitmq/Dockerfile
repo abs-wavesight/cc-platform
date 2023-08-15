@@ -1,42 +1,55 @@
 # Copied from https://registry.hub.docker.com/r/micdenny/rabbitmq-windows
 # ltsc2019 or ltsc2022
 ARG SERVER_VERSION='ltsc2019'
-FROM mcr.microsoft.com/windows/servercore:${SERVER_VERSION}
+ARG POWERSHELL_NANOSERVER_TAG='lts-7.2-nanoserver-1809'
 
-LABEL Description="RabbitMQ" Version="3.11.2"
+FROM mcr.microsoft.com/windows/servercore:${SERVER_VERSION} AS erlang
+USER containeradministrator
 
-# ERLANG_HOME: erlang will install to this location and rabbitmq will use this environment variable to locate it
-# RABBITMQ_VERSION: rabbitmq version used in download url and to rename folder extracted from zip file
-# RABBITMQ_CONFIG_FILE: tell rabbitmq where to find our custom config file
-ENV ERLANG_HOME="c:\\erlang" \
-    RABBITMQ_VERSION="3.11.2" \
-    RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
+ENV ERLANG_HOME="c:\\erlang"
+ENV ERLANG_VERSION="25.1.1"
 
-# setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-# download and install erlang using silent install option, and remove installer when done
-# download and extract rabbitmq, and remove zip file when done
-# remove version from rabbitmq folder name
+# Eownload and install erlang using silent install option, and remove installer when done
 RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -OutFile "c:\\erlang_install.exe" ; \
     Start-Process -Wait -FilePath "c:\\erlang_install.exe" -ArgumentList /S, /D=$env:ERLANG_HOME ; \
-    Remove-Item -Force -Path "C:\\erlang_install.exe" ; \
-    Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v$env:RABBITMQ_VERSION/rabbitmq-server-windows-$env:RABBITMQ_VERSION.zip" -OutFile "c:\\rabbitmq.zip" ; \
-    Expand-Archive -Path "c:\\rabbitmq.zip" -DestinationPath "c:\\" ; \
-    Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
-    Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
+    Remove-Item -Force -Path "C:\\erlang_install.exe";
+
+
+FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS rabbitmq
+USER containeradministrator
+LABEL Description="RabbitMQ" Version="3.11.2"
+
+ENV HOMEDRIVE="c:\\"
+ENV HOMEPATH="Users\\ContainerAdministrator"
+ENV ERLANG_HOME="c:\\erlang"
+ENV RABBITMQ_VERSION="3.11.2"
+ENV RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Download and install RabbitMQ
+RUN Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v${env:RABBITMQ_VERSION}/rabbitmq-server-windows-$env:RABBITMQ_VERSION.zip" -OutFile "c:\\rabbitmq.zip"
+RUN Expand-Archive -Path "c:\\rabbitmq.zip" -DestinationPath "c:\\"
+RUN Remove-Item -Force -Path "c:\\rabbitmq.zip"
+RUN Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
+
+# Copy and initialize Erlang
+COPY --from=erlang "$env:ERLANG_HOME" "$env:ERLANG_HOME"
+RUN echo "the-erlang-cookie" > c:\Windows\.erlang.cookie
 
 # Copy handle.exe utility and add to PATH
 RUN mkdir "C:\\rabbitmq\\utilities"
 COPY ./utilities "C:\\rabbitmq\\utilities"
-RUN powershell -File "C:\\rabbitmq\\utilities\\add-handle-to-path.ps1"
+RUN pwsh -File "C:\\rabbitmq\\utilities\\add-handle-to-path.ps1"
 
-# create config file
+# Create config file
 RUN mkdir "C:\\rabbitmq\\config"
 RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.conf"]
 
-# enable managment plugin
+# Enable managment plugin
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
 
-# run server when container starts - container will shutdown when this process ends
+# Run server when container starts - container will shutdown when this process ends
 CMD c:\rabbitmq\sbin\rabbitmq-server.bat
