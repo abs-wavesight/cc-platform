@@ -1,5 +1,6 @@
 ﻿using System.ServiceProcess;
 using Abs.CommonCore.Installer.Services;
+using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
@@ -62,30 +63,40 @@ namespace Abs.CommonCore.Installer.Actions
 
             foreach (var container in allContainers)
             {
-                var isABSContainer = container.Image.Contains(AbsImageName, StringComparison.OrdinalIgnoreCase) ||
-                                     container.Labels
-                    .Any(x => x.Key.Contains(AbsContainerLabel, StringComparison.OrdinalIgnoreCase));
+                var isABSContainer = container.Image
+                    .Contains(AbsImageName, StringComparison.OrdinalIgnoreCase) ||
+                        container.Labels.Any(x => x.Key.Contains(AbsContainerLabel, StringComparison.OrdinalIgnoreCase));
 
                 if (isABSContainer == false)
                 {
                     continue;
                 }
 
-                Console.WriteLine($"Removing container: {container.Image}");
+                Console.WriteLine($"Removing container: {container.Names.StringJoin(", ")}");
                 await client.Containers
                     .StopContainerAsync(container.ID, new ContainerStopParameters
                     {
-                        WaitBeforeKillSeconds = 5
-                    });
-
-                await client.Containers
-                    .RemoveContainerAsync(container.ID, new ContainerRemoveParameters
-                    {
-                        RemoveLinks = false,
-                        RemoveVolumes = true,
-                        Force = true
+                        WaitBeforeKillSeconds = 10
                     });
             }
+
+            Console.WriteLine("Pruning containers");
+            await client.Containers.PruneContainersAsync();
+
+            Console.WriteLine("Pruning Images");
+            await client.Images.PruneImagesAsync(new ImagesPruneParameters()
+            {
+                Filters = new Dictionary<string, IDictionary<string, bool>>
+                {
+                    {
+                        "dangling",
+                        new Dictionary<string, bool>
+                        {
+                            { "false", false}
+                        }
+                    }
+                }
+            });
 
             Console.WriteLine("System components removed");
         }
