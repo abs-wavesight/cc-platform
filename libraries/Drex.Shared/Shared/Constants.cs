@@ -9,9 +9,8 @@
             public const string Client = $"{Prefix}.client";
             public const string Site = $"{Prefix}.site";
             public const string Origin = $"{Prefix}.origin";
-            public const string Source = $"{Prefix}.source";
             public const string Destination = $"{Prefix}.destination";
-            public const string Sink = $"{Prefix}.sink";
+            public const string MessageType = $"{Prefix}.message-type";
 
             public const string ContainerPrefix = "container";
             public const string ContainerName = $"{ContainerPrefix}.name";

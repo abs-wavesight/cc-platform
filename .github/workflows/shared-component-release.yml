@@ -84,8 +84,8 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
-          .\Installer.exe install -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
 
       - name: Compress contents
         run: |

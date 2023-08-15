@@ -14,16 +14,13 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
         [Description(Constants.MessageHeaders.Origin)]
         public string? Origin { get; set; }
 
-        [Description(Constants.MessageHeaders.Source)]
-        public string? Source { get; set; }
-
         [Description(Constants.MessageHeaders.Destination)]
         public string? Destination { get; set; }
 
-        [Description(Constants.MessageHeaders.Sink)]
-        public string? Sink { get; set; }
+        [Description(Constants.MessageHeaders.MessageType)]
+        public string? MessageType { get; set; }
 
-        private MessageMetadata(Dictionary<string, string> headers)
+        private MessageMetadata(IReadOnlyDictionary<string, string> headers)
         {
             headers.TryGetValue(GetType().GetDescription(nameof(Client))!, out var client);
             Client = client;
@@ -34,17 +31,14 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
             headers.TryGetValue(GetType().GetDescription(nameof(Origin))!, out var origin);
             Origin = origin;
 
-            headers.TryGetValue(GetType().GetDescription(nameof(Source))!, out var source);
-            Source = source;
-
             headers.TryGetValue(GetType().GetDescription(nameof(Destination))!, out var destination);
             Destination = destination;
 
-            headers.TryGetValue(GetType().GetDescription(nameof(Sink))!, out var sink);
-            Sink = sink;
+            headers.TryGetValue(GetType().GetDescription(nameof(MessageType))!, out var messageType);
+            MessageType = messageType;
         }
 
-        public static MessageMetadata FromHeaders(Dictionary<string, string> headers)
+        public static MessageMetadata FromHeaders(IReadOnlyDictionary<string, string> headers)
         {
             return new MessageMetadata(headers);
         }

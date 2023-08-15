@@ -32,19 +32,19 @@ namespace Abs.CommonCore.Installer.Actions
             var removeConfiguration = removeConfig != null && (removeConfig.Value || ReadBoolean("Remove configuration files"));
             var removeDockerItems = removeDocker != null && (removeDocker.Value || ReadBoolean("Remove docker"));
 
-            if (installPath == null || installPath.Exists == false)
+            if (removeConfiguration && (installPath == null || installPath.Exists == false))
             {
                 installPath = ReadDirectoryPath("Enter installation location");
             }
 
-            if (dockerLocation == null || dockerLocation.Exists == false)
+            if (removeDockerItems && (dockerLocation == null || dockerLocation.Exists == false))
             {
                 dockerLocation = ReadDirectoryPath("Enter docker location");
             }
 
             if (removeComponents) await UninstallSystemComponentsAsync();
-            if (removeConfiguration) await UninstallConfigurationAsync(installPath);
-            if (removeDockerItems) await UninstallDockerAsync(dockerLocation);
+            if (removeConfiguration) await UninstallConfigurationAsync(installPath!);
+            if (removeDockerItems) await UninstallDockerAsync(dockerLocation!);
         }
 
         private async Task UninstallSystemComponentsAsync()
@@ -115,8 +115,6 @@ namespace Abs.CommonCore.Installer.Actions
 
                 await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"{path}\"", "");
             }
-
-
 
             Console.WriteLine("Docker removed");
         }

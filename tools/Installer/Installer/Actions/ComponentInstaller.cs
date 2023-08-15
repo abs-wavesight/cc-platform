@@ -1,8 +1,11 @@
 ﻿using System.Text.Json;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
+using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
@@ -10,6 +13,8 @@ namespace Abs.CommonCore.Installer.Actions
     public class ComponentInstaller : ActionBase
     {
         private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
+        private const string ReleaseZipName = "Release.zip";
+        private const string AdditionalFilesName = "AdditionalFiles";
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ICommandExecutionService _commandExecutionService;
@@ -19,8 +24,10 @@ namespace Abs.CommonCore.Installer.Actions
         private readonly InstallerComponentRegistryConfig _registryConfig;
         private readonly Dictionary<string, string> _allParameters;
 
+        public bool WaitForDockerContainersHealthy { get; set; } = true;
+
         public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
-            FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters)
+            FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
         {
             _loggerFactory = loggerFactory;
             _commandExecutionService = commandExecutionService;
@@ -31,11 +38,16 @@ namespace Abs.CommonCore.Installer.Actions
                 : null;
 
             var mergedParameters = _installerConfig?.Parameters ?? new Dictionary<string, string>();
-            MergeParameters(mergedParameters, parameters);
-            _allParameters = mergedParameters;
+            mergedParameters.MergeParameters(parameters);
 
+            if (promptForMissingParameters)
+            {
+                ReadMissingParameters(mergedParameters);
+            }
+
+            _allParameters = mergedParameters;
             _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
-                (c, t) => ReplaceConfigParameters(t, mergedParameters));
+                (c, t) => t.ReplaceConfigParameters(mergedParameters));
         }
 
         public async Task ExecuteAsync(string[]? specificComponents = null)
@@ -46,6 +58,8 @@ namespace Abs.CommonCore.Installer.Actions
             }
 
             _logger.LogInformation("Starting installer");
+            await ExpandReleaseZipFile();
+
             var components = DetermineComponents(specificComponents);
             VerifySourcesPresent(components);
 
@@ -258,8 +272,121 @@ namespace Abs.CommonCore.Installer.Actions
                 .Select(x => $"-f {x}")
                 .StringJoin(" ");
 
-            if (envFile.Length == 1) arguments = "--env-file environment.env " + arguments;
+            if (envFile.Length == 1) arguments = $"--env-file {envFile[0]} " + arguments;
             await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
+
+            var containerCount = configFiles
+                .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
+
+            if (WaitForDockerContainersHealthy)
+            {
+                await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+            }
+        }
+
+        private async Task WaitForDockerContainersHealthyAsync(int totalContainers, TimeSpan totalTime, TimeSpan checkInterval)
+        {
+            _logger.LogInformation($"Waiting for {totalContainers} containers to be healthy");
+            var start = DateTime.UtcNow;
+            var client = new DockerClientConfiguration()
+                .CreateClient();
+
+            while (DateTime.UtcNow.Subtract(start) < totalTime)
+            {
+                var containers = await LoadContainerInfoAsync(client);
+                var healthyCount = 0;
+
+                if (containers.Length == 0) _logger.LogWarning("No containers found");
+
+                foreach (var container in containers.OrderBy(x => x.Image))
+                {
+                    var isHealthy = CheckContainerHealthy(container, TimeSpan.FromSeconds(30));
+                    if (isHealthy)
+                    {
+                        healthyCount++;
+                    }
+
+                    var logLevel = isHealthy
+                        ? LogLevel.Information
+                        : LogLevel.Warning;
+
+                    _logger.Log(logLevel, $"Container '{container.Name.Trim('/')}': {(isHealthy ? "Healthy" : "Unhealthy")}");
+                }
+
+                if (healthyCount == totalContainers)
+                {
+                    _logger.LogInformation("All containers are healthy");
+                    return;
+                }
+
+                await Task.Delay(checkInterval);
+            }
+
+            throw new Exception("Not all containers are healthy");
+        }
+
+        private async Task<ContainerInspectResponse[]> LoadContainerInfoAsync(DockerClient client)
+        {
+            var containers = await client.Containers
+                .ListContainersAsync(new ContainersListParameters
+                {
+                    All = true
+                });
+
+            var containerInfo = await containers
+                .SelectAsync(async c => await client.Containers.InspectContainerAsync(c.ID));
+
+            return containerInfo
+                .ToArray();
+        }
+
+        private bool CheckContainerHealthy(ContainerInspectResponse container, TimeSpan containerHealthyTime)
+        {
+            var startTime = string.IsNullOrWhiteSpace(container.State.StartedAt)
+                ? DateTime.MaxValue
+                : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
+
+            if (container.State.Health != null && string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (container.State.Running && container.State.Restarting == false &&
+                (container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase) ||
+                 DateTime.UtcNow.Subtract(startTime) > containerHealthyTime))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task ExpandReleaseZipFile()
+        {
+            _logger.LogInformation("Preparing install components");
+
+            var current = Directory.GetCurrentDirectory();
+            var files = Directory.GetFiles(current, $"{ReleaseZipName}*", SearchOption.TopDirectoryOnly);
+
+            if (files.Length == 0)
+            {
+                return;
+            }
+
+            var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
+            var installLocation = new DirectoryInfo(_registryConfig.Location);
+
+            _logger.LogInformation("Unchunking release files");
+            var chunker = new DataChunker(_loggerFactory);
+            await chunker.UnchunkFileAsync(new DirectoryInfo(current), releaseZip, false);
+
+            _logger.LogInformation("Uncompressing release file");
+            var compressor = new DataCompressor(_loggerFactory);
+            await compressor.UncompressFileAsync(releaseZip, installLocation, false);
+
+            _logger.LogInformation($"Creating {AdditionalFilesName} folder");
+            var path = Path.Combine(_registryConfig.Location, AdditionalFilesName);
+            Directory.CreateDirectory(path);
         }
     }
 }
