@@ -11,13 +11,6 @@ on:
         required: true
         type: string
         description: Description of the release
-      windows-version:
-        required: true
-        type: choice
-        description: Windows version for the Release
-        options:
-        - 2019
-        - 2022
       rabbitmq-tag:
         required: true
         type: string
@@ -38,7 +31,6 @@ jobs:
     with:
       version: ${{ inputs.version }}
       description: ${{ inputs.description }}
-      windows-version: ${{ inputs.windows-version }}
       tag-prefix: central-system
       system-config: CentralSystemConfig.json
       component-params: -p `$RABBIT_RELEASE_TAG:${{ inputs.rabbitmq-tag }} -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ inputs.vector-central-tag }}
