@@ -11,6 +11,7 @@
             public const string Origin = $"{Prefix}.origin";
             public const string Destination = $"{Prefix}.destination";
             public const string MessageType = $"{Prefix}.message-type";
+            public const string DestinationClient = $"{Prefix}.destination-client";
 
             public const string ContainerPrefix = "container";
             public const string ContainerName = $"{ContainerPrefix}.name";

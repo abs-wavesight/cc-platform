@@ -20,6 +20,9 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
         [Description(Constants.MessageHeaders.MessageType)]
         public string? MessageType { get; set; }
 
+        [Description(Constants.MessageHeaders.DestinationClient)]
+        public string? DestinationClient { get; set; }
+
         private MessageMetadata(IReadOnlyDictionary<string, string> headers)
         {
             headers.TryGetValue(GetType().GetDescription(nameof(Client))!, out var client);
@@ -36,6 +39,9 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Models
 
             headers.TryGetValue(GetType().GetDescription(nameof(MessageType))!, out var messageType);
             MessageType = messageType;
+
+            headers.TryGetValue(GetType().GetDescription(nameof(DestinationClient))!, out var destinationClient);
+            DestinationClient = destinationClient;
         }
 
         public static MessageMetadata FromHeaders(IReadOnlyDictionary<string, string> headers)
