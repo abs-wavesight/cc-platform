@@ -183,16 +183,10 @@ namespace Abs.CommonCore.Installer.Actions
         {
             var service = GetWindowsServiceByName(name);
 
-            if (service == null)
-            {
-                _logger.LogInformation($"Service '{name}' does not exist");
-                return;
-            }
-
             await _commandExecutionService.ExecuteCommandAsync("net", $"stop {name}", "");
             await Task.Delay(1000);
-            service.Refresh();
-            service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+            service?.Refresh();
+            service?.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
 
             await _commandExecutionService.ExecuteCommandAsync("sc", $"delete {name}", "");
             await Task.Delay(1000);
