@@ -33,19 +33,12 @@ jobs:
     name: Component Release
     runs-on: windows-${{ inputs.windows-version }}
     
-    steps:    
-      - name: Get Time
-        id: time
-        uses: nanzm/get-time-action@master
-        with:
-          timeZone: UTC
-          format: 'YYYYMMDDHHmmss'
-          
+    steps:          
       - name: Build Tag
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: ${{ inputs.tag }}-${{ steps.time.outputs.time }}
+          string: ${{ inputs.tag }}
           
       - name: Nuget - Set Nuget credentials
         working-directory: ./
