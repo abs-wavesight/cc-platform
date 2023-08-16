@@ -36,7 +36,7 @@ RUN Remove-Item -Force -Path "c:\\rabbitmq.zip"
 RUN Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
 
 # Copy and initialize Erlang
-COPY --from=erlang "$env:ERLANG_HOME" "$env:ERLANG_HOME"
+COPY --from=erlang "c:\\erlang" "c:\\erlang"
 RUN echo "the-erlang-cookie" > c:\Windows\.erlang.cookie
 
 # Copy handle.exe utility and add to PATH
