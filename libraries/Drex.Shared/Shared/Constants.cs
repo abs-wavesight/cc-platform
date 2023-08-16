@@ -53,6 +53,9 @@
                 public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response.{QueueSuffix}";
                 public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{QueueSuffix}";
 
+                public const string CentralSinkDirectExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk.{DirectExchangeSuffix}";
+                public const string CentralSinkTopicExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk.{TopicExchangeSuffix}";
+
                 public const string CentralFileNotificationQueueTemplate = $"cc.{{client}}.central.{{site}}-snk-{FileNotificationReservedName}.{QueueSuffix}";
                 public const string CentralFileResponseQueueTemplate = $"cc.{{client}}.central.{{site}}-snk-{FileResponseReservedName}.{QueueSuffix}";
                 public const string CentralFileRequestQueueTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-{FileRequestReservedName}.{QueueSuffix}";
