@@ -34,9 +34,6 @@
             public static class File
             {
                 public const string DrexFileReservedName = "drex-file";
-                public const string FileRequestReservedName = "file-request";
-                public const string FileResponseReservedName = "file-response";
-                public const string FileNotificationReservedName = "file-notification";
 
                 public const string SiteFileRequestDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{DirectExchangeSuffix}";
                 public const string SiteFileRequestTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{TopicExchangeSuffix}";
@@ -45,20 +42,9 @@
                 public const string SiteFileNotificationDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{DirectExchangeSuffix}";
                 public const string SiteFileNotificationTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{TopicExchangeSuffix}";
 
-                public const string SiteFileNotificationQueue = $"{ResourcePrefix}.site.{DrexFileReservedName}-src-{FileNotificationReservedName}.{QueueSuffix}";
-                public const string SiteFileResponseQueue = $"{ResourcePrefix}.site.{DrexFileReservedName}-src-{FileResponseReservedName}.{QueueSuffix}";
-                public const string SiteFileRequestQueue = $"cc.{DrexFileReservedName}.site.snk-{FileRequestReservedName}.{QueueSuffix}";
-
                 public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{QueueSuffix}";
                 public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response.{QueueSuffix}";
                 public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{QueueSuffix}";
-
-                public const string CentralSinkDirectExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk.{DirectExchangeSuffix}";
-                public const string CentralSinkTopicExchangeTemplate = $"{ResourcePrefix}.central.{{site}}-snk.{TopicExchangeSuffix}";
-
-                public const string CentralFileNotificationQueueTemplate = $"cc.{{client}}.central.{{site}}-snk-{FileNotificationReservedName}.{QueueSuffix}";
-                public const string CentralFileResponseQueueTemplate = $"cc.{{client}}.central.{{site}}-snk-{FileResponseReservedName}.{QueueSuffix}";
-                public const string CentralFileRequestQueueTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-{FileRequestReservedName}.{QueueSuffix}";
             }
 
             public static class Message
