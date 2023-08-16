@@ -373,6 +373,10 @@ namespace Abs.CommonCore.Installer.Actions
                 return;
             }
 
+            // Must stop docker first. Ours is dockerd, default can be docker
+            await StopWindowsServiceAsync(_logger, _commandExecutionService, "dockerd");
+            await StopWindowsServiceAsync(_logger, _commandExecutionService, "docker");
+
             var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
             var installLocation = new DirectoryInfo(_registryConfig.Location);
 

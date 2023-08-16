@@ -14,19 +14,19 @@ on:
       rabbitmq-version:
         required: true
         type: string
-        description: Tag to use for RabbitMQ release
+        description: Version to use for RabbitMQ release # v1.0.0
       vector-site-version:
         required: true
         type: string
-        description: Tag to use for Vector site release
+        description: Version to use for Vector site release # v1.0.0
       drex-version:
         required: true
         type: string
-        description: Tag to use for Drex release
+        description: Version to use for Drex release # v1.0.0
       openssl-version:
         required: true
         type: string
-        description: Tag to use for OpenSSL release
+        description: Version to use for OpenSSL release # v1.0.0
 
 concurrency:
   group: site-system-release

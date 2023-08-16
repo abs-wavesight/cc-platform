@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions
 {
-    public class DataCompressor
+    public class DataCompressor : ActionBase
     {
         private readonly ILogger _logger;
 
