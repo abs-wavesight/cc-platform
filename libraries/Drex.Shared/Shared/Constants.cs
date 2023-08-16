@@ -60,8 +60,10 @@
 
             public static class Message
             {
-                public const string SiteClientDirectExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{DirectExchangeSuffix}";
-                public const string SiteClientTopicExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{TopicExchangeSuffix}";
+                public const string SiteClientSourceDirectExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{DirectExchangeSuffix}";
+                public const string SiteClientSourceTopicExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src.{TopicExchangeSuffix}";
+                public const string SiteClientSinkDirectExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-snk.{DirectExchangeSuffix}";
+                public const string SiteClientSinkTopicExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-snk.{TopicExchangeSuffix}";
                 public const string SiteClientDlqExchangeTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{TopicExchangeSuffix}";
                 public const string SiteClientDlqTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{QueueSuffix}";
 
