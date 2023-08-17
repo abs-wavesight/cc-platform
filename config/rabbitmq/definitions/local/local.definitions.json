@@ -1,4 +1,9 @@
 {
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
   "users": [
     {
       "name": "guest",
@@ -6,6 +11,15 @@
       "tags": [
         "administrator"
       ]
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
     }
   ]
 }
