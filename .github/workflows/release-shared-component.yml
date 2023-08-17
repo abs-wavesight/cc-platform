@@ -81,8 +81,8 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
-          .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
 
       - name: Compress contents
         run: |
@@ -94,7 +94,7 @@ jobs:
       
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$ABS_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
       
       - name: Build release
         uses: ncipollo/release-action@v1
