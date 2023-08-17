@@ -8,24 +8,18 @@ services:
       driver: local
     profiles: [ 'templates' ]
     restart: always
-    entrypoint: [ "powershell", "-c" ]
-    command:
-      [
-        "Import-Certificate",
-        "-CertStoreLocation",
-        "Cert:\\LocalMachine\\root",
-        "-FilePath",
-        "C:\\certs\\rabbitmq.cer",
-        ";",
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
-      ]
+    entrypoint: [ "powershell", "-File", "C:\\rabbitmq\\utilities\\startup.ps1" ]
+    # command:
+    #   [
+    #     "cmd",
+    #     "/C",
+    #     "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
+    #   ]
     healthcheck:
       test:
         [
           "CMD",
-          "powershell",
+          "pwsh",
           "-Command",
           "Invoke-WebRequest",
           "-UseBasicParsing",

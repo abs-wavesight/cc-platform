@@ -17,7 +17,8 @@ RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -O
     Remove-Item -Force -Path "C:\\erlang_install.exe";
 
 
-FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS rabbitmq
+# FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS rabbitmq
+FROM mcr.microsoft.com/windows/servercore:${SERVER_VERSION} AS rabbitmq
 USER containeradministrator
 LABEL Description="RabbitMQ" Version="3.11.2"
 
@@ -27,7 +28,7 @@ ENV ERLANG_HOME="c:\\erlang"
 ENV RABBITMQ_VERSION="3.11.2"
 ENV RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
 
-SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # Download and install RabbitMQ
 RUN Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v${env:RABBITMQ_VERSION}/rabbitmq-server-windows-$env:RABBITMQ_VERSION.zip" -OutFile "c:\\rabbitmq.zip"
@@ -42,9 +43,14 @@ RUN echo "the-erlang-cookie" > c:\Windows\.erlang.cookie
 # Copy handle.exe utility and add to PATH
 RUN mkdir "C:\\rabbitmq\\utilities"
 COPY ./utilities "C:\\rabbitmq\\utilities"
-RUN pwsh -File "C:\\rabbitmq\\utilities\\add-handle-to-path.ps1"
+RUN powershell -File "C:\\rabbitmq\\utilities\\add-handle-to-path.ps1"
+
+# Copy certoc.exe utility
+COPY --from=erlang "c:\\Windows\\System32\certutil.exe" "c:\\Windows\\System32"
+COPY --from=erlang "c:\\Windows\\System32\certoc.exe" "c:\\Windows\\System32"
 
 # Create config file
+RUN mkdir c:\Users\%USERNAME%\\AppData\\Roaming\\RabbitMQ
 RUN mkdir "C:\\rabbitmq\\config"
 RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.conf"]
 
