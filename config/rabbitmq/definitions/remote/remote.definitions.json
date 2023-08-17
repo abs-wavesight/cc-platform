@@ -1,4 +1,13 @@
 {
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
   "queues": [
     {
       "name": "cc.drex.central.snk-log.q",
