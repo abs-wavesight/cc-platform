@@ -85,7 +85,7 @@ public class ConfigureCommandTests
     public void ValidateConfigAndThrow_GivenNullConfig_ShouldThrow()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
+        _ = new LocalDevUtilityFixture(_testOutput);
         AppConfig? appConfig = null;
 
         // Act

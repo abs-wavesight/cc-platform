@@ -55,6 +55,14 @@ public static class ConfigureCommand
             sftpRootPath = readAppConfig?.SftpRootPath;
         }
 
+        var currentValue = (readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.FdzRootPath) ? $" ({readAppConfig.FdzRootPath})" : "");
+        Console.Write($"Local path to use for File Drop Zone root -- will be created if it does not exist{currentValue}: ");
+        var fdzRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(fdzRootPath))
+        {
+            fdzRootPath = readAppConfig?.FdzRootPath;
+        }
+
         Console.Write("Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
@@ -70,7 +78,8 @@ public static class ConfigureCommand
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
-            SftpRootPath = sftpRootPath!
+            SftpRootPath = sftpRootPath,
+            FdzRootPath = fdzRootPath,
         };
 
         ValidateConfigAndThrow(appConfig);
@@ -80,6 +89,14 @@ public static class ConfigureCommand
             using (CliStep.Start("Creating SFTP root directory"))
             {
                 Directory.CreateDirectory(appConfig.SftpRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.FdzRootPath))
+        {
+            using (CliStep.Start("Creating FDZ root directory"))
+            {
+                Directory.CreateDirectory(appConfig.FdzRootPath!);
             }
         }
 
@@ -169,6 +186,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath))
         {
             errors.Add($"SFTP root path ({appConfig.SftpRootPath}) is required");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath))
+        {
+            errors.Add($"FDZ root path ({appConfig.FdzRootPath}) is required");
         }
 
         return errors;

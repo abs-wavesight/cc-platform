@@ -30,3 +30,7 @@ services:
         source: ${PATH_TO_CERTS}/remote-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
+      - type: bind
+        source: ${FDZ_ROOT_PATH}
+        target: c:/abs/cc/file-drop-zone
+        read_only: false        

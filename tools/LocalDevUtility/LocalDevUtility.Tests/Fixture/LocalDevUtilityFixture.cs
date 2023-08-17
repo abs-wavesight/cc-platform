@@ -47,13 +47,17 @@ public class LocalDevUtilityFixture
         var dummySftpRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-sftp-root");
         Directory.CreateDirectory(Path.Combine(dummySftpRootPath));
 
+        var dummyFdzRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-fdz-root");
+        Directory.CreateDirectory(Path.Combine(dummyFdzRootPath));
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
-            SftpRootPath = dummySftpRootPath
+            SftpRootPath = dummySftpRootPath,
+            FdzRootPath = dummyFdzRootPath
         };
     }
 
