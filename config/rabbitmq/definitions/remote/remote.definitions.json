@@ -8,6 +8,15 @@
       ]
     }
   ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    }
+  ],
   "queues": [
     {
       "name": "cc.drex.central.snk-log.q",

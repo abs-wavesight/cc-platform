@@ -7,5 +7,14 @@
         "administrator"
       ]
     }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    }
   ]
 }
