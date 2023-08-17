@@ -91,16 +91,5 @@
       "read": "siemens-adapter",
       "write": "siemens-adapter"
     }
-  ],
-  "queues": [
-    {
-      "name": "cc.drex.central.snk-log.q",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {
-        "x-queue-type": "classic"
-      }
-    }
   ]
 }
