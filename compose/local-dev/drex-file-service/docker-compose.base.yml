@@ -32,5 +32,5 @@ services:
         read_only: true
       - type: bind
         source: ${FDZ_ROOT_PATH}
-        target: c:/abs/cc/file-drop-zone
+        target: c:/abs/fdz
         read_only: false        

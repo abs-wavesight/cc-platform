@@ -1,7 +1,8 @@
-{
+﻿{
   "clients": [
     "test_client",
-    "elogs"
+    "elogs",
+    "drex"
   ],
   "defaultPassword": "P@ssword"
 }
