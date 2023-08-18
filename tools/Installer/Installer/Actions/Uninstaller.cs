@@ -1,4 +1,5 @@
-﻿using Abs.CommonCore.Installer.Services;
+﻿using System.ComponentModel;
+using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -79,24 +80,8 @@ namespace Abs.CommonCore.Installer.Actions
                     });
             }
 
-            Console.WriteLine("Pruning containers");
-            await client.Containers.PruneContainersAsync();
-
-            Console.WriteLine("Pruning Images");
-            await client.Images.PruneImagesAsync(new ImagesPruneParameters()
-            {
-                Filters = new Dictionary<string, IDictionary<string, bool>>
-                {
-                    {
-                        "dangling",
-                        new Dictionary<string, bool>
-                        {
-                            { "false", true}
-                        }
-                    }
-                }
-            });
-
+            Console.WriteLine("Pruning unused components");
+            await _commandExecutionService.ExecuteCommandAsync("docker", "system prune -a -f", "");
             Console.WriteLine("System components removed");
         }
 
