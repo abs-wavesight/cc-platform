@@ -12,18 +12,14 @@ public static class TestDrexCommand
         var appConfig = (await ConfigureCommand.ReadConfig())!;
         ConfigureCommand.ValidateConfigAndThrow(appConfig);
 
-        var testClientFolder = Path.Combine("client", "TestClient");
-        var testClientPath = Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, testClientFolder);
+        var testClientProj = Path.Combine("client", "TestClient", "TestClient.csproj");
+        var testClientPath = Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, testClientProj);
+
+        powerShellAdapter.RunPowerShellCommand($"dotnet restore {testClientPath}");
 
         const string configuration = "Release";
-        var publishOutputPath = Path.Combine(testClientPath, "bin", configuration, "LocalDev");
-        var publishCommand = $"dotnet publish {testClientPath} -c {configuration} -o {publishOutputPath}";
-        powerShellAdapter.RunPowerShellCommand(publishCommand);
-
-        const string testAppName = "Abs.CommonCore.Drex.TestClient.exe";
-        var testAppFullName = Path.Combine(publishOutputPath, testAppName);
-
-        var executeTestDrexCommandBuilder = new StringBuilder(testAppFullName);
+        var runCommand = $"dotnet run  -c {configuration} --project {testClientPath} -- ";
+        var executeTestDrexCommandBuilder = new StringBuilder(runCommand);
 
         if (testDrexOptions.Config is not null)
         {

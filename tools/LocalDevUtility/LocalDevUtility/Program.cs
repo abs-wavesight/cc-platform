@@ -122,11 +122,11 @@ public class Program
         var command = new Command("test-drex", "Facilitates running the DREX Test Client");
 
         var roleOption = new Option<Role?>(new[] { "--role", "-r" },
-            description: "\"producer\"/\"p\" or \"consumer\"/\"c\"; if this is not provided, \"--config\" parameter must be present");
+            description: "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present");
         command.AddOption(roleOption);
 
         var originOption = new Option<Origin?>(new[] { "--origin", "-o" },
-            description: "\"site\"/\"s\" or \"central\"/\"c\"");
+            description: "'site'/'s' or 'central'/'c'");
         command.AddOption(originOption);
 
         var loopOption = new Option<bool?>(new[] { "--loop", "-l" },
@@ -134,7 +134,7 @@ public class Program
         command.Add(loopOption);
 
         var configOption = new Option<FileInfo?>(new[] { "--config", "-c" },
-            description: "Override absolute path to an alternative config file; if this is not provided, \"--role\" parameter must be present");
+            description: "Override absolute path to an alternative config file; if this is not provided, '--role' parameter must be present");
         command.Add(configOption);
 
         command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
