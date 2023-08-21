@@ -119,28 +119,41 @@ public class Program
 
     private static Command BuildTestDrexCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
     {
-        var command = new Command("test-drex", "Facilitates running the DREX Test Client");
+        const string commandDescription = "Facilitates running the DREX Test Client";
+        const string commandName = "test-drex";
+        var command = new Command(commandName, commandDescription);
 
-        var roleOption = new Option<Role?>(new[] { "--role", "-r" },
-            description: "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present");
+        const string roleOptionDescription =
+            "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present";
+        const string longRoleAlias = "--role";
+        const string shortRoleAlias = "-r";
+        var roleOption = new Option<Role?>(new[] { longRoleAlias, shortRoleAlias }, roleOptionDescription);
         command.AddOption(roleOption);
 
-        var originOption = new Option<Origin?>(new[] { "--origin", "-o" },
-            description: "'site'/'s' or 'central'/'c'");
+        const string originOptionDescription = "'site'/'s' or 'central'/'c'";
+        const string longOriginAlias = "--origin";
+        const string shortOriginAlias = "-o";
+        var originOption = new Option<Origin?>(new[] { longOriginAlias, shortOriginAlias }, originOptionDescription);
         command.AddOption(originOption);
 
-        var loopOption = new Option<bool?>(new[] { "--loop", "-l" },
-            description: "If present the producer will run continuously, producing 1 message every second until stopped");
+        const string loopOptionDescription =
+            "If present the producer will run continuously, producing 1 message every second until stopped";
+        const string longLoopAlias = "--loop";
+        const string shortLoopAlias = "-l";
+        var loopOption = new Option<bool?>(new[] { longLoopAlias, shortLoopAlias }, loopOptionDescription);
         command.Add(loopOption);
 
-        var configOption = new Option<FileInfo?>(new[] { "--config", "-c" },
-            description: "Override absolute path to an alternative config file; if this is not provided, '--role' parameter must be present");
+        const string configOptionDescription =
+            "Override absolute path to an alternative config file; if this is not provided, '--role' parameter must be present";
+        const string longConfigAlias = "--config";
+        const string shortConfigAlias = "-c";
+        var configOption = new Option<FileInfo?>(new[] { longConfigAlias, shortConfigAlias }, configOptionDescription);
         command.Add(configOption);
 
         command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
         {
             return await TryExecuteCommandAsync(
-                async () => await TestDrexCommand.Run(configureOptions, logger, powerShellAdapter),
+                async () => await TestDrexCommand.Run(configureOptions, powerShellAdapter),
                 logger);
         });
 

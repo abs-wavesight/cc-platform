@@ -1,12 +1,11 @@
 ﻿using System.Text;
 using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Helpers;
-using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
 public static class TestDrexCommand
 {
-    public static async Task<int> Run(TestDrexOptions testDrexOptions, ILogger logger,
+    public static async Task<int> Run(TestDrexOptions testDrexOptions,
         IPowerShellAdapter powerShellAdapter)
     {
         var appConfig = (await ConfigureCommand.ReadConfig())!;
@@ -15,7 +14,8 @@ public static class TestDrexCommand
         var testClientProj = Path.Combine("client", "TestClient", "TestClient.csproj");
         var testClientPath = Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, testClientProj);
 
-        powerShellAdapter.RunPowerShellCommand($"dotnet restore {testClientPath}");
+        var restoreCommand = $"dotnet restore {testClientPath}";
+        powerShellAdapter.RunPowerShellCommand(restoreCommand);
 
         const string configuration = "Release";
         var runCommand = $"dotnet run  -c {configuration} --project {testClientPath} -- ";
@@ -42,7 +42,6 @@ public static class TestDrexCommand
         }
 
         powerShellAdapter.RunPowerShellCommand(executeTestDrexCommandBuilder.ToString());
-        Console.WriteLine("Finished.");
 
         return 0;
     }
