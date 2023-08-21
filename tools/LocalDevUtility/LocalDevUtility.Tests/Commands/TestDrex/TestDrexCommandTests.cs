@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Xunit.Abstractions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.TestDrex;
 
 [Collection(nameof(TestDrexCommandTests))]
