@@ -1,11 +1,11 @@
-﻿using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
+﻿using Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
+using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
 using Xunit.Abstractions;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.TestDrex;
 
-[Collection(nameof(TestDrexCommandTests))]
+[Collection(nameof(RunCommandTests))]
 public class TestDrexCommandTests
 {
     private readonly ITestOutputHelper _testOutput;
