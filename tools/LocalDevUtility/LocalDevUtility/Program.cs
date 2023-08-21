@@ -4,6 +4,7 @@ using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Commands.Run;
 using Abs.CommonCore.LocalDevUtility.Commands.Shared;
 using Abs.CommonCore.LocalDevUtility.Commands.Stop;
+using Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.Platform.Extensions;
@@ -46,6 +47,7 @@ public class Program
         root.AddCommand(BuildConfigureCommand(logger, powerShellAdapter));
         root.AddCommand(BuildRunCommand(logger, powerShellAdapter));
         root.AddCommand(BuildStopCommand(logger, powerShellAdapter));
+        root.AddCommand(BuildTestDrexCommand(logger, powerShellAdapter));
         return await root.InvokeAsync(args ?? Array.Empty<string>());
     }
 
@@ -54,7 +56,7 @@ public class Program
         var root = new RootCommand("Utility to aid local development and testing");
         root.SetHandler(() =>
         {
-            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", or \"stop\".");
+            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\".");
         });
         return root;
     }
@@ -109,6 +111,36 @@ public class Program
         {
             return await TryExecuteCommandAsync(
                 async () => await RunCommand.Run(runOptions, logger, powerShellAdapter),
+                logger);
+        });
+
+        return command;
+    }
+
+    private static Command BuildTestDrexCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
+    {
+        var command = new Command("test-drex", "Facilitates running the DREX Test Client");
+
+        var roleOption = new Option<Role?>(new[] { "--role", "-r" },
+            description: "\"producer\"/\"p\" or \"consumer\"/\"c\"; if this is not provided, \"--config\" parameter must be present");
+        command.AddOption(roleOption);
+
+        var originOption = new Option<Origin?>(new[] { "--origin", "-o" },
+            description: "\"site\"/\"s\" or \"central\"/\"c\"");
+        command.AddOption(originOption);
+
+        var loopOption = new Option<bool?>(new[] { "--loop", "-l" },
+            description: "If present the producer will run continuously, producing 1 message every second until stopped");
+        command.Add(loopOption);
+
+        var configOption = new Option<FileInfo?>(new[] { "--config", "-c" },
+            description: "Override absolute path to an alternative config file; if this is not provided, \"--role\" parameter must be present");
+        command.Add(configOption);
+
+        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
+        {
+            return await TryExecuteCommandAsync(
+                async () => await TestDrexCommand.Run(configureOptions, logger, powerShellAdapter),
                 logger);
         });
 
