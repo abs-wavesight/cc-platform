@@ -91,7 +91,7 @@ namespace Abs.CommonCore.Installer.Actions
                         "dangling",
                         new Dictionary<string, bool>
                         {
-                            { "false", false}
+                            { "false", true}
                         }
                     }
                 }

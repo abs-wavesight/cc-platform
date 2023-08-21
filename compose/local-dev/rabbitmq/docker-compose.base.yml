@@ -50,6 +50,7 @@ services:
     <<: *rabbitmq
     container_name: rabbitmq-local
     environment:
+      RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
       RABBITMQ_LOCATION: local
     hostname: rabbitmq-local
@@ -77,6 +78,7 @@ services:
     <<: *rabbitmq
     container_name: rabbitmq-remote
     environment:
+      RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
       RABBITMQ_LOCATION: remote
     hostname: rabbitmq-remote
