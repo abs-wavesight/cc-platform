@@ -6,5 +6,6 @@ public class AppConfig
     public string? CommonCoreDrexRepositoryPath { get; set; }
     public string? ContainerWindowsVersion { get; set; }
     public string? CertificatePath { get; set; }
-    public string SftpRootPath { get; set; }
+    public string? SftpRootPath { get; set; }
+    public string? FdzRootPath { get; set; }
 }
