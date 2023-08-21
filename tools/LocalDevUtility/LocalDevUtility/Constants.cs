@@ -28,6 +28,7 @@ public static class Constants
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
         public const string SftpRootPath = "SFTP_ROOT_PATH";
+        public const string FdzRootPath = "FDZ_ROOT_PATH";
     }
 
     public static class CertificateSubDirectories

@@ -50,7 +50,9 @@ public static class DockerHelper
             {Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository, appConfig.CommonCoreDrexRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCertificates, appConfig.CertificatePath!},
             {Constants.ComposeEnvKeys.SftpRootPath, appConfig.SftpRootPath!},
+            {Constants.ComposeEnvKeys.FdzRootPath, appConfig.FdzRootPath!},
         };
+
         if (additionalOptions != null)
         {
             foreach (var (key, value) in additionalOptions)
@@ -58,6 +60,7 @@ public static class DockerHelper
                 envValues.Add(key, value);
             }
         }
+
         var envFileText = string.Join("\n", envValues.Select(_ => $"{_.Key}={_.Value}"));
         var envFileName = Path.Combine(appConfig.CommonCorePlatformRepositoryPath!, Constants.EnvFileRelativePath);
         await File.WriteAllTextAsync(envFileName, envFileText);
