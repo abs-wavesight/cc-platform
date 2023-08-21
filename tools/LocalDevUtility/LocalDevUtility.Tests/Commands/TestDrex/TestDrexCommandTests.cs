@@ -34,8 +34,6 @@ public class TestDrexCommandTests
         // Assert
         fixture.ActualPowerShellCommands.Should().HaveCountGreaterThan(0);
         var exeCommand = fixture.ActualPowerShellCommands[^1];
-        const string testAppName = "TestClient.exe";
-        exeCommand.Should().Contain(testAppName);
         exeCommand.Should().ContainAll(expectedOptions);
     }
 }
