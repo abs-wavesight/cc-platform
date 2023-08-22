@@ -36,6 +36,22 @@
 
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="dummy-certs\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="dummy-certs\local-certs\rabbitmq.cer">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="dummy-certs\local-certs\rabbitmq.pem">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="dummy-certs\local-keys\rabbitmq.key">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 
 
 
