@@ -1,4 +1,4 @@
-﻿using Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
+using Abs.CommonCore.LocalDevUtility.Tests.Commands.Run;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
 using Xunit.Abstractions;

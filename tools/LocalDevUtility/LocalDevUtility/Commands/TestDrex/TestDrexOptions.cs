@@ -1,4 +1,4 @@
-﻿namespace Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
+namespace Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
 
 public class TestDrexOptions
 {
