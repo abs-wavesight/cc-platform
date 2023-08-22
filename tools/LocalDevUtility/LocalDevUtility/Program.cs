@@ -4,6 +4,7 @@ using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Commands.Run;
 using Abs.CommonCore.LocalDevUtility.Commands.Shared;
 using Abs.CommonCore.LocalDevUtility.Commands.Stop;
+using Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.Platform.Extensions;
@@ -46,6 +47,7 @@ public class Program
         root.AddCommand(BuildConfigureCommand(logger, powerShellAdapter));
         root.AddCommand(BuildRunCommand(logger, powerShellAdapter));
         root.AddCommand(BuildStopCommand(logger, powerShellAdapter));
+        root.AddCommand(BuildTestDrexCommand(logger, powerShellAdapter));
         return await root.InvokeAsync(args ?? Array.Empty<string>());
     }
 
@@ -54,7 +56,7 @@ public class Program
         var root = new RootCommand("Utility to aid local development and testing");
         root.SetHandler(() =>
         {
-            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", or \"stop\".");
+            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\".");
         });
         return root;
     }
@@ -109,6 +111,49 @@ public class Program
         {
             return await TryExecuteCommandAsync(
                 async () => await RunCommand.Run(runOptions, logger, powerShellAdapter),
+                logger);
+        });
+
+        return command;
+    }
+
+    private static Command BuildTestDrexCommand(ILogger logger, IPowerShellAdapter powerShellAdapter)
+    {
+        const string commandDescription = "Facilitates running the DREX Test Client";
+        const string commandName = "test-drex";
+        var command = new Command(commandName, commandDescription);
+
+        const string roleOptionDescription =
+            "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present";
+        const string longRoleAlias = "--role";
+        const string shortRoleAlias = "-r";
+        var roleOption = new Option<Role?>(new[] { longRoleAlias, shortRoleAlias }, roleOptionDescription);
+        command.AddOption(roleOption);
+
+        const string originOptionDescription = "'site'/'s' or 'central'/'c'";
+        const string longOriginAlias = "--origin";
+        const string shortOriginAlias = "-o";
+        var originOption = new Option<Origin?>(new[] { longOriginAlias, shortOriginAlias }, originOptionDescription);
+        command.AddOption(originOption);
+
+        const string loopOptionDescription =
+            "If present the producer will run continuously, producing 1 message every second until stopped";
+        const string longLoopAlias = "--loop";
+        const string shortLoopAlias = "-l";
+        var loopOption = new Option<bool?>(new[] { longLoopAlias, shortLoopAlias }, loopOptionDescription);
+        command.Add(loopOption);
+
+        const string configOptionDescription =
+            "Override absolute path to an alternative config file; if this is not provided, '--role' parameter must be present";
+        const string longConfigAlias = "--config";
+        const string shortConfigAlias = "-c";
+        var configOption = new Option<FileInfo?>(new[] { longConfigAlias, shortConfigAlias }, configOptionDescription);
+        command.Add(configOption);
+
+        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
+        {
+            return await TryExecuteCommandAsync(
+                async () => await TestDrexCommand.Run(configureOptions, powerShellAdapter),
                 logger);
         });
 
