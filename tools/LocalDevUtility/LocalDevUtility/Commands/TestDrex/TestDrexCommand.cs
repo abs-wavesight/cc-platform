@@ -23,7 +23,7 @@ public static class TestDrexCommand
 
         if (testDrexOptions.Config is not null)
         {
-            executeTestDrexCommandBuilder.Append($" -c {testDrexOptions.Config}");
+            executeTestDrexCommandBuilder.Append($" -c {testDrexOptions.Config.FullName}");
         }
 
         if (testDrexOptions.Loop is true)
