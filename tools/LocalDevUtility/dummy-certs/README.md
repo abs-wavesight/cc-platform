@@ -1,1 +1,0 @@
-This `dummy-certs` directory is here for the purposes of unit/integration testing the LocalDevUtility. We need to have a directory to contain certificates.
