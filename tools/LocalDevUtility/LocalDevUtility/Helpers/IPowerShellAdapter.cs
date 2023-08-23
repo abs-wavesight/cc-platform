@@ -2,5 +2,5 @@
 
 public interface IPowerShellAdapter
 {
-    Task<List<string>> RunPowerShellCommandAsync(string command, TimeSpan? timeout = null);
+    List<string> RunPowerShellCommand(string command, TimeSpan? timeout = null);
 }

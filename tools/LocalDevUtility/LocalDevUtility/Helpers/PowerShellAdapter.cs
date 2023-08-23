@@ -2,7 +2,6 @@
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility.Helpers;
@@ -11,34 +10,35 @@ public class PowerShellAdapter : IPowerShellAdapter
 {
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
 
-    public Task<List<string>> RunPowerShellCommandAsync(string command, TimeSpan? timeout)
+    public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {
-        return RunPowerShellCommandAsync(command, NullLogger.Instance, timeout);
+        return RunPowerShellCommand(command, null, timeout);
     }
 
-    public async Task<List<string>> RunPowerShellCommandAsync(string command, ILogger logger, TimeSpan? timeout)
+    public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        using (var ps = PowerShell.Create(RunspaceMode.NewRunspace))
+        using var ps = PowerShell.Create();
+        ps.AddScript(command);
+        ps.AddCommand("Out-String").AddParameter("Stream", true);
+
+        var rawOutput = new List<string>();
+        var output = new PSDataCollection<string>();
+        output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
+        ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
+
+        var asyncToken = ps.BeginInvoke<object, string>(null, output);
+
+
+        if (timeout.HasValue
+                ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
+                : asyncToken.AsyncWaitHandle.WaitOne())
         {
-            ps.AddScript(command);
-            ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-            var rawOutput = new List<string>();
-            var output = new PSDataCollection<string>();
-            output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-            ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-
-            var invokeTask = ps.InvokeAsync<object, string>(null, output);
-            if (timeout is not null)
-            {
-                invokeTask = invokeTask
-                    .WaitAsync(timeout.Value);
-            }
-
-            await invokeTask;
-
-            return rawOutput;
+            ps.EndInvoke(asyncToken);
         }
+
+        ps.InvokeAsync();
+
+        return rawOutput;
     }
 
     private void ProcessCommandOutput(List<string> rawOutput, ILogger? logger, object? sender, DataAddedEventArgs eventArgs)

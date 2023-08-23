@@ -18,11 +18,11 @@ public static class StopCommand
 
         Console.WriteLine("Now running the following Docker Compose command:");
         Console.WriteLine(composeCommandBuilder.ToString());
-        await powerShellAdapter.RunPowerShellCommandAsync(composeCommandBuilder.ToString());
+        powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
 
         if (stopOptions.Reset == true)
         {
-            await DockerHelper.ResetDockerAsync(powerShellAdapter);
+            DockerHelper.ResetDocker(powerShellAdapter);
         }
 
         return 0;

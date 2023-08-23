@@ -8,14 +8,14 @@ namespace Abs.CommonCore.LocalDevUtility.Helpers;
 
 public static class DockerHelper
 {
-    public static async Task ResetDockerAsync(IPowerShellAdapter powerShellAdapter)
+    public static void ResetDocker(IPowerShellAdapter powerShellAdapter)
     {
         using (CliStep.Start("Resetting Docker", true))
         {
-            await powerShellAdapter.RunPowerShellCommandAsync("docker ps -aq | ForEach-Object { Write-Output \"Stopping $(docker stop $_) & removing $(docker rm $_)\" };");
-            await powerShellAdapter.RunPowerShellCommandAsync("Write-Output \"Pruning system: $(docker system prune -f)\"");
-            await powerShellAdapter.RunPowerShellCommandAsync("Write-Output \"Pruning volume: $(docker volume prune -f)\"");
-            await powerShellAdapter.RunPowerShellCommandAsync("Write-Output \"Pruning network: $(docker network prune -f)\"");
+            powerShellAdapter.RunPowerShellCommand("docker ps -aq | ForEach-Object { Write-Output \"Stopping $(docker stop $_) & removing $(docker rm $_)\" };");
+            powerShellAdapter.RunPowerShellCommand("Write-Output \"Pruning system: $(docker system prune -f)\"");
+            powerShellAdapter.RunPowerShellCommand("Write-Output \"Pruning volume: $(docker volume prune -f)\"");
+            powerShellAdapter.RunPowerShellCommand("Write-Output \"Pruning network: $(docker network prune -f)\"");
         }
     }
 
