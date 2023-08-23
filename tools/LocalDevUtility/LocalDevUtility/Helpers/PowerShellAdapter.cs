@@ -35,8 +35,10 @@ public class PowerShellAdapter : IPowerShellAdapter
         {
             ps.EndInvoke(asyncToken);
         }
-
-        ps.InvokeAsync();
+        else
+        {
+            ps.InvokeAsync();
+        }
 
         return rawOutput;
     }
