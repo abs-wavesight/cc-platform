@@ -35,14 +35,6 @@ public class PowerShellAdapter : IPowerShellAdapter
             ps.EndInvoke(asyncToken);
         }
 
-        var task = ps.InvokeAsync();
-        if (timeout.HasValue)
-        {
-            task
-                .GetAwaiter()
-                .GetResult();
-        }
-
         return rawOutput;
     }
 
