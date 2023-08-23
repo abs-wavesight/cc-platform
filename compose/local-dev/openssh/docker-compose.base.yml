@@ -3,6 +3,7 @@ version: '3.9'
 services:
   cc.openssh:
     container_name: openssh
+    hostname: openssh
     entrypoint: [
       "pwsh", 
       "-Command", 
