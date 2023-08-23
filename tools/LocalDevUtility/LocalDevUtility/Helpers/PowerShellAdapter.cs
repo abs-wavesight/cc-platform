@@ -17,7 +17,7 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
+        var ps = PowerShell.Create(RunspaceMode.NewRunspace);
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
 
