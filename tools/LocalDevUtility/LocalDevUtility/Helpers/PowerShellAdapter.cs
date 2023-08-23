@@ -17,7 +17,7 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        using var ps = PowerShell.Create();
+        using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
 
@@ -27,7 +27,6 @@ public class PowerShellAdapter : IPowerShellAdapter
         ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
 
         var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
 
         if (timeout.HasValue
                 ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
