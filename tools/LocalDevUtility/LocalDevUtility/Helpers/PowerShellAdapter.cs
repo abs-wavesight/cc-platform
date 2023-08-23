@@ -17,11 +17,6 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        if (timeout is not null)
-        {
-            timeout = timeout.Value * 2;
-        }
-
         using var ps = PowerShell.Create();
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
