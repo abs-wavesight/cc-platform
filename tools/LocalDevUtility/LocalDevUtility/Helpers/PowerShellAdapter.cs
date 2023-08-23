@@ -17,12 +17,7 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        if (timeout is not null)
-        {
-            timeout = timeout.Value * 2;
-        }
-
-        using var ps = PowerShell.Create();
+        using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
         ps.AddScript(command);
         ps.AddCommand("Out-String").AddParameter("Stream", true);
 
@@ -40,9 +35,13 @@ public class PowerShellAdapter : IPowerShellAdapter
             ps.EndInvoke(asyncToken);
         }
 
-        ps.InvokeAsync()
-            .GetAwaiter()
-            .GetResult();
+        var task = ps.InvokeAsync();
+        if (timeout.HasValue)
+        {
+            task
+                .GetAwaiter()
+                .GetResult();
+        }
 
         return rawOutput;
     }
