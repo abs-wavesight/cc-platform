@@ -11,6 +11,8 @@ public class PowerShellAdapter : IPowerShellAdapter
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
     private readonly SemaphoreSlim _accessLock = new SemaphoreSlim(1);
 
+    //private readonly RunspacePool _pool = new RunspacePool(1, 100, new PSHost)
+
     public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {
         return RunPowerShellCommand(command, null, timeout);
@@ -20,6 +22,7 @@ public class PowerShellAdapter : IPowerShellAdapter
     {
         try
         {
+            Console.WriteLine($"Executing command: {command}");
             _accessLock.WaitAsync().GetAwaiter().GetResult();
             using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
             ps.AddScript(command);
