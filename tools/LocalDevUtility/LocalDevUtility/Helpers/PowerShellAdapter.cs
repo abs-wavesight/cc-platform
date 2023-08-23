@@ -23,8 +23,8 @@ public class PowerShellAdapter : IPowerShellAdapter
         var output = new List<string>();
 
         var process = new Process();
-        process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
-        process.StartInfo.Arguments = $"/C powershell.exe -Command \"{command}\"";
+        process.StartInfo.FileName = "powershell.exe"; // Use cmd for more extensibility
+        process.StartInfo.Arguments = $"-Command \"\"{command}\"\"";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardError = true;
         process.StartInfo.RedirectStandardOutput = true;
