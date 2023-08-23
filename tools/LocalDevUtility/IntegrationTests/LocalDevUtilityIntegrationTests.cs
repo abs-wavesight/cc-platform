@@ -34,16 +34,17 @@ public class LocalDevUtilityIntegrationTests
 
         var runCommand = $"{utilityExecutablePath} run {componentParameters} --background --reset --mode r";
         var stopCommand = $"{utilityExecutablePath} stop {componentParameters} --reset";
+        var powerShell = new PowerShellAdapter();
 
         // Stop first just in case something was running before we started
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
-        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+        powerShell.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
 
         try
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            var runCommandOutput = powerShell.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
 
             // Assert
             var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
@@ -58,7 +59,7 @@ public class LocalDevUtilityIntegrationTests
             {
                 try
                 {
-                    var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(1));
+                    var statusCommandRawResult = powerShell.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(1));
                     var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
 
                     statusCommandJsonResult.Should().NotBeNull();
@@ -87,7 +88,7 @@ public class LocalDevUtilityIntegrationTests
         finally
         {
             _testOutput.WriteLine("\n\n\n");
-            fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            powerShell.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
         }
     }
 }
