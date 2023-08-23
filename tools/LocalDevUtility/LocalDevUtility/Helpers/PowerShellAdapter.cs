@@ -1,7 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using System.Management.Automation;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility.Helpers;
@@ -9,72 +10,59 @@ namespace Abs.CommonCore.LocalDevUtility.Helpers;
 public class PowerShellAdapter : IPowerShellAdapter
 {
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
-    private readonly SemaphoreSlim _accessLock = new SemaphoreSlim(1);
-
-    //private readonly RunspacePool _pool = new RunspacePool(1, 100, new PSHost)
 
     public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {
-        return RunPowerShellCommand(command, null, timeout);
+        return RunPowerShellCommand(command, NullLogger.Instance, timeout);
     }
 
-    public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
+    public List<string> RunPowerShellCommand(string command, ILogger logger, TimeSpan? timeout)
     {
-        try
+        logger.LogInformation($"Executing command: {command}");
+
+        var output = new List<string>();
+
+        var process = new Process();
+        process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
+        process.StartInfo.Arguments = $"/C powershell.exe -Command \"{command}\"";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+
+        process.ErrorDataReceived += (sender, args) =>
         {
-            Console.WriteLine($"Executing command: {command}");
-            _accessLock.WaitAsync().GetAwaiter().GetResult();
-            using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
-            ps.AddScript(command);
-            ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-            var rawOutput = new List<string>();
-            var output = new PSDataCollection<string>();
-            output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-            ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-
-            var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-
-            if (timeout.HasValue
-                    ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
-                    : asyncToken.AsyncWaitHandle.WaitOne())
-            {
-                ps.EndInvoke(asyncToken);
-            }
-
-            ps.InvokeAsync();
-
-            return rawOutput;
-        }
-        finally
+            if (string.IsNullOrWhiteSpace(args.Data) == false) ProcessCommandOutput(output, logger, sender, args?.Data?.Trim() ?? "");
+        };
+        process.OutputDataReceived += (sender, args) =>
         {
-            _accessLock.Release();
+            if (string.IsNullOrWhiteSpace(args.Data) == false) ProcessCommandOutput(output, logger, sender, args?.Data?.Trim() ?? "");
+        };
+        process.Start();
+
+        process.BeginErrorReadLine();
+        process.BeginOutputReadLine();
+
+        var task = process.WaitForExitAsync();
+        if (timeout is not null)
+        {
+            task = task
+                .WaitAsync(timeout.Value);
         }
+
+        task
+            .GetAwaiter()
+            .GetResult();
+
+        return output;
     }
 
-    private void ProcessCommandOutput(List<string> rawOutput, ILogger? logger, object? sender, DataAddedEventArgs eventArgs)
+    private void ProcessCommandOutput(List<string> rawOutput, ILogger logger, object? sender, string data)
     {
-        string? outputItem;
-        switch (sender)
-        {
-            case PSDataCollection<string> collection:
-                outputItem = collection[eventArgs.Index];
-                break;
-            case PSDataCollection<ErrorRecord> errorCollection:
-                outputItem = errorCollection[eventArgs.Index].ToString();
-                break;
-            default:
-                return;
-        }
+        OutputWithColorForDockerCompose(data!);
+        rawOutput.Add(data!);
 
-        OutputWithColorForDockerCompose(outputItem!);
-        rawOutput.Add(outputItem!);
-
-        if (logger != null)
-        {
-            logger.LogInformation(outputItem);
-        }
+        logger.LogInformation(data);
     }
 
     /// <summary>
