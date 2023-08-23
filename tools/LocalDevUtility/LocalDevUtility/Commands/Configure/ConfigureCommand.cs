@@ -126,7 +126,7 @@ public static class ConfigureCommand
             dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
             dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\"";
             logger.LogInformation($"Running docker command: {dockerCommand}");
-            powerShellAdapter.RunPowerShellCommand(dockerCommand);
+            await powerShellAdapter.RunPowerShellCommandAsync(dockerCommand);
         }
 
         using (CliStep.Start("Installing TLS certificates", true))

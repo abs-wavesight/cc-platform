@@ -21,7 +21,7 @@ public class LocalDevUtilityFixture
     {
         MockPowerShellAdapter = new Mock<IPowerShellAdapter>();
         MockPowerShellAdapter
-            .Setup(_ => _.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
+            .Setup(_ => _.RunPowerShellCommandAsync(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
             .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem); });
 
         TestLogger.Default.SetTestOutput(testOutput);

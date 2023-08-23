@@ -41,8 +41,8 @@ public class RunCommandTests
 
         // Assert
         var composeCommandPart = AssertComposeCommandWasExecutedAndExtractComposeCommandPart(fixture);
-        AssertComposeConfigIsValid(fixture, composeCommandPart);
-        AssertComposeStartsExpectedServices(fixture, composeCommandPart, expectedServices);
+        await AssertComposeConfigIsValidAsync(fixture, composeCommandPart);
+        await AssertComposeStartsExpectedServicesAsync(fixture, composeCommandPart, expectedServices);
         AssertSpecificExpectedComposeFilesArePresent(composeCommandPart, specificExpectedComposeFiles);
     }
 
@@ -54,19 +54,19 @@ public class RunCommandTests
         return composeUpCommand[..upIndex];
     }
 
-    private void AssertComposeConfigIsValid(LocalDevUtilityFixture fixture, string composeCommandPart)
+    private async Task AssertComposeConfigIsValidAsync(LocalDevUtilityFixture fixture, string composeCommandPart)
     {
         var configCommand = $"{composeCommandPart} config";
-        var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(1));
+        var configCommandOutput = await fixture.RealPowerShellAdapter.RunPowerShellCommandAsync(configCommand, TimeSpan.FromMinutes(1));
         _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: abs-cc");
     }
 
-    private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
+    private static async Task AssertComposeStartsExpectedServicesAsync(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
-        var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(1));
+        var configServicesCommandOutput = await fixture.RealPowerShellAdapter.RunPowerShellCommandAsync(configServicesCommand, TimeSpan.FromMinutes(1));
         configServicesCommandOutput.Should().HaveCount(expectedServices.Count);
         configServicesCommandOutput.Should().AllSatisfy(s => expectedServices.Should().Contain(s));
     }

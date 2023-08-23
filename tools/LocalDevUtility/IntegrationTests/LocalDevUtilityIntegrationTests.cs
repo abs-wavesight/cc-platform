@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
-using Abs.CommonCore.LocalDevUtility.Helpers;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
@@ -37,13 +36,15 @@ public class LocalDevUtilityIntegrationTests
 
         // Stop first just in case something was running before we started
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
-        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+        await fixture.RealPowerShellAdapter
+            .RunPowerShellCommandAsync(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
 
         try
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            var runCommandOutput = await fixture.RealPowerShellAdapter
+                .RunPowerShellCommandAsync(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
 
             // Assert
             var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
@@ -58,7 +59,7 @@ public class LocalDevUtilityIntegrationTests
             {
                 try
                 {
-                    var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(1));
+                    var statusCommandRawResult = await fixture.RealPowerShellAdapter.RunPowerShellCommandAsync(statusCommand, TimeSpan.FromMinutes(1));
                     var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
 
                     statusCommandJsonResult.Should().NotBeNull();
@@ -87,7 +88,8 @@ public class LocalDevUtilityIntegrationTests
         finally
         {
             _testOutput.WriteLine("\n\n\n");
-            fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            await fixture.RealPowerShellAdapter
+                .RunPowerShellCommandAsync(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
         }
     }
 }

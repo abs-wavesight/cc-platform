@@ -15,7 +15,7 @@ public static class TestDrexCommand
         var testClientPath = Path.Combine(appConfig.CommonCoreDrexRepositoryPath!, testClientProj);
 
         var restoreCommand = $"dotnet restore {testClientPath}";
-        powerShellAdapter.RunPowerShellCommand(restoreCommand);
+        await powerShellAdapter.RunPowerShellCommandAsync(restoreCommand);
 
         const string configuration = "Release";
         var runCommand = $"dotnet run  -c {configuration} --project {testClientPath} -- ";
@@ -41,7 +41,7 @@ public static class TestDrexCommand
             executeTestDrexCommandBuilder.Append($" -o {testDrexOptions.Origin}");
         }
 
-        powerShellAdapter.RunPowerShellCommand(executeTestDrexCommandBuilder.ToString());
+        await powerShellAdapter.RunPowerShellCommandAsync(executeTestDrexCommandBuilder.ToString());
 
         return 0;
     }

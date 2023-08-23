@@ -16,7 +16,7 @@ public static class RunCommand
 
         if (runOptions.Reset == true)
         {
-            DockerHelper.ResetDocker(powerShellAdapter);
+            await DockerHelper.ResetDockerAsync(powerShellAdapter);
         }
 
         var additionalEnvValues = new Dictionary<string, string>
@@ -66,7 +66,7 @@ public static class RunCommand
         {
             Console.WriteLine("\nFinal compose configuration:");
             AnsiConsole.Write(new Rule());
-            powerShellAdapter.RunPowerShellCommand(configCommand);
+            await powerShellAdapter.RunPowerShellCommandAsync(configCommand);
             AnsiConsole.Write(new Rule());
             Console.WriteLine();
         }
@@ -75,7 +75,7 @@ public static class RunCommand
         {
             foreach (var component in RunOptions.NonAliasComponentPropertyNames)
             {
-                PullImageIfNeeded(powerShellAdapter, runOptions, appConfig, component);
+                await PullImageIfNeededAsync(powerShellAdapter, runOptions, appConfig, component);
             }
         }
 
@@ -102,7 +102,7 @@ public static class RunCommand
         {
             Console.WriteLine("\nNow running the following Docker Compose command:");
             Console.WriteLine(composeCommandBuilder.ToString());
-            powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
+            await powerShellAdapter.RunPowerShellCommandAsync(composeCommandBuilder.ToString());
         }
 
         if (runOptions.Mode is RunMode.o)
@@ -115,7 +115,7 @@ public static class RunCommand
         return 0;
     }
 
-    private static void PullImageIfNeeded(IPowerShellAdapter powerShellAdapter, RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
+    private static async Task PullImageIfNeededAsync(IPowerShellAdapter powerShellAdapter, RunOptions runOptions, AppConfig appConfig, string componentPropertyName)
     {
         var componentIsNotIncludedOrIsSetToRunFromSource = runOptions.GetType().GetProperty(componentPropertyName)!.GetValue(runOptions, null) is not ComposeComponentMode propertyValue
                                                            || propertyValue == ComposeComponentMode.s;
@@ -126,6 +126,6 @@ public static class RunCommand
 
         var runComponent = runOptions.GetType().GetRunComponent(componentPropertyName)!;
         Console.WriteLine($"Pulling {runComponent.ImageName} image...");
-        powerShellAdapter.RunPowerShellCommand($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
+        await powerShellAdapter.RunPowerShellCommandAsync($"docker pull {Constants.ContainerRepository}/{runComponent.ImageName}:windows-{appConfig.ContainerWindowsVersion}");
     }
 }
