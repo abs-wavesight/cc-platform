@@ -9,6 +9,7 @@ namespace Abs.CommonCore.LocalDevUtility.Helpers;
 public class PowerShellAdapter : IPowerShellAdapter
 {
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
+    private readonly SemaphoreSlim _accessLock = new SemaphoreSlim(1);
 
     public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
     {
@@ -17,28 +18,36 @@ public class PowerShellAdapter : IPowerShellAdapter
 
     public List<string> RunPowerShellCommand(string command, ILogger? logger, TimeSpan? timeout)
     {
-        var ps = PowerShell.Create(RunspaceMode.NewRunspace);
-        ps.AddScript(command);
-        ps.AddCommand("Out-String").AddParameter("Stream", true);
-
-        var rawOutput = new List<string>();
-        var output = new PSDataCollection<string>();
-        output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-        ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
-
-        var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-
-        if (timeout.HasValue
-                ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
-                : asyncToken.AsyncWaitHandle.WaitOne())
+        try
         {
-            ps.EndInvoke(asyncToken);
+            _accessLock.WaitAsync().GetAwaiter().GetResult();
+            using var ps = PowerShell.Create(RunspaceMode.NewRunspace);
+            ps.AddScript(command);
+            ps.AddCommand("Out-String").AddParameter("Stream", true);
+
+            var rawOutput = new List<string>();
+            var output = new PSDataCollection<string>();
+            output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
+            ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
+
+            var asyncToken = ps.BeginInvoke<object, string>(null, output);
+
+
+            if (timeout.HasValue
+                    ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
+                    : asyncToken.AsyncWaitHandle.WaitOne())
+            {
+                ps.EndInvoke(asyncToken);
+            }
+
+            ps.InvokeAsync();
+
+            return rawOutput;
         }
-
-        ps.InvokeAsync();
-
-        return rawOutput;
+        finally
+        {
+            _accessLock.Release();
+        }
     }
 
     private void ProcessCommandOutput(List<string> rawOutput, ILogger? logger, object? sender, DataAddedEventArgs eventArgs)
