@@ -55,10 +55,13 @@ public class LocalDevUtilityFixture
         CopyFile(testsLocalCerts, dummyLocalCerts, "rabbitmq.pem");
 
         var dummySftpRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-sftp-root");
-        Directory.CreateDirectory(Path.Combine(dummySftpRootPath));
+        Directory.CreateDirectory(dummySftpRootPath);
 
         var dummyFdzRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-fdz-root");
-        Directory.CreateDirectory(Path.Combine(dummyFdzRootPath));
+        Directory.CreateDirectory(dummyFdzRootPath);
+
+        var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
+        Directory.CreateDirectory(dummydrexPath);
 
         return new AppConfig
         {
