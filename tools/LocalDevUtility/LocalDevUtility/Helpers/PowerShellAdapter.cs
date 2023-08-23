@@ -27,11 +27,11 @@ public class PowerShellAdapter : IPowerShellAdapter
         ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
 
         var task = ps.InvokeAsync<object, string>(null, output);
-        if (timeout is not null)
-        {
-            task = task
-                .WaitAsync(timeout.Value);
-        }
+        //if (timeout is not null)
+        //{
+        //    task = task
+        //        .WaitAsync(timeout.Value);
+        //}
 
         task
             .GetAwaiter()
