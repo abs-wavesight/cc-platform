@@ -26,14 +26,16 @@ public class PowerShellAdapter : IPowerShellAdapter
         output.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
         ps.Streams.Error.DataAdded += (sender, args) => ProcessCommandOutput(rawOutput, logger, sender, args);
 
-        var asyncToken = ps.BeginInvoke<object, string>(null, output);
-
-        if (timeout.HasValue
-                ? asyncToken.AsyncWaitHandle.WaitOne(timeout.Value)
-                : asyncToken.AsyncWaitHandle.WaitOne())
+        var task = ps.InvokeAsync<object, string>(null, output);
+        if (timeout is not null)
         {
-            ps.EndInvoke(asyncToken);
+            task = task
+                .WaitAsync(timeout.Value);
         }
+
+        task
+            .GetAwaiter()
+            .GetResult();
 
         return rawOutput;
     }
