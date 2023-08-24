@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/git-sha.yml
     with:
       username: "${{ github.actor }}"
-      password: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+      password: "${{ github.secret_source.FETCH_ALL_RELEASES_TOKEN }}"
       repo: "github.com/abs-wavesight/cc-platform"
       branch: "main"
 
