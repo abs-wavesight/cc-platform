@@ -1,0 +1,42 @@
+﻿name: 'Git remote sha'
+
+on:
+  workflow_call:
+    inputs:
+      username:  # username to use
+        description: 'Git username'
+        type: string
+        required: true
+      password:  # username to use
+        description: 'Git password or token'
+        type: string
+        required: true
+      repo:  # username to use
+        description: 'Git repository'
+        type: string
+        required: true
+      branch:  # username to use
+        description: 'Git branch'
+        type: string
+        required: false
+        default: 'HEAD'
+    outputs:
+      sha:
+        description: 'sha of the repository/branch'
+      short_sha:
+        description: 'The first 7 characters of the full sha'
+
+jobs:
+  sha-check:
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.get_sha.outputs.sha }}
+      output2: ${{ steps.get_sha.outputs.short_sha }}
+    steps:
+      - name: Determine platform commit SHA
+        id: get_sha
+        run: |
+          sha=$(git ls-remote https://${{ inputs.username }}:${{ inputs.password }}@{{ inputs.repo }} ${{ inputs.branch }} | cut -f1)
+          short_sha=${sha:0:7}
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "short_sha=short_sha" >> "$GITHUB_OUTPUT"
