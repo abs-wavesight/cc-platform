@@ -24,12 +24,13 @@ jobs:
   sha-check:
     name: Determine platform commit SHA
     if: ${{ inputs.platform-commit-sha == '' }}
-    uses: ./.github/workflows/git-sha.yml
+    uses: ./.github/workflows/shared-git-sha.yml
     with:
       username: "${{ github.actor }}"
-      password: "${{ github.secret_source.FETCH_ALL_RELEASES_TOKEN }}"
+      # password: "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
       repo: "github.com/abs-wavesight/cc-platform"
       branch: "main"
+    secrets: inherit
 
   release-component:
     needs: sha-check
