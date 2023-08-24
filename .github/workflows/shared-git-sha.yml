@@ -14,7 +14,7 @@ on:
       repo:  # username to use
         description: 'Git repository'
         type: string
-        required: true
+        required: false
       branch:  # username to use
         description: 'Git branch'
         type: string
