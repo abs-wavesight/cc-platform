@@ -43,7 +43,7 @@ jobs:
     steps:
     - name: step1
       id: step1
-      uses: ankur-lt/get-previous-stable-releases@1.0.4
+      uses: ankur-lt/get-previous-stable-releases@v1.0.4
       with:
         user: "${{ github.actor }}"
         repoName: "https://github.com/abs-wavesight/cc-platform"
