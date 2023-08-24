@@ -12,19 +12,19 @@ on:
         type: string
         description: Description of the release
       rabbitmq-version:
-        required: true
+        required: false
         type: string
         description: Version to use for RabbitMQ release # v1.0.0
       vector-site-version:
-        required: true
+        required: false
         type: string
         description: Version to use for Vector site release # v1.0.0
       drex-version:
-        required: true
+        required: false
         type: string
         description: Version to use for Drex release # v1.0.0
       openssl-version:
-        required: true
+        required: false
         type: string
         description: Version to use for OpenSSL release # v1.0.0
 
@@ -43,7 +43,7 @@ jobs:
     steps:
     - name: step1
       id: step1
-      uses: ankur-lt/get-previous-stable-releases@1.0.2
+      uses: ankur-lt/get-previous-stable-releases@1.0.4
       with:
         user: "${{ github.actor }}"
         repoName: "https://github.com/abs-wavesight/cc-platform"
