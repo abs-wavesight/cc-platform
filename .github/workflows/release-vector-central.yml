@@ -24,7 +24,7 @@ jobs:
   sha-check:
     name: Determine platform commit SHA
     if: ${{ inputs.platform-commit-sha == '' }}
-    uses: ./.github/workflows/shared-git-sha.yml
+    uses: ./.github/workflows/shared-get-latest-commit-sha.yml
     with:
       repo: "github.com/abs-wavesight/cc-platform"
       branch: "main"
@@ -47,4 +47,3 @@ jobs:
         -p `$PLATFORM_COMMIT_SHA:${{ needs.sha-check.outputs.short_sha || inputs.platform-commit-sha }}  
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
-    if: ${{ always() }}

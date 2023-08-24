@@ -1,4 +1,4 @@
-﻿name: 'Git remote sha'
+﻿name: 'Shared - Get Latest Commit SHA'
 
 on:
   workflow_call:
