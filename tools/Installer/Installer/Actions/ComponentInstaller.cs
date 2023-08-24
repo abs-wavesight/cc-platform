@@ -72,13 +72,13 @@ namespace Abs.CommonCore.Installer.Actions
                     Action = y
                 }))
                 .OrderByDescending(x => x.Action.Action == ComponentActionAction.Copy)
+                .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
                 .ThenByDescending(x => x.Action.Action == ComponentActionAction.UpdatePath)
                 .ThenByDescending(x =>
-                    x.Action.Action is ComponentActionAction.ReplaceParameters or
-                        ComponentActionAction.Chunk or
+                    x.Action.Action is ComponentActionAction.Chunk or
                         ComponentActionAction.Unchunk or
                         ComponentActionAction.Compress or
                         ComponentActionAction.Uncompress)
