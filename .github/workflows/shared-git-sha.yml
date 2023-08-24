@@ -33,4 +33,4 @@ jobs:
           sha=$(git ls-remote https://${{ github.actor }}:"${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"@${{ inputs.repo }} ${{ inputs.branch }} | cut -f1)
           short_sha=${sha:0:7}
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "short_sha=short_sha" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
