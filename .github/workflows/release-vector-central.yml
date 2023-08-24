@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Determine platform commit SHA
         id: get_platform_commit_sha
-        uses: ./.github/actions/git-sha/git-sha.yml
+        uses: ./.github/actions/git-sha/action.yml
         with:
           username: "${{ github.actor }}"
           password: "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
