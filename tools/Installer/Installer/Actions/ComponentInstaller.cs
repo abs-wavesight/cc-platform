@@ -216,6 +216,7 @@ namespace Abs.CommonCore.Installer.Actions
 
         private async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action)
         {
+            _logger.LogInformation($"{component.Name}: Replacing parameters in '{action.Source}'");
             var path = Path.Combine(rootLocation, action.Source);
             var text = await File.ReadAllTextAsync(path);
 
