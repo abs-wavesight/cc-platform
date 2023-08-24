@@ -4,6 +4,7 @@ using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Abs.CommonCore.LocalDevUtility.IntegrationTests;
@@ -17,9 +18,8 @@ public class LocalDevUtilityIntegrationTests
         _testOutput = testOutput;
     }
 
-    // TODO: Fix in ADO-22076
-    //[Theory]
-    //[InlineData("--rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
+    [Theory]
+    [InlineData("--rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
     // [InlineData("--drex-file-service i", new[] { "cc.drex-file-service", "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     // [InlineData("--deps i --drex-service i --log-viz i", new []{"cc.vector", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.grafana", "cc.loki", "cc.drex-service"})]
     public async Task Utility_GivenValidRunCommand_ShouldStartExpectedComposeServices(string componentParameters, string[] expectedServices)
@@ -36,13 +36,13 @@ public class LocalDevUtilityIntegrationTests
 
         // Stop first just in case something was running before we started
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
-        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
 
         try
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
 
             // Assert
             var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
@@ -57,7 +57,7 @@ public class LocalDevUtilityIntegrationTests
             {
                 try
                 {
-                    var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(1));
+                    var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
                     var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
 
                     statusCommandJsonResult.Should().NotBeNull();
@@ -86,7 +86,7 @@ public class LocalDevUtilityIntegrationTests
         finally
         {
             _testOutput.WriteLine("\n\n\n");
-            fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(3));
+            fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
         }
     }
 }

@@ -43,6 +43,8 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ inputs.image-name }}
+  ASPNET_FULLSERVER_TAG_WIN2019: 7.0-windowsservercore-ltsc2019
+  ASPNET_FULLSERVER_TAG_WIN2022: 7.0-windowsservercore-ltsc2022
   DOTNET_IMAGE_TAG_WIN2019: 7.0-nanoserver-1809
   DOTNET_IMAGE_TAG_WIN2022: 7.0-nanoserver-ltsc2022
   POWERSHELL_IMAGE_TAG_WIN2019: lts-7.2-nanoserver-1809
@@ -117,6 +119,7 @@ jobs:
           BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
         with:
           buildArgs: >-
+            ASPNET_FULLSERVER_TAG=${{ matrix.os == 'windows-2022' && env.ASPNET_FULLSERVER_TAG_WIN2022 || env.ASPNET_FULLSERVER_TAG_WIN2019 }},
             DOTNET_TAG=${{ matrix.os == 'windows-2022' && env.DOTNET_IMAGE_TAG_WIN2022 || env.DOTNET_IMAGE_TAG_WIN2019 }},
             POWERSHELL_NANOSERVER_TAG=${{ matrix.os == 'windows-2022' && env.POWERSHELL_IMAGE_TAG_WIN2022 || env.POWERSHELL_IMAGE_TAG_WIN2019 }},
             ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",

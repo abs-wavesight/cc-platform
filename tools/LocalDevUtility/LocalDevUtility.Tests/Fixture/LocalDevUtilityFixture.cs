@@ -22,7 +22,7 @@ public class LocalDevUtilityFixture
         MockPowerShellAdapter = new Mock<IPowerShellAdapter>();
         MockPowerShellAdapter
             .Setup(_ => _.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
-            .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem); });
+            .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem.Replace("\"\"", "\"")); });
 
         TestLogger.Default.SetTestOutput(testOutput);
         Logger = TestLogger.Default;
@@ -41,14 +41,27 @@ public class LocalDevUtilityFixture
         var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
 
         var dummyCertPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-certs");
-        Directory.CreateDirectory(Path.Combine(dummyCertPath, "local-keys"));
-        Directory.CreateDirectory(Path.Combine(dummyCertPath, "local-certs"));
+        var dummyLocalKeys = Path.Combine(dummyCertPath, "local-keys");
+        var dummyLocalCerts = Path.Combine(dummyCertPath, "local-certs");
+        Directory.CreateDirectory(dummyLocalKeys);
+        Directory.CreateDirectory(dummyLocalCerts);
+
+        var testsCertPath = Path.Combine(executingPath, "dummy-certs");
+        var testsLocalKeys = Path.Combine(testsCertPath, "local-keys");
+        var testsLocalCerts = Path.Combine(testsCertPath, "local-certs");
+
+        CopyFile(testsLocalKeys, dummyLocalKeys, "rabbitmq.key");
+        CopyFile(testsLocalCerts, dummyLocalCerts, "rabbitmq.cer");
+        CopyFile(testsLocalCerts, dummyLocalCerts, "rabbitmq.pem");
 
         var dummySftpRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-sftp-root");
-        Directory.CreateDirectory(Path.Combine(dummySftpRootPath));
+        Directory.CreateDirectory(dummySftpRootPath);
 
         var dummyFdzRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-fdz-root");
-        Directory.CreateDirectory(Path.Combine(dummyFdzRootPath));
+        Directory.CreateDirectory(dummyFdzRootPath);
+
+        var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
+        Directory.CreateDirectory(dummydrexPath);
 
         return new AppConfig
         {
@@ -70,5 +83,13 @@ public class LocalDevUtilityFixture
     {
         ConfigureCommand.ValidateConfig(config).Should().HaveCount(0);
         await ConfigureCommand.SaveConfig(config);
+    }
+
+    private void CopyFile(string sourcePath, string destinationPath, string name)
+    {
+        sourcePath = Path.Combine(sourcePath, name);
+        destinationPath = Path.Combine(destinationPath, name);
+
+        File.Copy(sourcePath, destinationPath, true);
     }
 }

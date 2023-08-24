@@ -22,6 +22,7 @@ public class TestDrexCommandTests
     [InlineData("test-drex -o c -r c -l", new[] { "-o c", "-r c", "-l" })]
     [InlineData("test-drex -l", new[] { "-l" })]
     [InlineData("test-drex -o s", new[] { "-o s" })]
+    [InlineData("test-drex -c C:\\test.json", new[] { "-c C:\\test.json" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteTestClient(string command, string[] expectedOptions)
     {
         // Arrange

@@ -119,12 +119,12 @@ public static class ConfigureCommand
             var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
             var dockerCommand = $"docker pull {fullContainerName};";
             dockerCommand += " docker run";
-            dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\"";
+            dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\" ";
             dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
             dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
             dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
             dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
-            dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\"";
+            dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\" ";
             logger.LogInformation($"Running docker command: {dockerCommand}");
             powerShellAdapter.RunPowerShellCommand(dockerCommand);
         }
