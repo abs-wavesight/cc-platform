@@ -3,19 +3,11 @@
 on:
   workflow_call:
     inputs:
-      #username:  # username to use
-      #  description: 'Git username'
-      #  type: string
-      #  required: true
-      # password:  # username to use
-      #   description: 'Git password or token'
-      #   type: string
-      #   required: true
-      repo:  # username to use
+      repo:
         description: 'Git repository'
         type: string
         required: false
-      branch:  # username to use
+      branch:
         description: 'Git branch'
         type: string
         required: false
@@ -38,7 +30,7 @@ jobs:
       - name: Determine platform commit SHA
         id: get_sha
         run: |
-          sha=$(git ls-remote https://${{ github.actor }}:"${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"@{{ inputs.repo }} ${{ inputs.branch }} | cut -f1)
+          sha=$(git ls-remote https://${{ github.actor }}:"${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"@${{ inputs.repo }} ${{ inputs.branch }} | cut -f1)
           short_sha=${sha:0:7}
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "short_sha=short_sha" >> "$GITHUB_OUTPUT"
