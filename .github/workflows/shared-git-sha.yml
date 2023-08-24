@@ -23,15 +23,17 @@ on:
     outputs:
       sha:
         description: 'sha of the repository/branch'
+        value: ${{ jobs.sha.outputs.sha }}
       short_sha:
         description: 'The first 7 characters of the full sha'
+        value: ${{ jobs.sha.outputs.short_sha }}
 
 jobs:
-  sha-check:
+  sha:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.get_sha.outputs.sha }}
-      output2: ${{ steps.get_sha.outputs.short_sha }}
+      sha: ${{ steps.get_sha.outputs.sha }}
+      short_sha: ${{ steps.get_sha.outputs.short_sha }}
     steps:
       - name: Determine platform commit SHA
         id: get_sha
