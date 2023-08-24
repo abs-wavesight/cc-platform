@@ -1,4 +1,4 @@
-name: Vector Central Release
+﻿name: Vector Central Release
 
 on:
   workflow_dispatch:
@@ -22,19 +22,15 @@ concurrency:
 
 jobs:
   sha-check:
-    runs-on: ubuntu-latest
-    outputs:
-      platform_commit_sha: ${{ steps.get_platform_commit_sha.outputs.short_sha }}
-    steps:
-      - name: Determine platform commit SHA
-        id: get_platform_commit_sha
-        uses: ./.github/actions/git-sha/action.yml
-        with:
-          username: "${{ github.actor }}"
-          password: "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
-          repo: "https://github.com/abs-wavesight/cc-platform"
-          branch: "HEAD"
-        if: ${{ inputs.platform-commit-sha == '' }}
+    name: Determine platform commit SHA
+    if: ${{ inputs.platform-commit-sha == '' }}
+    uses: ./.github/actions/git-sha/action.yml
+    with:
+      username: "${{ github.actor }}"
+      password: "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
+      repo: "https://github.com/abs-wavesight/cc-platform"
+      branch: "HEAD"
+    secrets: inherit
 
   release-component:
     needs: sha-check
@@ -50,6 +46,7 @@ jobs:
       description: ${{ inputs.description }}
       component-params: >
         -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 
-        -p `$PLATFORM_COMMIT_SHA:${{ needs.sha-check.outputs.platform_commit_sha || inputs.platform-commit-sha }}  
+        -p `$PLATFORM_COMMIT_SHA:${{ needs.sha-check.outputs.short_sha || inputs.platform-commit-sha }}  
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
+    if: ${{ always() }}
