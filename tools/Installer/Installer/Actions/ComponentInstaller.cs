@@ -72,13 +72,13 @@ public class ComponentInstaller : ActionBase
                 Action = y
             }))
             .OrderByDescending(x => x.Action.Action == ComponentActionAction.Copy)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.UpdatePath)
             .ThenByDescending(x =>
-                x.Action.Action is ComponentActionAction.ReplaceParameters or
-                    ComponentActionAction.Chunk or
+                x.Action.Action is ComponentActionAction.Chunk or
                     ComponentActionAction.Unchunk or
                     ComponentActionAction.Compress or
                     ComponentActionAction.Uncompress)
@@ -216,6 +216,7 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
+        _logger.LogInformation($"{component.Name}: Replacing parameters in '{action.Source}'");
         var path = Path.Combine(rootLocation, action.Source);
         var text = await File.ReadAllTextAsync(path);
 
