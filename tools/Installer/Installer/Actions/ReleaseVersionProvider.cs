@@ -14,7 +14,7 @@ public class ReleaseVersionProvider : ActionBase
         var releaseVersion = (await client.Repository.Release.GetAll(owner, repoName))
             .OrderByDescending(r => r.PublishedAt)
             .Select(r => r.Name)
-            .FirstOrDefault(n => n.StartsWith(releaseName))
+            .FirstOrDefault(n => n.StartsWith(releaseName, StringComparison.InvariantCultureIgnoreCase))
             ?[releaseName.Length..]
             ?.Trim();
 
