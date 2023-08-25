@@ -12,11 +12,11 @@ on:
         type: string
         description: Description of the release
       rabbitmq-version:
-        required: true
+        required: false
         type: string
         description: Version to use for RabbitMQ release # v1.0.0
       vector-central-version:
-        required: true
+        required: false
         type: string
         description: Version to use for Vector central release # v1.0.0
 
@@ -25,8 +25,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-default-rabbitmq-version:
+    name: Get Default RabbitMQ Version
+    if: ${{ inputs.rabbitmq-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "RabbitMQ Release 2022"
+    secrets: inherit
+
+  get-default-vector-central-version:
+    name: Get Default Vector Central Version
+    if: ${{ inputs.vector-central-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Vector Central Release 2022"
+    secrets: inherit
+
   release-component:
     name: Central System Release
+    needs: 
+      - get-default-rabbitmq-version
+      - get-default-vector-central-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -37,6 +58,9 @@ jobs:
       tag-prefix: central-system
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemConfig.json
-      component-params: -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ inputs.rabbitmq-version }} -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ inputs.vector-central-version }}
+      component-params: >
+        -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
+        -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}
       release-name-prefix: Central System Release
     secrets: inherit
+    if: ${{ always() }}
