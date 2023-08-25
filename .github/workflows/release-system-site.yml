@@ -12,19 +12,19 @@ on:
         type: string
         description: Description of the release
       rabbitmq-version:
-        required: true
+        required: false
         type: string
         description: Version to use for RabbitMQ release # v1.0.0
       vector-site-version:
-        required: true
+        required: false
         type: string
         description: Version to use for Vector site release # v1.0.0
       drex-version:
-        required: true
+        required: false
         type: string
         description: Version to use for Drex release # v1.0.0
       openssl-version:
-        required: true
+        required: false
         type: string
         description: Version to use for OpenSSL release # v1.0.0
 
@@ -33,8 +33,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-default-rabbitmq-version:
+    name: Get Default RabbitMQ Version
+    if: ${{ inputs.rabbitmq-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "RabbitMQ Release 2022"
+    secrets: inherit
+
+  get-default-vector-site-version:
+    name: Get Default Vector Site Version
+    if: ${{ inputs.vector-site-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Vector Site Release 2022"
+    secrets: inherit
+
+  get-default-drex-version:
+    name: Get Default Drex Version
+    if: ${{ inputs.drex-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex Release 2022"
+    secrets: inherit
+
+  get-default-openssl-version:
+    name: Get Default OpenSSL Version
+    if: ${{ inputs.vector-site-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "OpenSSL Release 2022"
+    secrets: inherit
+
   release-component:
     name: Site System Release
+    needs: 
+      - get-default-rabbitmq-version
+      - get-default-vector-site-version
+      - get-default-drex-version
+      - get-default-openssl-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -46,9 +87,9 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ inputs.rabbitmq-version }} 
-        -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ inputs.vector-site-version }} 
-        -p `$DREX_RELEASE_TAG:drex-${{ matrix.windows-version }}-${{ inputs.drex-version }} 
-        -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ inputs.openssl-version }}
+        -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
+        -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ needs.get-default-vector-site-version || inputs.vector-site-version }} 
+        -p `$DREX_RELEASE_TAG:drex-${{ matrix.windows-version }}-${{ needs.get-default-drex-version || inputs.drex-version }} 
+        -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ needs.get-default-openssl-version || inputs.openssl-version }}
       release-name-prefix: Site System Release
     secrets: inherit

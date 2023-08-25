@@ -21,17 +21,6 @@ on:
         version:
           description: 'version'
           value: ${{ jobs.get-version.outputs.version }}
-    workflow_dispatch:
-        inputs:
-            repo: # cc-platform
-                description: 'Git repository name'
-                type: string
-                required: false
-                default: 'cc-platform'
-            name: # RabbitMQ Release 2019
-                description: 'Release name'
-                type: string
-                required: true
 
 jobs:
     get-version:
