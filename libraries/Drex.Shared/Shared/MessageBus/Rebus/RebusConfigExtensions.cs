@@ -115,7 +115,7 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                 .Options(o =>
                 {
                     o.SetBusName(busName);
-                    if (string.IsNullOrWhiteSpace(deadLetterQueueName) == false) 
+                    if (string.IsNullOrWhiteSpace(deadLetterQueueName) == false)
                         o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
                 })
                 .SetSerialization(serializerConfig);
