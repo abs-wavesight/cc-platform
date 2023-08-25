@@ -4,8 +4,10 @@ using Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization;
 using Microsoft.Extensions.Logging;
 using Rebus.Compression;
 using Rebus.Config;
+using Rebus.Messages;
 using Rebus.RabbitMq;
 using Rebus.Retry.Simple;
+using Rebus.Routing.TransportMessages;
 using Rebus.Serialization;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
@@ -83,6 +85,68 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
                     o.EnableCompression(1);
                     // o.LogPipeline(verbose: true);
                 })
+                .SetSerialization(serializerConfig);
+        }
+
+        public static RebusConfigurer ConfigureRebusQueueConsumer(
+            this RebusConfigurer rebusConfigurer,
+            BusConnection sourceMessageBusConnectionInfo,
+            string busName,
+            string inputQueueName,
+            string? deadLetterQueueName,
+            ILoggerFactory loggerFactory,
+            Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
+            bool enableSsl = false)
+        {
+            return rebusConfigurer
+                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
+                .Transport(t =>
+                {
+                    var rabbitMqOptions = t
+                        .UseRabbitMq(
+                            sourceMessageBusConnectionInfo.ToConnectionString(),
+                            inputQueueName)
+                        .SetPublisherConfirms(true);
+                    if (enableSsl)
+                    {
+                        rabbitMqOptions.Ssl(new SslSettings(true, sourceMessageBusConnectionInfo.Host));
+                    }
+                })
+                .Options(o =>
+                {
+                    o.SetBusName(busName);
+                    if (string.IsNullOrWhiteSpace(deadLetterQueueName) == false) 
+                        o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
+                })
+                .SetSerialization(serializerConfig);
+        }
+
+        public static RebusConfigurer ConfigureRebusQueueConsumer(
+            this RebusConfigurer rebusConfigurer,
+            BusConnection sourceMessageBusConnectionInfo,
+            string busName,
+            string inputQueueName,
+            Func<TransportMessage, Task<ForwardAction>> messageForwarder,
+            ILoggerFactory loggerFactory,
+            Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
+            bool enableSsl = false)
+        {
+            return rebusConfigurer
+                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
+                .Transport(t =>
+                {
+                    var rabbitMqOptions = t
+                        .UseRabbitMq(
+                            sourceMessageBusConnectionInfo.ToConnectionString(),
+                            inputQueueName)
+                        .SetPublisherConfirms(true);
+                    if (enableSsl)
+                    {
+                        rabbitMqOptions.Ssl(new SslSettings(true, sourceMessageBusConnectionInfo.Host));
+                    }
+                })
+                .Routing(r => r.AddTransportMessageForwarder(transportMessage => messageForwarder(transportMessage)))
+                .Options(o => o.SetBusName(busName))
                 .SetSerialization(serializerConfig);
         }
 
