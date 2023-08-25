@@ -12,19 +12,19 @@ on:
         type: string
         description: Description of the release
       rabbitmq-version:
-        required: false
+        required: true
         type: string
         description: Version to use for RabbitMQ release # v1.0.0
       vector-site-version:
-        required: false
+        required: true
         type: string
         description: Version to use for Vector site release # v1.0.0
       drex-version:
-        required: false
+        required: true
         type: string
         description: Version to use for Drex release # v1.0.0
       openssl-version:
-        required: false
+        required: true
         type: string
         description: Version to use for OpenSSL release # v1.0.0
 
@@ -33,30 +33,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  get:
-    name: Get rabbit version
-    runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.step1.outputs.previousTag }}
-      output2: ${{ steps.step1.outputs.previousSecondTag }}
-      output3: ${{ steps.step1.outputs.previousThirdTag }}
-    steps:
-    - name: step1
-      id: step1
-      uses: ankur-lt/get-previous-stable-releases@v1.0.4
-      with:
-        user: "${{ github.actor }}"
-        repoName: "https://github.com/abs-wavesight/cc-platform"
-        accessToken: "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
-    - name: debug
-      id: step2
-      run: |
-        echo "previousTag: ${{ steps.step1.outputs.previousTag }}"
-        echo "previousSecondTag: ${{ steps.step1.outputs.previousSecondTag }}"
-        echo "previousThirdTag: ${{ steps.step1.outputs.previousThirdTag }}"
-
   release-component:
-    needs: get
     name: Site System Release
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
