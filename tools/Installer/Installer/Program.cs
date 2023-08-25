@@ -31,6 +31,7 @@ internal class Program
         var configureRabbitCommand = SetupConfigureRabbitCommand(args);
         var uninstallCommand = SetupUninstallCommand(args);
         var getReleaseVersionCommand = SetupGetVersionCommand(args);
+        var getContainerVersionCommand = SetupGetContainerVersionCommand(args);
 
         var root = new RootCommand("Installer for the Common Core platform");
         root.TreatUnmatchedTokensAsErrors = true;
@@ -44,6 +45,7 @@ internal class Program
         root.Add(configureRabbitCommand);
         root.Add(uninstallCommand);
         root.Add(getReleaseVersionCommand);
+        root.Add(getContainerVersionCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
@@ -456,6 +458,31 @@ internal class Program
         return command;
     }
 
+    private static Command SetupGetContainerVersionCommand(string[] args)
+    {
+        const string commandName = "get-container-version";
+        var command = new Command(commandName);
+        command.TreatUnmatchedTokensAsErrors = true;
+
+        const string releaseNameParamName = "--name";
+        var releaseNameParam = new Option<string>(releaseNameParamName);
+        releaseNameParam.IsRequired = true;
+        command.Add(releaseNameParam);
+
+        const string ownerParamName = "--owner";
+        var ownerParam = new Option<string>(ownerParamName);
+        releaseNameParam.IsRequired = true;
+        command.Add(ownerParam);
+
+        command.SetHandler(async (releaseName, owner) =>
+        {
+            var result = await ExecuteGetContainerVersionCommandAsync(releaseName, owner, args);
+            await Console.Out.WriteAsync(result);
+        }, releaseNameParam, ownerParam);
+
+        return command;
+    }
+
     private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
     {
         var config = new FileInfo("SystemConfig.json");
@@ -673,12 +700,28 @@ internal class Program
     private static async Task<string?> ExecuteGetReleaseVersionCommandAsync(string releaseName, string owner, string repoName, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
-        var versionProvider = new ReleaseVersionProvider();
+        var releaseDataProvider = new ReleaseDataProvider();
+        var versionProvider = new ReleaseVersionProvider(releaseDataProvider);
 
         string? version = null;
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
             version = await versionProvider.GetVersionAsync(releaseName, owner, repoName);
+        });
+
+        return version;
+    }
+
+    private static async Task<string?> ExecuteGetContainerVersionCommandAsync(string releaseName, string owner, string[] args)
+    {
+        var (_, loggerFactory) = Initialize(args);
+        var tagProvider = new ContainerTagProvider();
+        var versionProvider = new ContainerVersionProvider(tagProvider);
+
+        string? version = null;
+        await ExecuteCommandAsync(loggerFactory, async () =>
+        {
+            version = await versionProvider.GetLatestContainerVersionAsync(releaseName, owner);
         });
 
         return version;

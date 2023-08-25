@@ -1,19 +1,19 @@
-﻿using Octokit;
+﻿using Abs.CommonCore.Installer.Services;
 
 namespace Abs.CommonCore.Installer.Actions;
 
 public class ReleaseVersionProvider : ActionBase
 {
-    private readonly string? _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
+    private readonly IReleaseDataProvider _releaseDataProvider;
+
+    public ReleaseVersionProvider(IReleaseDataProvider releaseDataProvider)
+    {
+        _releaseDataProvider = releaseDataProvider;
+    }
 
     public async Task<string?> GetVersionAsync(string releaseName, string owner, string repoName)
     {
-        var client = new GitHubClient(new ProductHeaderValue(Constants.AbsHeaderValue));
-        client.Credentials = new Credentials(_nugetEnvironmentVariable);
-
-        var releaseVersion = (await client.Repository.Release.GetAll(owner, repoName))
-            .OrderByDescending(r => r.PublishedAt)
-            .Select(r => r.Name)
+        var releaseVersion = (await _releaseDataProvider.GetReleaseNames(owner, repoName))
             .FirstOrDefault(n => n.StartsWith(releaseName, StringComparison.InvariantCultureIgnoreCase))
             ?[releaseName.Length..]
             ?.Trim();

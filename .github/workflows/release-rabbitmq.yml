@@ -12,7 +12,7 @@ on:
         type: string
         description: Description of the release
       platform-commit-sha: # 6ac7551
-        required: false
+        required: true
         type: string
         description: 7 character short SHA for the commit in cc-platform 
 
@@ -21,18 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sha-check:
-    name: Determine platform commit SHA
-    if: ${{ inputs.platform-commit-sha == '' }}
-    uses: ./.github/workflows/shared-get-latest-commit-sha.yml
-    with:
-      repo: "github.com/abs-wavesight/cc-platform"
-      branch: "main"
-    secrets: inherit
-
   release-component:
     name: RabbitMQ Release
-    needs: sha-check
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
@@ -44,6 +34,6 @@ jobs:
       description: ${{ inputs.description }}
       component-params: >
         -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 
-        -p `$PLATFORM_COMMIT_SHA:${{ needs.sha-check.outputs.short_sha || inputs.platform-commit-sha }} 
+        -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
