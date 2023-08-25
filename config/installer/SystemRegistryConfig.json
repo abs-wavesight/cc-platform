@@ -361,6 +361,31 @@
           "action": "replaceParameters"
         }
       ]
+    },
+    {
+      "name": "OpenSsh",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$OPENSSH_RELEASE_TAG/",
+          "destination": "c:/abs/temp/OpenSsh/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "openssh.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.openssh.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }

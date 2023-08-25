@@ -1,0 +1,35 @@
+---
+version: '3.9'
+services:
+  cc.openssh:
+    image: ghcr.io/abs-wavesight/openssh:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
+    command: [ "pwsh", "C:\\config\\generate-certs-prod.ps1" ]
+    container_name: openssh
+    hostname: openssh
+    entrypoint: [
+      "pwsh", 
+      "-Command", 
+      "C:/scripts/create-drex-user.ps1",
+      "-Username",
+      "drex",
+      "-Password",
+      "P@ssword",
+      ";",
+      "pwsh", 
+      "-Command", 
+      "C:/scripts/startup.ps1", 
+      ";"
+    ]    
+    logging:
+      driver: local
+    ports:
+      - 1022:22
+    volumes:
+      - type: bind
+        source: $ABS_PATH/config/config/openssh
+        target: C:/config
+        read_only: true
+      - type: bind
+        source: $OPEN_SSH_ROOT
+        target: C:/sftproot
+        read_only: false
