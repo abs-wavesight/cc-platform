@@ -32,6 +32,7 @@ jobs:
   release-component:
     name: OpenSSL Release
     needs: get-default-platform-commit-sha
+    if: needs.get-default-platform-commit-sha.result == 'success' || needs.get-default-platform-commit-sha.result == 'skipped'
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
