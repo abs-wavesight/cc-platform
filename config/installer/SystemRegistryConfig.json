@@ -343,16 +343,16 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex-message\\",
+          "destination": "$ABS_PATH\\config\\drex-common\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "$ABS_PATH\\config\\drex-message\\",
+          "destination": "$ABS_PATH\\config\\drex-common\\",
           "action": "copy"
         },
         {
-          "source": "docker-compose.drex.yml",
+          "source": "docker-compose.drex-message.yml",
           "destination": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "copy"
         },
@@ -362,6 +362,31 @@
         }
       ]
     },
+    {
+      "name": "Drex-File",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_FILE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-File/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "drex-file.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.drex-file.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },	
     {
       "name": "OpenSsh",
       "files": [

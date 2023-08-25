@@ -160,13 +160,34 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-message.yml",
           "destination": "docker-compose.drex-message.yml"
         }
       ],
       "actions": [
 	  	{
           "source": "docker-compose.drex-message.yml",
+          "action": "replaceParameters"
+        }		
+	  ]
+    },
+    {
+      "name": "Drex-File",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-main-$DREX_FILE_COMMIT_SHA",
+          "destination": "drex-file.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-file.yml",
+          "destination": "docker-compose.drex-file.yml"
+        }
+      ],
+      "actions": [
+	  	{
+          "source": "docker-compose.drex-file.yml",
           "action": "replaceParameters"
         }		
 	  ]

@@ -1,0 +1,37 @@
+---
+version: '3.9'
+
+services:
+  cc.drex-file-service:
+    container_name: drex-file-service
+    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-main-$DREX_FILE_COMMIT_SHA
+    depends_on:
+      - cc.vector
+      - cc.rabbitmq
+      - cc.drex-message-service
+    environment:
+      - SiteConfigFileName=C:/app/config/site-config.json
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
+      - LocalMessageBus__Username=${DREX_COMMON_LOCAL_USERNAME}
+      - LocalMessageBus__Password=${DREX_COMMON_LOCAL_PASSWORD}
+    ports:	
+      - "12345:5000"	
+    restart: always	
+    volumes:	
+      - type: bind	
+        source: $ABS_PATH/config/drex-common
+        target: C:/app/config
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/certificates/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: $FDZ_ROOT_PATH
+        target: c:/abs/fdz
+        read_only: false          
