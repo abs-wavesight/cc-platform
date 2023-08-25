@@ -4,91 +4,90 @@ using Abs.CommonCore.Installer.Extensions;
 using Microsoft.Extensions.Logging;
 using Octokit;
 
-namespace Abs.CommonCore.Installer.Services
+namespace Abs.CommonCore.Installer.Services;
+
+[ExcludeFromCodeCoverage]
+public class DataRequestService : IDataRequestService
 {
-    [ExcludeFromCodeCoverage]
-    public class DataRequestService : IDataRequestService
+    private readonly ILogger _logger;
+    private readonly string? _nugetEnvironmentVariable;
+    private readonly bool _verifyOnly;
+
+    private readonly HttpClient _httpClient = new HttpClient();
+
+    public DataRequestService(ILoggerFactory loggerFactory, bool verifyOnly = false)
     {
-        private readonly ILogger _logger;
-        private readonly string? _nugetEnvironmentVariable;
-        private readonly bool _verifyOnly;
+        _logger = loggerFactory.CreateLogger<DataRequestService>();
+        _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
+        _verifyOnly = verifyOnly;
 
-        private readonly HttpClient _httpClient = new HttpClient();
-
-        public DataRequestService(ILoggerFactory loggerFactory, bool verifyOnly = false)
+        if (verifyOnly == false && string.IsNullOrWhiteSpace(_nugetEnvironmentVariable))
         {
-            _logger = loggerFactory.CreateLogger<DataRequestService>();
-            _nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
-            _verifyOnly = verifyOnly;
+            throw new Exception("Nuget environment variable not found");
+        }
+    }
 
-            if (verifyOnly == false && string.IsNullOrWhiteSpace(_nugetEnvironmentVariable))
+    public async Task<byte[]> RequestByteArrayAsync(string source)
+    {
+        _logger.LogInformation($"Loading data from '{source}'");
+
+        if (_verifyOnly)
+        {
+            return Array.Empty<byte>();
+        }
+
+        if (source.Contains("github.com", StringComparison.OrdinalIgnoreCase) && source.Contains("/releases/", StringComparison.OrdinalIgnoreCase))
+        {
+            return await DownloadGithubReleaseFileAsync(source);
+        }
+
+        if (source.Contains("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase))
+        {
+            return await DownloadGithubRawFileAsync(source);
+        }
+
+        return await DownloadDirectFileAsync(source);
+    }
+
+    private async Task<byte[]> DownloadGithubReleaseFileAsync(string source)
+    {
+        var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
+        client.Credentials = new Credentials(_nugetEnvironmentVariable);
+
+        var segments = source.GetGitHubPathSegments();
+        var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
+        var asset = release.Assets
+            .First(x => string.Equals(x.Name, segments.File));
+
+        var uri = new Uri(asset.Url, UriKind.Absolute);
+        var response = await client.Connection.Get<byte[]>(uri, new Dictionary<string, string>(), "application/octet-stream");
+        return response.Body;
+    }
+
+    private Task<byte[]> DownloadGithubRawFileAsync(string source)
+    {
+        return DownloadFileAsync(source, true);
+    }
+
+    private Task<byte[]> DownloadDirectFileAsync(string source)
+    {
+        return DownloadFileAsync(source, false);
+    }
+
+    private async Task<byte[]> DownloadFileAsync(string source, bool isGithub)
+    {
+        using (var request = new HttpRequestMessage(HttpMethod.Get, source))
+        {
+            if (isGithub)
             {
-                throw new Exception("Nuget environment variable not found");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _nugetEnvironmentVariable);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
             }
-        }
 
-        public async Task<byte[]> RequestByteArrayAsync(string source)
-        {
-            _logger.LogInformation($"Loading data from '{source}'");
-
-            if (_verifyOnly)
+            using (var response = await _httpClient.SendAsync(request))
             {
-                return Array.Empty<byte>();
-            }
-
-            if (source.Contains("github.com", StringComparison.OrdinalIgnoreCase) && source.Contains("/releases/", StringComparison.OrdinalIgnoreCase))
-            {
-                return await DownloadGithubReleaseFileAsync(source);
-            }
-
-            if (source.Contains("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase))
-            {
-                return await DownloadGithubRawFileAsync(source);
-            }
-
-            return await DownloadDirectFileAsync(source);
-        }
-
-        private async Task<byte[]> DownloadGithubReleaseFileAsync(string source)
-        {
-            var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
-            client.Credentials = new Credentials(_nugetEnvironmentVariable);
-
-            var segments = source.GetGitHubPathSegments();
-            var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
-            var asset = release.Assets
-                .First(x => string.Equals(x.Name, segments.File));
-
-            var uri = new Uri(asset.Url, UriKind.Absolute);
-            var response = await client.Connection.Get<byte[]>(uri, new Dictionary<string, string>(), "application/octet-stream");
-            return response.Body;
-        }
-
-        private Task<byte[]> DownloadGithubRawFileAsync(string source)
-        {
-            return DownloadFileAsync(source, true);
-        }
-
-        private Task<byte[]> DownloadDirectFileAsync(string source)
-        {
-            return DownloadFileAsync(source, false);
-        }
-
-        private async Task<byte[]> DownloadFileAsync(string source, bool isGithub)
-        {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, source))
-            {
-                if (isGithub)
-                {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _nugetEnvironmentVariable);
-                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
-                }
-
-                using (var response = await _httpClient.SendAsync(request))
-                {
-                    response.EnsureSuccessStatusCode();
-                    return await response.Content.ReadAsByteArrayAsync();
-                }
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsByteArrayAsync();
             }
         }
     }

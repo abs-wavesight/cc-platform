@@ -1,7 +1,6 @@
-﻿namespace Abs.CommonCore.Installer.Services
+﻿namespace Abs.CommonCore.Installer.Services;
+
+public interface ICommandExecutionService
 {
-    public interface ICommandExecutionService
-    {
-        Task ExecuteCommandAsync(string command, string arguments, string workingDirectory);
-    }
+    Task ExecuteCommandAsync(string command, string arguments, string workingDirectory);
 }

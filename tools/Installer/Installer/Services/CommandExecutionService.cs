@@ -2,52 +2,51 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Services
+namespace Abs.CommonCore.Installer.Services;
+
+[ExcludeFromCodeCoverage]
+public class CommandExecutionService : ICommandExecutionService
 {
-    [ExcludeFromCodeCoverage]
-    public class CommandExecutionService : ICommandExecutionService
+    private readonly bool _verifyOnly;
+    private readonly ILogger _logger;
+
+    public CommandExecutionService(ILoggerFactory loggerFactory, bool verifyOnly = false)
     {
-        private readonly bool _verifyOnly;
-        private readonly ILogger _logger;
+        _logger = loggerFactory.CreateLogger<CommandExecutionService>();
+        _verifyOnly = verifyOnly;
+    }
 
-        public CommandExecutionService(ILoggerFactory loggerFactory, bool verifyOnly = false)
+    public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
+    {
+        _logger.LogInformation($"Executing: {command} {arguments}");
+
+        if (_verifyOnly)
         {
-            _logger = loggerFactory.CreateLogger<CommandExecutionService>();
-            _verifyOnly = verifyOnly;
+            return;
         }
 
-        public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
+        var process = new Process();
+        process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
+        process.StartInfo.Arguments = $"/C {command} {arguments}";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.StartInfo.WorkingDirectory = workingDirectory;
+
+        process.ErrorDataReceived += (sender, args) =>
         {
-            _logger.LogInformation($"Executing: {command} {arguments}");
+            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data?.Trim());
+        };
+        process.OutputDataReceived += (sender, args) =>
+        {
+            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data.Trim());
+        };
+        process.Start();
 
-            if (_verifyOnly)
-            {
-                return;
-            }
+        process.BeginErrorReadLine();
+        process.BeginOutputReadLine();
 
-            var process = new Process();
-            process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
-            process.StartInfo.Arguments = $"/C {command} {arguments}";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.WorkingDirectory = workingDirectory;
-
-            process.ErrorDataReceived += (sender, args) =>
-            {
-                if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data?.Trim());
-            };
-            process.OutputDataReceived += (sender, args) =>
-            {
-                if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data.Trim());
-            };
-            process.Start();
-
-            process.BeginErrorReadLine();
-            process.BeginOutputReadLine();
-
-            await process.WaitForExitAsync();
-        }
+        await process.WaitForExitAsync();
     }
 }

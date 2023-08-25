@@ -1,0 +1,76 @@
+﻿name: 'Shared - Get Latest Release version'
+
+on:
+    workflow_call:
+      inputs:
+        repo: # cc-platform
+          description: 'Git repository name'
+          type: string
+          required: true
+        name: # RabbitMQ Release 2019
+          description: 'Release name'
+          type: string
+          required: true
+        owner:
+          description: 'Repository owner'
+          type: string
+          required: false
+          default: 'abs-wavesight'
+        
+      outputs:
+        version:
+          description: 'version'
+          value: ${{ jobs.get-version.outputs.version }}
+
+jobs:
+    get-version:
+        runs-on: windows-latest
+        outputs:
+          version: ${{ steps.get-version.outputs.version }}
+        steps:
+            - name: Nuget - Set Nuget credentials
+              working-directory: ./
+              run: |
+                $AbsNugetUsername = "USERNAME"
+                echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+                $AbsNugetPassword = "${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"
+                echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append 
+
+            - name: Setup dotnet
+              uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: 7.0.x
+
+            - name: Login to Container Registry
+              uses: docker/login-action@v2
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+                            
+            - name: Download installer
+              uses: dsaltares/fetch-gh-release-asset@master
+              with:
+                repo: 'abs-wavesight/cc-platform'
+                version: tags/Installer
+                file: Abs.CommonCore.Installer.exe
+                target: Installer.exe
+                token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}   
+                
+            - name: Download installer config
+              uses: dsaltares/fetch-gh-release-asset@master
+              with:
+                repo: 'abs-wavesight/cc-platform'
+                version: tags/Installer
+                file: ComponentRegistryConfig.json
+                target: ComponentRegistryConfig.json
+                token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+
+            - name: Get version
+              id: get-version
+              run: |
+                $command = '.\Installer.exe get-release-version --name "${{ inputs.name }}" --owner "${{ inputs.owner }}" --repo "${{ inputs.repo }}"'
+                $version = cmd /c $com 2`>`&1
+                echo "version=$version" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+        

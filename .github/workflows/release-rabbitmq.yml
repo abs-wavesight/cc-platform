@@ -32,6 +32,7 @@ jobs:
 
   release-component:
     name: RabbitMQ Release
+    needs: sha-check
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:

@@ -1,7 +1,6 @@
-﻿namespace Abs.CommonCore.Installer.Services
+﻿namespace Abs.CommonCore.Installer.Services;
+
+public interface IDataRequestService
 {
-    public interface IDataRequestService
-    {
-        public Task<byte[]> RequestByteArrayAsync(string source);
-    }
+    public Task<byte[]> RequestByteArrayAsync(string source);
 }
