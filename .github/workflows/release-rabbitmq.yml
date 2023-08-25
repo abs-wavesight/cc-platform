@@ -12,7 +12,7 @@ on:
         type: string
         description: Description of the release
       platform-commit-sha: # 6ac7551
-        required: true
+        required: false
         type: string
         description: 7 character short SHA for the commit in cc-platform 
 
@@ -21,8 +21,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-default-platform-commit-sha:
+    name: Get Default Platform Commit SHA
+    if: ${{ inputs.platform-commit-sha == '' }}
+    uses: ./.github/workflows/shared-get-latest-container-version.yml
+    with: 
+      name: "openssl"
+    secrets: inherit
+
   release-component:
     name: RabbitMQ Release
+    needs: get-default-platform-commit-sha
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
@@ -34,6 +43,7 @@ jobs:
       description: ${{ inputs.description }}
       component-params: >
         -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 
-        -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }} 
+        -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
