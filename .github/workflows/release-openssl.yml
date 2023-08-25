@@ -32,7 +32,6 @@ jobs:
   release-component:
     name: OpenSSL Release
     needs: get-default-platform-commit-sha
-    if: needs.get-default-platform-commit-sha.result == 'success' || needs.get-default-platform-commit-sha.result == 'skipped'
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
@@ -47,3 +46,7 @@ jobs:
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
+    if: |
+      ${{ always() }} &&
+      ${{ !contains(needs.*.result, 'failure') }} &&
+      ${{ !contains(needs.*.result, 'cancelled') }}
