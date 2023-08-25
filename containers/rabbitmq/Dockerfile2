@@ -1,0 +1,103 @@
+FROM mcr.microsoft.com/windows/servercore:ltsc2019 as erlang
+USER ContainerAdministrator
+
+ENV erlang_download_url="http://erlang.org/download/otp_win64_20.3.exe" \
+    ERLANG_HOME=c:\\erlang
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# download and install erlang using silent install option, and remove installer when done
+RUN Invoke-WebRequest -Uri $env:erlang_download_url -OutFile erlang_install.exe ; \
+    Start-Process -Wait -FilePath .\erlang_install.exe -ArgumentList /S, /D=$env:ERLANG_HOME ; \
+    Remove-Item -Force erlang_install.exe
+
+
+
+
+
+
+
+
+
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2019 as run
+USER ContainerAdministrator
+
+ENV HOMEDRIVE=c:\\
+ENV HOMEPATH=Users\\ContainerAdministrator
+ENV ERLANG_HOME=c:\\erlang
+
+COPY --from=erlang c:\\erlang c:\\erlang
+
+RUN echo "MQATXXBUYSOQAYUNJPWZ" > c:\Windows\.erlang.cookie
+# COPY .erlang.cookie c:\\windows
+
+RUN icacls c:\windows\.erlang.cookie /grant %USERNAME%:F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2019 as rabbitmq
+USER ContainerAdministrator
+
+ENV RMQ_VERSION="3.7.5" \
+    rabbit_download_url="https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.5/rabbitmq-server-windows-3.7.5.zip"
+
+# setup powershell options for RUN commands
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# download and extract rabbitmq, and remove zip file when done
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+    Invoke-WebRequest -Uri $env:rabbit_download_url -OutFile rabbitmq.zip ; \
+    Expand-Archive -Path .\rabbitmq.zip -DestinationPath "c:\\" ; \
+    Remove-Item -Force rabbitmq.zip; \
+    Rename-Item c:\rabbitmq_server-$env:RMQ_VERSION c:\rabbitmq
+
+
+
+
+
+
+
+FROM run
+USER ContainerAdministrator
+
+COPY --from=rabbitmq c:\\rabbitmq c:\\rabbitmq
+
+# tell rabbitmq where to find our custom config file
+ENV RABBITMQ_CONFIG_FILE="c:/rabbitmq"
+# ENV RABBITMQ_BASE="c:\\rmq-data"
+
+# VOLUME ${RABBITMQ_BASE}
+
+# COPY start.cmd c:\\scripts\\start.cmd
+
+RUN ["cmd", "/c", "echo [{rabbit, [{loopback_users, []}]}].> c:\\rabbitmq.config"]
+# RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq.conf"]
+
+RUN mkdir c:\Users\%USERNAME%\\AppData\\Roaming\\RabbitMQ
+
+# Ports
+# 4369: epmd, a peer discovery service used by RabbitMQ nodes and CLI tools
+# 5672: used by AMQP 0-9-1 and 1.0 clients without TLS
+# 5671: used by AMQP 0-9-1 and 1.0 clients with TLS
+# 25672: used by Erlang distribution for inter-node and CLI tools communication and is allocated from a dynamic range (limited to a single port by default, computed as AMQP port + 20000).
+# 15672: HTTP API clients and rabbitmqadmin (only if the management plugin is enabled)
+EXPOSE 4369 5671 5672 25672 15672
+
+# RUN ["cmd", "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", "enable", "rabbitmq_management", "--offline"]
+RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
+
+# run server when container starts - container will shutdown when this process ends
+# CMD Scripts\\start.cmd
+CMD c:\rabbitmq\sbin\rabbitmq-server.bat
