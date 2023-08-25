@@ -93,3 +93,4 @@ jobs:
         -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ needs.get-default-openssl-version || inputs.openssl-version }}
       release-name-prefix: Site System Release
     secrets: inherit
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
