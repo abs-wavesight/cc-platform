@@ -1,4 +1,4 @@
-name: Vector Site Release
+﻿name: Vector Site Release
 
 on:
   workflow_dispatch:
@@ -32,6 +32,8 @@ jobs:
       component_name: vector-site
       tag: vector-site-${{ matrix.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
-      component-params: -p `$WINDOWS_VERSION:${{ matrix.windows-version }} -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}
+      component-params: >
+        -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 
+        -p `$PLATFORM_COMMIT_SHA:${{ inputs.platform-commit-sha }}
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit

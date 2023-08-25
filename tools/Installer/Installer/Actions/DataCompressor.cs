@@ -1,56 +1,55 @@
 ﻿using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 
-namespace Abs.CommonCore.Installer.Actions
+namespace Abs.CommonCore.Installer.Actions;
+
+public class DataCompressor : ActionBase
 {
-    public class DataCompressor : ActionBase
+    private readonly ILogger _logger;
+
+    public DataCompressor(ILoggerFactory loggerFactory)
     {
-        private readonly ILogger _logger;
+        _logger = loggerFactory.CreateLogger<DataCompressor>();
+    }
 
-        public DataCompressor(ILoggerFactory loggerFactory)
+    public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
+    {
+        _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
+
+        if (Directory.Exists(source.FullName) == false)
         {
-            _logger = loggerFactory.CreateLogger<DataCompressor>();
+            _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+            return;
         }
 
-        public async Task CompressDirectoryAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
+        await Task.Yield();
+        File.Delete(destination.FullName);
+        ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
+
+        if (removeSource)
         {
-            _logger.LogInformation($"Compressing folder '{source.FullName}' to file '{destination.FullName}'");
+            _logger.LogInformation($"Removing source folder: '{source.FullName}'");
+            source.Delete(true);
+        }
+    }
 
-            if (Directory.Exists(source.FullName) == false)
-            {
-                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
-                return;
-            }
+    public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
+    {
+        _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
 
-            await Task.Yield();
-            File.Delete(destination.FullName);
-            ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
-
-            if (removeSource)
-            {
-                _logger.LogInformation($"Removing source folder: '{source.FullName}'");
-                source.Delete(true);
-            }
+        if (File.Exists(source.FullName) == false)
+        {
+            _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+            return;
         }
 
-        public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
+        await Task.Yield();
+        ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
+
+        if (removeSource)
         {
-            _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
-
-            if (File.Exists(source.FullName) == false)
-            {
-                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
-                return;
-            }
-
-            await Task.Yield();
-            ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
-
-            if (removeSource)
-            {
-                _logger.LogInformation($"Removing source file: '{source.FullName}'");
-                source.Delete();
-            }
+            _logger.LogInformation($"Removing source file: '{source.FullName}'");
+            source.Delete();
         }
     }
 }
