@@ -63,4 +63,4 @@ jobs:
         -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}
       release-name-prefix: Central System Release
     secrets: inherit
-    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
