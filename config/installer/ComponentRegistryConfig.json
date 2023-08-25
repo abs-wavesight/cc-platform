@@ -151,22 +151,22 @@
 	  ]
     },	
     {
-      "name": "Drex",
+      "name": "Drex-Message",
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
-          "destination": "drex.tar"
+          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$DREX_MESSAGE_COMMIT_SHA",
+          "destination": "drex-message.tar"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex.yml",
-          "destination": "docker-compose.drex.yml"
+          "destination": "docker-compose.drex-message.yml"
         }
       ],
       "actions": [
 	  	{
-          "source": "docker-compose.drex.yml",
+          "source": "docker-compose.drex-message.yml",
           "action": "replaceParameters"
         }		
 	  ]

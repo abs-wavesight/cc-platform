@@ -328,36 +328,36 @@
       ]
     },	
     {
-      "name": "Drex",
+      "name": "Drex-Message",
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Drex/"
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_MESSAGE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-Message/"
         }
       ],
       "actions": [
         {
-          "source": "drex.tar",
+          "source": "drex-message.tar",
           "action": "install"
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex-message\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "$ABS_PATH\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex-message\\",
           "action": "copy"
         },
         {
           "source": "docker-compose.drex.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.drex.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.drex.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "replaceParameters"
         }
       ]

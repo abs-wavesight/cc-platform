@@ -3,14 +3,14 @@
     "Docker",
     "RabbitMq",
     "Vector-Site",
-    "Drex",
+    "Drex-Message",
     "OpenSsl",
 	"Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
     "$RABBIT_LOCATION": "local",
-    "$DREX_ACCOUNT_USERNAME": "",
-    "$DREX_ACCOUNT_PASSWORD": ""
+    "$DREX_MESSAGE_ACCOUNT_USERNAME": "",
+    "$DREX_MESSAGE_ACCOUNT_PASSWORD": ""
   }
 }
