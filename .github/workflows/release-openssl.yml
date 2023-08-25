@@ -46,7 +46,4 @@ jobs:
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
-    if: |
-      ${{ !cancelled() }} &&
-      ${{ !contains(needs.*.result, 'failure') }} &&
-      ${{ !contains(needs.*.result, 'cancelled') }}
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
