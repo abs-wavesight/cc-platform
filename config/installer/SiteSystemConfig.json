@@ -13,6 +13,6 @@
     "$RABBIT_LOCATION": "local",
     "$DREX_COMMON_ACCOUNT_USERNAME": "",
     "$DREX_COMMON_ACCOUNT_PASSWORD": "",
-	"$FDZ_ROOT_PATH": ""
+	"$FDZ_ROOT_PATH": "c:/abs/fdz"
   }
 }

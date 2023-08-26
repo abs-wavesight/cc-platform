@@ -384,7 +384,11 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
           "action": "replaceParameters"
-        }
+        },
+		{
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
+          "action": "execute"
+        }		
       ]
     },	
     {
@@ -409,6 +413,10 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.openssh.yml",
           "action": "replaceParameters"
+        },
+		{
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPEN_SSH_ROOT')",
+          "action": "execute"
         }
       ]
     }
