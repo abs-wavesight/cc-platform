@@ -30,6 +30,6 @@ services:
         target: C:/config
         read_only: true
       - type: bind
-        source: $OPEN_SSH_ROOT
+        source: $OPENSSH_ROOT
         target: C:/sftproot
         read_only: false

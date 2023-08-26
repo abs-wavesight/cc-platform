@@ -415,7 +415,7 @@
           "action": "replaceParameters"
         },
 		{
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPEN_SSH_ROOT')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPENSSH_ROOT')",
           "action": "execute"
         }
       ]
