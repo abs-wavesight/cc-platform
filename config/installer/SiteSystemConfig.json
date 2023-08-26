@@ -4,15 +4,15 @@
     "RabbitMq",
     "Vector-Site",
     "Drex-Message",
-	"Drex-File",
+    "Drex-File",
     "OpenSsl",
-	"Installer"
+    "Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
     "$RABBIT_LOCATION": "local",
     "$DREX_COMMON_ACCOUNT_USERNAME": "",
     "$DREX_COMMON_ACCOUNT_PASSWORD": "",
-	"$FDZ_ROOT_PATH": "c:/abs/fdz"
+    "$FDZ_ROOT_PATH": "c:/abs/fdz"
   }
 }

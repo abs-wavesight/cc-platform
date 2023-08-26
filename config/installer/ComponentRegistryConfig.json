@@ -27,10 +27,10 @@
       ],
       "actions": [
         {
-            "source": "manual-docker-compose.openssl.yml",
-            "action": "replaceParameters"
+          "source": "manual-docker-compose.openssl.yml",
+          "action": "replaceParameters"
         }
-	    ]
+      ]
     },
     {
       "name": "RabbitMq",
@@ -62,15 +62,15 @@
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
-        },	
-	  	{
+        },
+        {
           "source": "cc-rabbitmq.conf",
           "action": "replaceParameters"
-        }		
-	  ]
+        }
+      ]
     },
     {
       "name": "Vector-Site",
@@ -90,26 +90,26 @@
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/vector.toml",
           "destination": "vector.toml"
         },
-		{
+        {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-container-logs.vrl",
           "destination": "remap-container-logs.vrl"
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.vector.yml",
           "action": "replaceParameters"
-        },	
-	  	{
+        },
+        {
           "source": "vector.toml",
           "action": "replaceParameters"
         },
-	  	{
+        {
           "source": "remap-container-logs.vrl",
           "action": "replaceParameters"
-        }			
-	  ]
+        }
+      ]
     },
     {
       "name": "Vector-Central",
@@ -129,27 +129,27 @@
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/vector.toml",
           "destination": "vector.toml"
         },
-		{
+        {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-site-logs.vrl",
           "destination": "remap-site-logs.vrl"
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.vector.yml",
           "action": "replaceParameters"
-        },	
-	  	{
+        },
+        {
           "source": "vector.toml",
           "action": "replaceParameters"
         },
-	  	{
+        {
           "source": "remap-site-logs.vrl",
           "action": "replaceParameters"
-        }			
-	  ]
-    },	
+        }
+      ]
+    },
     {
       "name": "Drex-Message",
       "files": [
@@ -165,11 +165,11 @@
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.drex-message.yml",
           "action": "replaceParameters"
-        }		
-	  ]
+        }
+      ]
     },
     {
       "name": "Drex-File",
@@ -186,13 +186,13 @@
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.drex-file.yml",
           "action": "replaceParameters"
-        }		
-	  ]
+        }
+      ]
     },
-	{
+    {
       "name": "OpenSsh",
       "files": [
         {
@@ -207,11 +207,11 @@
         }
       ],
       "actions": [
-	  	{
+        {
           "source": "docker-compose.openssh.yml",
           "action": "replaceParameters"
-        }		
-	  ]
+        }
+      ]
     }
   ]
 }
