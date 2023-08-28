@@ -19,17 +19,21 @@ on:
         required: false
         type: string
         description: Version to use for Vector site release # v1.0.0
-      drex-version:
+      drex-message-version:
         required: false
         type: string
-        description: Version to use for Drex release # v1.0.0
+        description: Version to use for Drex Message release # v1.0.0
+      drex-file-version:
+        required: false
+        type: string
+        description: Version to use for Drex File release # v1.0.0
       openssl-version:
         required: false
         type: string
         description: Version to use for OpenSSL release # v1.0.0
 
 concurrency:
-  group: site-system-release
+  group: site-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,13 +55,22 @@ jobs:
       name: "Vector Site Release 2022"
     secrets: inherit
 
-  get-default-drex-version:
-    name: Get Default Drex Version
-    if: ${{ inputs.drex-version == '' }}
+  get-default-drex-message-version:
+    name: Get Default Drex Message Version
+    if: ${{ inputs.drex-message-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-drex"
-      name: "Drex Release 2022"
+      name: "Drex Message Release 2022"
+    secrets: inherit
+
+  get-default-drex-file-version:
+    name: Get Default Drex File Version
+    if: ${{ inputs.drex-file-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex File Release 2022"
     secrets: inherit
 
   get-default-openssl-version:
@@ -74,7 +87,8 @@ jobs:
     needs: 
       - get-default-rabbitmq-version
       - get-default-vector-site-version
-      - get-default-drex-version
+      - get-default-drex-message-version
+      - get-default-drex-file-version
       - get-default-openssl-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
@@ -89,7 +103,8 @@ jobs:
       component-params: >
         -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
         -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ needs.get-default-vector-site-version || inputs.vector-site-version }} 
-        -p `$DREX_RELEASE_TAG:drex-${{ matrix.windows-version }}-${{ needs.get-default-drex-version || inputs.drex-version }} 
+        -p `$DREX_MESSAGE_RELEASE_TAG:drex-message-${{ matrix.windows-version }}-${{ needs.get-default-drex-message-version || inputs.drex-message-version }} 
+        -p `$DREX_FILE_RELEASE_TAG:drex-file-${{ matrix.windows-version }}-${{ needs.get-default-drex-file-version || inputs.drex-file-version }}
         -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ needs.get-default-openssl-version || inputs.openssl-version }}
       release-name-prefix: Site System Release
     secrets: inherit

@@ -17,7 +17,7 @@ on:
         description: 7 character short SHA for the commit in cc-platform 
 
 concurrency:
-  group: rabbitmq-release
+  group: rabbitmq-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:

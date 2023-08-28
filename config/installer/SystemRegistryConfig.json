@@ -16,8 +16,8 @@
           "action": "copy"
         }
       ]
-    },    
-	{
+    },
+    {
       "name": "Certificates-Central",
       "files": [],
       "actions": [
@@ -64,10 +64,10 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/environment.env",
           "destination": "environment.env"
-        }		
+        }
       ],
-      "actions": [   
-		{
+      "actions": [
+        {
           "source": "net stop dockerd",
           "action": "executeImmediate"
         },
@@ -83,8 +83,8 @@
         {
           "source": "powershell -Command Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart",
           "action": "executeImmediate"
-        },            
-		{
+        },
+        {
           "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
@@ -124,13 +124,13 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.root.yml",
           "action": "replaceParameters"
-        },		
+        },
         {
           "source": "environment.env",
           "destination": "$ABS_PATH\\config\\environment.env",
           "action": "copy"
-        },	
-		{
+        },
+        {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "replaceParameters"
         },
@@ -326,39 +326,115 @@
           "action": "execute"
         }
       ]
-    },	
+    },
     {
-      "name": "Drex",
+      "name": "Drex-Message",
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Drex/"
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_MESSAGE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-Message/"
         }
       ],
       "actions": [
         {
-          "source": "drex.tar",
+          "source": "drex-message.tar",
           "action": "install"
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex-shared\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "$ABS_PATH\\config\\drex\\",
+          "destination": "$ABS_PATH\\config\\drex-shared\\",
           "action": "copy"
         },
         {
-          "source": "docker-compose.drex.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.drex.yml",
+          "source": "docker-compose.drex-message.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.drex.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Drex-File",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_FILE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-File/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "drex-file.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.drex-file.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
+          "action": "execute"
+        }
+      ]
+    },
+    {
+      "name": "OpenSsh",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OPENSSH_RELEASE_TAG/",
+          "destination": "c:/abs/temp/OpenSsh/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "openssh.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.openssh.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "config.json",
+          "destination": "$ABS_PATH\\config\\openssh\\config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\openssh\\config.json",
+          "action": "replaceParameters"
+        },		
+        {
+          "source": "sshd.config",
+          "destination": "$ABS_PATH\\config\\openssh\\sshd.config",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\openssh\\sshd.config",
+          "action": "replaceParameters"
+        },			
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPENSSH_ROOT')",
+          "action": "execute"
         }
       ]
     }
