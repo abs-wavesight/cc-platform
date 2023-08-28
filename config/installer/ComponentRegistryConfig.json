@@ -197,7 +197,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/openssh:windows-$WINDOWS_VERSION-main-$OPENSSH_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/openssh:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
           "destination": "openssh.tar"
         },
         {
