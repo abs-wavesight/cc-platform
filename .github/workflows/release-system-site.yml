@@ -33,7 +33,7 @@ on:
         description: Version to use for OpenSSL release # v1.0.0
 
 concurrency:
-  group: site-system-release
+  group: site-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:

@@ -202,6 +202,16 @@
         },
         {
           "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/sshd.config",
+          "destination": "sshd.config"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/config.json",
+          "destination": "config.json"
+        },
+        {
+          "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.openssh.yml",
           "destination": "docker-compose.openssh.yml"
         }

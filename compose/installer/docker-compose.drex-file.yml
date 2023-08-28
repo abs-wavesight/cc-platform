@@ -13,14 +13,14 @@ services:
       - SiteConfigFileName=C:/app/config/site-config.json
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
-      - LocalMessageBus__Username=${DREX_COMMON_LOCAL_USERNAME}
-      - LocalMessageBus__Password=${DREX_COMMON_LOCAL_PASSWORD}
+      - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
+      - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
     ports:	
       - "12345:5000"	
     restart: always	
     volumes:	
       - type: bind	
-        source: $ABS_PATH/config/drex-common
+        source: $ABS_PATH/config/drex-shared
         target: C:/app/config
         read_only: true
       - type: bind

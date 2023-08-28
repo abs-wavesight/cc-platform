@@ -343,12 +343,12 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex-common\\",
+          "destination": "$ABS_PATH\\config\\drex-shared\\",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "$ABS_PATH\\config\\drex-common\\",
+          "destination": "$ABS_PATH\\config\\drex-shared\\",
           "action": "copy"
         },
         {
