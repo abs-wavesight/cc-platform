@@ -82,7 +82,7 @@ public class ComponentDownloader : ActionBase
 
         // Assumes all files can be processed in any order
         await component.Files
-            .ForAllAsync(async file =>
+            .ForEachAsync(async file =>
             {
                 await ProcessFileAsync(component, file);
             });
@@ -150,7 +150,7 @@ public class ComponentDownloader : ActionBase
             .Select(x => new { Url = new Uri(x.Url, UriKind.Absolute), Filename = x.Name });
 
         await files
-            .ForAllAsync(async file =>
+            .ForEachAsync(async file =>
             {
                 var response = await client.Connection.Get<byte[]>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
                 var outputLocation = Path.Combine(outputPath, file.Filename);
