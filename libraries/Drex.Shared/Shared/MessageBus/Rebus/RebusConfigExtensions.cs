@@ -12,45 +12,86 @@ using Rebus.Serialization;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus
 {
+    public class CommonCoreServiceBusOptions
+    {
+        public required ILoggerFactory LoggerFactory { get; init; }
+        public required BusConnection BusConnectionInfo { get; init; }
+        public required string InputQueueName { get; set; }
+        public required string BusName { get; set; }
+        public string? DeadLetterQueueName { get; set; }
+        public Action<StandardConfigurer<ISerializer>>? SerializerConfig { get; set; }
+
+        public CommonCoreRabbitMqOptions? RabbitMqOptions { get; init; }
+        public CommonCoreAzureServiceBusOptions? AzureServiceBusOptions { get; init; }
+    }
+
+    public class CommonCoreRabbitMqOptions
+    {
+        public required string DirectExchangeName { get; set; }
+        public required string TopicExchangeName { get; set; }
+        public required bool EnableSsl { get; set; }
+    }
+
+    public class CommonCoreAzureServiceBusOptions
+    {
+
+    }
+
     public static class RebusConfigExtensions
     {
-        public static RebusConfigurer ConfigureRebusConsumer(
-            this RebusConfigurer rebusConfigurer,
-            BusConnection sourceMessageBusConnectionInfo,
-            string busName,
-            string inputQueueName,
-            string? deadLetterQueueName,
-            string directExchangeName,
-            string topicExchangeName,
-            ILoggerFactory loggerFactory,
-            Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
-            bool enableSsl = false)
+        private static void ValidateOptionsAndThrowIfInvalid(CommonCoreServiceBusOptions options)
         {
+            if (options.RabbitMqOptions != null && options.AzureServiceBusOptions != null)
+            {
+                throw new ArgumentException("Only one of RabbitMqOptions or AzureServiceBusOptions can be set.", nameof(options));
+            }
+
+            if (options.RabbitMqOptions == null && options.AzureServiceBusOptions == null)
+            {
+                throw new ArgumentException("Either RabbitMqOptions or AzureServiceBusOptions must be set.", nameof(options));
+            }
+        }
+
+        public static RebusConfigurer ConfigureRebusConsumer(this RebusConfigurer rebusConfigurer, CommonCoreServiceBusOptions options)
+        {
+            ValidateOptionsAndThrowIfInvalid(options);
+
             return rebusConfigurer
-                .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
+                .Logging(l => l.MicrosoftExtensionsLogging(options.LoggerFactory))
                 .Transport(t =>
                 {
-                    var rabbitMqOptions = t
-                        .UseRabbitMq(
-                            sourceMessageBusConnectionInfo.ToConnectionString(),
-                            inputQueueName)
-                        .SetPublisherConfirms(true)
-                        .ExchangeNames(
-                            directExchangeName: directExchangeName,
-                            topicExchangeName: topicExchangeName)
-                        .Declarations(declareExchanges: false, declareInputQueue: false);
-                    if (enableSsl)
+                    if (options.RabbitMqOptions != null)
                     {
-                        rabbitMqOptions.Ssl(new SslSettings(true, sourceMessageBusConnectionInfo.Host));
+                        var rabbitMqOptions = t
+                            .UseRabbitMq(
+                                options.BusConnectionInfo.ToConnectionString(),
+                                options.InputQueueName)
+                            .SetPublisherConfirms(true)
+                            .ExchangeNames(
+                                directExchangeName: options.RabbitMqOptions.DirectExchangeName,
+                                topicExchangeName: options.RabbitMqOptions.TopicExchangeName)
+                            .Declarations(declareExchanges: false, declareInputQueue: false);
+
+                        if (options.RabbitMqOptions.EnableSsl)
+                        {
+                            rabbitMqOptions.Ssl(new SslSettings(true, options.BusConnectionInfo.Host));
+                        }
+                    }
+                    else if (options.AzureServiceBusOptions != null)
+                    {
+                        var azureServiceBusOptions = t
+                            .UseAzureServiceBus(
+                                options.BusConnectionInfo.ToConnectionString(),
+                                options.InputQueueName);
                     }
                 })
                 .Options(o =>
                 {
-                    o.SetBusName(busName);
-                    if (string.IsNullOrWhiteSpace(deadLetterQueueName) == false) o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
+                    o.SetBusName(options.BusName);
+                    if (string.IsNullOrWhiteSpace(options.DeadLetterQueueName) == false) o.SimpleRetryStrategy(errorQueueAddress: options.DeadLetterQueueName);
                     // o.LogPipeline(verbose: true);
                 })
-                .SetSerialization(serializerConfig);
+                .SetSerialization(options.SerializerConfig);
         }
 
         public static RebusConfigurer ConfigureRebusPublisher(
