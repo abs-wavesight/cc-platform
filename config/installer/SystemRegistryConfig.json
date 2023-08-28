@@ -415,6 +415,24 @@
           "action": "replaceParameters"
         },
         {
+          "source": "config.json",
+          "destination": "$ABS_PATH\\config\\openssh\\config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\openssh\\config.json",
+          "action": "replaceParameters"
+        },		
+        {
+          "source": "sshd.config",
+          "destination": "$ABS_PATH\\config\\openssh\\sshd.config",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\openssh\\sshd.config",
+          "action": "replaceParameters"
+        },			
+        {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPENSSH_ROOT')",
           "action": "execute"
         }
