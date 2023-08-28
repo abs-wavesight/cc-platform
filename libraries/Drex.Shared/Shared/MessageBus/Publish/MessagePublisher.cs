@@ -42,6 +42,11 @@ namespace Abs.CommonCore.Drex.Shared.MessageBus.Publish
             await _bus.Value.Advanced.Routing.Send(destinationQueueName, message, headers);
         }
 
+        public async Task PublishAsync(object message, string destinationQueueName, Dictionary<string, string> headers, Func<Task, Task> continueTask)
+        {
+            await _bus.Value.Advanced.Routing.Send(destinationQueueName, message, headers).ContinueWith(continueTask);
+        }
+
         public void Dispose()
         {
             if (!_bus.IsValueCreated)

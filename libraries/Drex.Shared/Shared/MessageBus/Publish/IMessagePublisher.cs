@@ -5,5 +5,7 @@
         public string BusKey { get; }
 
         Task PublishAsync(object message, string destinationQueueName, Dictionary<string, string> headers);
+
+        Task PublishAsync(object message, string destinationQueueName, Dictionary<string, string> headers, Func<Task, Task> continueTask);
     }
 }
