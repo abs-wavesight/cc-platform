@@ -16,7 +16,7 @@ services:
       - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
     ports:	
-      - "12345:5000"	
+      - "12346:5000"	
     restart: always	
     volumes:	
       - type: bind	
