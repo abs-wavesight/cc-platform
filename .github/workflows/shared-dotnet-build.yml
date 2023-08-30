@@ -135,11 +135,14 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
         uses: 5monkeys/cobertura-action@master
         with:
+          report_name: Test Coverage
           path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           skip_covered: false
           fail_below_threshold: false
+          show_missing: true
+          link_missing_lines: true
 
       # - name: Install LCOV
       #   uses: hrishikesh-kadam/setup-lcov@v1
