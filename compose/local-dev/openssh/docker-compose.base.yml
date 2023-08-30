@@ -31,3 +31,7 @@ services:
         source: ${SFTP_ROOT_PATH}
         target: C:/sftproot
         read_only: false
+      - type: bind
+        source: C:/ABS/ssh
+        target: C:/ssh
+        read_only: true

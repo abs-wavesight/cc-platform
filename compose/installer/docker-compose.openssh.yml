@@ -33,3 +33,7 @@ services:
         source: $OPENSSH_ROOT
         target: C:/sftproot
         read_only: false
+      - type: bind
+        source: $ABS_PATH/ssh
+        target: C:/ssh
+        read_only: true
