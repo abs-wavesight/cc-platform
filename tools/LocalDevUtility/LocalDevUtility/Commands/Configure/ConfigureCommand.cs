@@ -88,6 +88,18 @@ public static class ConfigureCommand
             generateSshKeysNow = validPositiveValues.Contains(generateSshKeysNowInput.ToLowerInvariant());
         }
 
+        var installSshClientNow = false;
+        if (generateSshKeysNow)
+        {
+            Console.Write("Install OpenSSH client -- it's used to generate SSH keys (y/n)? (n): ");
+            var installSshClientNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(installSshClientNowInput))
+            {
+                var validPositiveValues = new List<string> { "y", "yes", "true" };
+                installSshClientNow = validPositiveValues.Contains(installSshClientNowInput.ToLowerInvariant());
+            }
+        }
+
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
@@ -148,6 +160,16 @@ public static class ConfigureCommand
                 const string rabbitMqCertName = "rabbitmq.cer";
                 CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
                 CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
+            }
+        }
+
+        if (installSshClientNow)
+        {
+            using (CliStep.Start("Installing SSH client."))
+            {
+                // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
+                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
+                powerShellAdapter.RunPowerShellCommand(installCommand);
             }
         }
 
