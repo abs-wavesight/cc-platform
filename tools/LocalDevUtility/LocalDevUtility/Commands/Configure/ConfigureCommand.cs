@@ -48,6 +48,13 @@ public static class ConfigureCommand
             certificatePath = readAppConfig?.CertificatePath;
         }
 
+        Console.Write($"Local path to use for storage of generated SSH keys used by containers{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SshKeysPath) ? $" ({readAppConfig.SshKeysPath})" : "")}: ");
+        var sshKeysPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(sshKeysPath))
+        {
+            sshKeysPath = readAppConfig?.SshKeysPath;
+        }
+
         Console.Write($"Local path to use for SFTP (OpenSSH) root -- will be created if it does not exist{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SftpRootPath) ? $" ({readAppConfig.SftpRootPath})" : "")}: ");
         var sftpRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(sftpRootPath))
@@ -72,12 +79,22 @@ public static class ConfigureCommand
             generateCertificatesNow = validPositiveValues.Contains(generateCertificatesNowInput.ToLowerInvariant());
         }
 
+        Console.Write("Generate SSH keys -- this only needs to be done once ever (y/n)? (n): ");
+        var generateSshKeysNow = false;
+        var generateSshKeysNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(generateSshKeysNowInput))
+        {
+            var validPositiveValues = new List<string> { "y", "yes", "true" };
+            generateSshKeysNow = validPositiveValues.Contains(generateSshKeysNowInput.ToLowerInvariant());
+        }
+
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
+            SshKeysPath = sshKeysPath,
             SftpRootPath = sftpRootPath,
             FdzRootPath = fdzRootPath,
         };
@@ -103,37 +120,46 @@ public static class ConfigureCommand
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
 
-        if (!generateCertificatesNow)
+        if (generateCertificatesNow)
         {
-            return 0;
+            using (CliStep.Start("Generating TLS certificates"))
+            {
+                // Ensure sub-directories exist
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalKeys));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalCerts));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteKeys));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteCerts));
+
+                var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
+                var dockerCommand = $"docker pull {fullContainerName};";
+                dockerCommand += " docker run";
+                dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\" ";
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
+                dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\" ";
+                logger.LogInformation($"Running docker command: {dockerCommand}");
+                powerShellAdapter.RunPowerShellCommand(dockerCommand);
+            }
+
+            using (CliStep.Start("Installing TLS certificates", true))
+            {
+                const string rabbitMqCertName = "rabbitmq.cer";
+                CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
+                CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
+            }
         }
 
-        using (CliStep.Start("Generating TLS certificates"))
+        if (generateSshKeysNow)
         {
-            // Ensure sub-directories exist
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalKeys));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalCerts));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteKeys));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteCerts));
-
-            var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
-            var dockerCommand = $"docker pull {fullContainerName};";
-            dockerCommand += " docker run";
-            dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\" ";
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
-            dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\" ";
-            logger.LogInformation($"Running docker command: {dockerCommand}");
-            powerShellAdapter.RunPowerShellCommand(dockerCommand);
-        }
-
-        using (CliStep.Start("Installing TLS certificates", true))
-        {
-            const string rabbitMqCertName = "rabbitmq.cer";
-            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
-            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
+            using (CliStep.Start("Generating SSH keys"))
+            {
+                // OpenSSH client must be enabled
+                var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
+                logger.LogInformation($"Running command: {command}");
+                powerShellAdapter.RunPowerShellCommand(command);
+            }
         }
 
         return 0;
@@ -181,6 +207,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CertificatePath) || !new DirectoryInfo(appConfig.CertificatePath).Exists)
         {
             errors.Add($"Certificate path ({appConfig.CertificatePath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.SshKeysPath) || !new DirectoryInfo(appConfig.SshKeysPath).Exists)
+        {
+            errors.Add($"SSH keys path ({appConfig.SshKeysPath}) could not be found");
         }
 
         if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath))
