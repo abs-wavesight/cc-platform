@@ -105,16 +105,15 @@ jobs:
         if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
         run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
       
-      # TODO RH: UNCOMMENT
-      # - name: Run integration tests
-      #   if: inputs.run-integration-tests == true
-      #   working-directory: ${{ inputs.solution-directory }}
-      #   run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/Integration/" /p:MergeWith="../Coverage/coverage.json" -m:1
+      - name: Run integration tests
+        if: inputs.run-integration-tests == true
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
       - name: Run end-to-end tests
         if: inputs.run-e2e-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/E2E/" /p:MergeWith="../Coverage/coverage.json" -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
       - name: Report test results
         uses: dorny/test-reporter@v1
@@ -143,24 +142,4 @@ jobs:
           fail_below_threshold: false
           show_missing: true
           link_missing_lines: true
-
-      # - name: Install LCOV
-      #   uses: hrishikesh-kadam/setup-lcov@v1
-
-      # - name: Report code coverage
-      #   uses: zgosalvez/github-actions-report-lcov@v3
-      #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
-      #   with:
-      #     coverage-files: ${{ inputs.solution-directory }}/Coverage/coverage.unit.info
-      #     working-directory: ${{ inputs.solution-directory }}
-      #     artifact-name: code-coverage-report
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     update-comment: true
-
-      # - name: Add code coverage comment to PR
-      #   uses: romeovs/lcov-reporter-action@v0.3.1
-      #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
-      #   with:
-      #     lcov-file: ${{ inputs.solution-directory }}/Coverage/coverage.unit.info
-      #     delete-old-comments: true
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+          link_missing_lines_source_dir: ${{ inputs.solution-directory }}
