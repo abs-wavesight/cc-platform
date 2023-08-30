@@ -34,6 +34,6 @@ services:
         target: C:/sftproot
         read_only: false
       - type: bind
-        source: $ABS_PATH/ssh
-        target: C:/ssh
+        source: $ABS_PATH/ssh_keys
+        target: C:/ssh_keys
         read_only: true

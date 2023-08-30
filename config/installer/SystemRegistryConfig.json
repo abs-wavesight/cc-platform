@@ -398,11 +398,6 @@
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OPENSSH_RELEASE_TAG/",
           "destination": "c:/abs/temp/OpenSsh/"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/getSshRsaKeyFingerprint.ps1",
-          "destination": "$ABS_PATH\\config\\openssh\\getSshRsaKeyFingerprint.ps1"
         }
       ],
       "actions": [
@@ -447,7 +442,7 @@
           "action": "execute"
         },
         {
-          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\config\\openssh\\ssh'",
+          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\ssh_keys'",
           "action": "execute"
         }
       ]

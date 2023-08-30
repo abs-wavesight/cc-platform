@@ -50,11 +50,11 @@ Match User ${ClientName}
   Rename-Item -Path $SshTempConfigFilePath -NewName "sshd_config"
 
   Write-Output "`nSSH directory contents:"
-  Get-ChildItem "C:/ssh/"
+  Get-ChildItem "C:/ssh_keys/"
 
   Write-Output "`nCopying SSH keys..." 
-  Copy-Item "C:/ssh/ssh_host_rsa_key" -Destination "C:/ProgramData/ssh" -Force
-  Copy-Item "C:/ssh/ssh_host_rsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh_keys/ssh_host_rsa_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh_keys/ssh_host_rsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
 
   Write-Output "Fixing host file permissions"
   C:\\openssh\\OpenSSH-Win64\\FixHostFilePermissions.ps1 -Confirm:$false
