@@ -47,5 +47,5 @@ Copy-Item -Path "${ProvisionPath}/site-config.json" -Destination "${AdditionalFi
 
 # TODO RH: Things we need to do AFTER VM instance creation
 # 1. Update Site config for each Site to give it a unique key
-# 2. Create Central RabbitMQ DREX account for each Site
+# 2. Create Central RabbitMQ DREX account for each Site and update Site config (configure-rabbit)
 # 3. Generate valid Central RabbitMQ TLS certs, install them on Central and every Site
