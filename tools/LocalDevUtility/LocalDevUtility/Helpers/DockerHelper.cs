@@ -49,6 +49,7 @@ public static class DockerHelper
             {Constants.ComposeEnvKeys.PathToCommonCorePlatformRepository, appConfig.CommonCorePlatformRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository, appConfig.CommonCoreDrexRepositoryPath!},
             {Constants.ComposeEnvKeys.PathToCertificates, appConfig.CertificatePath!},
+            {Constants.ComposeEnvKeys.PathToSshKeys, appConfig.SshKeysPath!},
             {Constants.ComposeEnvKeys.SftpRootPath, appConfig.SftpRootPath!},
             {Constants.ComposeEnvKeys.FdzRootPath, appConfig.FdzRootPath!},
         };
