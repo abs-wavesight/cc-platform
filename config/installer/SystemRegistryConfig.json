@@ -442,7 +442,7 @@
           "action": "execute"
         },
         {
-          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\ssh_keys'",
+          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\ssh-keys'",
           "action": "execute"
         }
       ]
