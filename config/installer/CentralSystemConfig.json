@@ -4,10 +4,12 @@
     "Docker",
     "RabbitMq",
     "Vector-Central",
-	"Installer"
+    "OpenSsh",
+    "Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
-	"$RABBIT_LOCATION": "remote"
+    "$RABBIT_LOCATION": "remote",
+    "$OPENSSH_ROOT": "c:/abs/sftp"
   }
 }

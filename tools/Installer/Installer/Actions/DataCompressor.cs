@@ -6,6 +6,7 @@ namespace Abs.CommonCore.Installer.Actions;
 public class DataCompressor : ActionBase
 {
     private readonly ILogger _logger;
+    private readonly CompressionLevel _compressionLevel = CompressionLevel.Optimal;
 
     public DataCompressor(ILoggerFactory loggerFactory)
     {
@@ -24,7 +25,7 @@ public class DataCompressor : ActionBase
 
         await Task.Yield();
         File.Delete(destination.FullName);
-        ZipFile.CreateFromDirectory(source.FullName, destination.FullName, CompressionLevel.SmallestSize, false);
+        ZipFile.CreateFromDirectory(source.FullName, destination.FullName, _compressionLevel, false);
 
         if (removeSource)
         {

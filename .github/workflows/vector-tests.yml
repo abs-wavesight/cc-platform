@@ -24,7 +24,6 @@ defaults:
 jobs:
   run-vector-tests:
     name: Run Vector Tests
-
     runs-on: windows-2019
 
     steps:
