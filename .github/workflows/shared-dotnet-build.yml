@@ -132,9 +132,10 @@ jobs:
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
   
       - name: Report code coverage
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
         uses: 5monkeys/cobertura-action@master
         with:
-          path: Coverage/cobertura.xml
+          path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           skip_covered: false
