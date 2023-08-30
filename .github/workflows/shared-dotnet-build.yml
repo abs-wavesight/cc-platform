@@ -134,7 +134,6 @@ jobs:
           coverage-files: ${{ inputs.solution-directory }}/Coverage/**/coverage.info
           artifact-name: code-coverage-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: /coverage-working-directory
           update-comment: true
 
       - name: Add code coverage comment to PR
