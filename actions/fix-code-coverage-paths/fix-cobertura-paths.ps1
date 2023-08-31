@@ -45,11 +45,11 @@ foreach ($classNode in $xml.SelectNodes("//class")) {
     $prependedPath = Get-ParentPrependedPath -rootDir $RootDirectory -partialPath $partialPath
 
     if (![string]::IsNullOrEmpty($prependedPath)) {
-        Write-Host "Replaced: $partialPath -> $prependedPath"
+        Write-Output "Replaced: $partialPath -> $prependedPath"
         $filenameAttribute.Value = $prependedPath
     }
     else {
-        Write-Host "Skipped: $partialPath"
+        Write-Output "Skipped: $partialPath"
     }
 }
 
