@@ -9,7 +9,13 @@ if (Test-Path -Path $ssh_host_rsa_key_path)
 }
 else 
 {
-    @(ssh-keygen -f $ssh_host_rsa_key_path -q -N '\\\"\\\"')
+    $temp = @(Join-Path -Path $output_path -ChildPath "temp/")
+    $keygenOutputPath = @(Join-Path -Path $temp -ChildPath "__PROGRAMDATA__/ssh")
+    New-Item -Path $keygenOutputPath -ItemType "directory" -Force
+    ssh-keygen -A -f $temp
+
+    Move-Item -Path "$keygenOutputPath\*" -Destination $output_path -Force
+    Remove-Item -Path $temp -Recurse -Force
 }
 
 # Generate fingerprint

@@ -386,6 +386,11 @@
           "action": "replaceParameters"
         },
         {
+          "source": "..\\AdditionalFiles\\SshHostKeyFingerprint",
+          "destination": "C:\\abs\\ssh-keys\\SshHostKeyFingerprint",
+          "action": "copy"
+        },
+        {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
           "action": "execute"
         }
