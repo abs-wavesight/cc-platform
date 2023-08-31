@@ -100,9 +100,9 @@ public static class ConfigureCommand
             FdzRootPath = fdzRootPath,
         };
 
+        CreateDirectories(appConfig);
         ValidateConfigAndThrow(appConfig);
         SetEnvironmentVariables(appConfig);
-        CreateDirectories(appConfig);
 
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
@@ -228,12 +228,12 @@ public static class ConfigureCommand
             errors.Add($"SSH keys path ({appConfig.SshKeysPath}) could not be found");
         }
 
-        if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath))
+        if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath) || !new DirectoryInfo(appConfig.SftpRootPath).Exists)
         {
             errors.Add($"SFTP root path ({appConfig.SftpRootPath}) is required");
         }
 
-        if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath))
+        if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath) || !new DirectoryInfo(appConfig.FdzRootPath).Exists)
         {
             errors.Add($"FDZ root path ({appConfig.FdzRootPath}) is required");
         }
@@ -287,6 +287,14 @@ public static class ConfigureCommand
 
     private static void CreateDirectories(AppConfig appConfig)
     {
+        if (!Directory.Exists(appConfig.CertificatePath))
+        {
+            using (CliStep.Start("Creating Certificate root directory"))
+            {
+                Directory.CreateDirectory(appConfig.CertificatePath!);
+            }
+        }
+
         if (!Directory.Exists(appConfig.SftpRootPath))
         {
             using (CliStep.Start("Creating SFTP root directory"))

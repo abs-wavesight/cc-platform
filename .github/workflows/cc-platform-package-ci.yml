@@ -28,10 +28,6 @@ defaults:
     shell: pwsh
 
 jobs:
-  dump-context:
-    name: Dump Context
-    uses: ./.github/workflows/shared-dump-context.yml
-
   build:
     name: Build & Run Tests
     uses: ./.github/workflows/shared-dotnet-build.yml
