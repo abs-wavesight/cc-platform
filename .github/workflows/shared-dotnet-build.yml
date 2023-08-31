@@ -132,7 +132,7 @@ jobs:
 
       - name: Workaround for invalid link paths in coverage report 
         # uses: ./actions/fix-code-coverage-paths@main
-        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@test-report-check-drex-shared
+        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@bug/test-report-check-drex-shared
         with:
           cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
           source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
