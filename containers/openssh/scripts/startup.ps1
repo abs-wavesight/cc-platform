@@ -55,6 +55,12 @@ Match User ${ClientName}
   Write-Output "`nCopying SSH keys..." 
   Copy-Item "C:/ssh-keys/ssh_host_rsa_key" -Destination "C:/ProgramData/ssh" -Force
   Copy-Item "C:/ssh-keys/ssh_host_rsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
+  
+  Copy-Item "C:/ssh-keys/ssh_host_ecdsa_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh-keys/ssh_host_ecdsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
+
+  Copy-Item "C:/ssh-keys/ssh_host_ed25519_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh-keys/ssh_host_ed25519_key.pub" -Destination "C:/ProgramData/ssh" -Force
 
   Write-Output "Fixing host file permissions"
   C:\\openssh\\OpenSSH-Win64\\FixHostFilePermissions.ps1 -Confirm:$false

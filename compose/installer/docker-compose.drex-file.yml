@@ -15,6 +15,8 @@ services:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
+      - ABS_CC_FDZ_PATH=c:/fdz
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
     ports:	
       - "12346:5000"	
     restart: always	
@@ -33,5 +35,9 @@ services:
         read_only: true
       - type: bind
         source: $FDZ_ROOT_PATH
-        target: c:/abs/fdz
-        read_only: false          
+        target: c:/fdz
+        read_only: false
+      - type: bind
+        source: $ABS_PATH/ssh-keys
+        target: c:/ssh-keys
+        read_only: false 
