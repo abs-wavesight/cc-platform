@@ -1,0 +1,16 @@
+name: Fix Code Coverage Paths
+inputs:
+  cobertura-xml-path:
+    description: "Cobertura XML coverage report path"
+    required: true 
+  source-directory:
+    description: "Directory containing covered source files"
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Workaround for invalid link paths in coverage report 
+      working-directory: scripts/workflows
+      run: ./fix-cobertura-paths.ps1 -CoberturaXmlPath "${{ inputs.cobertura-xml-path }}" -RootDirectory "${{ inputs.source-directory }}"
