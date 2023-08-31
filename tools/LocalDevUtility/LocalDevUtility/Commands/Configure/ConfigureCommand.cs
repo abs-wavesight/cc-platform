@@ -114,30 +114,7 @@ public static class ConfigureCommand
 
         ValidateConfigAndThrow(appConfig);
         SetEnvironmentVariables(appConfig);
-
-        if (!Directory.Exists(appConfig.SftpRootPath))
-        {
-            using (CliStep.Start("Creating SFTP root directory"))
-            {
-                Directory.CreateDirectory(appConfig.SftpRootPath!);
-            }
-        }
-
-        if (!Directory.Exists(appConfig.FdzRootPath))
-        {
-            using (CliStep.Start("Creating FDZ root directory"))
-            {
-                Directory.CreateDirectory(appConfig.FdzRootPath!);
-            }
-        }
-
-        if (!Directory.Exists(appConfig.SshKeysPath))
-        {
-            using (CliStep.Start("Creating SSH keys root directory"))
-            {
-                Directory.CreateDirectory(appConfig.SshKeysPath!);
-            }
-        }
+        CreateDirectories(appConfig);
 
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
@@ -310,5 +287,32 @@ public static class ConfigureCommand
         Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.Machine);
         Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.Machine);
         Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.Machine);
+    }
+
+    private static void CreateDirectories(AppConfig appConfig)
+    {
+        if (!Directory.Exists(appConfig.SftpRootPath))
+        {
+            using (CliStep.Start("Creating SFTP root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SftpRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.FdzRootPath))
+        {
+            using (CliStep.Start("Creating FDZ root directory"))
+            {
+                Directory.CreateDirectory(appConfig.FdzRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.SshKeysPath))
+        {
+            using (CliStep.Start("Creating SSH keys root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
+            }
+        }
     }
 }
