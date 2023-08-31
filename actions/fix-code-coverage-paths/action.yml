@@ -1,4 +1,5 @@
 name: Fix Code Coverage Paths
+description: "Fixes invalid paths in Cobertura XML coverage report"
 inputs:
   cobertura-xml-path:
     description: "Cobertura XML coverage report path"
