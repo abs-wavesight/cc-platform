@@ -145,7 +145,7 @@ public static class ConfigureCommand
             using (CliStep.Start("Generating SSH keys"))
             {
                 Directory.CreateDirectory(appConfig.SshKeysPath!);
-                
+
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
@@ -172,13 +172,6 @@ public static class ConfigureCommand
                 powerShellAdapter.RunPowerShellCommand(installCommand);
             }
         }
-    }
-
-    private static void SetEnvironmentVariables(AppConfig appConfig)
-    {
-        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath!);
-        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath!);
-        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath!);
     }
 
     private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
