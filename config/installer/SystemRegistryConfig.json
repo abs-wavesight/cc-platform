@@ -387,7 +387,7 @@
         },
         {
           "source": "..\\AdditionalFiles\\SshHostKeyFingerprint",
-          "destination": "C:\\abs\\ssh-keys\\SshHostKeyFingerprint",
+          "destination": "$ABS_PATH\\ssh-keys\\SshHostKeyFingerprint",
           "action": "copy"
         },
         {
