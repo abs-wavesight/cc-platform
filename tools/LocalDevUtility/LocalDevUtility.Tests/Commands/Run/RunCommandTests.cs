@@ -23,7 +23,7 @@ public class RunCommandTests
     [InlineData("run -m r --rabbitmq-remote i", new[] { "cc.rabbitmq-remote" })]
     [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
-    [InlineData("run -m r --loki i", new[] { "cc.loki" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --drex-message-service i", new[] { "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --drex-file-service i", new[] { "cc.drex-file-service", "cc.rabbitmq-local", "cc.vector-site", "cc.drex-message-service", "cc.openssh" })]
     [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.openssh" })]
