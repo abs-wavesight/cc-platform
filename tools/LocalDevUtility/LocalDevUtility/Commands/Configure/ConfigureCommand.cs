@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform;
 using Abs.CommonCore.Platform.Certificates;
 using Microsoft.Extensions.Logging;
 
@@ -88,18 +89,6 @@ public static class ConfigureCommand
             generateSshKeysNow = validPositiveValues.Contains(generateSshKeysNowInput.ToLowerInvariant());
         }
 
-        var installSshClientNow = false;
-        if (generateSshKeysNow)
-        {
-            Console.Write("Install OpenSSH client -- it's used to generate SSH keys (y/n)? (n): ");
-            var installSshClientNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(installSshClientNowInput))
-            {
-                var validPositiveValues = new List<string> { "y", "yes", "true" };
-                installSshClientNow = validPositiveValues.Contains(installSshClientNowInput.ToLowerInvariant());
-            }
-        }
-
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
@@ -112,22 +101,8 @@ public static class ConfigureCommand
         };
 
         ValidateConfigAndThrow(appConfig);
-
-        if (!Directory.Exists(appConfig.SftpRootPath))
-        {
-            using (CliStep.Start("Creating SFTP root directory"))
-            {
-                Directory.CreateDirectory(appConfig.SftpRootPath!);
-            }
-        }
-
-        if (!Directory.Exists(appConfig.FdzRootPath))
-        {
-            using (CliStep.Start("Creating FDZ root directory"))
-            {
-                Directory.CreateDirectory(appConfig.FdzRootPath!);
-            }
-        }
+        SetEnvironmentVariables(appConfig);
+        CreateDirectories(appConfig);
 
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
@@ -163,20 +138,14 @@ public static class ConfigureCommand
             }
         }
 
-        if (installSshClientNow)
-        {
-            using (CliStep.Start("Installing SSH client."))
-            {
-                // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
-                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
-                powerShellAdapter.RunPowerShellCommand(installCommand);
-            }
-        }
-
         if (generateSshKeysNow)
         {
+            InstallOpenSsh(powerShellAdapter);
+
             using (CliStep.Start("Generating SSH keys"))
             {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
+
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
@@ -187,12 +156,34 @@ public static class ConfigureCommand
         return 0;
     }
 
+    private static void InstallOpenSsh(IPowerShellAdapter powerShellAdapter)
+    {
+        using (CliStep.Start("Installing SSH client."))
+        {
+            // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
+            const string getStatusCommand = "Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Client*'";
+            const string installedStatus = "Installed";
+            var results = powerShellAdapter.RunPowerShellCommand(getStatusCommand);
+            var isOpenSshClientInstalled = results.Any(r => r.Contains(installedStatus));
+
+            if (isOpenSshClientInstalled)
+            {
+                Console.WriteLine("SSH client already installed.");
+            }
+            else
+            {
+                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
+                powerShellAdapter.RunPowerShellCommand(installCommand);
+            }
+        }
+    }
+
     private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
     {
         return $" --mount \"type=bind,source={appConfig.CertificatePath}/{certDirectoryName},target=C:/{certDirectoryName}\"";
     }
 
-    public static void ValidateConfigAndThrow(AppConfig? appConfig)
+    public static void ValidateConfigAndThrow(AppConfig appConfig)
     {
         var validationErrors = ValidateConfig(appConfig);
         if (validationErrors.Any())
@@ -284,5 +275,39 @@ public static class ConfigureCommand
     private static string GetConfigFileName()
     {
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, Constants.ConfigFileName);
+    }
+
+    private static void SetEnvironmentVariables(AppConfig appConfig)
+    {
+        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.Machine);
+    }
+
+    private static void CreateDirectories(AppConfig appConfig)
+    {
+        if (!Directory.Exists(appConfig.SftpRootPath))
+        {
+            using (CliStep.Start("Creating SFTP root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SftpRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.FdzRootPath))
+        {
+            using (CliStep.Start("Creating FDZ root directory"))
+            {
+                Directory.CreateDirectory(appConfig.FdzRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.SshKeysPath))
+        {
+            using (CliStep.Start("Creating SSH keys root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
+            }
+        }
     }
 }
