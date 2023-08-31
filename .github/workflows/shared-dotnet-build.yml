@@ -53,7 +53,7 @@ jobs:
     steps:
 
       - name: Dump context
-        uses: abs-wavesight/cc-platform/actions/dump-context@bug/test-report-check-drex-shared
+        uses: abs-wavesight/cc-platform/actions/dump-context@main
 
       - uses: actions/checkout@v3
         name: Checkout branch
@@ -135,7 +135,7 @@ jobs:
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
       - name: Workaround for invalid link paths in coverage report 
-        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@bug/test-report-check-drex-shared
+        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
         with:
           cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
           source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
