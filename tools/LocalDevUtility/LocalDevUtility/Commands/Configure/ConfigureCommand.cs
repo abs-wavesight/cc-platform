@@ -164,18 +164,15 @@ public static class ConfigureCommand
         {
             using (CliStep.Start("Generating SSH keys"))
             {
-                const string destFingerprintLocation = @"c:\abs\ssh-keys";
-                Directory.CreateDirectory(destFingerprintLocation);
-
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
                 powerShellAdapter.RunPowerShellCommand(command);
 
                 const string fingerprintFileName = "SshHostKeyFingerprint";
-                logger.LogInformation($"Copying {fingerprintFileName} to '{destFingerprintLocation}'");
+                logger.LogInformation($"Copying {fingerprintFileName} to '{appConfig.SshKeysPath}'");
                 var fingerprintPath = Path.Combine(appConfig.SshKeysPath!, fingerprintFileName);
-                var destFilePath = Path.Combine(destFingerprintLocation, fingerprintFileName);
+                var destFilePath = Path.Combine(appConfig.SshKeysPath, fingerprintFileName);
                 File.Copy(fingerprintPath, destFilePath, true);
             }
         }
