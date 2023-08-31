@@ -2,7 +2,7 @@
   "profiles": {
     "LocalDevUtility": {
       "commandName": "Project",
-      "commandLineArgs": "run --drex-file-service i"
+      "commandLineArgs": "configure"
     }
   }
 }
