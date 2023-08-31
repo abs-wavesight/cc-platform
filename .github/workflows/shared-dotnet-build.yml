@@ -129,6 +129,10 @@ jobs:
           dotnet tool install --global dotnet-coverage
           mkdir Coverage/
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
+
+      - name: Workaround for backslashes in path https://github.com/5monkeys/cobertura-action/issues/86 
+        working-directory: ${{ inputs.solution-directory }}
+        run: (Get-Content -path Coverage/cobertura.xml -Raw) -replace '\\','/' | out-file -FilePath Coverage/cobertura.xml
   
       - name: Report code coverage
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
