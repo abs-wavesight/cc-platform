@@ -144,7 +144,8 @@ public static class ConfigureCommand
 
             using (CliStep.Start("Generating SSH keys"))
             {
-                Directory.CreateDirectory(appConfig.SshKeysPath!);
+                const string executionPolicyChangeCommand = "Set-ExecutionPolicy Bypass -Scope Process";
+                powerShellAdapter.RunPowerShellCommand(executionPolicyChangeCommand);
 
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
@@ -279,9 +280,9 @@ public static class ConfigureCommand
 
     private static void SetEnvironmentVariables(AppConfig appConfig)
     {
-        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.Machine);
-        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.Machine);
-        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.User);
+        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.User);
+        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.User);
     }
 
     private static void CreateDirectories(AppConfig appConfig)
