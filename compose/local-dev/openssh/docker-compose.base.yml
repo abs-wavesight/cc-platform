@@ -28,10 +28,10 @@ services:
         target: C:/config
         read_only: true
       - type: bind
-        source: ${SFTP_ROOT_PATH}
+        source: ${ABS_CC_SFTP_PATH}
         target: C:/sftproot
         read_only: false
       - type: bind
-        source: ${SSH_KEY_PATH}
+        source: ${ABS_CC_SSH_KEYS_PATH}
         target: C:/ssh-keys
         read_only: true

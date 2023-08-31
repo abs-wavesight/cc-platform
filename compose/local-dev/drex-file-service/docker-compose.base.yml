@@ -31,6 +31,6 @@ services:
         target: C:/rabbitmq-remote-certs
         read_only: true
       - type: bind
-        source: ${FDZ_ROOT_PATH}
+        source: ${ABS_CC_FDZ_PATH}
         target: c:/abs/fdz
         read_only: false        
