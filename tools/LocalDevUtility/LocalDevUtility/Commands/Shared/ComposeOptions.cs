@@ -51,7 +51,6 @@ public abstract class ComposeOptions
     public ComposeComponentMode? Grafana { get; set; }
 
     [ComposeComponent(composePath: "loki", imageName: "loki")]
-    [ComposeComponentDependency(dependencyPropertyName: nameof(VectorSite), variant: "loki")]
     public ComposeComponentMode? Loki { get; set; }
 
 
