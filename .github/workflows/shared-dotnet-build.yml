@@ -130,9 +130,9 @@ jobs:
           mkdir Coverage/
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
-      - name: Workaround for invalid link paths in coverage report 
-        working-directory: scripts/workflows
-        run: ./fix-cobertura-paths.ps1 -CoberturaXmlPath "${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml" -RootDirectory "${{ github.workspace }}/${{ inputs.solution-directory }}"
+      # - name: Workaround for invalid link paths in coverage report 
+      #   working-directory: scripts/workflows
+      #   run: ./fix-cobertura-paths.ps1 -CoberturaXmlPath "${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml" -RootDirectory "${{ github.workspace }}/${{ inputs.solution-directory }}"
   
       - name: Report code coverage
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
