@@ -89,18 +89,6 @@ public static class ConfigureCommand
             generateSshKeysNow = validPositiveValues.Contains(generateSshKeysNowInput.ToLowerInvariant());
         }
 
-        var installSshClientNow = false;
-        if (generateSshKeysNow)
-        {
-            Console.Write("Install OpenSSH client -- it's used to generate SSH keys (y/n)? (n): ");
-            var installSshClientNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(installSshClientNowInput))
-            {
-                var validPositiveValues = new List<string> { "y", "yes", "true" };
-                installSshClientNow = validPositiveValues.Contains(installSshClientNowInput.ToLowerInvariant());
-            }
-        }
-
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
@@ -150,34 +138,47 @@ public static class ConfigureCommand
             }
         }
 
-        if (installSshClientNow)
-        {
-            using (CliStep.Start("Installing SSH client."))
-            {
-                // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
-                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
-                powerShellAdapter.RunPowerShellCommand(installCommand);
-            }
-        }
-
         if (generateSshKeysNow)
         {
+            InstallOpenSsh(powerShellAdapter);
+
             using (CliStep.Start("Generating SSH keys"))
             {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
+                
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
                 powerShellAdapter.RunPowerShellCommand(command);
-
-                const string fingerprintFileName = "SshHostKeyFingerprint";
-                logger.LogInformation($"Copying {fingerprintFileName} to '{appConfig.SshKeysPath}'");
-                var fingerprintPath = Path.Combine(appConfig.SshKeysPath!, fingerprintFileName);
-                var destFilePath = Path.Combine(appConfig.SshKeysPath, fingerprintFileName);
-                File.Copy(fingerprintPath, destFilePath, true);
             }
         }
 
         return 0;
+    }
+
+    private static void InstallOpenSsh(IPowerShellAdapter powerShellAdapter)
+    {
+        using (CliStep.Start("Installing SSH client."))
+        {
+            // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
+            const string getStatusCommand = "Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Client*'";
+            const string installedStatus = "Installed";
+            var results = powerShellAdapter.RunPowerShellCommand(getStatusCommand);
+            var isOpenSshClientInstalled = results.Any(r => r.Contains(installedStatus));
+
+            if (!isOpenSshClientInstalled)
+            {
+                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
+                powerShellAdapter.RunPowerShellCommand(installCommand);
+            }
+        }
+    }
+
+    private static void SetEnvironmentVariables(AppConfig appConfig)
+    {
+        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath!);
+        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath!);
+        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath!);
     }
 
     private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
