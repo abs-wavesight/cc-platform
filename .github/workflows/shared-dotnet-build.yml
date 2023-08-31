@@ -145,5 +145,6 @@ jobs:
           skip_covered: false
           fail_below_threshold: false
           show_missing: true
-          link_missing_lines: true
-          link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+          # Links to missing lines won't work unless we do it project-by-project (since the project directory must be in the source_dir paramter below)
+          # link_missing_lines: true
+          # link_missing_lines_source_dir: ${{ inputs.solution-directory }}/${{ inputs.solution-name }}
