@@ -12,5 +12,6 @@ runs:
 
   steps:
     - name: Workaround for invalid link paths in coverage report 
+      shell: pwsh
       working-directory: scripts/workflows
       run: ./fix-cobertura-paths.ps1 -CoberturaXmlPath "${{ inputs.cobertura-xml-path }}" -RootDirectory "${{ inputs.source-directory }}"
