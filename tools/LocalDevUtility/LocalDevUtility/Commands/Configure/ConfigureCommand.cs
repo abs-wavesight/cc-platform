@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform;
 using Abs.CommonCore.Platform.Certificates;
 using Microsoft.Extensions.Logging;
 
@@ -112,6 +113,7 @@ public static class ConfigureCommand
         };
 
         ValidateConfigAndThrow(appConfig);
+        SetEnvironmentVariables(appConfig);
 
         if (!Directory.Exists(appConfig.SftpRootPath))
         {
@@ -126,6 +128,14 @@ public static class ConfigureCommand
             using (CliStep.Start("Creating FDZ root directory"))
             {
                 Directory.CreateDirectory(appConfig.FdzRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.SshKeysPath))
+        {
+            using (CliStep.Start("Creating SSH keys root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
             }
         }
 
@@ -201,7 +211,7 @@ public static class ConfigureCommand
         return $" --mount \"type=bind,source={appConfig.CertificatePath}/{certDirectoryName},target=C:/{certDirectoryName}\"";
     }
 
-    public static void ValidateConfigAndThrow(AppConfig? appConfig)
+    public static void ValidateConfigAndThrow(AppConfig appConfig)
     {
         var validationErrors = ValidateConfig(appConfig);
         if (validationErrors.Any())
@@ -293,5 +303,12 @@ public static class ConfigureCommand
     private static string GetConfigFileName()
     {
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, Constants.ConfigFileName);
+    }
+
+    private static void SetEnvironmentVariables(AppConfig appConfig)
+    {
+        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.Machine);
     }
 }
