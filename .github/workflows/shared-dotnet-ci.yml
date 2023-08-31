@@ -58,10 +58,6 @@ defaults:
     shell: pwsh
 
 jobs:
-  dump-context:
-    name: Dump Context
-    uses: ./.github/workflows/shared-dump-context.yml
-
   get_clean_branch_names:
     name: Get Clean Branch Names
     uses: ./.github/workflows/shared-get-clean-branch-names.yml
