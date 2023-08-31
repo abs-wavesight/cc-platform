@@ -28,7 +28,7 @@ if (Test-Path -Path $ssh_host_rsa_key_path)
     $len = $temp[0] # 3072
     $value = $temp[1].split(":")[1] # Wl1/wCywwvUOrs8J2++YnvKgGmiokFgDc9J8fu8Dwl0
 
-    $fingerprint_file = @(Join-Path -Path $output_path -ChildPath "SshHostKeyFingerprint")
+    $fingerprint_file = @(Join-Path -Path $output_path -ChildPath "ssh-host-key-fingerprint.txt")
     "ssh-rsa $len $value" | Out-File "$fingerprint_file"
 }
 else

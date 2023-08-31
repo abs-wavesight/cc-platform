@@ -166,7 +166,11 @@ public static class ConfigureCommand
             var results = powerShellAdapter.RunPowerShellCommand(getStatusCommand);
             var isOpenSshClientInstalled = results.Any(r => r.Contains(installedStatus));
 
-            if (!isOpenSshClientInstalled)
+            if (isOpenSshClientInstalled)
+            {
+                Console.WriteLine("SSH client already installed.");
+            }
+            else
             {
                 const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
                 powerShellAdapter.RunPowerShellCommand(installCommand);

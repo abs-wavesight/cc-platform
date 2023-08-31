@@ -386,8 +386,8 @@
           "action": "replaceParameters"
         },
         {
-          "source": "..\\AdditionalFiles\\SshHostKeyFingerprint",
-          "destination": "$ABS_PATH\\ssh-keys\\SshHostKeyFingerprint",
+          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
+          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
           "action": "copy"
         },
         {
