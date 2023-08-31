@@ -144,7 +144,8 @@ public static class ConfigureCommand
 
             using (CliStep.Start("Generating SSH keys"))
             {
-                Directory.CreateDirectory(appConfig.SshKeysPath!);
+                const string executionPolicyChangeCommand = "Set-ExecutionPolicy Bypass -Scope Process";
+                powerShellAdapter.RunPowerShellCommand(executionPolicyChangeCommand);
 
                 // OpenSSH client must be enabled
                 var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
