@@ -132,7 +132,7 @@ jobs:
 
       - name: Workaround for invalid link paths in coverage report 
         working-directory: scripts/workflows
-        run: ./fix-coverage-report.ps1 -CoberturaXmlPath ${{ inputs.solution-directory }}/Coverage/cobertura.xml -RootDirectory ${{ inputs.solution-directory }}
+        run: ./fix-cobertura-paths.ps1 -CoberturaXmlPath ${{ inputs.solution-directory }}/Coverage/cobertura.xml -RootDirectory ${{ inputs.solution-directory }}
   
       - name: Report code coverage
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
