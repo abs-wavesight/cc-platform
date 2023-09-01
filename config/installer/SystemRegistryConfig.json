@@ -420,7 +420,7 @@
           "action": "replaceParameters"
         },
         {
-          "source": "..\\AdditionalFiles\\openssh\\config.json",
+          "source": "..\\AdditionalFiles\\openssh-config.json",
           "destination": "$ABS_PATH\\config\\openssh\\config.json",
           "action": "copy"
         },
