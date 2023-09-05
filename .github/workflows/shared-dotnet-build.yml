@@ -139,7 +139,7 @@ jobs:
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
       - name: Workaround for invalid link paths in coverage report 
-        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
+        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@bug/ado-22749-code-coverage-duplicates
         with:
           cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
           source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
@@ -152,7 +152,7 @@ jobs:
           path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_covered: true
+          skip_covered: false
           fail_below_threshold: false
           show_class_names: true
           show_missing: true

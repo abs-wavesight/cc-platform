@@ -45,11 +45,20 @@ foreach ($classNode in $xml.SelectNodes("//class")) {
     $prependedPath = Get-ParentPrependedPath -rootDir $RootDirectory -partialPath $partialPath
 
     if (![string]::IsNullOrEmpty($prependedPath)) {
-        Write-Output "Replaced: $partialPath -> $prependedPath"
+        Write-Output "Replaced File Name: $partialPath -> $prependedPath"
         $filenameAttribute.Value = $prependedPath
     }
     else {
         Write-Output "Skipped: $partialPath"
+    }
+
+    $nameAttribute = $classNode.Attributes.GetNamedItem("name")
+    # Abs.CommonCore.Drex.MessageShipper.Handlers.LogMessageHandler/&lt;&gt;c__DisplayClass12_0/&lt;&lt;Handle&gt;b__2&gt;d 
+    $rawName = $nameAttribute.Value
+    $cleanName = $rawName.Replace("&lt;", "_LT_").Replace("<", "_LT_").Replace("&gt;", "_GT_").Replace(">", "_GT_");
+    if (![string]::IsNullOrEmpty($cleanName)) {
+        Write-Output "Replaced Class Name: $rawName -> $cleanName"
+        $nameAttribute.Value = $cleanName
     }
 }
 
