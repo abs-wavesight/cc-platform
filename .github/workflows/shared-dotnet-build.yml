@@ -148,7 +148,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
         uses: 5monkeys/cobertura-action@master
         with:
-          report_name: "Coverage: ${{ inputs.solution-name }}"
+          report_name: "Coverage: ${{ inputs.solution-name }} (${{ inputs.test-project-filter-part }})"
           path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
