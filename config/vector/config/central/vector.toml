@@ -17,3 +17,8 @@ inputs = ["remap-site-logs"]
 encoding.codec = "json"
 compression = "none"
 path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log"
+
+[api]
+enabled = true
+address = "0.0.0.0:8686"
+playground = true

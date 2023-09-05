@@ -11,7 +11,24 @@ services:
       - VECTOR_CONFIG=C:/config/vector.toml    
       - VECTOR_LOG_FORMAT=json
       - VECTOR_COLOR=never
-      - LOG_RETENTION_PERIOD=7d      
+      - LOG_RETENTION_PERIOD=7d
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pwsh",
+          "-Command",
+          "Invoke-WebRequest",
+          "-UseBasicParsing",
+          "-Method",
+          "HEAD",
+          "-Uri",
+          "http://localhost:8686/health"
+        ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
     logging:	
       driver: local	
     ports:	
