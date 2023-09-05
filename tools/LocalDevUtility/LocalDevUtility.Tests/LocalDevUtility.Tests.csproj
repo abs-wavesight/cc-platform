@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
 
         <AssemblyName>Abs.CommonCore.LocalDevUtility.Tests</AssemblyName>
 
@@ -13,6 +14,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="coverlet.msbuild" Version="6.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.11.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />

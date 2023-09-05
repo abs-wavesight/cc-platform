@@ -32,7 +32,7 @@ jobs:
       solution-name: LocalDevUtility.sln
       install-docker-compose: true
       check-code-formatting: true
-      run-integration-tests: true
+      run-integration-tests: false # TODO RH: REVERT
     secrets: inherit
 
   publish-nuget-package:

@@ -4,7 +4,6 @@ using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Abs.CommonCore.LocalDevUtility.IntegrationTests;
