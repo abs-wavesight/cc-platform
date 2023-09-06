@@ -4,6 +4,7 @@ using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
+using Abs.CommonCore.Installer.OptionValidators;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -32,6 +33,7 @@ internal class Program
         var uninstallCommand = SetupUninstallCommand(args);
         var getReleaseVersionCommand = SetupGetVersionCommand(args);
         var getContainerVersionCommand = SetupGetContainerVersionCommand(args);
+        var addOpenSshUserCommand = SetupAddOpenSshUserCommand(args);
 
         var root = new RootCommand("Installer for the Common Core platform");
         root.TreatUnmatchedTokensAsErrors = true;
@@ -46,10 +48,35 @@ internal class Program
         root.Add(uninstallCommand);
         root.Add(getReleaseVersionCommand);
         root.Add(getContainerVersionCommand);
+        root.Add(addOpenSshUserCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
         return result;
+    }
+
+    private static Command SetupAddOpenSshUserCommand(string[] args)
+    {
+        const string commandName = "add-openssh-user";
+        var command = new Command(commandName);
+        command.TreatUnmatchedTokensAsErrors = true;
+
+        const string usernameParamName = "--name";
+        var usernameParam = new Option<string>(usernameParamName);
+        usernameParam.IsRequired = true;
+        usernameParam.AddValidator(AddOpenSshUserCommandOptionsValidator.ValidateUserName);
+        command.Add(usernameParam);
+
+        const string isDrexParamName = "--drex";
+        var isDrexParam = new Option<bool>(isDrexParamName);
+        command.Add(isDrexParam);
+
+        command.SetHandler(async (name, isDrex) =>
+        {
+            await ExecuteAddOpenSshUserCommand(name, isDrex, args);
+        }, usernameParam, isDrexParam);
+
+        return command;
     }
 
     private static Command SetupDownloadCommand(string[] args)
@@ -695,6 +722,18 @@ internal class Program
 
                 await action(new DirectoryInfo(s), new FileInfo(d));
             });
+    }
+
+    private static async Task ExecuteAddOpenSshUserCommand(string name, bool isDrex, string[] args)
+    {
+        var (_, loggerFactory) = Initialize(args);
+        var commandExecution = new CommandExecutionService(loggerFactory);
+
+        await ExecuteCommandAsync(loggerFactory, async () =>
+        {
+            var creator = new OpenSshUserCreator(commandExecution);
+            await creator.AddOpenSshUserAsync(name, isDrex);
+        });
     }
 
     private static async Task<string?> ExecuteGetReleaseVersionCommandAsync(string releaseName, string owner, string repoName, string[] args)
