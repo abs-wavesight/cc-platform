@@ -26,8 +26,8 @@
     & C:\\scripts\\create-drex-user.ps1 $username $password $false $false
   }
 
-  Write-Output "`nAdding users..."
-  foreach($User in $Config.users)
+  Write-Output "`nAdding sites..."
+  foreach($User in $Config.sites)
   {
     $username = $User.username
     $password = $User.password

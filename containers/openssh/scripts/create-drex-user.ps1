@@ -52,12 +52,12 @@ else
   $MatchUserBlock = @"
 
 Match User ${Username}
-ChrootDirectory c:\sftproot\${Username}\
-PermitTunnel no
-AllowAgentForwarding no
-AllowTcpForwarding no
-X11Forwarding no
-GatewayPorts no
+  ChrootDirectory c:\sftproot\${Username}\
+  PermitTunnel no
+  AllowAgentForwarding no
+  AllowTcpForwarding no
+  X11Forwarding no
+  GatewayPorts no
 
 "@
 
@@ -68,10 +68,10 @@ GatewayPorts no
   {
     Write-Output "Adding user to the config file.."
 
-    $user = $config.clients | Where-Object { $_ -eq "$Username" }
+    $user = $config.sites | Where-Object { $_ -eq "$Username" }
     if ($null -eq $user)
     {
-      $config.clients += "$Username"
+      $config.sites += "$Username"
       $config | ConvertTo-Json | set-content $configFile
     }
   }

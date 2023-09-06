@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace Abs.CommonCore.Installer.OptionValidators;
 public partial class AddOpenSshUserCommandOptionsValidator
 {
-    [GeneratedRegex("^[a-zA-Z][a-zA-Z0-9]{4,11}$", RegexOptions.IgnoreCase, "en-US")]
+    [GeneratedRegex("^[a-zA-Z][a-zA-Z0-9]{4,255}$", RegexOptions.IgnoreCase, "en-US")]
     private static partial Regex UsernameRegex();
 
     public static void ValidateUserName(OptionResult symbolResult)
