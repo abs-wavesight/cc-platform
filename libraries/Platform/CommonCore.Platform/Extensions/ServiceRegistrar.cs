@@ -33,7 +33,8 @@ public static class ServiceRegistrar
                 options.IncludeScopes = true;
                 options.JsonWriterOptions = new JsonWriterOptions
                 {
-                    Indented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    Indented = false,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                 };
             });
         }
