@@ -16,6 +16,7 @@ services:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - ABS_CC_FDZ_PATH=c:/fdz
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - FLAT_LOGS=false
     ports:
       - "12346:5000"
     restart: always

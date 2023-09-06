@@ -9,7 +9,6 @@ namespace Abs.CommonCore.Platform.Extensions;
 [ExcludeFromCodeCoverage]
 public static class ServiceRegistrar
 {
-    private const string FlatLogsVariableName = "FLAT_LOGS";
     public static ILoggingBuilder ConfigureLogging(this ILoggingBuilder logging, bool? useFlatLogs = null)
     {
         logging.ClearProviders();
@@ -44,7 +43,7 @@ public static class ServiceRegistrar
 
     private static bool ShouldUseFlatLogs()
     {
-        var flatLogsStr = Environment.GetEnvironmentVariable(FlatLogsVariableName);
+        var flatLogsStr = Environment.GetEnvironmentVariable(PlatformConstants.FlatLogsVariableName);
         if (!bool.TryParse(flatLogsStr, out var useFlatLogs))
         {
             useFlatLogs = false;
