@@ -4,15 +4,15 @@ namespace Abs.CommonCore.LocalDevUtility;
 
 public static class Constants
 {
-    public const string ConfigFileName = "cc-local.config.json";
-    public const string DockerComposeExecutionRootPath = "compose/local-dev";
-    public const string EnvFileRelativePath = $"{DockerComposeExecutionRootPath}/.env";
-    public const string ContainerRepository = "ghcr.io/abs-wavesight";
-    public const string LogsContainingDirectoryName = "logs";
-    public const string LogsSiteDirectoryName = "site";
-    public const string LogsCentralDirectoryName = "central";
-    public const string NugetConfigFileName = "nuget.config";
-    public const string DefaultDrexSiteConfigFileName = "drex-demo-site-alpha.site-config.json";
+    public static readonly string ConfigFileName = "cc-local.config.json";
+    public static readonly string DockerComposeExecutionRootPath = "compose/local-dev";
+    public static readonly string EnvFileRelativePath = $"{DockerComposeExecutionRootPath}/.env";
+    public static readonly string ContainerRepository = "ghcr.io/abs-wavesight";
+    public static readonly string LogsContainingDirectoryName = "logs";
+    public static readonly string LogsSiteDirectoryName = "site";
+    public static readonly string LogsCentralDirectoryName = "central";
+    public static readonly string NugetConfigFileName = "nuget.config";
+    public static readonly string DefaultDrexSiteConfigFileName = "drex-demo-site-alpha.site-config.json";
 
     public static class Profiles
     {
@@ -24,21 +24,21 @@ public static class Constants
 
     public static class ComposeEnvKeys
     {
-        public const string WindowsVersion = "WINDOWS_VERSION";
-        public const string PathToCommonCorePlatformRepository = "PATH_TO_CC_PLATFORM_REPO";
-        public const string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
-        public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
-        public const string PathToCertificates = "PATH_TO_CERTS";
-        public const string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
-        public const string SftpRootPath = PlatformConstants.SFTP_Path;
-        public const string FdzRootPath = PlatformConstants.FDZ_Path;
+        public static readonly string WindowsVersion = "WINDOWS_VERSION";
+        public static readonly string PathToCommonCorePlatformRepository = "PATH_TO_CC_PLATFORM_REPO";
+        public static readonly string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
+        public static readonly string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
+        public static readonly string PathToCertificates = "PATH_TO_CERTS";
+        public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
+        public static readonly string SftpRootPath = PlatformConstants.SFTP_Path;
+        public static readonly string FdzRootPath = PlatformConstants.FDZ_Path;
     }
 
     public static class CertificateSubDirectories
     {
-        public const string LocalKeys = "local-keys";
-        public const string LocalCerts = "local-certs";
-        public const string RemoteKeys = "remote-keys";
-        public const string RemoteCerts = "remote-certs";
+        public static readonly string LocalKeys = "local-keys";
+        public static readonly string LocalCerts = "local-certs";
+        public static readonly string RemoteKeys = "remote-keys";
+        public static readonly string RemoteCerts = "remote-certs";
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Abs.CommonCore.LocalDevUtility.Commands.Configure;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using TextCopy;
@@ -21,7 +22,8 @@ public static class RunCommand
 
         var additionalEnvValues = new Dictionary<string, string>
         {
-            { Constants.ComposeEnvKeys.DrexSiteConfigFileNameOverride, runOptions.DrexSiteConfigFileNameOverride ?? Constants.DefaultDrexSiteConfigFileName }
+            [Constants.ComposeEnvKeys.DrexSiteConfigFileNameOverride] = runOptions.DrexSiteConfigFileNameOverride ?? Constants.DefaultDrexSiteConfigFileName,
+            [PlatformConstants.FlatLogsVariableName] = (runOptions.FlatLogs ?? false).ToString()
         };
         await DockerHelper.CreateEnvFile(appConfig, additionalEnvValues);
 
