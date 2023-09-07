@@ -29,9 +29,9 @@ public static class Constants
         public const string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
-        public const string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
-        public const string SftpRootPath = PlatformConstants.SFTP_Path;
-        public const string FdzRootPath = PlatformConstants.FDZ_Path;
+        public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
+        public static readonly string SftpRootPath = PlatformConstants.SFTP_Path;
+        public static readonly string FdzRootPath = PlatformConstants.FDZ_Path;
     }
 
     public static class CertificateSubDirectories
