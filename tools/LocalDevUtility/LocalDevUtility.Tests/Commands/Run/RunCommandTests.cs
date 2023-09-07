@@ -46,8 +46,6 @@ public class RunCommandTests
         AssertSpecificExpectedComposeFilesArePresent(composeCommandPart, specificExpectedComposeFiles);
     }
 
-    //public async Task RunCommand
-
     private static string AssertComposeCommandWasExecutedAndExtractComposeCommandPart(LocalDevUtilityFixture fixture)
     {
         fixture.ActualPowerShellCommands.Should().HaveCountGreaterThan(0);
