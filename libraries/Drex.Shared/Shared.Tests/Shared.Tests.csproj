@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -34,6 +34,5 @@
 		<ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
 
-
-
+	<Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 </Project>
