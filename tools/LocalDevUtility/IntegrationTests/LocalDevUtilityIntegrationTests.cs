@@ -29,7 +29,7 @@ public class LocalDevUtilityIntegrationTests
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var utilityExecutablePath = Path.Combine(executingPath, "Abs.CommonCore.LocalDevUtility.exe");
 
-        await fixture.SetUpValidTestConfig();
+        await LocalDevUtilityFixture.SetUpValidTestConfig();
 
         var runCommand = $"{utilityExecutablePath} run {componentParameters} --background --reset --mode r";
         var stopCommand = $"{utilityExecutablePath} stop {componentParameters} --reset";

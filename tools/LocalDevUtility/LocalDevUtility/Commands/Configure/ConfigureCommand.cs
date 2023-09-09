@@ -63,7 +63,7 @@ public static class ConfigureCommand
             sftpRootPath = readAppConfig?.SftpRootPath;
         }
 
-        var currentValue = (readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.FdzRootPath) ? $" ({readAppConfig.FdzRootPath})" : "");
+        var currentValue = readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.FdzRootPath) ? $" ({readAppConfig.FdzRootPath})" : "";
         Console.Write($"Local path to use for File Drop Zone root -- will be created if it does not exist{currentValue}: ");
         var fdzRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(fdzRootPath))
@@ -213,7 +213,7 @@ public static class ConfigureCommand
             errors.Add($"\"cc-drex\" repository path ({appConfig.CommonCoreDrexRepositoryPath}) could not be found");
         }
 
-        if (appConfig.ContainerWindowsVersion != "2019" && appConfig.ContainerWindowsVersion != "2022")
+        if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")
         {
             errors.Add($"Container Windows version ({appConfig.ContainerWindowsVersion}) is invalid (must be either \"2019\" or \"2022\")");
         }

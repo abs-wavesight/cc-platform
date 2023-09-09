@@ -20,15 +20,12 @@ public class Program
     public static async Task<int> Main(string[]? args = null)
     {
         var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddSimpleConsole(options =>
+            .AddLogging(builder => builder.AddSimpleConsole(options =>
                 {
                     options.IncludeScopes = false;
                     options.SingleLine = true;
                     options.TimestampFormat = "hh:mm:ss.fff ";
-                });
-            });
+                }));
         services.AddSingleton<IPowerShellAdapter, PowerShellAdapter>();
         var serviceProvider = services.BuildServiceProvider();
 
@@ -54,10 +51,7 @@ public class Program
     private static RootCommand BuildRootCommand()
     {
         var root = new RootCommand("Utility to aid local development and testing");
-        root.SetHandler(() =>
-        {
-            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\".");
-        });
+        root.SetHandler(() => Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\"."));
         return root;
     }
 
@@ -72,12 +66,9 @@ public class Program
         printOption.AddAlias("-p");
         command.AddOption(printOption);
 
-        command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) => await TryExecuteCommandAsync(
                 async () => await ConfigureCommand.Configure(configureOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -108,12 +99,9 @@ public class Program
         siteConfigOverrideOption.AddAlias("-s");
         command.AddOption(siteConfigOverrideOption);
 
-        command.Handler = CommandHandler.Create(async (RunOptions runOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (RunOptions runOptions) => await TryExecuteCommandAsync(
                 async () => await RunCommand.Run(runOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -151,12 +139,9 @@ public class Program
         var configOption = new Option<FileInfo?>(new[] { longConfigAlias, shortConfigAlias }, configOptionDescription);
         command.Add(configOption);
 
-        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) => await TryExecuteCommandAsync(
                 async () => await TestDrexCommand.Run(configureOptions, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -169,12 +154,9 @@ public class Program
 
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
 
-        command.Handler = CommandHandler.Create((StopOptions stopOptions) =>
-        {
-            return TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create((StopOptions stopOptions) => TryExecuteCommandAsync(
                 async () => await StopCommand.Stop(stopOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }

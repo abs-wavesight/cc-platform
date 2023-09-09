@@ -20,7 +20,11 @@ public class OpenSshUserCreator
         var dockerCommand = $"exec -it {containerName} cmd.exe /C ";
         dockerCommand += "pwsh -Command C:\\scripts\\create-drex-user.ps1";
         dockerCommand += $" -Username {name}";
-        if (isDrex) dockerCommand += $" -Password \"{password}\"";
+        if (isDrex)
+        {
+            dockerCommand += $" -Password \"{password}\"";
+        }
+
         dockerCommand += $" -DrexUser {(isDrex ? 1 : 0)} -UpdateConfig 1";
         await _commandExecutionService.ExecuteCommandAsync("docker", dockerCommand, string.Empty);
 

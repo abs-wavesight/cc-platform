@@ -46,9 +46,20 @@ public class Uninstaller : ActionBase
             dockerLocation = ReadDirectoryPath("Enter docker location");
         }
 
-        if (removeComponents) await UninstallSystemComponentsAsync();
-        if (removeConfiguration) await UninstallConfigurationAsync(installPath!);
-        if (removeDockerItems) await UninstallDockerAsync(dockerLocation!);
+        if (removeComponents)
+        {
+            await UninstallSystemComponentsAsync();
+        }
+
+        if (removeConfiguration)
+        {
+            await UninstallConfigurationAsync(installPath!);
+        }
+
+        if (removeDockerItems)
+        {
+            await UninstallDockerAsync(dockerLocation!);
+        }
     }
 
     private async Task UninstallSystemComponentsAsync()
@@ -115,7 +126,7 @@ public class Uninstaller : ActionBase
         Console.WriteLine("Docker removed");
     }
 
-    private DirectoryInfo ReadDirectoryPath(string prompt)
+    private static DirectoryInfo ReadDirectoryPath(string prompt)
     {
         prompt = prompt
             .Trim(new[] { ' ', ':' });
@@ -135,7 +146,7 @@ public class Uninstaller : ActionBase
         }
     }
 
-    private bool ReadBoolean(string prompt)
+    private static bool ReadBoolean(string prompt)
     {
         prompt = prompt
             .Trim(new[] { ' ', ':' });
@@ -156,20 +167,18 @@ public class Uninstaller : ActionBase
         }
     }
 
-    private bool? ConvertToBoolean(string? text)
+    private static bool? ConvertToBoolean(string? text)
     {
         text = (text ?? "")
             .Trim()
             .ToLower();
 
-        if (string.IsNullOrWhiteSpace(text)) return null;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
 
         var isSuccess = bool.TryParse(text, out var result);
-        if (isSuccess) return result;
-
-        if (text == "y") return true;
-        if (text == "n") return false;
-
-        return null;
+        return isSuccess ? result : text == "y" ? true : text == "n" ? false : null;
     }
 }

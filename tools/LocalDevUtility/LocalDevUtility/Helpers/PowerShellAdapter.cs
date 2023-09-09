@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace Abs.CommonCore.LocalDevUtility.Helpers;
 
-public class PowerShellAdapter : IPowerShellAdapter
+public partial class PowerShellAdapter : IPowerShellAdapter
 {
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
 
@@ -53,10 +53,7 @@ public class PowerShellAdapter : IPowerShellAdapter
         OutputWithColorForDockerCompose(outputItem!);
         rawOutput.Add(outputItem!);
 
-        if (logger != null)
-        {
-            logger.LogInformation(outputItem);
-        }
+        logger?.LogInformation(outputItem);
     }
 
     /// <summary>
@@ -78,7 +75,7 @@ public class PowerShellAdapter : IPowerShellAdapter
         colorStack.Push("green");
 
         // Regex to extract the starting string including the container name from the following: "my-container-name_1  | the log message goes here"
-        var containerNameRegex = new Regex(@"[\w-]+?\s+\|\s+");
+        var containerNameRegex = MyRegex();
         var match = containerNameRegex.Match(rawOutput);
         if (match.Success)
         {
@@ -98,11 +95,14 @@ public class PowerShellAdapter : IPowerShellAdapter
             }
 
             var coloredOutputPart = $"[{color}]{match.Value}[/]";
-            var uncoloredOutputPart = rawOutput.Substring(match.Value.Length).EscapeMarkup();
+            var uncoloredOutputPart = rawOutput[match.Value.Length..].EscapeMarkup();
             AnsiConsole.MarkupLine($"{coloredOutputPart}{uncoloredOutputPart}");
             return;
         }
 
         Console.WriteLine(rawOutput);
     }
+
+    [GeneratedRegex("[\\w-]+?\\s+\\|\\s+")]
+    private static partial Regex MyRegex();
 }

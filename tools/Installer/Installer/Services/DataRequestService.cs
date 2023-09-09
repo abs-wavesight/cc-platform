@@ -13,7 +13,7 @@ public class DataRequestService : IDataRequestService
     private readonly string? _nugetEnvironmentVariable;
     private readonly bool _verifyOnly;
 
-    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly HttpClient _httpClient = new();
 
     public DataRequestService(ILoggerFactory loggerFactory, bool verifyOnly = false)
     {
@@ -31,28 +31,21 @@ public class DataRequestService : IDataRequestService
     {
         _logger.LogInformation($"Loading data from '{source}'");
 
-        if (_verifyOnly)
-        {
-            return Array.Empty<byte>();
-        }
-
-        if (source.Contains("github.com", StringComparison.OrdinalIgnoreCase) && source.Contains("/releases/", StringComparison.OrdinalIgnoreCase))
-        {
-            return await DownloadGithubReleaseFileAsync(source);
-        }
-
-        if (source.Contains("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase))
-        {
-            return await DownloadGithubRawFileAsync(source);
-        }
-
-        return await DownloadDirectFileAsync(source);
+        return _verifyOnly
+            ? Array.Empty<byte>()
+            : source.Contains("github.com", StringComparison.OrdinalIgnoreCase) && source.Contains("/releases/", StringComparison.OrdinalIgnoreCase)
+            ? await DownloadGithubReleaseFileAsync(source)
+            : source.Contains("raw.githubusercontent.com", StringComparison.OrdinalIgnoreCase)
+            ? await DownloadGithubRawFileAsync(source)
+            : await DownloadDirectFileAsync(source);
     }
 
     private async Task<byte[]> DownloadGithubReleaseFileAsync(string source)
     {
-        var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
-        client.Credentials = new Credentials(_nugetEnvironmentVariable);
+        var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue))
+        {
+            Credentials = new Credentials(_nugetEnvironmentVariable)
+        };
 
         var segments = source.GetGitHubPathSegments();
         var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
@@ -76,19 +69,15 @@ public class DataRequestService : IDataRequestService
 
     private async Task<byte[]> DownloadFileAsync(string source, bool isGithub)
     {
-        using (var request = new HttpRequestMessage(HttpMethod.Get, source))
+        using var request = new HttpRequestMessage(HttpMethod.Get, source);
+        if (isGithub)
         {
-            if (isGithub)
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _nugetEnvironmentVariable);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
-            }
-
-            using (var response = await _httpClient.SendAsync(request))
-            {
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsByteArrayAsync();
-            }
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _nugetEnvironmentVariable);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
         }
+
+        using var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }

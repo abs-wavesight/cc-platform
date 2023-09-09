@@ -36,11 +36,17 @@ public class CommandExecutionService : ICommandExecutionService
 
         process.ErrorDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data?.Trim());
+            if (string.IsNullOrWhiteSpace(args.Data) == false)
+            {
+                _logger.LogInformation(args.Data?.Trim());
+            }
         };
         process.OutputDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data.Trim());
+            if (string.IsNullOrWhiteSpace(args.Data) == false)
+            {
+                _logger.LogInformation(args.Data.Trim());
+            }
         };
         process.Start();
 

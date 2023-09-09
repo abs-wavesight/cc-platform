@@ -12,10 +12,7 @@ public class TestLogger : ILogger
     {
         get
         {
-            if (_default == null)
-            {
-                _default = new TestLogger();
-            }
+            _default ??= new TestLogger();
 
             return _default;
         }
@@ -42,7 +39,7 @@ public class TestLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter, string category)
     {
-        var formattedMessage = $"{DateTime.Now:u} [{category}] [{logLevel.ToString()}] {formatter(state, exception)}";
+        var formattedMessage = $"{DateTime.Now:u} [{category}] [{logLevel}] {formatter(state, exception)}";
         try
         {
             _testOutputHelper?.WriteLine(formattedMessage);

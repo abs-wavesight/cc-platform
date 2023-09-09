@@ -47,10 +47,12 @@ public class DataChunker : ActionBase
                 dataRead = await stream.ReadAsync(buffer);
 
                 if (dataRead == 0)
+                {
                     break;
+                }
 
                 currentChunkFile ??= File.OpenWrite($"{chunkPath}.{ChunkName}{currentChunkCount}");
-                await currentChunkFile.WriteAsync(buffer, 0, dataRead);
+                await currentChunkFile.WriteAsync(buffer.AsMemory(0, dataRead));
                 dataWritten += dataRead;
 
                 if (dataWritten >= maxSize)
@@ -101,10 +103,8 @@ public class DataChunker : ActionBase
             foreach (var file in files)
             {
                 _logger.LogInformation($"Appending file: {file}");
-                using (var fileStream = File.OpenRead(file))
-                {
-                    await fileStream.CopyToAsync(destinationStream);
-                }
+                using var fileStream = File.OpenRead(file);
+                await fileStream.CopyToAsync(destinationStream);
             }
         }
 
