@@ -17,7 +17,6 @@ public class OpenSshUserCreatorTests
         var commandExecution = new Mock<ICommandExecutionService>();
         var testObj = new OpenSshUserCreator(commandExecution.Object);
 
-
         // Act
         await testObj.AddOpenSshUserAsync(Name, true);
 
@@ -32,7 +31,6 @@ public class OpenSshUserCreatorTests
         // Arrange
         var commandExecution = new Mock<ICommandExecutionService>();
         var testObj = new OpenSshUserCreator(commandExecution.Object);
-
 
         // Act
         await testObj.AddOpenSshUserAsync(Name, false);

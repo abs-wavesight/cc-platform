@@ -125,7 +125,7 @@ public class ComponentInstaller : ActionBase
     {
         var missingFiles = components
             .SelectMany(component => component.Actions, (component, action) => new { component, action })
-            .Where(t => t.action.Action == ComponentActionAction.Install || t.action.Action == ComponentActionAction.Copy)
+            .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
             .Where(location => VerifyFileExists(location) == false)
             .ToArray();
@@ -136,7 +136,7 @@ public class ComponentInstaller : ActionBase
         }
     }
 
-    private bool VerifyFileExists(string location)
+    private static bool VerifyFileExists(string location)
     {
         var directory = Path.GetDirectoryName(location)!;
         var filename = Path.GetFileName(location);
@@ -154,17 +154,50 @@ public class ComponentInstaller : ActionBase
     {
         try
         {
-            if (action.Action == ComponentActionAction.Execute || action.Action == ComponentActionAction.ExecuteImmediate) await RunExecuteCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Install) await RunInstallCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.UpdatePath) await RunUpdatePathCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Copy) await RunCopyCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.ReplaceParameters) await RunReplaceParametersCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Chunk) await RunChunkCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Unchunk) await RunUnchunkCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Compress) await RunCompressCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.Uncompress) await RunUncompressCommandAsync(component, rootLocation, action);
-            else if (action.Action == ComponentActionAction.RunDockerCompose) await RunDockerComposeCommandAsync(component, rootLocation, action);
-            else throw new Exception($"Unknown action command: {action.Action}");
+            if (action.Action is ComponentActionAction.Execute or ComponentActionAction.ExecuteImmediate)
+            {
+                await RunExecuteCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Install)
+            {
+                await RunInstallCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.UpdatePath)
+            {
+                await RunUpdatePathCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Copy)
+            {
+                await RunCopyCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.ReplaceParameters)
+            {
+                await RunReplaceParametersCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Chunk)
+            {
+                await RunChunkCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Unchunk)
+            {
+                await RunUnchunkCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Compress)
+            {
+                await RunCompressCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.Uncompress)
+            {
+                await RunUncompressCommandAsync(component, rootLocation, action);
+            }
+            else if (action.Action == ComponentActionAction.RunDockerCompose)
+            {
+                await RunDockerComposeCommandAsync(component, rootLocation, action);
+            }
+            else
+            {
+                throw new Exception($"Unknown action command: {action.Action}");
+            }
         }
         catch (Exception ex)
         {
@@ -183,7 +216,10 @@ public class ComponentInstaller : ActionBase
     private async Task RunInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running installation for '{action.Source}'");
-        if (action.Source.EndsWith(".tar")) await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {action.Source}", rootLocation);
+        if (action.Source.EndsWith(".tar"))
+        {
+            await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {action.Source}", rootLocation);
+        }
         else
         {
             var parts = action.Source.Split(' ');
@@ -197,7 +233,11 @@ public class ComponentInstaller : ActionBase
         var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
                    ?? "";
 
-        if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase)) return;
+        if (path.Contains(action.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
         await _commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"%{Constants.PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
     }
 
@@ -273,7 +313,11 @@ public class ComponentInstaller : ActionBase
             .Select(x => $"-f {x}")
             .StringJoin(" ");
 
-        if (envFile.Length == 1) arguments = $"--env-file {envFile[0]} " + arguments;
+        if (envFile.Length == 1)
+        {
+            arguments = $"--env-file {envFile[0]} " + arguments;
+        }
+
         await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
 
         var containerCount = configFiles
@@ -297,7 +341,10 @@ public class ComponentInstaller : ActionBase
             var containers = await LoadContainerInfoAsync(client);
             var healthyCount = 0;
 
-            if (containers.Length == 0) _logger.LogWarning("No containers found");
+            if (containers.Length == 0)
+            {
+                _logger.LogWarning("No containers found");
+            }
 
             foreach (var container in containers.OrderBy(x => x.Image))
             {
@@ -326,7 +373,7 @@ public class ComponentInstaller : ActionBase
         throw new Exception("Not all containers are healthy");
     }
 
-    private async Task<ContainerInspectResponse[]> LoadContainerInfoAsync(DockerClient client)
+    private static async Task<ContainerInspectResponse[]> LoadContainerInfoAsync(DockerClient client)
     {
         var containers = await client.Containers
             .ListContainersAsync(new ContainersListParameters
@@ -341,25 +388,16 @@ public class ComponentInstaller : ActionBase
             .ToArray();
     }
 
-    private bool CheckContainerHealthy(ContainerInspectResponse container, TimeSpan containerHealthyTime)
+    private static bool CheckContainerHealthy(ContainerInspectResponse container, TimeSpan containerHealthyTime)
     {
         var startTime = string.IsNullOrWhiteSpace(container.State.StartedAt)
             ? DateTime.MaxValue
             : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
 
-        if (container.State.Health != null && string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        if (container.State.Running && container.State.Restarting == false &&
-            (container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase) ||
-             DateTime.UtcNow.Subtract(startTime) > containerHealthyTime))
-        {
-            return true;
-        }
-
-        return false;
+        return (container.State.Health == null || !string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
+&& container.State.Running && container.State.Restarting == false &&
+            ((container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase)) ||
+             DateTime.UtcNow.Subtract(startTime) > containerHealthyTime);
     }
 
     private async Task ExpandReleaseZipFile()

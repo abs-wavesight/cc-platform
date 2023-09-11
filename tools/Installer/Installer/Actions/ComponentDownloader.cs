@@ -82,20 +82,29 @@ public class ComponentDownloader : ActionBase
 
         // Assumes all files can be processed in any order
         await component.Files
-            .ForEachAsync(async file =>
-            {
-                await ProcessFileAsync(component, file);
-            });
+            .ForEachAsync(async file => await ProcessFileAsync(component, file));
     }
 
     private async Task ProcessFileAsync(Component component, ComponentFile file)
     {
         try
         {
-            if (file.Type == ComponentFileType.Container) await ProcessContainerFileAsync(component, file.Source, file.Destination);
-            else if (file.Type == ComponentFileType.File) await ProcessSimpleFileAsync(component, file.Source, file.Destination);
-            else if (file.Type == ComponentFileType.Release) await ProcessReleaseFileAsync(component, file.Source, file.Destination);
-            else throw new Exception($"Unknown file type '{file.Type}'");
+            if (file.Type == ComponentFileType.Container)
+            {
+                await ProcessContainerFileAsync(component, file.Source, file.Destination);
+            }
+            else if (file.Type == ComponentFileType.File)
+            {
+                await ProcessSimpleFileAsync(component, file.Source, file.Destination);
+            }
+            else if (file.Type == ComponentFileType.Release)
+            {
+                await ProcessReleaseFileAsync(component, file.Source, file.Destination);
+            }
+            else
+            {
+                throw new Exception($"Unknown file type '{file.Type}'");
+            }
         }
         catch (Exception ex)
         {
@@ -141,8 +150,10 @@ public class ComponentDownloader : ActionBase
 
         var segments = source.GetGitHubPathSegments();
 
-        var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue));
-        client.Credentials = new Credentials(_nugetEnvironmentVariable);
+        var client = new GitHubClient(new Octokit.ProductHeaderValue(Constants.AbsHeaderValue))
+        {
+            Credentials = new Credentials(_nugetEnvironmentVariable)
+        };
 
         var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
         var files = release.Assets

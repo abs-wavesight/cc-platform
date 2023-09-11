@@ -54,7 +54,6 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(dependencyPropertyName: nameof(VectorSite), variant: "loki")]
     public ComposeComponentMode? Loki { get; set; }
 
-
     [Description("Alias for \"rabbitmq-local\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     public ComposeComponentMode? Rabbitmq { get; set; }
