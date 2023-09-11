@@ -8,6 +8,9 @@ namespace Abs.CommonCore.LocalDevUtility.Helpers;
 
 public partial class PowerShellAdapter : IPowerShellAdapter
 {
+    [GeneratedRegex("[\\w-]+?\\s+\\|\\s+")]
+    private static partial Regex ContainerNameExtractor();
+
     private readonly ConcurrentDictionary<string, string> _colorsByContainerName = new();
 
     public List<string> RunPowerShellCommand(string command, TimeSpan? timeout)
@@ -75,7 +78,7 @@ public partial class PowerShellAdapter : IPowerShellAdapter
         colorStack.Push("green");
 
         // Regex to extract the starting string including the container name from the following: "my-container-name_1  | the log message goes here"
-        var containerNameRegex = MyRegex();
+        var containerNameRegex = ContainerNameExtractor();
         var match = containerNameRegex.Match(rawOutput);
         if (match.Success)
         {
@@ -102,7 +105,4 @@ public partial class PowerShellAdapter : IPowerShellAdapter
 
         Console.WriteLine(rawOutput);
     }
-
-    [GeneratedRegex("[\\w-]+?\\s+\\|\\s+")]
-    private static partial Regex MyRegex();
 }
