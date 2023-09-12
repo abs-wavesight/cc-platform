@@ -1,10 +1,13 @@
-﻿{
-  "clients": [
-    "test_client",
-    "elogs",
-    "drex"
-  ],
-  "sites": [
-  ],
-  "defaultPassword": "P@ssword"
+{
+    "clients": [
+        "test_client",
+        "elogs"
+    ],
+    "sites": [
+        {
+            "username": "drex",
+            "password": "P@ssword"
+        }
+    ],
+    "defaultPassword": "P@ssword"
 }
