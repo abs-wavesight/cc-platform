@@ -22,7 +22,7 @@ public class LocalDevUtilityFixture
         MockPowerShellAdapter = new Mock<IPowerShellAdapter>();
         MockPowerShellAdapter
             .Setup(a => a.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
-            .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem.Replace("\"\"", "\"")); });
+            .Callback<string, TimeSpan?>((commandItem, _) => ActualPowerShellCommands.Add(commandItem.Replace("\"\"", "\"")));
 
         TestLogger.Default.SetTestOutput(testOutput);
         Logger = TestLogger.Default;
@@ -35,7 +35,7 @@ public class LocalDevUtilityFixture
         await Program.Run(inputArray, TestLogger.Default, MockPowerShellAdapter.Object);
     }
 
-    public AppConfig GetValidTestConfig()
+    public static AppConfig GetValidTestConfig()
     {
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
@@ -75,18 +75,18 @@ public class LocalDevUtilityFixture
         };
     }
 
-    public async Task SetUpValidTestConfig()
+    public static async Task SetUpValidTestConfig()
     {
         await SetUpConfig(GetValidTestConfig());
     }
 
-    public async Task SetUpConfig(AppConfig? config)
+    public static async Task SetUpConfig(AppConfig? config)
     {
         ConfigureCommand.ValidateConfig(config).Should().HaveCount(0);
         await ConfigureCommand.SaveConfig(config);
     }
 
-    private void CopyFile(string sourcePath, string destinationPath, string name)
+    private static void CopyFile(string sourcePath, string destinationPath, string name)
     {
         sourcePath = Path.Combine(sourcePath, name);
         destinationPath = Path.Combine(destinationPath, name);

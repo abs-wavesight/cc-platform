@@ -1,5 +1,4 @@
 ﻿
-
 namespace Abs.CommonCore.Installer.Extensions;
 
 public static class StringExtensions

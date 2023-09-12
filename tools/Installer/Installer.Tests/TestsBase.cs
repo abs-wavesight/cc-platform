@@ -2,7 +2,7 @@
 
 public class TestsBase
 {
-    protected byte[] BuildTestData(int size)
+    protected static byte[] BuildTestData(int size)
     {
         var data = new byte[size];
         for (var x = 0; x < data.Length; x++)

@@ -29,7 +29,7 @@ public class DataChunkerTests : TestsBase
             await chunker.ChunkFileAsync(new FileInfo(tempFile), destination, 4096, true);
 
             var writtenBytes = expectedFiles
-                .SelectMany(x => File.ReadAllBytes(x));
+                .SelectMany(File.ReadAllBytes);
 
             Assert.Equal(fullData, writtenBytes);
         }

@@ -156,7 +156,10 @@ public static class DockerHelper
         ComposeOptions composeOptions,
         string componentPropertyName)
     {
-        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode propertyValue) return;
+        if (composeOptions.GetType().GetProperty(componentPropertyName)!.GetValue(composeOptions, null) is not ComposeComponentMode propertyValue)
+        {
+            return;
+        }
 
         var runComponent = composeOptions.GetType().GetRunComponent(componentPropertyName)!;
         builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.base.yml");
@@ -168,7 +171,10 @@ public static class DockerHelper
             builder.Append($" -f ./{runComponent.ComposePath}/docker-compose.variant.{variantToAdd}.yml");
         }
 
-        if (string.IsNullOrWhiteSpace(runComponent.Profile)) return;
+        if (string.IsNullOrWhiteSpace(runComponent.Profile))
+        {
+            return;
+        }
 
         AddProfile(builder, runComponent.Profile);
     }
@@ -209,14 +215,11 @@ public static class DockerHelper
 
     private static string GetComposeFileSuffix(ComposeComponentMode composeComponentMode)
     {
-        switch (composeComponentMode)
+        return composeComponentMode switch
         {
-            case ComposeComponentMode.s:
-                return "source";
-            case ComposeComponentMode.i:
-                return "image";
-            default:
-                throw new ArgumentOutOfRangeException(nameof(composeComponentMode), composeComponentMode, null);
-        }
+            ComposeComponentMode.s => "source",
+            ComposeComponentMode.i => "image",
+            _ => throw new ArgumentOutOfRangeException(nameof(composeComponentMode), composeComponentMode, null),
+        };
     }
 }

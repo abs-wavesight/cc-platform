@@ -1,7 +1,6 @@
 ﻿using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Platform.Config;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Installer.Tests.Actions;
 
@@ -39,10 +38,8 @@ public class ReleaseBodyBuilderTests : TestsBase
         await TestReleaseBodyAsync(@"Configs/ParameterDownloaderConfig.json", parameters);
     }
 
-    private async Task TestReleaseBodyAsync(string? configPath, Dictionary<string, string>? parameters)
+    private static async Task TestReleaseBodyAsync(string? configPath, Dictionary<string, string>? parameters)
     {
-        var builder = new ReleaseBodyBuilder(NullLoggerFactory.Instance);
-
         var configFile = string.IsNullOrWhiteSpace(configPath)
             ? null
             : new FileInfo(configPath);
@@ -50,7 +47,7 @@ public class ReleaseBodyBuilderTests : TestsBase
 
         try
         {
-            await builder.BuildReleaseBodyAsync(configFile, parameters, new FileInfo(outputFile));
+            await ReleaseBodyBuilder.BuildReleaseBodyAsync(configFile, parameters, new FileInfo(outputFile));
 
             Assert.True(File.Exists(outputFile));
 

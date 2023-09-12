@@ -17,7 +17,7 @@ public class ReleaseBodyBuilder : ActionBase
         _logger = loggerFactory.CreateLogger<ReleaseBodyBuilder>();
     }
 
-    public async Task BuildReleaseBodyAsync(FileInfo? configFile, Dictionary<string, string>? parameters, FileInfo output)
+    public static async Task BuildReleaseBodyAsync(FileInfo? configFile, Dictionary<string, string>? parameters, FileInfo output)
     {
         var config = configFile != null
             ? ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(configFile.FullName)
@@ -29,20 +29,24 @@ public class ReleaseBodyBuilder : ActionBase
         await CreateBodyAsync(mergedParameters, output);
     }
 
-    private async Task CreateBodyAsync(Dictionary<string, string> parameters, FileInfo output)
+    private static async Task CreateBodyAsync(Dictionary<string, string> parameters, FileInfo output)
     {
         var body = new StringBuilder();
 
         foreach (var parameter in parameters)
         {
-            if (string.IsNullOrWhiteSpace(parameter.Value)) continue;
+            if (string.IsNullOrWhiteSpace(parameter.Value))
+            {
+                continue;
+            }
+
             body.AppendLine($"{FormatKey(parameter.Key)}: {parameter.Value}");
         }
 
         await File.WriteAllTextAsync(output.FullName, body.ToString());
     }
 
-    private string FormatKey(string key)
+    private static string FormatKey(string key)
     {
         key = key
             .Replace("$", "")

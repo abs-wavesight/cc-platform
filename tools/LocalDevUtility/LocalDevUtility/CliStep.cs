@@ -13,6 +13,7 @@ public class CliStep : IDisposable
         {
             Console.Write(toPrint);
         }
+
         return new CliStep();
     }
 

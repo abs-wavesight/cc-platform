@@ -20,8 +20,7 @@ public class ConfigureCommandTests
     public void ValidateConfigAndThrow_GivenValidConfig_ShouldNotThrow()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
 
         // Act
         var exception = Record.Exception(() => ConfigureCommand.ValidateConfigAndThrow(appConfig));
@@ -34,8 +33,7 @@ public class ConfigureCommandTests
     public void ValidateConfigAndThrow_GivenInvalidPlatformRepositoryPath_ShouldThrow()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
         appConfig.CommonCorePlatformRepositoryPath = "invalid";
 
         // Act
@@ -51,8 +49,7 @@ public class ConfigureCommandTests
     public void ValidateConfigAndThrow_GivenInvalidDrexRepositoryPath_ShouldThrow()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
         appConfig.CommonCoreDrexRepositoryPath = "invalid";
 
         // Act
@@ -68,8 +65,7 @@ public class ConfigureCommandTests
     public void ValidateConfigAndThrow_GivenInvalidContainerWindowsVersion_ShouldThrow()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
         appConfig.ContainerWindowsVersion = "invalid";
 
         // Act
@@ -101,8 +97,7 @@ public class ConfigureCommandTests
     public void ReadConfig_GivenValidConfigFile_ShouldReturnAppConfigObject()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var expectedAppConfig = fixture.GetValidTestConfig();
+        var expectedAppConfig = LocalDevUtilityFixture.GetValidTestConfig();
         var fileName = ConfigureCommand.SaveConfig(expectedAppConfig).Result;
         File.Exists(fileName).Should().BeTrue();
 
@@ -134,8 +129,7 @@ public class ConfigureCommandTests
     public void SaveConfig_GivenValidConfig_ShouldSaveConfigFile()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
 
         // Act
         var fileName = ConfigureCommand.SaveConfig(appConfig).Result;
@@ -149,8 +143,7 @@ public class ConfigureCommandTests
     public void SaveConfig_GivenNullConfigAndPreviouslyExistingConfigFile_ShouldDeletePreviouslyExistingConfigFile()
     {
         // Arrange
-        var fixture = new LocalDevUtilityFixture(_testOutput);
-        var appConfig = fixture.GetValidTestConfig();
+        var appConfig = LocalDevUtilityFixture.GetValidTestConfig();
         var originalFileName = ConfigureCommand.SaveConfig(appConfig).Result;
         File.Exists(originalFileName).Should().BeTrue();
 
