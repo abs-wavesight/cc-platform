@@ -8,7 +8,7 @@ param (
 $configFile = "C:/config/config.json"
 $config = Get-Content -Path $configFile -Raw | ConvertFrom-Json
 
-if ($Password=$false)
+if ($Password==$false)
 {
   $Password = $config.defaultPassword
 }
