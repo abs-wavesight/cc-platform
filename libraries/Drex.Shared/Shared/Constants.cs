@@ -35,17 +35,17 @@ public static class Constants
         {
             public const string DrexFileReservedName = "drex-file";
 
-                public const string SiteFileRequestDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{DirectExchangeSuffix}";
-                public const string SiteFileRequestTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{TopicExchangeSuffix}";
-                public const string SiteFileResponseDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{DirectExchangeSuffix}";
-                public const string SiteFileResponseTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{TopicExchangeSuffix}";
-                public const string SiteFileNotificationDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{DirectExchangeSuffix}";
-                public const string SiteFileNotificationTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{TopicExchangeSuffix}";
+            public const string SiteFileRequestDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{DirectExchangeSuffix}";
+            public const string SiteFileRequestTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{TopicExchangeSuffix}";
+            public const string SiteFileResponseDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{DirectExchangeSuffix}";
+            public const string SiteFileResponseTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{TopicExchangeSuffix}";
+            public const string SiteFileNotificationDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{DirectExchangeSuffix}";
+            public const string SiteFileNotificationTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{TopicExchangeSuffix}";
 
-                public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{QueueSuffix}";
-                public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{QueueSuffix}";
-                public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{QueueSuffix}";
-            }
+            public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{QueueSuffix}";
+            public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{QueueSuffix}";
+            public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{QueueSuffix}";
+        }
 
         public static class Message
         {
