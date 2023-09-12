@@ -82,7 +82,12 @@ public class RabbitConfigurer : ActionBase
     {
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
-            ? new Password(true, true, true, true, 32)
+            ? new Password()
+                .IncludeLowercase()
+                .IncludeUppercase()
+                .IncludeNumeric()
+                .IncludeSpecial()
+                .LengthRequired(32)
                 .Next()
             : password;
 
@@ -136,13 +141,8 @@ public class RabbitConfigurer : ActionBase
 
     private static async Task UpdateUserPermissionsAsync(IManagementClient client, string username, bool isSuperUser)
     {
-        var user = await GetUserAsync(client, username);
-
-        if (user == null)
-        {
-            throw new Exception("User account does not exist");
-        }
-
+        var user = await GetUserAsync(client, username)
+                   ?? throw new Exception("User account does not exist");
         var permissionRegex = isSuperUser
             ? ".*"
             : $"{Regex.Escape(username.ToLower())}";

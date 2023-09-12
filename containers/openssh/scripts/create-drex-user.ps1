@@ -21,9 +21,6 @@ if ($DrexUser)
   & net user $Username $Password /ADD 
   & net localgroup $DrexGroupName $Username /ADD
 
-  Write-Output "`nCreating directory for user $Username..."
-  New-Item -Path "C:/sftproot" -Name $Username -ItemType "directory" -Force
-
   if ($UpdateConfig)
   {
     Write-Output "Adding user to the config file.."
