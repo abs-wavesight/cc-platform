@@ -8,7 +8,7 @@ param (
 $configFile = "C:/config/config.json"
 $config = Get-Content -Path $configFile -Raw | ConvertFrom-Json
 
-if ($Password==$false)
+if (!$Password)
 {
   $Password = $config.defaultPassword
 }
@@ -18,7 +18,7 @@ if ($DrexUser)
 {
   $DrexGroupName="drex_group"
   & net localgroup $DrexGroupName /ADD
-  & net user $Username $Password /ADD &&
+  & net user $Username $Password /ADD 
   & net localgroup $DrexGroupName $Username /ADD
 
   Write-Output "`nCreating directory for user $Username..."
