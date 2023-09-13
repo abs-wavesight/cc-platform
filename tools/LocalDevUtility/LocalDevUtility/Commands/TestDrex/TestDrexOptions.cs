@@ -2,8 +2,10 @@
 
 public class TestDrexOptions
 {
-    public Role? Role { get; set; }
-    public Origin? Origin { get; set; }
-    public bool? Loop { get; set; }
-    public FileInfo? Config { get; set; }
+    public string Name { get; init; }
+    public Role? Role { get; init; }
+    public Origin? Origin { get; init; }
+    public bool? Loop { get; init; }
+    public bool? File { get; init; }
+    public FileInfo? Config { get; init; }
 }
