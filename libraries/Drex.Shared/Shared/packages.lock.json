@@ -4,21 +4,22 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.88, )",
-        "resolved": "1.0.88",
-        "contentHash": "9VjjjglXeV6qddXWDG7RXVgzeb3xR0FWhaZc42ddbqBNvSDWQmRA1wPNqaoh1otLCUhMjMwwUkwJNzE8NkMJfg==",
+        "requested": "[1.0.149-feature-ado-22461-file-checksums, )",
+        "resolved": "1.0.149-feature-ado-22461-file-checksums",
+        "contentHash": "Sj25024S7ZS0SEI4zOhKGLUMatJ0/rwZvZq7X6azh5x2/tjH613GHrWJjo9AgTBT+bP0+Mxu56olVxAqt+299w==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
+          "Grpc.AspNetCore": "2.32.0",
+          "Macross.Json.Extensions": "3.0.0"
         }
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.50, )",
-        "resolved": "1.0.50",
-        "contentHash": "RHLiSsFUQAnaJTCH4472+O5mUsd3eJJy2r2AUocOyThOF7DEZ4V8q4QiocEHfum12n5wsB7nLVKIvdoaDTxMgA==",
+        "requested": "[1.0.186-feature-ado-22461-file-checksums, )",
+        "resolved": "1.0.186-feature-ado-22461-file-checksums",
+        "contentHash": "6yqTYRm5lGJphBKU/Q00mR44Ot0qjNE/L7bcyvA2aJvEiZNsyYxJ4fltNbxxJKBcTXDsgAxUfrS91UTp249X6w==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.88",
+          "Abs.CommonCore.Contracts": "1.0.149-feature-ado-22461-file-checksums",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",
@@ -260,6 +261,11 @@
           "Json.More.Net": "1.8.0",
           "JsonPointer.Net": "3.0.1"
         }
+      },
+      "Macross.Json.Extensions": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
