@@ -21,6 +21,16 @@ public static class TestDrexCommand
         var runCommand = $"dotnet run  -c {configuration} --project {testClientPath} -- ";
         var executeTestDrexCommandBuilder = new StringBuilder(runCommand);
 
+        if (!string.IsNullOrWhiteSpace(testDrexOptions.Name))
+        {
+            executeTestDrexCommandBuilder.Append($" -n {testDrexOptions.Name}");
+        }
+
+        if (testDrexOptions.File is not null)
+        {
+            executeTestDrexCommandBuilder.Append(" -f");
+        }
+
         if (testDrexOptions.Config is not null)
         {
             executeTestDrexCommandBuilder.Append($" -c {testDrexOptions.Config.FullName}");
