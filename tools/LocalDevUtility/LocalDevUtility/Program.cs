@@ -112,6 +112,22 @@ public class Program
         const string commandName = "test-drex";
         var command = new Command(commandName, commandDescription);
 
+        const string nameOptionDescription = "Unique name for this instance";
+        const string longNameAlias = "--name";
+        const string shortNameAlias = "-n";
+        var nameOption = new Option<string>(new[] { longNameAlias, shortNameAlias }, nameOptionDescription);
+        command.AddOption(nameOption);
+
+        const string fileOptionDescription = "Indicates whether test client should send files";
+        const string longFileAlias = "--file";
+        const string shortFileAlias = "-f";
+        var fileOption = new Option<bool>(new[] { longFileAlias, shortFileAlias }, fileOptionDescription)
+        {
+            IsRequired = false,
+        };
+        fileOption.SetDefaultValue(false);
+        command.AddOption(fileOption);
+
         const string roleOptionDescription =
             "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present";
         const string longRoleAlias = "--role";
