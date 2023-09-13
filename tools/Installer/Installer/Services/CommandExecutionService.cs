@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services;
 
 [ExcludeFromCodeCoverage]
-public class CommandExecutionService : ICommandExecutionService
+public partial class CommandExecutionService : ICommandExecutionService
 {
+    [GeneratedRegex("(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]")]
+    private static partial Regex AnsiEscapeCodesRegex();
+
     private readonly bool _verifyOnly;
     private readonly ILogger _logger;
 
@@ -43,9 +47,12 @@ public class CommandExecutionService : ICommandExecutionService
         };
         process.OutputDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false)
+            var result = args.Data is null
+                ? null
+                : AnsiEscapeCodesRegex().Replace(args.Data, "");
+            if (string.IsNullOrWhiteSpace(result) == false)
             {
-                _logger.LogInformation(args.Data.Trim());
+                _logger.LogInformation(result.Trim());
             }
         };
         process.Start();
