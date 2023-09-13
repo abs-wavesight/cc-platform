@@ -40,11 +40,11 @@ if ($DrexUser)
 }
 else
 {
-  & net USER $Username $Password /ADD
+  & net USER $Username $Password /ADD && net localgroup "Administrators" $Username /ADD
 
   Write-Output "`nCreating directory for client $Username..."
   New-Item -Path "C:/sftproot" -Name $Username -ItemType "directory" -Force
-  
+
   Write-Output "`Adding match user block for client $Username..."
   $MatchUserBlock = @"
 
@@ -65,10 +65,10 @@ Match User ${Username}
   {
     Write-Output "Adding user to the config file.."
 
-    $user = $config.sites | Where-Object { $_ -eq "$Username" }
+    $user = $config.clients | Where-Object { $_ -eq "$Username" }
     if ($null -eq $user)
     {
-      $config.sites += "$Username"
+      $config.clients += "$Username"
       $config | ConvertTo-Json | set-content $configFile
     }
   }
