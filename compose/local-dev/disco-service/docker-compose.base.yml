@@ -1,0 +1,25 @@
+---
+version: '3.9'
+
+services:
+
+  cc.disco-service:
+    container_name: disco-service
+    depends_on:
+      - cc.vector-site
+      - cc.rabbitmq-local
+    environment:
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      # Copy siemens-adapter config. If we add more adapters in the same way, 
+      # it will override the folder with last one.
+      - type: bind
+        source: ${PATH_TO_CC_SIEMENS_ADAPTER_REPO}/config/vendor-configs
+        target: C:/app/config/vendor-configs
+        read_only: true
