@@ -13,7 +13,11 @@ public class OpenSshUserCreator
 
     public async Task AddOpenSshUserAsync(string name, bool isDrex)
     {
-        var pwd = new Password();
+        var pwd = new Password()
+            .IncludeLowercase()
+            .IncludeUppercase()
+            .IncludeNumeric()
+            .LengthRequired(14);
         var password = pwd.Next();
 
         const string containerName = "openssh";
