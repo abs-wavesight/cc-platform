@@ -69,7 +69,8 @@ public class LocalDevUtilityFixture
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
             CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
             // we need real siemens-adapter config
-            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens"),
+            //CommonCoreSiemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens"),
+            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "cc-adapters-siemens"),
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
