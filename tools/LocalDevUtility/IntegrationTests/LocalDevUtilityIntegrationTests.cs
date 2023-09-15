@@ -69,8 +69,7 @@ public class LocalDevUtilityIntegrationTests
                         .Where(i => i.Project == "abs-cc").Should()
                         .AllSatisfy(i =>
                         {
-                            //i.State.Should().Be("running");
-                            i.State.Should().Be("created");
+                            i.State.Should().Be("running");
                             i.Health.Should().BeOneOf("healthy", string.Empty);
                             i.ExitCode.Should().Be(0);
                         });
