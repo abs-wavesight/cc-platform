@@ -8,7 +8,7 @@ namespace Abs.CommonCore.Installer.Services;
 [ExcludeFromCodeCoverage]
 public partial class CommandExecutionService : ICommandExecutionService
 {
-    [GeneratedRegex("(\\x9B|\\x1B\\[)[0-?]*[ -\\/]*[@-~]")]
+    [GeneratedRegex(@"(\u001b)(8|7|H|>|\]0;|\[(\?\d+(h|l)|[0-2]?(K|J)|\d*(A|B|C|D\D|E|F|G|H|I|M|N|S|T|U|X)|1000D\d+|\d*;\d*(f|H|r|m)|\d+;\d+;\d+m))", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
     private static partial Regex AnsiEscapeCodesRegex();
 
     private readonly bool _verifyOnly;
@@ -22,7 +22,7 @@ public partial class CommandExecutionService : ICommandExecutionService
 
     public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
     {
-        _logger.LogInformation($"Executing: {command} {arguments}");
+        _logger.LogInformation("Executing: {command} {arguments}", command, arguments);
 
         if (_verifyOnly)
         {
@@ -47,12 +47,13 @@ public partial class CommandExecutionService : ICommandExecutionService
         };
         process.OutputDataReceived += (sender, args) =>
         {
-            var result = args.Data is null
-                ? null
-                : AnsiEscapeCodesRegex().Replace(args.Data, "");
-            if (string.IsNullOrWhiteSpace(result) == false)
+            // ansi commands duplicate text data.
+            // If remove only ANSI codes and log the rest of the string, text output will be logged multiple times.
+            var isAnsiCommand = args.Data is not null
+                && AnsiEscapeCodesRegex().IsMatch(args.Data);
+            if (!isAnsiCommand && !string.IsNullOrWhiteSpace(args.Data))
             {
-                _logger.LogInformation(result.Trim());
+                _logger.LogInformation(args.Data.Trim());
             }
         };
         process.Start();
