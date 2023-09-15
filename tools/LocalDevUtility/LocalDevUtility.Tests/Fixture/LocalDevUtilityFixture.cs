@@ -63,21 +63,19 @@ public class LocalDevUtilityFixture
         var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
         Directory.CreateDirectory(dummydrexPath);
 
-        var logMessage = "";
-        var siemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens");
-        if (Directory.Exists(siemensAdapterRepositoryPath))
-        {
-            logMessage = "siemens_path_found";
-        }
+        var dummyDiscoRepoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo");
+        Directory.CreateDirectory(dummyDiscoRepoPath);
+
+        var dummySiemensAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo");
+        Directory.CreateDirectory(dummySiemensAdapterPath);
+        CreateFoldersAndCopyDiscoVendorConfig(dummySiemensAdapterPath, executingPath, "siemens-config.json");
 
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
             CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
-            // we need real siemens-adapter config
-            //CommonCoreSiemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens"),
-            CommonCoreSiemensAdapterRepositoryPath = logMessage,
+            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo"),
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
@@ -103,5 +101,14 @@ public class LocalDevUtilityFixture
         destinationPath = Path.Combine(destinationPath, name);
 
         File.Copy(sourcePath, destinationPath, true);
+    }
+
+    private static void CreateFoldersAndCopyDiscoVendorConfig(string vendorAdapterRepoPath, string executingPath, string configFileName)
+    {
+        var vendorConfigsFolderPath = Path.Combine(vendorAdapterRepoPath, "config/vendor-configs");
+        Directory.CreateDirectory(vendorConfigsFolderPath);
+
+        var testConfigsPath = Path.Combine(executingPath, "dummy-vendor-configs");
+        CopyFile(testConfigsPath, vendorConfigsFolderPath, "siemens-config.json");
     }
 }
