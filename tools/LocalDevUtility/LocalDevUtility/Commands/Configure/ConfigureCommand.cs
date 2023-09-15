@@ -229,6 +229,16 @@ public static class ConfigureCommand
             errors.Add($"\"cc-drex\" repository path ({appConfig.CommonCoreDrexRepositoryPath}) could not be found");
         }
 
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDiscoRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDiscoRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-disco\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+        }
+
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")
         {
             errors.Add($"Container Windows version ({appConfig.ContainerWindowsVersion}) is invalid (must be either \"2019\" or \"2022\")");
