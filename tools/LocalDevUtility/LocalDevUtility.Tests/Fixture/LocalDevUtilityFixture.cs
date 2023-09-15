@@ -63,6 +63,13 @@ public class LocalDevUtilityFixture
         var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
         Directory.CreateDirectory(dummydrexPath);
 
+        var logMessage = "";
+        var siemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens");
+        if (Directory.Exists(siemensAdapterRepositoryPath))
+        {
+            logMessage = "siemens_path_found";
+        }
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
@@ -70,7 +77,7 @@ public class LocalDevUtilityFixture
             CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
             // we need real siemens-adapter config
             //CommonCoreSiemensAdapterRepositoryPath = Path.Combine(Path.GetFullPath(Path.Combine(repoRootPath, "..")), "cc-adapters-siemens"),
-            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "cc-adapters-siemens"),
+            CommonCoreSiemensAdapterRepositoryPath = logMessage,
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
