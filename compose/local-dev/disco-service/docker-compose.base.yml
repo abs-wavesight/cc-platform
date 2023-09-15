@@ -7,7 +7,7 @@ services:
     container_name: disco-service
     depends_on:
       - cc.rabbitmq-local
-      - cc.vector-site
+      #- cc.vector-site
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}

@@ -25,7 +25,7 @@ public abstract class ComposeOptions
 
     [ComposeComponent(composePath: "disco-service", imageName: "cc-disco")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    [ComposeComponentDependency(nameof(VectorSite))]
+    //[ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DiscoService { get; set; }
 
     [ComposeComponent(composePath: "drex-file-service", imageName: "cc-drex-file-service")]
