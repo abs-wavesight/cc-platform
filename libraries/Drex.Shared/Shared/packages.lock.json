@@ -4,21 +4,22 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.88, )",
-        "resolved": "1.0.88",
-        "contentHash": "9VjjjglXeV6qddXWDG7RXVgzeb3xR0FWhaZc42ddbqBNvSDWQmRA1wPNqaoh1otLCUhMjMwwUkwJNzE8NkMJfg==",
+        "requested": "[1.0.150-feature-ado-21434-file-fault-handling, )",
+        "resolved": "1.0.150-feature-ado-21434-file-fault-handling",
+        "contentHash": "cRwcAzU3wdBtZatUO8TjAQ5jvpEsQq16obD6L8/XGruAXpHAseS/S/1W5Je1j7ACVmDbUT7xp0KV+adtOhN4AA==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0"
+          "Grpc.AspNetCore": "2.32.0",
+          "Macross.Json.Extensions": "3.0.0"
         }
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.50, )",
-        "resolved": "1.0.50",
-        "contentHash": "RHLiSsFUQAnaJTCH4472+O5mUsd3eJJy2r2AUocOyThOF7DEZ4V8q4QiocEHfum12n5wsB7nLVKIvdoaDTxMgA==",
+        "requested": "[1.0.192-feature-ado-21434-file-fault-handling-platform, )",
+        "resolved": "1.0.192-feature-ado-21434-file-fault-handling-platform",
+        "contentHash": "mXk/HG4FBlTCt1GvNHxpAgapp64+AXuCfclqgbj8EjFXAHOphTaQzBxWBAYXZLrlPVoScSGkRpsO7w+nblV3VQ==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.88",
+          "Abs.CommonCore.Contracts": "1.0.150-feature-ado-21434-file-fault-handling",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",
@@ -260,6 +261,11 @@
           "Json.More.Net": "1.8.0",
           "JsonPointer.Net": "3.0.1"
         }
+      },
+      "Macross.Json.Extensions": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
