@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.150-feature-ado-21434-file-fault-handling, )",
-        "resolved": "1.0.150-feature-ado-21434-file-fault-handling",
-        "contentHash": "cRwcAzU3wdBtZatUO8TjAQ5jvpEsQq16obD6L8/XGruAXpHAseS/S/1W5Je1j7ACVmDbUT7xp0KV+adtOhN4AA==",
+        "requested": "[1.0.151-feature-ado-21434-file-fault-handling, )",
+        "resolved": "1.0.151-feature-ado-21434-file-fault-handling",
+        "contentHash": "iKkZn9wKEp1iptNA9psZ4QNoICh4dojr3pLQgVz4u4ZtFC1p0ETjU86SLWNrMdatckWOLe4zlHQYW6eKTSMJRg==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",
@@ -15,11 +15,11 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.192-feature-ado-21434-file-fault-handling-platform, )",
-        "resolved": "1.0.192-feature-ado-21434-file-fault-handling-platform",
-        "contentHash": "mXk/HG4FBlTCt1GvNHxpAgapp64+AXuCfclqgbj8EjFXAHOphTaQzBxWBAYXZLrlPVoScSGkRpsO7w+nblV3VQ==",
+        "requested": "[1.0.194-feature-ado-21434-file-fault-handling-platform, )",
+        "resolved": "1.0.194-feature-ado-21434-file-fault-handling-platform",
+        "contentHash": "xBwEgwEoHE1nr86BbKIr3gUqE8eHwQG/1r96Iz3Vvr5rhrbz8OAOGh1FIymsSkaObMhL9PrP7EHFWXvJVjwvCQ==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.150-feature-ado-21434-file-fault-handling",
+          "Abs.CommonCore.Contracts": "1.0.151-feature-ado-21434-file-fault-handling",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",
