@@ -68,7 +68,6 @@ public class LocalDevUtilityFixture
 
         var dummySiemensAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo");
         Directory.CreateDirectory(dummySiemensAdapterPath);
-        CreateFoldersAndCopyDiscoVendorConfig(dummySiemensAdapterPath, executingPath, "siemens-config.json");
 
         return new AppConfig
         {
@@ -101,14 +100,5 @@ public class LocalDevUtilityFixture
         destinationPath = Path.Combine(destinationPath, name);
 
         File.Copy(sourcePath, destinationPath, true);
-    }
-
-    private static void CreateFoldersAndCopyDiscoVendorConfig(string vendorAdapterRepoPath, string executingPath, string configFileName)
-    {
-        var vendorConfigsFolderPath = Path.Combine(vendorAdapterRepoPath, "config/vendor-configs");
-        Directory.CreateDirectory(vendorConfigsFolderPath);
-
-        var testConfigsPath = Path.Combine(executingPath, "dummy-vendor-configs");
-        CopyFile(testConfigsPath, vendorConfigsFolderPath, "siemens-config.json");
     }
 }
