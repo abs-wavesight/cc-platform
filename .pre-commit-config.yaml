@@ -1,0 +1,23 @@
+repos:
+-   repo: local
+    hooks:
+    -   id: dotnet-format-libraries-drex-shared
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal libraries/Drex.Shared/Drex.Shared.sln --include 
+        types_or: ["c#"]
+    -   id: dotnet-format-libraries-platform
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal libraries/Platform/CommonCore.Platform.sln --include 
+        types_or: ["c#"]
+    -   id: dotnet-format-tools-installer
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal tools/Installer/Installer.sln --include 
+        types_or: ["c#"]
+    -   id: dotnet-format-tools-local-dev-utility
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal tools/LocalDevUtility/LocalDevUtility.sln --include 
+        types_or: ["c#"]
