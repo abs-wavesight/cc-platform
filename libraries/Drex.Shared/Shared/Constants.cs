@@ -35,12 +35,12 @@ public static class Constants
         {
             public const string DrexFileReservedName = "drex-file";
 
-            public const string SiteFileRequestDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{DirectExchangeSuffix}";
-            public const string SiteFileRequestTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{TopicExchangeSuffix}";
-            public const string SiteFileResponseDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{DirectExchangeSuffix}";
-            public const string SiteFileResponseTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{TopicExchangeSuffix}";
-            public const string SiteFileNotificationDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{DirectExchangeSuffix}";
-            public const string SiteFileNotificationTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{TopicExchangeSuffix}";
+            public const string SiteFileRequestDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{DirectExchangeSuffix}";
+            public const string SiteFileRequestTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{TopicExchangeSuffix}";
+            public const string SiteFileResponseDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response.{DirectExchangeSuffix}";
+            public const string SiteFileResponseTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response.{TopicExchangeSuffix}";
+            public const string SiteFileNotificationDirectExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{DirectExchangeSuffix}";
+            public const string SiteFileNotificationTopicExchangeTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{TopicExchangeSuffix}";
 
             public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{QueueSuffix}";
             public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{QueueSuffix}";
