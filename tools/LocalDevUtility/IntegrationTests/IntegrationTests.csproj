@@ -30,5 +30,4 @@
       <ProjectReference Include="..\LocalDevUtility\LocalDevUtility.csproj" />
     </ItemGroup>
 
-  <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 </Project>
