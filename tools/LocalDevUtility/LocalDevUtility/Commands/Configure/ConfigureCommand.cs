@@ -35,6 +35,20 @@ public static class ConfigureCommand
             ccDrexRepositoryLocalPath = readAppConfig?.CommonCoreDrexRepositoryPath;
         }
 
+        Console.Write($"\"cc-disco\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDiscoRepositoryPath) ? $" ({readAppConfig.CommonCoreDiscoRepositoryPath})" : "")}: ");
+        var ccDiscoRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccDrexRepositoryLocalPath))
+        {
+            ccDiscoRepositoryLocalPath = readAppConfig?.CommonCoreDiscoRepositoryPath;
+        }
+
+        Console.Write($"\"cc-adapters-siemens\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSiemensAdapterRepositoryPath) ? $" ({readAppConfig.CommonCoreSiemensAdapterRepositoryPath})" : "")}: ");
+        var ccSiemensAdapterRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccSiemensAdapterRepositoryLocalPath))
+        {
+            ccSiemensAdapterRepositoryLocalPath = readAppConfig?.CommonCoreSiemensAdapterRepositoryPath;
+        }
+
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
         var containerWindowsVersion = Console.ReadLine() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(containerWindowsVersion))
@@ -93,6 +107,8 @@ public static class ConfigureCommand
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
+            CommonCoreDiscoRepositoryPath = ccDiscoRepositoryLocalPath,
+            CommonCoreSiemensAdapterRepositoryPath = ccSiemensAdapterRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
@@ -211,6 +227,16 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDrexRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDrexRepositoryPath).Exists)
         {
             errors.Add($"\"cc-drex\" repository path ({appConfig.CommonCoreDrexRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDiscoRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDiscoRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-disco\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")

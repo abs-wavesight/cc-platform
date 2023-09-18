@@ -1,0 +1,15 @@
+---
+version: '3.9'
+
+services:
+
+  cc.siemens-adapter:
+    build:
+      context: ${PATH_TO_CC_SIEMENS_ADAPTER_REPO}
+      dockerfile: service/SiemensAdapter.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "application"
