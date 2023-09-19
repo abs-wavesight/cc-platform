@@ -38,6 +38,7 @@
 
     <ItemGroup>
       <Folder Include="dummy-certs\" />
+      <Folder Include="dummy-vendor-configs\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -50,7 +51,9 @@
       <None Update="dummy-certs\local-keys\rabbitmq.key">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="dummy-vendor-configs\siemens-config.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
-  <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 </Project>

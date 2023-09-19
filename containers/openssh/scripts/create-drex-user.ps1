@@ -40,7 +40,7 @@ if ($DrexUser)
 }
 else
 {
-  & net USER $Username $Password /ADD && net localgroup "Administrators" $Username /ADD
+  & net USER $Username $Password /ADD 
 
   Write-Output "`nCreating directory for client $Username..."
   New-Item -Path "C:/sftproot" -Name $Username -ItemType "directory" -Force

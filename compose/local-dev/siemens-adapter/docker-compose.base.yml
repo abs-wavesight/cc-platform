@@ -1,0 +1,23 @@
+---
+version: '3.9'
+
+services:
+
+  cc.siemens-adapter:
+    container_name: siemens-adapter
+    depends_on:
+      - cc.disco-service
+    environment:
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_SIEMENS_ADAPTER_REPO}/config/vendor-configs
+        target: C:/app/config
+        read_only: true    
+

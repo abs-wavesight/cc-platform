@@ -1,0 +1,199 @@
+﻿{
+  "key": "siemens",
+  "connection": {
+    "uri": "https://ecomain-suite-vessel.siemens-energy.com/EcoMAIN_WebAPI/",
+    "username": "ABS_NS_ext_demo",
+    "password": "AbsNS_2023"
+  },
+  "discoDataTypeToVendorSensorAliasMapping": {
+    "draftDataTypeToVendorSensorAliasMapping": [
+      {
+        "discoDataType": "MeanDraft",
+        "vendorSensorAlias": "Draft_Mean"
+      },
+      {
+        "discoDataType": "AftDraft",
+        "vendorSensorAlias": "Draft_Aft"
+      },
+      {
+        "discoDataType": "ForwardDraft",
+        "vendorSensorAlias": "Draft_Forward"
+      },
+      {
+        "discoDataType": "MidshipDraftPort",
+        "vendorSensorAlias": "Draft_Midship_Port"
+      },
+      {
+        "discoDataType": "MidshipDraftStarboard",
+        "vendorSensorAlias": "Draft_Midship_Starboard"
+      },
+      {
+        "discoDataType": "Trim",
+        "vendorSensorAlias": "Trim"
+      }
+    ],
+    "fuelDataTypeToVendorSensorAliasMapping": [],
+    "locationDataTypeToVendorSensorAliasMapping": [
+      {
+        "discoDataType": "Latitude",
+        "vendorSensorAlias": "Latitude"
+      },
+      {
+        "discoDataType": "Longitude",
+        "vendorSensorAlias": "Longitude"
+      }
+    ],
+    "weatherDataTypeToVendorSensorAliasMapping": [
+      {
+        "discoDataType": "RelativeWindDirection",
+        "vendorSensorAlias": "Wind_Direction_Relative"
+      },
+      {
+        "discoDataType": "RelativeWindSpeed",
+        "vendorSensorAlias": "Wind_Speed_Relative"
+      },
+      {
+        "discoDataType": "TrueWindDirection",
+        "vendorSensorAlias": "Wind_Direction_True"
+      },
+      {
+        "discoDataType": "WetTemperature",
+        "vendorSensorAlias": "Temperature_Wet"
+      },
+      {
+        "discoDataType": "DryTemperature",
+        "vendorSensorAlias": "Temperature_Dry"
+      },
+      {
+        "discoDataType": "SeaWaterTemperature",
+        "vendorSensorAlias": "Temperature_Sea_Water"
+      },
+      {
+        "discoDataType": "SeaWaterDepth",
+        "vendorSensorAlias": "Sea_Water_Depth"
+      },
+      {
+        "discoDataType": "AirPressure",
+        "vendorSensorAlias": "Air_Pressure"
+      },
+      {
+        "discoDataType": "RelativeHumidity",
+        "vendorSensorAlias": "Humidity_Relative"
+      },
+      {
+        "discoDataType": "Swell",
+        "vendorSensorAlias": "Swell"
+      },
+      {
+        "discoDataType": "SeaScale",
+        "vendorSensorAlias": "Sea_Scale"
+      }
+    ]
+  },
+  "discoDataTypeUnitToVendorSensorUnitMapping": [
+    {
+      "discoDataTypeUnit": "Degrees",
+      "vendorSensorUnit": "°"
+    },
+    {
+      "discoDataTypeUnit": "DegreesCelsius",
+      "vendorSensorUnit": "°C"
+    },
+    {
+      "discoDataTypeUnit": "Hours",
+      "vendorSensorUnit": "h"
+    },
+    {
+      "discoDataTypeUnit": "Kilonewtons",
+      "vendorSensorUnit": "kn"
+    },
+    {
+      "discoDataTypeUnit": "NewtonMeter",
+      "vendorSensorUnit": "nm"
+    },
+    {
+      "discoDataTypeUnit": "MetricTonsPerHour",
+      "vendorSensorUnit": "mt/h"
+    },
+    {
+      "discoDataTypeUnit": "Percent",
+      "vendorSensorUnit": "%"
+    },
+    {
+      "discoDataTypeUnit": "MetricTons",
+      "vendorSensorUnit": "mt"
+    },
+    {
+      "discoDataTypeUnit": "Kilowatts",
+      "vendorSensorUnit": "kW"
+    },
+    {
+      "discoDataTypeUnit": "KilovoltAmpereReactive",
+      "vendorSensorUnit": "kvar"
+    },
+    {
+      "discoDataTypeUnit": "KilovoltAmpere",
+      "vendorSensorUnit": "kVA"
+    },
+    {
+      "discoDataTypeUnit": "KilogramsPerHour",
+      "vendorSensorUnit": "kg/h"
+    },
+    {
+      "discoDataTypeUnit": "GramsPerKilowattHour",
+      "vendorSensorUnit": "g/kWh"
+    },
+    {
+      "discoDataTypeUnit": "RevolutionsPerMinute",
+      "vendorSensorUnit": "rpm"
+    },
+    {
+      "discoDataTypeUnit": "Bar",
+      "vendorSensorUnit": "bar"
+    },
+    {
+      "discoDataTypeUnit": "MetersPerSecond",
+      "vendorSensorUnit": "m/s"
+    },
+    {
+      "discoDataTypeUnit": "MetersPerSecondSquared",
+      "vendorSensorUnit": "m/s2"
+    },
+    {
+      "discoDataTypeUnit": "Meters",
+      "vendorSensorUnit": "m"
+    },
+    {
+      "discoDataTypeUnit": "PartsPerMillion",
+      "vendorSensorUnit": "ppm"
+    },
+    {
+      "discoDataTypeUnit": "PartsPerMillionPerPercent",
+      "vendorSensorUnit": "ppm/%"
+    },
+    {
+      "discoDataTypeUnit": "CubicMetersPerHour",
+      "vendorSensorUnit": "m3/h"
+    },
+    {
+      "discoDataTypeUnit": "PotentialOfHydrogen",
+      "vendorSensorUnit": "pH"
+    },
+    {
+      "discoDataTypeUnit": "MillimetersPerSecond",
+      "vendorSensorUnit": "mm/s"
+    },
+    {
+      "discoDataTypeUnit": "OnePerMinute",
+      "vendorSensorUnit": "1/min"
+    },
+    {
+      "discoDataTypeUnit": "DegreesPerSecond",
+      "vendorSensorUnit": "°/s"
+    },
+    {
+      "discoDataTypeUnit": "Kilonewtons",
+      "vendorSensorUnit": "kN"
+    }
+  ]
+}
