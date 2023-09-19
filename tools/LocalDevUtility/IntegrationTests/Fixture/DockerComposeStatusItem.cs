@@ -5,11 +5,11 @@ public class DockerComposeStatusItem
     /*
      * {
     "ID": "10fa8c0e2ced81dd35ec60378fd5a7c147a4fa18cbdd4ef2c71f468117b96aac",
-    "Name": "drex-service-i",
-    "Image": "ghcr.io/abs-wavesight/cc-drex-service:windows-2019",
+    "Name": "drex-message-service-i",
+    "Image": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-2019",
     "Command": "dotnet Abs.CommonCore.Drex.Console.dll",
     "Project": "abs-cc",
-    "Service": "cc.drex-service",
+    "Service": "cc.drex-message-service",
     "Created": 1689348922,
     "State": "running",
     "Status": "Up 2 minutes (healthy)",
