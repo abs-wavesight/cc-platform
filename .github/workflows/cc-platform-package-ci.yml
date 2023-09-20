@@ -43,6 +43,7 @@ jobs:
     needs: [build]
     uses: ./.github/workflows/shared-publish-nuget-package.yml
     with:
+      solution-name: CommonCore.Platform.sln
       solution-directory: libraries/Platform
       nuget-working-directory: libraries/Platform/CommonCore.Platform
       nuget-package-name: Abs.CommonCore.Platform

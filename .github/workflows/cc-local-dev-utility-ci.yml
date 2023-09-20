@@ -40,6 +40,7 @@ jobs:
     needs: [build]
     uses: ./.github/workflows/shared-publish-nuget-package.yml
     with:
+      solution-name: LocalDevUtility.sln
       solution-directory: tools/LocalDevUtility
       nuget-working-directory: tools/LocalDevUtility/LocalDevUtility
       nuget-package-name: Abs.CommonCore.LocalDevUtility
