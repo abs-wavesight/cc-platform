@@ -29,9 +29,9 @@
       },
       "Abs.Messaging": {
         "type": "Direct",
-        "requested": "[1.0.11, )",
-        "resolved": "1.0.11",
-        "contentHash": "m01k4yXkY4z+V22wZrsGDz2C2pPnNvxsUop+ZOatSc2GdQxSa6OkMh02e9W5389DgsbJ2CWneHa/E1HTOgKquQ==",
+        "requested": "[1.0.12, )",
+        "resolved": "1.0.12",
+        "contentHash": "5GPFNj4I6vJ0nvI/rv0/ilJop3EsS/x1KvpVH8vYRUt+K3KYqxZD3G+67ib75EpdU8tSZmHOksKiERbM7Bi4Aw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3"
         }

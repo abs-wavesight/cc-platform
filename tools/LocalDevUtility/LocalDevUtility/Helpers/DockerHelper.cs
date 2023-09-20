@@ -48,6 +48,8 @@ public static class DockerHelper
             [Constants.ComposeEnvKeys.WindowsVersion] = appConfig.ContainerWindowsVersion!,
             [Constants.ComposeEnvKeys.PathToCommonCorePlatformRepository] = appConfig.CommonCorePlatformRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCommonCoreDrexRepository] = appConfig.CommonCoreDrexRepositoryPath!,
+            [Constants.ComposeEnvKeys.PathToCommonCoreDiscoRepository] = appConfig.CommonCoreDiscoRepositoryPath!,
+            [Constants.ComposeEnvKeys.PathToCommonCoreSiemensAdapterRepository] = appConfig.CommonCoreSiemensAdapterRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCertificates] = appConfig.CertificatePath!,
             [Constants.ComposeEnvKeys.PathToSshKeys] = appConfig.SshKeysPath!,
             [Constants.ComposeEnvKeys.SftpRootPath] = appConfig.SftpRootPath!,

@@ -63,10 +63,18 @@ public class LocalDevUtilityFixture
         var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
         Directory.CreateDirectory(dummydrexPath);
 
+        var dummyDiscoRepoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo");
+        Directory.CreateDirectory(dummyDiscoRepoPath);
+
+        var dummySiemensAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo");
+        Directory.CreateDirectory(dummySiemensAdapterPath);
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
+            CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
+            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo"),
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,

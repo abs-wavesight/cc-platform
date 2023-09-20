@@ -4,9 +4,15 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
+<<<<<<< HEAD
         "requested": "[1.0.151-feature-ado-21434-file-fault-handling, )",
         "resolved": "1.0.151-feature-ado-21434-file-fault-handling",
         "contentHash": "iKkZn9wKEp1iptNA9psZ4QNoICh4dojr3pLQgVz4u4ZtFC1p0ETjU86SLWNrMdatckWOLe4zlHQYW6eKTSMJRg==",
+=======
+        "requested": "[1.0.157, )",
+        "resolved": "1.0.157",
+        "contentHash": "2RNwfJr09WG90cHUoNSsmXloyhaf57VibbUDAWQuVgolpeljZ4Rbp13opwwf+atem7V6VHLhHMIGR3NuU9dlUQ==",
+>>>>>>> main
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",
