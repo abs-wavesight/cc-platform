@@ -27,6 +27,8 @@ public static class Constants
         public const string WindowsVersion = "WINDOWS_VERSION";
         public const string PathToCommonCorePlatformRepository = "PATH_TO_CC_PLATFORM_REPO";
         public const string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
+        public const string PathToCommonCoreDiscoRepository = "PATH_TO_CC_DISCO_REPO";
+        public const string PathToCommonCoreSiemensAdapterRepository = "PATH_TO_CC_SIEMENS_ADAPTER_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
         public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;

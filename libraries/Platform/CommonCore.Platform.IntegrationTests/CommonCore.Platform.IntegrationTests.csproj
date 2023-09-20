@@ -34,5 +34,4 @@
     </None>
   </ItemGroup>
 
-  <Import Project="$(SolutionDir)../../../Format.targets" Condition="Exists('$(SolutionDir)../../../Format.targets')" />
 </Project>

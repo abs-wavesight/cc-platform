@@ -4,22 +4,21 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.151-feature-ado-21434-file-fault-handling, )",
-        "resolved": "1.0.151-feature-ado-21434-file-fault-handling",
-        "contentHash": "iKkZn9wKEp1iptNA9psZ4QNoICh4dojr3pLQgVz4u4ZtFC1p0ETjU86SLWNrMdatckWOLe4zlHQYW6eKTSMJRg==",
+        "requested": "[1.0.88, )",
+        "resolved": "1.0.88",
+        "contentHash": "9VjjjglXeV6qddXWDG7RXVgzeb3xR0FWhaZc42ddbqBNvSDWQmRA1wPNqaoh1otLCUhMjMwwUkwJNzE8NkMJfg==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
-          "Grpc.AspNetCore": "2.32.0",
-          "Macross.Json.Extensions": "3.0.0"
+          "Grpc.AspNetCore": "2.32.0"
         }
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.194-feature-ado-21434-file-fault-handling-platform, )",
-        "resolved": "1.0.194-feature-ado-21434-file-fault-handling-platform",
-        "contentHash": "xBwEgwEoHE1nr86BbKIr3gUqE8eHwQG/1r96Iz3Vvr5rhrbz8OAOGh1FIymsSkaObMhL9PrP7EHFWXvJVjwvCQ==",
+        "requested": "[1.0.50, )",
+        "resolved": "1.0.50",
+        "contentHash": "RHLiSsFUQAnaJTCH4472+O5mUsd3eJJy2r2AUocOyThOF7DEZ4V8q4QiocEHfum12n5wsB7nLVKIvdoaDTxMgA==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.151-feature-ado-21434-file-fault-handling",
+          "Abs.CommonCore.Contracts": "1.0.88",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",
@@ -30,9 +29,9 @@
       },
       "Abs.Messaging": {
         "type": "Direct",
-        "requested": "[1.0.11, )",
-        "resolved": "1.0.11",
-        "contentHash": "m01k4yXkY4z+V22wZrsGDz2C2pPnNvxsUop+ZOatSc2GdQxSa6OkMh02e9W5389DgsbJ2CWneHa/E1HTOgKquQ==",
+        "requested": "[1.0.12, )",
+        "resolved": "1.0.12",
+        "contentHash": "5GPFNj4I6vJ0nvI/rv0/ilJop3EsS/x1KvpVH8vYRUt+K3KYqxZD3G+67ib75EpdU8tSZmHOksKiERbM7Bi4Aw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3"
         }
@@ -261,11 +260,6 @@
           "Json.More.Net": "1.8.0",
           "JsonPointer.Net": "3.0.1"
         }
-      },
-      "Macross.Json.Extensions": {
-        "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "AkNshs6dopj8FXsmkkJxvLivN2SyDJQDbjcds5lo9+Y6L4zpcoXdmzXQ3VVN+AIWQr0CTD5A7vkuHGAr2aypZg=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
