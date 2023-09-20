@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.151-feature-ado-21434-file-fault-handling" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.158" />
 		<PackageReference Include="EasyNetQ.Management.Client" Version="2.0.0" />
 		<PackageReference Include="JsonSchema.Net" Version="4.1.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
