@@ -17,9 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.88" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.50" />
-		<PackageReference Include="Abs.Messaging" Version="1.0.12" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.158" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.204" />
+		<PackageReference Include="Abs.Messaging" Version="1.0.11" />
 		<PackageReference Include="Polly" Version="7.2.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
@@ -37,4 +37,5 @@
 	  <Folder Include="MessageBus\Rebus\Handlers\" />
 	</ItemGroup>
 
+  <Import Project="$(SolutionDir)../../Format.targets" Condition="Exists('$(SolutionDir)../../Format.targets')" />
 </Project>
