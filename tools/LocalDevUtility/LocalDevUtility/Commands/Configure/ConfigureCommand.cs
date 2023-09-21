@@ -37,7 +37,7 @@ public static class ConfigureCommand
 
         Console.Write($"\"cc-disco\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDiscoRepositoryPath) ? $" ({readAppConfig.CommonCoreDiscoRepositoryPath})" : "")}: ");
         var ccDiscoRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(ccDrexRepositoryLocalPath))
+        if (string.IsNullOrWhiteSpace(ccDiscoRepositoryLocalPath))
         {
             ccDiscoRepositoryLocalPath = readAppConfig?.CommonCoreDiscoRepositoryPath;
         }
