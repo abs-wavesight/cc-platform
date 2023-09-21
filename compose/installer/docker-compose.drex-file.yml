@@ -17,7 +17,7 @@ services:
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
       - ABS_CC_FDZ_PATH=c:/fdz
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
-      - FLAT_LOGS=false
+      - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:	
       - "12346:5000"	
     restart: always	
