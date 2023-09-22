@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform;
 using Abs.CommonCore.Platform.Certificates;
 using Microsoft.Extensions.Logging;
 
@@ -34,6 +35,20 @@ public static class ConfigureCommand
             ccDrexRepositoryLocalPath = readAppConfig?.CommonCoreDrexRepositoryPath;
         }
 
+        Console.Write($"\"cc-disco\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreDiscoRepositoryPath) ? $" ({readAppConfig.CommonCoreDiscoRepositoryPath})" : "")}: ");
+        var ccDiscoRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccDiscoRepositoryLocalPath))
+        {
+            ccDiscoRepositoryLocalPath = readAppConfig?.CommonCoreDiscoRepositoryPath;
+        }
+
+        Console.Write($"\"cc-adapters-siemens\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSiemensAdapterRepositoryPath) ? $" ({readAppConfig.CommonCoreSiemensAdapterRepositoryPath})" : "")}: ");
+        var ccSiemensAdapterRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccSiemensAdapterRepositoryLocalPath))
+        {
+            ccSiemensAdapterRepositoryLocalPath = readAppConfig?.CommonCoreSiemensAdapterRepositoryPath;
+        }
+
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
         var containerWindowsVersion = Console.ReadLine() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(containerWindowsVersion))
@@ -48,6 +63,13 @@ public static class ConfigureCommand
             certificatePath = readAppConfig?.CertificatePath;
         }
 
+        Console.Write($"Local path to use for storage of generated SSH keys used by containers{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SshKeysPath) ? $" ({readAppConfig.SshKeysPath})" : "")}: ");
+        var sshKeysPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(sshKeysPath))
+        {
+            sshKeysPath = readAppConfig?.SshKeysPath;
+        }
+
         Console.Write($"Local path to use for SFTP (OpenSSH) root -- will be created if it does not exist{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SftpRootPath) ? $" ({readAppConfig.SftpRootPath})" : "")}: ");
         var sftpRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(sftpRootPath))
@@ -55,7 +77,7 @@ public static class ConfigureCommand
             sftpRootPath = readAppConfig?.SftpRootPath;
         }
 
-        var currentValue = (readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.FdzRootPath) ? $" ({readAppConfig.FdzRootPath})" : "");
+        var currentValue = readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.FdzRootPath) ? $" ({readAppConfig.FdzRootPath})" : "";
         Console.Write($"Local path to use for File Drop Zone root -- will be created if it does not exist{currentValue}: ");
         var fdzRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(fdzRootPath))
@@ -72,71 +94,105 @@ public static class ConfigureCommand
             generateCertificatesNow = validPositiveValues.Contains(generateCertificatesNowInput.ToLowerInvariant());
         }
 
+        Console.Write("Generate SSH keys -- this only needs to be done once ever (y/n)? (n): ");
+        var generateSshKeysNow = false;
+        var generateSshKeysNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(generateSshKeysNowInput))
+        {
+            var validPositiveValues = new List<string> { "y", "yes", "true" };
+            generateSshKeysNow = validPositiveValues.Contains(generateSshKeysNowInput.ToLowerInvariant());
+        }
+
         var appConfig = new AppConfig
         {
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
+            CommonCoreDiscoRepositoryPath = ccDiscoRepositoryLocalPath,
+            CommonCoreSiemensAdapterRepositoryPath = ccSiemensAdapterRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
+            SshKeysPath = sshKeysPath,
             SftpRootPath = sftpRootPath,
             FdzRootPath = fdzRootPath,
         };
 
+        CreateDirectories(appConfig);
         ValidateConfigAndThrow(appConfig);
-
-        if (!Directory.Exists(appConfig.SftpRootPath))
-        {
-            using (CliStep.Start("Creating SFTP root directory"))
-            {
-                Directory.CreateDirectory(appConfig.SftpRootPath!);
-            }
-        }
-
-        if (!Directory.Exists(appConfig.FdzRootPath))
-        {
-            using (CliStep.Start("Creating FDZ root directory"))
-            {
-                Directory.CreateDirectory(appConfig.FdzRootPath!);
-            }
-        }
+        SetEnvironmentVariables(appConfig);
 
         var fileName = await SaveConfig(appConfig);
         logger.LogInformation($"\nConfiguration saved ({fileName}):\n{JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true })}");
 
-        if (!generateCertificatesNow)
+        if (generateCertificatesNow)
         {
-            return 0;
+            using (CliStep.Start("Generating TLS certificates"))
+            {
+                // Ensure sub-directories exist
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalKeys));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalCerts));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteKeys));
+                Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteCerts));
+
+                var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
+                var dockerCommand = $"docker pull {fullContainerName};";
+                dockerCommand += " docker run";
+                dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\" ";
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
+                dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
+                dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\" ";
+                logger.LogInformation($"Running docker command: {dockerCommand}");
+                powerShellAdapter.RunPowerShellCommand(dockerCommand);
+            }
+
+            using (CliStep.Start("Installing TLS certificates", true))
+            {
+                const string rabbitMqCertName = "rabbitmq.cer";
+                CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
+                CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
+            }
         }
 
-        using (CliStep.Start("Generating TLS certificates"))
+        if (generateSshKeysNow)
         {
-            // Ensure sub-directories exist
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalKeys));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.LocalCerts));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteKeys));
-            Directory.CreateDirectory(Path.Combine(appConfig.CertificatePath!, Constants.CertificateSubDirectories.RemoteCerts));
+            InstallOpenSsh(powerShellAdapter);
 
-            var fullContainerName = $"{Constants.ContainerRepository}/openssl:windows-{appConfig.ContainerWindowsVersion}";
-            var dockerCommand = $"docker pull {fullContainerName};";
-            dockerCommand += " docker run";
-            dockerCommand += $" --mount \"type=bind,source={appConfig.CommonCorePlatformRepositoryPath}/config/openssl,target=C:/config\" ";
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalKeys);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.LocalCerts);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteKeys);
-            dockerCommand += GetMountParameterForCertDirectory(appConfig, Constants.CertificateSubDirectories.RemoteCerts);
-            dockerCommand += $" {fullContainerName} pwsh \"C:/config/generate-certs.ps1\" ";
-            logger.LogInformation($"Running docker command: {dockerCommand}");
-            powerShellAdapter.RunPowerShellCommand(dockerCommand);
-        }
+            using (CliStep.Start("Generating SSH keys"))
+            {
+                const string executionPolicyChangeCommand = "Set-ExecutionPolicy Bypass -Scope Process";
+                powerShellAdapter.RunPowerShellCommand(executionPolicyChangeCommand);
 
-        using (CliStep.Start("Installing TLS certificates", true))
-        {
-            const string rabbitMqCertName = "rabbitmq.cer";
-            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
-            CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
+                // OpenSSH client must be enabled
+                var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
+                logger.LogInformation($"Running command: {command}");
+                powerShellAdapter.RunPowerShellCommand(command);
+            }
         }
 
         return 0;
+    }
+
+    private static void InstallOpenSsh(IPowerShellAdapter powerShellAdapter)
+    {
+        using (CliStep.Start("Installing SSH client."))
+        {
+            // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
+            const string getStatusCommand = "Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Client*'";
+            const string installedStatus = "Installed";
+            var results = powerShellAdapter.RunPowerShellCommand(getStatusCommand);
+            var isOpenSshClientInstalled = results.Any(r => r.Contains(installedStatus));
+
+            if (isOpenSshClientInstalled)
+            {
+                Console.WriteLine("SSH client already installed.");
+            }
+            else
+            {
+                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
+                powerShellAdapter.RunPowerShellCommand(installCommand);
+            }
+        }
     }
 
     private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
@@ -144,7 +200,7 @@ public static class ConfigureCommand
         return $" --mount \"type=bind,source={appConfig.CertificatePath}/{certDirectoryName},target=C:/{certDirectoryName}\"";
     }
 
-    public static void ValidateConfigAndThrow(AppConfig? appConfig)
+    public static void ValidateConfigAndThrow(AppConfig appConfig)
     {
         var validationErrors = ValidateConfig(appConfig);
         if (validationErrors.Any())
@@ -173,7 +229,17 @@ public static class ConfigureCommand
             errors.Add($"\"cc-drex\" repository path ({appConfig.CommonCoreDrexRepositoryPath}) could not be found");
         }
 
-        if (appConfig.ContainerWindowsVersion != "2019" && appConfig.ContainerWindowsVersion != "2022")
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDiscoRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDiscoRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-disco\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+        }
+
+        if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")
         {
             errors.Add($"Container Windows version ({appConfig.ContainerWindowsVersion}) is invalid (must be either \"2019\" or \"2022\")");
         }
@@ -183,12 +249,17 @@ public static class ConfigureCommand
             errors.Add($"Certificate path ({appConfig.CertificatePath}) could not be found");
         }
 
-        if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath))
+        if (string.IsNullOrWhiteSpace(appConfig.SshKeysPath) || !new DirectoryInfo(appConfig.SshKeysPath).Exists)
+        {
+            errors.Add($"SSH keys path ({appConfig.SshKeysPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.SftpRootPath) || !new DirectoryInfo(appConfig.SftpRootPath).Exists)
         {
             errors.Add($"SFTP root path ({appConfig.SftpRootPath}) is required");
         }
 
-        if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath))
+        if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath) || !new DirectoryInfo(appConfig.FdzRootPath).Exists)
         {
             errors.Add($"FDZ root path ({appConfig.FdzRootPath}) is required");
         }
@@ -231,5 +302,47 @@ public static class ConfigureCommand
     private static string GetConfigFileName()
     {
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, Constants.ConfigFileName);
+    }
+
+    private static void SetEnvironmentVariables(AppConfig appConfig)
+    {
+        Environment.SetEnvironmentVariable(PlatformConstants.FDZ_Path, appConfig.FdzRootPath, EnvironmentVariableTarget.User);
+        Environment.SetEnvironmentVariable(PlatformConstants.SFTP_Path, appConfig.SftpRootPath, EnvironmentVariableTarget.User);
+        Environment.SetEnvironmentVariable(PlatformConstants.SSH_Keys_Path, appConfig.SshKeysPath, EnvironmentVariableTarget.User);
+    }
+
+    private static void CreateDirectories(AppConfig appConfig)
+    {
+        if (!Directory.Exists(appConfig.CertificatePath))
+        {
+            using (CliStep.Start("Creating Certificate root directory"))
+            {
+                Directory.CreateDirectory(appConfig.CertificatePath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.SftpRootPath))
+        {
+            using (CliStep.Start("Creating SFTP root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SftpRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.FdzRootPath))
+        {
+            using (CliStep.Start("Creating FDZ root directory"))
+            {
+                Directory.CreateDirectory(appConfig.FdzRootPath!);
+            }
+        }
+
+        if (!Directory.Exists(appConfig.SshKeysPath))
+        {
+            using (CliStep.Start("Creating SSH keys root directory"))
+            {
+                Directory.CreateDirectory(appConfig.SshKeysPath!);
+            }
+        }
     }
 }

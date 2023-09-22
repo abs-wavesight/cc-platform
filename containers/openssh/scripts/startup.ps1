@@ -1,4 +1,4 @@
-try
+﻿try
 {
   $SshConfigFilePath = "C:/ProgramData/ssh/sshd_config"
   $SshTempConfigFilePath = "C:/ProgramData/ssh/sshd.config"
@@ -14,32 +14,25 @@ try
   Write-Output "`nCopying OpenSSH config files..."
   Copy-Item "C:/config/sshd.config" -Destination "C:/ProgramData/ssh" -Force
 
+  $drexGroupName = "drex_group"
   Write-Output "`nCreating DREX local user group..."
-  & net localgroup "drex_group" /ADD
+  & net localgroup $drexGroupName /ADD
 
   $Config = Get-Content -Path "C:/config/config.json" -Raw | ConvertFrom-Json
   foreach($ClientName in $Config.clients)
   {
-    Write-Output "`nCreating user (if not exists) for client $ClientName..."
-    & net USER $ClientName $Config.defaultPassword /ADD && net localgroup "Administrators" $ClientName /ADD
+    $username = $ClientName
+    $password = $Config.defaultPassword
+    & C:\\scripts\\create-drex-user.ps1 $username $password $false $false
+  }
 
-    Write-Output "`nCreating directory for client $ClientName..."
-    New-Item -Path "C:/sftproot" -Name $ClientName -ItemType "directory" -Force
+  Write-Output "`nAdding sites..."
+  foreach($User in $Config.sites)
+  {
+    $username = $User.username
+    $password = $User.password
 
-    
-    Write-Output "`Adding match user block for client $ClientName..."
-    $MatchUserBlock = @"
-
-Match User ${ClientName}
-  ChrootDirectory c:\sftproot\${ClientName}\
-  PermitTunnel no
-  AllowAgentForwarding no
-  AllowTcpForwarding no
-  X11Forwarding no
-  GatewayPorts no
-
-"@
-    Add-Content $SshTempConfigFilePath $MatchUserBlock
+    & C:\\scripts\\create-drex-user.ps1 $username $password $true $false
   }
 
   Write-Output "`nOpenSSH Config file contents:"
@@ -48,6 +41,25 @@ Match User ${ClientName}
   Write-Output "`nRenaming OpenSSH config file..."
   $SshConfigFilePath = "C:/ProgramData/ssh/sshd_config"
   Rename-Item -Path $SshTempConfigFilePath -NewName "sshd_config"
+
+  Write-Output "`nSSH directory contents:"
+  Get-ChildItem "C:/ssh-keys/"
+
+  Write-Output "`nCopying SSH keys..." 
+  Copy-Item "C:/ssh-keys/ssh_host_rsa_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh-keys/ssh_host_rsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
+  
+  Copy-Item "C:/ssh-keys/ssh_host_ecdsa_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh-keys/ssh_host_ecdsa_key.pub" -Destination "C:/ProgramData/ssh" -Force
+
+  Copy-Item "C:/ssh-keys/ssh_host_ed25519_key" -Destination "C:/ProgramData/ssh" -Force
+  Copy-Item "C:/ssh-keys/ssh_host_ed25519_key.pub" -Destination "C:/ProgramData/ssh" -Force
+
+  Write-Output "Fixing host file permissions"
+  C:\\openssh\\OpenSSH-Win64\\FixHostFilePermissions.ps1 -Confirm:$false
+
+  Write-Output "Fixing user file permissions"
+  & C:\\openssh\\OpenSSH-Win64\\FixUserFilePermissions.ps1 -Confirm:$false
 
   Write-Output "`nOpenSSH directory contents:"
   Get-ChildItem "C:/ProgramData/ssh/"

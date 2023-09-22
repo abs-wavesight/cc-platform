@@ -9,7 +9,7 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public abstract class ActionBase
 {
-    protected Component[] DetermineComponents(InstallerComponentRegistryConfig registryConfig, string[]? specificComponents, ICollection<string>? configComponents)
+    protected static Component[] DetermineComponents(InstallerComponentRegistryConfig registryConfig, string[]? specificComponents, ICollection<string>? configComponents)
     {
         try
         {
@@ -37,7 +37,7 @@ public abstract class ActionBase
         throw new Exception("No components found to use");
     }
 
-    protected void ReadMissingParameters(Dictionary<string, string> parameters)
+    protected static void ReadMissingParameters(Dictionary<string, string> parameters)
     {
         foreach (var parameter in parameters)
         {
@@ -71,7 +71,7 @@ public abstract class ActionBase
         }
     }
 
-    protected async Task StopWindowsServiceAsync(ILogger logger, ICommandExecutionService commandExecutionService, string name)
+    protected static async Task StopWindowsServiceAsync(ILogger logger, ICommandExecutionService commandExecutionService, string name)
     {
         var service = GetWindowsServiceByName(name);
 
@@ -82,7 +82,7 @@ public abstract class ActionBase
         service?.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
     }
 
-    protected ServiceController? GetWindowsServiceByName(string name)
+    protected static ServiceController? GetWindowsServiceByName(string name)
     {
         return System.ServiceProcess.ServiceController
             .GetServices()
@@ -92,7 +92,7 @@ public abstract class ActionBase
     protected void DeleteRecursiveDirectory(ILogger logger, string path)
     {
         logger.LogInformation($"Deleting directory '{path}' recursively");
-        foreach (string directory in Directory.GetDirectories(path))
+        foreach (var directory in Directory.GetDirectories(path))
         {
             DeleteRecursiveDirectory(logger, directory);
         }

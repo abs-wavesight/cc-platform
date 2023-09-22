@@ -27,7 +27,7 @@ public class RabbitConfigurer : ActionBase
         _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
     }
 
-    public async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, bool isSuperUser)
+    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, bool isSuperUser)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
@@ -35,7 +35,7 @@ public class RabbitConfigurer : ActionBase
         return await ConfigureRabbitAsync(client, username, password, isSuperUser);
     }
 
-    public async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, bool isSuperUser)
+    public static async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, bool isSuperUser)
     {
         Console.WriteLine($"Updating user '{username}' permissions at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
@@ -43,13 +43,20 @@ public class RabbitConfigurer : ActionBase
         await UpdateUserPermissionsAsync(client, username, isSuperUser);
     }
 
-    public async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
+    public static async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
     {
         Console.WriteLine($"Updating Drex site config at '{location}'");
         var config = ConfigParser.LoadConfig<DrexSiteConfig>(location.FullName);
 
-        if (config.RemoteBuses.Count == 0) throw new Exception("No connections to modify.");
-        if (config.RemoteBuses.Count != 1) throw new Exception("Multiple connections found.");
+        if (config.RemoteBuses.Count == 0)
+        {
+            throw new Exception("No connections to modify.");
+        }
+
+        if (config.RemoteBuses.Count != 1)
+        {
+            throw new Exception("Multiple connections found.");
+        }
 
         config.RemoteBuses[0].Username = credentials.Username;
         config.RemoteBuses[0].Password = credentials.Password;
@@ -57,7 +64,7 @@ public class RabbitConfigurer : ActionBase
         await SaveConfigAsync(location, config);
     }
 
-    public async Task UpdateCredentialsFileAsync(RabbitCredentials credentials, FileInfo file)
+    public static async Task UpdateCredentialsFileAsync(RabbitCredentials credentials, FileInfo file)
     {
         Console.WriteLine($"Updating credentials file: {file.FullName}");
 
@@ -71,11 +78,16 @@ public class RabbitConfigurer : ActionBase
         Console.WriteLine("Credentials file updated");
     }
 
-    private async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)
+    private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)
     {
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
-            ? new Password(true, true, true, true, 32)
+            ? new Password()
+                .IncludeLowercase()
+                .IncludeUppercase()
+                .IncludeNumeric()
+                .IncludeSpecial()
+                .LengthRequired(32)
                 .Next()
             : password;
 
@@ -98,7 +110,7 @@ public class RabbitConfigurer : ActionBase
         };
     }
 
-    private async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, bool isSuperUser)
+    private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, bool isSuperUser)
     {
         var existingUser = await GetUserAsync(client, username);
 
@@ -127,12 +139,10 @@ public class RabbitConfigurer : ActionBase
             : throw new Exception("Unable to create user");
     }
 
-    private async Task UpdateUserPermissionsAsync(IManagementClient client, string username, bool isSuperUser)
+    private static async Task UpdateUserPermissionsAsync(IManagementClient client, string username, bool isSuperUser)
     {
-        var user = await GetUserAsync(client, username);
-
-        if (user == null) throw new Exception("User account does not exist");
-
+        var user = await GetUserAsync(client, username)
+                   ?? throw new Exception("User account does not exist");
         var permissionRegex = isSuperUser
             ? ".*"
             : $"{Regex.Escape(username.ToLower())}";
@@ -145,7 +155,7 @@ public class RabbitConfigurer : ActionBase
         await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
     }
 
-    private async Task<User?> GetUserAsync(IManagementClient client, string username)
+    private static async Task<User?> GetUserAsync(IManagementClient client, string username)
     {
         try
         {
@@ -157,7 +167,7 @@ public class RabbitConfigurer : ActionBase
         }
     }
 
-    private async Task SaveConfigAsync<T>(FileInfo location, T config)
+    private static async Task SaveConfigAsync<T>(FileInfo location, T config)
     {
         var options = new JsonSerializerOptions(JsonSerializerOptions.Default)
         {

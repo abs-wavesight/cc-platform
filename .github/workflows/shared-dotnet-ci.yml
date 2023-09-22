@@ -25,6 +25,10 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "Drex.Dockerfile")
+      test-project-filter-part: # & FullyQualifiedName!~FileShipper
+        required: false
+        type: string
+        description: Partial filter statement to be used with dotnet test (e.g., "& FullyQualifiedName!~FileShipper")
       run-integration-tests:
         required: false
         type: boolean
@@ -58,10 +62,6 @@ defaults:
     shell: pwsh
 
 jobs:
-  dump-context:
-    name: Dump Context
-    uses: ./.github/workflows/shared-dump-context.yml
-
   get_clean_branch_names:
     name: Get Clean Branch Names
     uses: ./.github/workflows/shared-get-clean-branch-names.yml
@@ -72,6 +72,7 @@ jobs:
     with:
       solution-directory: ${{ inputs.solution-directory }}
       solution-name: ${{ inputs.solution-name }}
+      test-project-filter-part: ${{ inputs.test-project-filter-part }}
       run-integration-tests: ${{ inputs.run-integration-tests }}
       run-e2e-tests: ${{ inputs.run-e2e-tests }}
       check-code-formatting: ${{ inputs.check-code-formatting }}

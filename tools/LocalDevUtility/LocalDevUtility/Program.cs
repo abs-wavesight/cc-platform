@@ -7,6 +7,7 @@ using Abs.CommonCore.LocalDevUtility.Commands.Stop;
 using Abs.CommonCore.LocalDevUtility.Commands.TestDrex;
 using Abs.CommonCore.LocalDevUtility.Extensions;
 using Abs.CommonCore.LocalDevUtility.Helpers;
+using Abs.CommonCore.Platform;
 using Abs.CommonCore.Platform.Extensions;
 using Figgle;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,15 +21,12 @@ public class Program
     public static async Task<int> Main(string[]? args = null)
     {
         var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddSimpleConsole(options =>
+            .AddLogging(builder => builder.AddSimpleConsole(options =>
                 {
                     options.IncludeScopes = false;
                     options.SingleLine = true;
                     options.TimestampFormat = "hh:mm:ss.fff ";
-                });
-            });
+                }));
         services.AddSingleton<IPowerShellAdapter, PowerShellAdapter>();
         var serviceProvider = services.BuildServiceProvider();
 
@@ -54,10 +52,7 @@ public class Program
     private static RootCommand BuildRootCommand()
     {
         var root = new RootCommand("Utility to aid local development and testing");
-        root.SetHandler(() =>
-        {
-            Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\".");
-        });
+        root.SetHandler(() => Console.WriteLine("You must use a sub-command to invoke this utility: \"configure\", \"run\", \"test-drex\" or \"stop\"."));
         return root;
     }
 
@@ -72,12 +67,9 @@ public class Program
         printOption.AddAlias("-p");
         command.AddOption(printOption);
 
-        command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (ConfigureOptions configureOptions) => await TryExecuteCommandAsync(
                 async () => await ConfigureCommand.Configure(configureOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -99,6 +91,7 @@ public class Program
         command.AddOption(GetFlagOption("background", "b", "Run in background, a.k.a. detached (cannot be used with --abort-on-container-exit)"));
         command.AddOption(GetFlagOption("abort-on-container-exit", "a", "Abort if any container exits (cannot be used with --background)"));
         command.AddOption(GetFlagOption("verbose", "v", "Print out final compose configuration"));
+        command.AddOption(GetFlagOption("flat-logs", "f", "Sets the \"FLAT_LOGS\" environment variable value"));
 
         var siteConfigOverrideOption = new Option<string?>("--drex-site-config-file-name-override")
         {
@@ -107,12 +100,9 @@ public class Program
         siteConfigOverrideOption.AddAlias("-s");
         command.AddOption(siteConfigOverrideOption);
 
-        command.Handler = CommandHandler.Create(async (RunOptions runOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (RunOptions runOptions) => await TryExecuteCommandAsync(
                 async () => await RunCommand.Run(runOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -122,6 +112,22 @@ public class Program
         const string commandDescription = "Facilitates running the DREX Test Client";
         const string commandName = "test-drex";
         var command = new Command(commandName, commandDescription);
+
+        const string nameOptionDescription = "Unique name for this instance";
+        const string longNameAlias = "--name";
+        const string shortNameAlias = "-n";
+        var nameOption = new Option<string>(new[] { longNameAlias, shortNameAlias }, nameOptionDescription);
+        command.AddOption(nameOption);
+
+        const string fileOptionDescription = "Indicates whether test client should send files";
+        const string longFileAlias = "--file";
+        const string shortFileAlias = "-f";
+        var fileOption = new Option<bool>(new[] { longFileAlias, shortFileAlias }, fileOptionDescription)
+        {
+            IsRequired = false,
+        };
+        fileOption.SetDefaultValue(false);
+        command.AddOption(fileOption);
 
         const string roleOptionDescription =
             "'producer'/'p' or 'consumer'/'c'; if this is not provided, '--config' parameter must be present";
@@ -150,12 +156,9 @@ public class Program
         var configOption = new Option<FileInfo?>(new[] { longConfigAlias, shortConfigAlias }, configOptionDescription);
         command.Add(configOption);
 
-        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) =>
-        {
-            return await TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create(async (TestDrexOptions configureOptions) => await TryExecuteCommandAsync(
                 async () => await TestDrexCommand.Run(configureOptions, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }
@@ -168,12 +171,9 @@ public class Program
 
         command.AddOption(GetFlagOption("reset", "r", "Reset Docker"));
 
-        command.Handler = CommandHandler.Create((StopOptions stopOptions) =>
-        {
-            return TryExecuteCommandAsync(
+        command.Handler = CommandHandler.Create((StopOptions stopOptions) => TryExecuteCommandAsync(
                 async () => await StopCommand.Stop(stopOptions, logger, powerShellAdapter),
-                logger);
-        });
+                logger));
 
         return command;
     }

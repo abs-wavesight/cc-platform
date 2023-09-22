@@ -23,6 +23,11 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DrexMessageService { get; set; }
 
+    [ComposeComponent(composePath: "disco-service", imageName: "cc-disco")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(VectorSite))]
+    public ComposeComponentMode? DiscoService { get; set; }
+
     [ComposeComponent(composePath: "drex-file-service", imageName: "cc-drex-file-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
@@ -54,7 +59,6 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(dependencyPropertyName: nameof(VectorSite), variant: "loki")]
     public ComposeComponentMode? Loki { get; set; }
 
-
     [Description("Alias for \"rabbitmq-local\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     public ComposeComponentMode? Rabbitmq { get; set; }
@@ -75,6 +79,10 @@ public abstract class ComposeOptions
     [ComposeComponentAlias(nameof(Grafana))]
     [ComposeComponentAlias(nameof(Loki))]
     public ComposeComponentMode? LogViz { get; set; }
+
+    [ComposeComponent(composePath: "siemens-adapter", imageName: "cc-adapters-siemens")]
+    [ComposeComponentDependency(nameof(DiscoService))]
+    public ComposeComponentMode? SiemensAdapter { get; set; }
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()

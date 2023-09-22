@@ -62,7 +62,7 @@ public class ComponentInstallerTests
         var commandCalls = new List<string>();
         initializer.CommandExecute
             .Setup(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, string, string>((c, _, _) => { commandCalls.Add(c); });
+            .Callback<string, string, string>((c, _, _) => commandCalls.Add(c));
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
@@ -117,10 +117,7 @@ public class ComponentInstallerTests
 
         var args = "";
         initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, string, string>((_, a, _) =>
-            {
-                args = a;
-            });
+            .Callback<string, string, string>((_, a, _) => args = a);
 
         initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         Assert.Contains(args, "docker-compose.root.yml");
@@ -164,7 +161,7 @@ public class ComponentInstallerTests
         Assert.True(File.Exists(destinationPath));
     }
 
-    private (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
+    private static (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
     {
         var commandExecute = new Mock<ICommandExecutionService>();
 

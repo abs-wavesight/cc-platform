@@ -12,6 +12,8 @@ services:
       "drex",
       "-Password",
       "P@ssword",
+      "-UpdateConfig",
+      "0",
       ";",
       "pwsh", 
       "-Command", 
@@ -26,8 +28,12 @@ services:
       - type: bind
         source: ${PATH_TO_CC_PLATFORM_REPO}/config/openssh
         target: C:/config
-        read_only: true
+        read_only: false
       - type: bind
-        source: ${SFTP_ROOT_PATH}
+        source: ${ABS_CC_SFTP_PATH}
         target: C:/sftproot
         read_only: false
+      - type: bind
+        source: ${ABS_CC_SSH_KEYS_PATH}
+        target: C:/ssh-keys
+        read_only: true

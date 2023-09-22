@@ -6,12 +6,16 @@ on:
     paths:
       - 'libraries/Platform/**/*'
       - '.github/workflows/cc-platform-package-ci.yml'
+      - '.github/workflows/shared-dotnet-build.yml'
+      - '.github/workflows/shared-publish-nuget-package.yml'
       - 'nuget.config'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'libraries/Platform/**/*'
       - '.github/workflows/cc-platform-package-ci.yml'
+      - '.github/workflows/shared-dotnet-build.yml'
+      - '.github/workflows/shared-publish-nuget-package.yml'
       - 'nuget.config'
   workflow_dispatch:
 
@@ -24,10 +28,6 @@ defaults:
     shell: pwsh
 
 jobs:
-  dump-context:
-    name: Dump Context
-    uses: ./.github/workflows/shared-dump-context.yml
-
   build:
     name: Build & Run Tests
     uses: ./.github/workflows/shared-dotnet-build.yml

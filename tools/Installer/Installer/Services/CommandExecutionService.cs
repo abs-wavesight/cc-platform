@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services;
 
 [ExcludeFromCodeCoverage]
-public class CommandExecutionService : ICommandExecutionService
+public partial class CommandExecutionService : ICommandExecutionService
 {
+    [GeneratedRegex(@"(\u001b)(8|7|H|>|\]0;|\[(\?\d+(h|l)|[0-2]?(K|J)|\d*(A|B|C|D\D|E|F|G|H|I|M|N|S|T|U|X)|1000D\d+|\d*;\d*(f|H|r|m)|\d+;\d+;\d+m))", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+    private static partial Regex AnsiEscapeCodesRegex();
+
     private readonly bool _verifyOnly;
     private readonly ILogger _logger;
 
@@ -18,7 +22,7 @@ public class CommandExecutionService : ICommandExecutionService
 
     public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
     {
-        _logger.LogInformation($"Executing: {command} {arguments}");
+        _logger.LogInformation("Executing: {command} {arguments}", command, arguments);
 
         if (_verifyOnly)
         {
@@ -36,11 +40,21 @@ public class CommandExecutionService : ICommandExecutionService
 
         process.ErrorDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data?.Trim());
+            if (string.IsNullOrWhiteSpace(args.Data) == false)
+            {
+                _logger.LogInformation(args.Data?.Trim());
+            }
         };
         process.OutputDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false) _logger.LogInformation(args.Data.Trim());
+            // ansi commands duplicate text data.
+            // If remove only ANSI codes and log the rest of the string, text output will be logged multiple times.
+            var isAnsiCommand = args.Data is not null
+                && AnsiEscapeCodesRegex().IsMatch(args.Data);
+            if (!isAnsiCommand && !string.IsNullOrWhiteSpace(args.Data))
+            {
+                _logger.LogInformation(args.Data.Trim());
+            }
         };
         process.Start();
 

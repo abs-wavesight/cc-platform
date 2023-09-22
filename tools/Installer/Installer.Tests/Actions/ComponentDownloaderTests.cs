@@ -25,24 +25,24 @@ public class ComponentDownloaderTests
     [Fact]
     public async Task InvalidRegistryConfigValues_ThrowsException()
     {
-        var initializer = Initialize(@"Configs/Invalid2_RegistryConfig.json");
-        await Assert.ThrowsAsync<Exception>(() => initializer.Downloader.ExecuteAsync());
+        var (_, _, Downloader) = Initialize(@"Configs/Invalid2_RegistryConfig.json");
+        await Assert.ThrowsAsync<Exception>(() => Downloader.ExecuteAsync());
     }
 
     [Fact]
     public async Task InvalidDownloaderConfigValues_ThrowsException()
     {
-        var initializer = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_DownloaderConfig.json");
-        await Assert.ThrowsAsync<Exception>(() => initializer.Downloader.ExecuteAsync());
+        var (_, _, Downloader) = Initialize(@"Configs/RegistryConfig.json", @"Configs/InvalidComponent_DownloaderConfig.json");
+        await Assert.ThrowsAsync<Exception>(() => Downloader.ExecuteAsync());
     }
 
     [Fact]
     public async Task ValidConfig_FileDownloaded()
     {
-        var initializer = Initialize(@"Configs/RegistryConfig.json");
-        await initializer.Downloader.ExecuteAsync(new[] { "RabbitMq" });
+        var (DataRequest, _, Downloader) = Initialize(@"Configs/RegistryConfig.json");
+        await Downloader.ExecuteAsync(new[] { "RabbitMq" });
 
-        initializer.DataRequest.Verify(x => x.RequestByteArrayAsync(It.IsAny<string>()), Times.Exactly(2));
+        DataRequest.Verify(x => x.RequestByteArrayAsync(It.IsAny<string>()), Times.Exactly(2));
     }
 
     [Fact]
@@ -52,19 +52,19 @@ public class ComponentDownloaderTests
         var paramValue = "Replacement";
 
         var parameters = new Dictionary<string, string>() { { paramKey, paramValue } };
-        var initializer = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
-        await initializer.Downloader.ExecuteAsync(new[] { "RabbitMq" });
+        var (DataRequest, _, Downloader) = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
+        await Downloader.ExecuteAsync(new[] { "RabbitMq" });
 
-        initializer.DataRequest.Verify(x => x.RequestByteArrayAsync(paramValue), Times.Exactly(1));
+        DataRequest.Verify(x => x.RequestByteArrayAsync(paramValue), Times.Exactly(1));
     }
 
     [Fact]
     public async Task ValidConfig_CommandExecuted()
     {
-        var initializer = Initialize(@"Configs/RegistryConfig.json");
-        await initializer.Downloader.ExecuteAsync(new[] { "RabbitMq" });
+        var (_, CommandExecute, Downloader) = Initialize(@"Configs/RegistryConfig.json");
+        await Downloader.ExecuteAsync(new[] { "RabbitMq" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+        CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
     }
 
     [Theory]
@@ -102,8 +102,10 @@ public class ComponentDownloaderTests
         Directory.CreateDirectory(expectedFilePath);
         File.Delete(expectedFile);
 
-        var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"));
-        client.Credentials = new Credentials(nugetEnvironmentVariable);
+        var client = new GitHubClient(new Octokit.ProductHeaderValue("ABS"))
+        {
+            Credentials = new Credentials(nugetEnvironmentVariable)
+        };
 
         var releases = await client.Repository.Release.GetAll("abs-wavesight", "cc-platform");
         var vectorCentralRelease = releases.FirstOrDefault(x => x.TagName.StartsWith("vector-central"));
@@ -134,7 +136,7 @@ public class ComponentDownloaderTests
         File.Delete(expectedFile);
     }
 
-    private (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
+    private static (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
     {
         var dataRequest = new Mock<IDataRequestService>();
         var commandExecute = new Mock<ICommandExecutionService>();

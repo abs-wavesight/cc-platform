@@ -22,6 +22,8 @@ public class LocalDevUtilityIntegrationTests
     [InlineData("--rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
     // [InlineData("--drex-file-service i", new[] { "cc.drex-file-service", "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     // [InlineData("--deps i --drex-service i --log-viz i", new []{"cc.vector", "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.grafana", "cc.loki", "cc.drex-service"})]
+    // [InlineData("--disco-service i", new[] { "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    // [InlineData("--siemens-adapter i", new[] { "cc.siemens-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     public async Task Utility_GivenValidRunCommand_ShouldStartExpectedComposeServices(string componentParameters, string[] expectedServices)
     {
         // Arrange
@@ -29,7 +31,7 @@ public class LocalDevUtilityIntegrationTests
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var utilityExecutablePath = Path.Combine(executingPath, "Abs.CommonCore.LocalDevUtility.exe");
 
-        await fixture.SetUpValidTestConfig();
+        await LocalDevUtilityFixture.SetUpValidTestConfig();
 
         var runCommand = $"{utilityExecutablePath} run {componentParameters} --background --reset --mode r";
         var stopCommand = $"{utilityExecutablePath} stop {componentParameters} --reset";

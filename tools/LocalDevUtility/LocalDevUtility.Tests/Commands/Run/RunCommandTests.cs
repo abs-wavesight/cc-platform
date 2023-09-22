@@ -30,11 +30,13 @@ public class RunCommandTests
     [InlineData("run -m r --deps i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.openssh" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --deps i --drex-file-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.drex-file-service", "cc.openssh" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --deps i --log-viz i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.loki", "cc.grafana", "cc.openssh" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --disco-service i", new[] { "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --siemens-adapter i", new[] { "cc.siemens-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
     {
         // Arrange
         var fixture = new LocalDevUtilityFixture(_testOutput);
-        await fixture.SetUpValidTestConfig();
+        await LocalDevUtilityFixture.SetUpValidTestConfig();
 
         // Act
         await fixture.ExecuteApplication(command);

@@ -386,6 +386,11 @@
           "action": "replaceParameters"
         },
         {
+          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
+          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
+          "action": "copy"
+        },
+        {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
           "action": "execute"
         }
@@ -415,7 +420,7 @@
           "action": "replaceParameters"
         },
         {
-          "source": "config.json",
+          "source": "..\\AdditionalFiles\\openssh-config.json",
           "destination": "$ABS_PATH\\config\\openssh\\config.json",
           "action": "copy"
         },
@@ -429,11 +434,20 @@
           "action": "copy"
         },
         {
+          "source": "create-ssh-keys-and-fingerprint.ps1",
+          "destination": "$ABS_PATH\\config\\openssh\\create-ssh-keys-and-fingerprint.ps1",
+          "action": "copy"
+        },
+        {
           "source": "$ABS_PATH\\config\\openssh\\sshd.config",
           "action": "replaceParameters"
         },			
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPENSSH_ROOT')",
+          "action": "execute"
+        },
+        {
+          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\ssh-keys'",
           "action": "execute"
         }
       ]

@@ -11,6 +11,10 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "Drex.sln")
+      test-project-filter-part: # & FullyQualifiedName!~FileShipper
+        required: false
+        type: string
+        description: Partial filter statement to be used with dotnet test (e.g., "& FullyQualifiedName!~FileShipper")
       run-integration-tests:
         required: false
         type: boolean
@@ -51,6 +55,10 @@ jobs:
     runs-on: windows-2019
 
     steps:
+
+      - name: Dump context
+        uses: abs-wavesight/cc-platform/actions/dump-context@main
+
       - uses: actions/checkout@v3
         name: Checkout branch
 
@@ -99,34 +107,54 @@ jobs:
 
       - name: Run unit tests
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
       - name: Log in to docker registry
         if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
         run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
-
+      
       - name: Run integration tests
         if: inputs.run-integration-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
       - name: Run end-to-end tests
         if: inputs.run-e2e-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd" --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2clcov" /p:CoverletOutput="../Coverage/" /p:MergeWith="../Coverage/coverage.json" -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
       - name: Report test results
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Test Results
+          name: Test Results ${{ inputs.test-project-filter-part }}
           path: ./${{ inputs.solution-directory }}/**/TestResults/*.trx
           reporter: dotnet-trx
 
-      - uses: romeovs/lcov-reporter-action@v0.3.1
-        if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
-        name: Add code coverage comment to PR
+      - name: Merge coverage results
+        working-directory: ${{ inputs.solution-directory }}
+        run: |
+          dotnet tool install --global dotnet-coverage
+          mkdir Coverage/
+          dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
+
+      - name: Workaround for invalid link paths in coverage report 
+        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
         with:
-          lcov-file: ${{ inputs.solution-directory }}/Coverage/coverage.info
-          delete-old-comments: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
+          source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
+  
+      - name: Report code coverage
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
+        uses: 5monkeys/cobertura-action@master
+        with:
+          report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
+          path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
+          minimum_coverage: 80
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          skip_covered: false
+          fail_below_threshold: false
+          show_class_names: true
+          show_missing: true
+          link_missing_lines: true
+          link_missing_lines_source_dir: ${{ inputs.solution-directory }}

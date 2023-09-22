@@ -7,15 +7,6 @@ Write-Output "Enable logfile"
 Write-Output "Installing OpenSSH"
 & .\\install-sshd.ps1
 
-Write-Output "Generating host keys"
-.\\ssh-keygen.exe -A
-
-Write-Output "Fixing host file permissions"
-& .\\FixHostFilePermissions.ps1 -Confirm:$false
-
-Write-Output "Fixing user file permissions"
-& .\\FixUserFilePermissions.ps1 -Confirm:$false
-
 Pop-Location
 
 $newPath = 'C:\\OpenSSH-Win64;' + [Environment]::GetEnvironmentVariable("PATH", [EnvironmentVariableTarget]::Machine)

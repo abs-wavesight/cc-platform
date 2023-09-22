@@ -202,13 +202,13 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/sshd.config",
-          "destination": "sshd.config"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/create-ssh-keys-and-fingerprint.ps1",
+          "destination": "create-ssh-keys-and-fingerprint.ps1"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/config.json",
-          "destination": "config.json"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/sshd.config",
+          "destination": "sshd.config"
         },
         {
           "type": "file",

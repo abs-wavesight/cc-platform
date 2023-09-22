@@ -21,8 +21,8 @@ public class LocalDevUtilityFixture
     {
         MockPowerShellAdapter = new Mock<IPowerShellAdapter>();
         MockPowerShellAdapter
-            .Setup(_ => _.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
-            .Callback<string, TimeSpan?>((commandItem, _) => { ActualPowerShellCommands.Add(commandItem.Replace("\"\"", "\"")); });
+            .Setup(a => a.RunPowerShellCommand(It.IsAny<string>(), It.IsAny<TimeSpan?>()))
+            .Callback<string, TimeSpan?>((commandItem, _) => ActualPowerShellCommands.Add(commandItem.Replace("\"\"", "\"")));
 
         TestLogger.Default.SetTestOutput(testOutput);
         Logger = TestLogger.Default;
@@ -35,7 +35,7 @@ public class LocalDevUtilityFixture
         await Program.Run(inputArray, TestLogger.Default, MockPowerShellAdapter.Object);
     }
 
-    public AppConfig GetValidTestConfig()
+    public static AppConfig GetValidTestConfig()
     {
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var repoRootPath = Path.GetFullPath(Path.Combine(executingPath, "../../../../../.."));
@@ -63,29 +63,38 @@ public class LocalDevUtilityFixture
         var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
         Directory.CreateDirectory(dummydrexPath);
 
+        var dummyDiscoRepoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo");
+        Directory.CreateDirectory(dummyDiscoRepoPath);
+
+        var dummySiemensAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo");
+        Directory.CreateDirectory(dummySiemensAdapterPath);
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
             CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
+            CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
+            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo"),
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
+            SshKeysPath = dummyCertPath,
             SftpRootPath = dummySftpRootPath,
             FdzRootPath = dummyFdzRootPath
         };
     }
 
-    public async Task SetUpValidTestConfig()
+    public static async Task SetUpValidTestConfig()
     {
         await SetUpConfig(GetValidTestConfig());
     }
 
-    public async Task SetUpConfig(AppConfig? config)
+    public static async Task SetUpConfig(AppConfig? config)
     {
         ConfigureCommand.ValidateConfig(config).Should().HaveCount(0);
         await ConfigureCommand.SaveConfig(config);
     }
 
-    private void CopyFile(string sourcePath, string destinationPath, string name)
+    private static void CopyFile(string sourcePath, string destinationPath, string name)
     {
         sourcePath = Path.Combine(sourcePath, name);
         destinationPath = Path.Combine(destinationPath, name);

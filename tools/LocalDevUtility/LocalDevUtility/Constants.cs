@@ -1,4 +1,6 @@
-﻿namespace Abs.CommonCore.LocalDevUtility;
+﻿using Abs.CommonCore.Platform;
+
+namespace Abs.CommonCore.LocalDevUtility;
 
 public static class Constants
 {
@@ -25,10 +27,13 @@ public static class Constants
         public const string WindowsVersion = "WINDOWS_VERSION";
         public const string PathToCommonCorePlatformRepository = "PATH_TO_CC_PLATFORM_REPO";
         public const string PathToCommonCoreDrexRepository = "PATH_TO_CC_DREX_REPO";
+        public const string PathToCommonCoreDiscoRepository = "PATH_TO_CC_DISCO_REPO";
+        public const string PathToCommonCoreSiemensAdapterRepository = "PATH_TO_CC_SIEMENS_ADAPTER_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
-        public const string SftpRootPath = "SFTP_ROOT_PATH";
-        public const string FdzRootPath = "FDZ_ROOT_PATH";
+        public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
+        public static readonly string SftpRootPath = PlatformConstants.SFTP_Path;
+        public static readonly string FdzRootPath = PlatformConstants.FDZ_Path;
     }
 
     public static class CertificateSubDirectories

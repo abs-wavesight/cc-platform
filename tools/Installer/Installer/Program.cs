@@ -4,6 +4,7 @@ using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
+using Abs.CommonCore.Installer.OptionValidators;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -32,9 +33,12 @@ internal class Program
         var uninstallCommand = SetupUninstallCommand(args);
         var getReleaseVersionCommand = SetupGetVersionCommand(args);
         var getContainerVersionCommand = SetupGetContainerVersionCommand(args);
+        var addOpenSshUserCommand = SetupAddOpenSshUserCommand(args);
 
-        var root = new RootCommand("Installer for the Common Core platform");
-        root.TreatUnmatchedTokensAsErrors = true;
+        var root = new RootCommand("Installer for the Common Core platform")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
         root.Add(downloadCommand);
         root.Add(installCommand);
         root.Add(chunkCommand);
@@ -46,36 +50,72 @@ internal class Program
         root.Add(uninstallCommand);
         root.Add(getReleaseVersionCommand);
         root.Add(getContainerVersionCommand);
+        root.Add(addOpenSshUserCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
         return result;
     }
 
+    private static Command SetupAddOpenSshUserCommand(string[] args)
+    {
+        const string commandName = "add-openssh-user";
+        var command = new Command(commandName)
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
+
+        const string usernameParamName = "--name";
+        var usernameParam = new Option<string>(usernameParamName)
+        {
+            IsRequired = true
+        };
+        usernameParam.AddValidator(AddOpenSshUserCommandOptionsValidator.ValidateUserName);
+        command.Add(usernameParam);
+
+        const string isDrexParamName = "--drex";
+        var isDrexParam = new Option<bool>(isDrexParamName);
+        command.Add(isDrexParam);
+
+        command.SetHandler(async (name, isDrex) => await ExecuteAddOpenSshUserCommand(name, isDrex, args), usernameParam, isDrexParam);
+
+        return command;
+    }
+
     private static Command SetupDownloadCommand(string[] args)
     {
-        var command = new Command("download", "Download components for installation");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("download", "Download components for installation")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
-        registryParam.IsRequired = true;
+        var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration")
+        {
+            IsRequired = true
+        };
         registryParam.SetDefaultValue(new FileInfo("SystemRegistryConfig.json"));
         registryParam.AddAlias("-r");
         command.Add(registryParam);
 
-        var downloadConfigParam = new Option<FileInfo>("--config", "Location of download configuration");
-        downloadConfigParam.IsRequired = false;
+        var downloadConfigParam = new Option<FileInfo>("--config", "Location of download configuration")
+        {
+            IsRequired = false
+        };
         downloadConfigParam.AddAlias("-dc");
         command.Add(downloadConfigParam);
 
-        var componentParam = new Option<string[]>("--component", "Specific component to process");
-        componentParam.IsRequired = false;
+        var componentParam = new Option<string[]>("--component", "Specific component to process")
+        {
+            IsRequired = false
+        };
         componentParam.AddAlias("-c");
         componentParam.AllowMultipleArgumentsPerToken = true;
         command.Add(componentParam);
 
-        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
-        parameterParam.IsRequired = false;
+        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter")
+        {
+            IsRequired = false
+        };
         parameterParam.AddAlias("-p");
         parameterParam.AllowMultipleArgumentsPerToken = true;
         command.Add(parameterParam);
@@ -92,38 +132,45 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt) =>
-        {
-            await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt, args);
-        }, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt) => await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
     }
 
     private static Command SetupInstallCommand(string[] args)
     {
-        var command = new Command("install", "Install components");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("install", "Install components")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration");
-        registryParam.IsRequired = true;
+        var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration")
+        {
+            IsRequired = true
+        };
         registryParam.SetDefaultValue(new FileInfo("SystemRegistryConfig.json"));
         registryParam.AddAlias("-r");
         command.Add(registryParam);
 
-        var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration");
-        installConfigParam.IsRequired = false;
+        var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration")
+        {
+            IsRequired = false
+        };
         installConfigParam.AddAlias("-ic");
         command.Add(installConfigParam);
 
-        var componentParam = new Option<string[]>("--component", "Specific component to process");
-        componentParam.IsRequired = false;
+        var componentParam = new Option<string[]>("--component", "Specific component to process")
+        {
+            IsRequired = false
+        };
         componentParam.AddAlias("-c");
         componentParam.AllowMultipleArgumentsPerToken = true;
         command.Add(componentParam);
 
-        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
-        parameterParam.IsRequired = false;
+        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter")
+        {
+            IsRequired = false
+        };
         parameterParam.AddAlias("-p");
         parameterParam.AllowMultipleArgumentsPerToken = true;
         command.Add(parameterParam);
@@ -140,31 +187,36 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt) =>
-        {
-            await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args);
-        }, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt) => await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
     }
 
     private static Command SetupChunkCommand(string[] args)
     {
-        var command = new Command("chunk", "Break a file into multiple smaller pieces");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("chunk", "Break a file into multiple smaller pieces")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var sourceParam = new Option<FileInfo>("--source", "File to separate into chunks");
-        sourceParam.IsRequired = true;
+        var sourceParam = new Option<FileInfo>("--source", "File to separate into chunks")
+        {
+            IsRequired = true
+        };
         sourceParam.AddAlias("-s");
         command.Add(sourceParam);
 
-        var destParam = new Option<DirectoryInfo>("--dest", "Directory to store pieces in");
-        destParam.IsRequired = true;
+        var destParam = new Option<DirectoryInfo>("--dest", "Directory to store pieces in")
+        {
+            IsRequired = true
+        };
         destParam.AddAlias("-d");
         command.Add(destParam);
 
-        var sizeParam = new Option<int>("--size", "Size in bytes to limit chunks to");
-        sizeParam.IsRequired = true;
+        var sizeParam = new Option<int>("--size", "Size in bytes to limit chunks to")
+        {
+            IsRequired = true
+        };
         sizeParam.AddAlias("-sz");
         command.Add(sizeParam);
 
@@ -174,31 +226,36 @@ internal class Program
         removeSourceParam.AddAlias("-rs");
         command.Add(removeSourceParam);
 
-        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
-        configParam.IsRequired = false;
+        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.")
+        {
+            IsRequired = false
+        };
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, size, removeSource, config) =>
-        {
-            await ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args);
-        }, sourceParam, destParam, sizeParam, removeSourceParam, configParam);
+        command.SetHandler(async (source, dest, size, removeSource, config) => await ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args), sourceParam, destParam, sizeParam, removeSourceParam, configParam);
 
         return command;
     }
 
     private static Command SetupUnchunkCommand(string[] args)
     {
-        var command = new Command("unchunk", "Merges file chunks into a single file");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("unchunk", "Merges file chunks into a single file")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var sourceParam = new Option<DirectoryInfo>("--source", "Directory where file chunks are");
-        sourceParam.IsRequired = true;
+        var sourceParam = new Option<DirectoryInfo>("--source", "Directory where file chunks are")
+        {
+            IsRequired = true
+        };
         sourceParam.AddAlias("-s");
         command.Add(sourceParam);
 
-        var destParam = new Option<FileInfo>("--dest", "File to write combined pieces to");
-        destParam.IsRequired = true;
+        var destParam = new Option<FileInfo>("--dest", "File to write combined pieces to")
+        {
+            IsRequired = true
+        };
         destParam.AddAlias("-d");
         command.Add(destParam);
 
@@ -208,31 +265,36 @@ internal class Program
         removeSourceParam.AddAlias("-rs");
         command.Add(removeSourceParam);
 
-        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
-        configParam.IsRequired = false;
+        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.")
+        {
+            IsRequired = false
+        };
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) =>
-        {
-            await ExecuteUnchunkCommandAsync(source, dest, removeSource, config, args);
-        }, sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteUnchunkCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
     }
 
     private static Command SetupCompressCommand(string[] args)
     {
-        var command = new Command("compress", "Compresses a directory into a single file");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("compress", "Compresses a directory into a single file")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var sourceParam = new Option<DirectoryInfo>("--source", "Directory to compress");
-        sourceParam.IsRequired = true;
+        var sourceParam = new Option<DirectoryInfo>("--source", "Directory to compress")
+        {
+            IsRequired = true
+        };
         sourceParam.AddAlias("-s");
         command.Add(sourceParam);
 
-        var destParam = new Option<FileInfo>("--dest", "File to write compressed contents to");
-        destParam.IsRequired = true;
+        var destParam = new Option<FileInfo>("--dest", "File to write compressed contents to")
+        {
+            IsRequired = true
+        };
         destParam.AddAlias("-d");
         command.Add(destParam);
 
@@ -242,31 +304,36 @@ internal class Program
         removeSourceParam.AddAlias("-rs");
         command.Add(removeSourceParam);
 
-        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
-        configParam.IsRequired = false;
+        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.")
+        {
+            IsRequired = false
+        };
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) =>
-        {
-            await ExecuteCompressCommandAsync(source, dest, removeSource, config, args);
-        }, sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteCompressCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
     }
 
     private static Command SetupUncompressCommand(string[] args)
     {
-        var command = new Command("uncompress", "Uncompresses a file back into directory structure");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("uncompress", "Uncompresses a file back into directory structure")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var sourceParam = new Option<FileInfo>("--source", "File to uncompress");
-        sourceParam.IsRequired = true;
+        var sourceParam = new Option<FileInfo>("--source", "File to uncompress")
+        {
+            IsRequired = true
+        };
         sourceParam.AddAlias("-s");
         command.Add(sourceParam);
 
-        var destParam = new Option<DirectoryInfo>("--dest", "Directory to write contents to");
-        destParam.IsRequired = true;
+        var destParam = new Option<DirectoryInfo>("--dest", "Directory to write contents to")
+        {
+            IsRequired = true
+        };
         destParam.AddAlias("-d");
         command.Add(destParam);
 
@@ -276,96 +343,120 @@ internal class Program
         removeSourceParam.AddAlias("-rs");
         command.Add(removeSourceParam);
 
-        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.");
-        configParam.IsRequired = false;
+        var configParam = new Option<FileInfo>("--config", $"Location of download configuration. `{ComponentNamePlaceholder}` in source/destination is replaced with config component.")
+        {
+            IsRequired = false
+        };
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) =>
-        {
-            await ExecuteUncompressCommandAsync(source, dest, removeSource, config, args);
-        }, sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteUncompressCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
     }
 
     private static Command SetupReleaseBodyCommand(string[] args)
     {
-        var command = new Command("release-body", "Builds a release body based on configuration");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("release-body", "Builds a release body based on configuration")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var configParam = new Option<FileInfo>("--config", $"Location of download configuration.");
-        configParam.IsRequired = false;
+        var configParam = new Option<FileInfo>("--config", $"Location of download configuration.")
+        {
+            IsRequired = false
+        };
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter");
-        parameterParam.IsRequired = false;
+        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter")
+        {
+            IsRequired = false
+        };
         parameterParam.AddAlias("-p");
         parameterParam.AllowMultipleArgumentsPerToken = true;
         command.Add(parameterParam);
 
-        var outputParam = new Option<FileInfo>("--output", "Location to save release body to");
-        outputParam.IsRequired = true;
+        var outputParam = new Option<FileInfo>("--output", "Location to save release body to")
+        {
+            IsRequired = true
+        };
         outputParam.AddAlias("-o");
         command.Add(outputParam);
 
-        command.SetHandler(async (config, parameters, output) =>
-        {
-            await ExecuteReleaseBodyBuilderCommandAsync(config, parameters, output, args);
-        }, configParam, parameterParam, outputParam);
+        command.SetHandler(async (config, parameters, output) => await ExecuteReleaseBodyBuilderCommandAsync(config, parameters, output, args), configParam, parameterParam, outputParam);
 
         return command;
     }
 
     private static Command SetupConfigureRabbitCommand(string[] args)
     {
-        var command = new Command("configure-rabbit", "Configures rabbit mq with credentials for configuration file");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("configure-rabbit", "Configures rabbit mq with credentials for configuration file")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var rabbitParam = new Option<Uri>("--rabbit", $"Http uri to connect to rabbit mq");
-        rabbitParam.IsRequired = true;
+        var rabbitParam = new Option<Uri>("--rabbit", $"Http uri to connect to rabbit mq")
+        {
+            IsRequired = true
+        };
         rabbitParam.AddAlias("-r");
         command.Add(rabbitParam);
 
-        var rabbitUsernameParam = new Option<string>("--rabbit-user", "Username to connect to rabbit");
-        rabbitUsernameParam.IsRequired = true;
+        var rabbitUsernameParam = new Option<string>("--rabbit-user", "Username to connect to rabbit")
+        {
+            IsRequired = true
+        };
         rabbitUsernameParam.AddAlias("-ru");
         command.Add(rabbitUsernameParam);
 
-        var rabbitPasswordParam = new Option<string>("--rabbit-password", "Password to connect to rabbit");
-        rabbitPasswordParam.IsRequired = true;
+        var rabbitPasswordParam = new Option<string>("--rabbit-password", "Password to connect to rabbit")
+        {
+            IsRequired = true
+        };
         rabbitPasswordParam.AddAlias("-rp");
         command.Add(rabbitPasswordParam);
 
-        var usernameParam = new Option<string>("--user", "Username to use for account");
-        usernameParam.IsRequired = true;
+        var usernameParam = new Option<string>("--user", "Username to use for account")
+        {
+            IsRequired = true
+        };
         usernameParam.AddAlias("-u");
         command.Add(usernameParam);
 
-        var passwordParam = new Option<string>("--password", "Password to use for account");
-        passwordParam.IsRequired = false;
+        var passwordParam = new Option<string>("--password", "Password to use for account")
+        {
+            IsRequired = false
+        };
         passwordParam.AddAlias("-p");
         command.Add(passwordParam);
 
-        var updatePermissionsParam = new Option<bool>("--update-permissions", "Update the users permissions");
-        updatePermissionsParam.IsRequired = false;
+        var updatePermissionsParam = new Option<bool>("--update-permissions", "Update the users permissions")
+        {
+            IsRequired = false
+        };
         updatePermissionsParam.AddAlias("-up");
         command.Add(updatePermissionsParam);
 
-        var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update");
-        drexSiteConfigParam.IsRequired = false;
+        var drexSiteConfigParam = new Option<FileInfo>("--drex-site-config", "Path to drex site config to update")
+        {
+            IsRequired = false
+        };
         drexSiteConfigParam.AddAlias("-dsc");
         command.Add(drexSiteConfigParam);
 
-        var superUserParam = new Option<bool>("--super-user", "Indicates the account is for a super user");
-        superUserParam.IsRequired = false;
+        var superUserParam = new Option<bool>("--super-user", "Indicates the account is for a super user")
+        {
+            IsRequired = false
+        };
         superUserParam.SetDefaultValue(false);
         superUserParam.AddAlias("-su");
         command.Add(superUserParam);
 
-        var credentialsFileParam = new Option<FileInfo>("--credentials-file", "Updates the file with the generated credentials");
-        credentialsFileParam.IsRequired = false;
+        var credentialsFileParam = new Option<FileInfo>("--credentials-file", "Updates the file with the generated credentials")
+        {
+            IsRequired = false
+        };
         credentialsFileParam.AddAlias("-cf");
         command.Add(credentialsFileParam);
 
@@ -392,38 +483,48 @@ internal class Program
 
     private static Command SetupUninstallCommand(string[] args)
     {
-        var command = new Command("uninstall", "Uninstalls all installed components");
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command("uninstall", "Uninstalls all installed components")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
-        var dockerParam = new Option<DirectoryInfo>("--docker", "Path to docker location");
-        dockerParam.IsRequired = false;
+        var dockerParam = new Option<DirectoryInfo>("--docker", "Path to docker location")
+        {
+            IsRequired = false
+        };
         dockerParam.AddAlias("-d");
         command.Add(dockerParam);
 
-        var pathParam = new Option<DirectoryInfo>("--path", "Path to the installation location");
-        pathParam.IsRequired = false;
+        var pathParam = new Option<DirectoryInfo>("--path", "Path to the installation location")
+        {
+            IsRequired = false
+        };
         pathParam.AddAlias("-p");
         command.Add(pathParam);
 
-        var removeSystemParam = new Option<bool>("--remove-system", "Indicates to remove system components");
-        removeSystemParam.IsRequired = false;
+        var removeSystemParam = new Option<bool>("--remove-system", "Indicates to remove system components")
+        {
+            IsRequired = false
+        };
         removeSystemParam.SetDefaultValue(false);
         command.Add(removeSystemParam);
 
-        var removeConfigParam = new Option<bool>("--remove-config", "Indicates to remove configuration files");
-        removeConfigParam.IsRequired = false; ;
+        var removeConfigParam = new Option<bool>("--remove-config", "Indicates to remove configuration files")
+        {
+            IsRequired = false
+        };
+        ;
         removeConfigParam.SetDefaultValue(false);
         command.Add(removeConfigParam);
 
-        var removeDockerParam = new Option<bool>("--remove-docker", "Indicates to remove docker");
-        removeDockerParam.IsRequired = false;
+        var removeDockerParam = new Option<bool>("--remove-docker", "Indicates to remove docker")
+        {
+            IsRequired = false
+        };
         removeDockerParam.SetDefaultValue(false);
         command.Add(removeDockerParam);
 
-        command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) =>
-        {
-            await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args);
-        }, dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
+        command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) => await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args), dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
 
         return command;
     }
@@ -431,12 +532,16 @@ internal class Program
     private static Command SetupGetVersionCommand(string[] args)
     {
         const string commandName = "get-release-version";
-        var command = new Command(commandName);
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command(commandName)
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
         const string releaseNameParamName = "--name";
-        var releaseNameParam = new Option<string>(releaseNameParamName);
-        releaseNameParam.IsRequired = true;
+        var releaseNameParam = new Option<string>(releaseNameParamName)
+        {
+            IsRequired = true
+        };
         command.Add(releaseNameParam);
 
         const string ownerParamName = "--owner";
@@ -445,8 +550,10 @@ internal class Program
         command.Add(ownerParam);
 
         const string repoParamName = "--repo";
-        var repoParam = new Option<string>(repoParamName);
-        repoParam.IsRequired = true;
+        var repoParam = new Option<string>(repoParamName)
+        {
+            IsRequired = true
+        };
         command.Add(repoParam);
 
         command.SetHandler(async (releaseName, owner, repo) =>
@@ -461,12 +568,16 @@ internal class Program
     private static Command SetupGetContainerVersionCommand(string[] args)
     {
         const string commandName = "get-container-version";
-        var command = new Command(commandName);
-        command.TreatUnmatchedTokensAsErrors = true;
+        var command = new Command(commandName)
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
 
         const string releaseNameParamName = "--name";
-        var releaseNameParam = new Option<string>(releaseNameParamName);
-        releaseNameParam.IsRequired = true;
+        var releaseNameParam = new Option<string>(releaseNameParamName)
+        {
+            IsRequired = true
+        };
         command.Add(releaseNameParam);
 
         const string ownerParamName = "--owner";
@@ -534,10 +645,7 @@ internal class Program
         {
             var chunker = new DataChunker(loggerFactory);
             await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await chunker.ChunkFileAsync(s, d, size, removeSource);
-                });
+                async (s, d) => await chunker.ChunkFileAsync(s, d, size, removeSource));
         });
     }
 
@@ -549,10 +657,7 @@ internal class Program
         {
             var chunker = new DataChunker(loggerFactory);
             await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await chunker.UnchunkFileAsync(s, d, removeSource);
-                });
+                async (s, d) => await chunker.UnchunkFileAsync(s, d, removeSource));
         });
     }
 
@@ -564,10 +669,7 @@ internal class Program
         {
             var compressor = new DataCompressor(loggerFactory);
             await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await compressor.CompressDirectoryAsync(s, d, removeSource);
-                });
+                async (s, d) => await compressor.CompressDirectoryAsync(s, d, removeSource));
         });
     }
 
@@ -579,10 +681,7 @@ internal class Program
         {
             var compressor = new DataCompressor(loggerFactory);
             await ExecuteForComponentsAsync(source, destination, config,
-                async (s, d) =>
-                {
-                    await compressor.UncompressFileAsync(s, d, removeSource);
-                });
+                async (s, d) => await compressor.UncompressFileAsync(s, d, removeSource));
         });
     }
 
@@ -591,28 +690,22 @@ internal class Program
         var (_, loggerFactory) = Initialize(args);
         var configParameters = BuildConfigParameters(parameters);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
-        {
-            var release = new ReleaseBodyBuilder(loggerFactory);
-            await release.BuildReleaseBodyAsync(config, configParameters, output);
-        });
+        await ExecuteCommandAsync(loggerFactory, async () => await ReleaseBodyBuilder.BuildReleaseBodyAsync(config, configParameters, output));
     }
 
     private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
-        var commandExecution = new CommandExecutionService(loggerFactory);
-        var configurer = new RabbitConfigurer(loggerFactory, commandExecution);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
             if (arguments.UpdatePermissions)
             {
-                await configurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
+                await RabbitConfigurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
                 return;
             }
 
-            var credentials = await configurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
+            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
 
             if (credentials == null)
             {
@@ -620,8 +713,15 @@ internal class Program
                 return;
             }
 
-            if (arguments.DrexSiteConfig != null) await configurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
-            if (arguments.CredentialsFile != null) await configurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+            if (arguments.DrexSiteConfig != null)
+            {
+                await RabbitConfigurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+            }
+
+            if (arguments.CredentialsFile != null)
+            {
+                await RabbitConfigurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+            }
         });
     }
 
@@ -697,6 +797,18 @@ internal class Program
             });
     }
 
+    private static async Task ExecuteAddOpenSshUserCommand(string name, bool isDrex, string[] args)
+    {
+        var (_, loggerFactory) = Initialize(args);
+        var commandExecution = new CommandExecutionService(loggerFactory);
+
+        await ExecuteCommandAsync(loggerFactory, async () =>
+        {
+            var creator = new OpenSshUserCreator(commandExecution);
+            await creator.AddOpenSshUserAsync(name, isDrex);
+        });
+    }
+
     private static async Task<string?> ExecuteGetReleaseVersionCommandAsync(string releaseName, string owner, string repoName, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
@@ -704,10 +816,7 @@ internal class Program
         var versionProvider = new ReleaseVersionProvider(releaseDataProvider);
 
         string? version = null;
-        await ExecuteCommandAsync(loggerFactory, async () =>
-        {
-            version = await versionProvider.GetVersionAsync(releaseName, owner, repoName);
-        });
+        await ExecuteCommandAsync(loggerFactory, async () => version = await versionProvider.GetVersionAsync(releaseName, owner, repoName));
 
         return version;
     }
@@ -719,10 +828,7 @@ internal class Program
         var versionProvider = new ContainerVersionProvider(tagProvider);
 
         string? version = null;
-        await ExecuteCommandAsync(loggerFactory, async () =>
-        {
-            version = await versionProvider.GetLatestContainerVersionAsync(releaseName, owner);
-        });
+        await ExecuteCommandAsync(loggerFactory, async () => version = await versionProvider.GetLatestContainerVersionAsync(releaseName, owner));
 
         return version;
     }
@@ -796,19 +902,16 @@ internal class Program
             .ReplaceConfigParameters(configParameters);
 
         Directory.CreateDirectory(root);
-        var fileName = $"{{Date}}{DateTime.Now.ToString("HHmmss")}.{name}.log";
+        var fileName = $"{{Date}}{DateTime.Now:HHmmss}.{name}.log";
 
         return Path.Combine(root, fileName);
     }
 
     private static Dictionary<string, string> BuildConfigParameters(string[]? parameters)
     {
-        if (parameters == null)
-        {
-            return new Dictionary<string, string>();
-        }
-
-        return parameters
+        return parameters == null
+            ? new Dictionary<string, string>()
+            : parameters
             .Select(x =>
             {
                 var parts = x.Split(new char[] { ':' }, 2);
