@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Rebex;
 using LogLevel = Rebex.LogLevel;
 
 namespace Abs.CommonCore.SftpService;
+
+[ExcludeFromCodeCoverage]
 public class LogWriterAdapter : LogWriterBase
 {
     private readonly ILogger _logger;

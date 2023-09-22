@@ -15,9 +15,9 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.204, )",
-        "resolved": "1.0.204",
-        "contentHash": "6XE+T7pGYVYUjkS7xMDgjIIJAYljME39N9XMFGeHKJEn+z5/BbW45s8Zh/t0GEJUJkUDOuiCnE26hXMYepw2uQ==",
+        "requested": "[1.0.206, )",
+        "resolved": "1.0.206",
+        "contentHash": "cdbMOeVan6O1F5rMWH+HQm9r+z8w+oFfLphP2sPV+WuagUVNY4QzaVpb3BDH37lPWtfEa75DLDXvRT/7rv51Cg==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.158",
           "EasyNetQ.Management.Client": "2.0.0",
