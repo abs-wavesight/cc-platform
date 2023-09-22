@@ -18,7 +18,7 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "openssh", imageName: "openssh")]
     public ComposeComponentMode? Openssh { get; set; }
 
-    [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-service")]
+    [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DrexMessageService { get; set; }

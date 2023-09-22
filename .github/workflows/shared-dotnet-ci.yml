@@ -3,7 +3,7 @@ name: Shared - Dotnet CI
 on:
   workflow_call:
     inputs:
-      image-name: # cc-drex-service
+      image-name: # cc-drex-message-service
         required: true
         type: string
       label-description: # ABS Common Core Data Remote EXchange Service (D-REX)
@@ -21,10 +21,10 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "Drex.sln")
-      dockerfile-name: # Drex.Dockerfile
+      dockerfile-name: # DrexMessage.Dockerfile
         required: true
         type: string
-        description: Should be found with the `solution-directory` (e.g., "Drex.Dockerfile")
+        description: Should be found with the `solution-directory` (e.g., "DrexMessage.Dockerfile")
       test-project-filter-part: # & FullyQualifiedName!~FileShipper
         required: false
         type: string
