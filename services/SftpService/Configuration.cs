@@ -6,7 +6,7 @@ namespace Abs.CommonCore.SftpService;
 public class Configuration
 {
     public string[] Clients { get; init; }
-    public SiteUser[] Site { get; init; }
+    public SiteUser[] Sites { get; init; }
     public string DefaultPassword { get; init; }
 }
 

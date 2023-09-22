@@ -2,7 +2,7 @@
   "profiles": {
     "SftpService": {
       "commandName": "Project",
-      "commandLineArgs": "gen-key -p C:\\ABS\\ssh-keys"
+      "commandLineArgs": "run"
     }
   }
 }

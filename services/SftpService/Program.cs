@@ -79,7 +79,7 @@ public class Program
         return command;
     }
 
-    private static async Task ExecuteRunCommandAsync(string[] args)
+    private static async Task ExecuteRunCommandAsync(string[] args, CancellationToken cancellation = default)
     {
         var logger = Initialize(args);
 
@@ -96,6 +96,11 @@ public class Program
         SubscribeEvents(logger, server);
 
         server.Start();
+
+        while (!cancellation.IsCancellationRequested)
+        {
+            await Task.Delay(1000, cancellation);
+        }
     }
 
     private static async Task ExecuteGenerateKeyCommandAsync(DirectoryInfo path, string[] args)
@@ -154,8 +159,9 @@ public class Program
         foreach (var user in users)
         {
             var userRoot = Path.Combine(root, user.Root);
+            
+            logger.LogInformation($"Adding user '{user.Name}' with root '{userRoot}'");
             Directory.CreateDirectory(userRoot);
-
             server.Users.Add(user.Name, user.Password, userRoot);
         }
     }
@@ -169,12 +175,12 @@ public class Program
         }
 
         var json = await File.ReadAllTextAsync(configPath);
-        var config = JsonSerializer.Deserialize<Configuration>(json);
+        var config = JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
         var clients = config!.Clients
                              .Select(x => new SftpUser { Name = x, Password = config.DefaultPassword, Root = x });
 
-        var sites = config!.Site
+        var sites = config!.Sites
                            .Select(x => new SftpUser { Name = x.Username, Password = x.Password, Root = "" });
 
         return clients
