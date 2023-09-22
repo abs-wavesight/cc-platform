@@ -41,8 +41,8 @@ public class Program
     public static async Task InitializeServerAsync(ILogger logger,
                                                    CancellationToken cancellationToken)
     {
-        // Trial key good until 2023-10-23
-        Rebex.Licensing.Key = "==AL4kkXuiIOSH0T0cLM+F3qu2bmz5eWz6CyuVjEMlrk2U==";
+        
+        Rebex.Licensing.Key = "==FudJOUJlqLaPVaBtOVJ1jdBLjJJ+4T/W1NvAV4SFwbM2JnZrMzKbjMLnSMNKWai2b1Ete==";
 
         logger.LogInformation("Creating file server");
         var server = new FileServer();
@@ -67,6 +67,9 @@ public class Program
     private static async Task AddSshKeyAsync(ILogger logger, FileServer server)
     {
         logger.LogInformation("Adding ssh keys");
+
+        var key = SshPrivateKey.Generate(SshHostKeyAlgorithm.RSA, 2048);
+        key.
 
         var data = await File.ReadAllBytesAsync(@"C:\ABS\ssh-keys\ssh_host_rsa_key");
         server.Keys.Add(new SshPrivateKey(data));
