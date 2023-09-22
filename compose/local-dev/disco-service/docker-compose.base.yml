@@ -13,6 +13,9 @@ services:
       - FLAT_LOGS=${FLAT_LOGS:-False}
     restart: always
     volumes:
+      - type: volume
+        source: disco-scheduler-storage
+        target: C:/app/scheduler/data
       - type: bind
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/rabbitmq-local-certs
@@ -23,3 +26,6 @@ services:
         source: ${PATH_TO_CC_SIEMENS_ADAPTER_REPO}/config/vendor-configs
         target: C:/app/config/vendor-configs
         read_only: true
+
+volumes:
+  disco-scheduler-storage:
