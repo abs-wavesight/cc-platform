@@ -208,7 +208,7 @@ public static class ConfigureCommand
 
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
         {
-            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreSiemensAdapterRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")
