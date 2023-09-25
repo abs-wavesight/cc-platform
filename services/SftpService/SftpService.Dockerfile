@@ -22,15 +22,14 @@ COPY ./config ./config
 COPY ./service ./service
 COPY ./nuget.config ./service
 
-RUN dotnet restore "services/SftpService"
-RUN dotnet publish "services/SftpService" --no-restore -c Release -o C:\app\publish /p:UseAppHost=false
+RUN dotnet restore "service/FileShipper.Console"
+RUN dotnet publish "service/FileShipper.Console" --no-restore -c Release -o C:\app\publish /p:UseAppHost=false
 
-# FROM mcr.microsoft.com/dotnet/aspnet:${ASPNET_FULLSERVER_TAG}
-FROM mcr.microsoft.com/dotnet/aspnet:$DOTNET_TAG
+FROM mcr.microsoft.com/dotnet/aspnet:${ASPNET_FULLSERVER_TAG}
 WORKDIR C:/app
 ENV DOTNET_ENVIRONMENT=docker
 COPY --from=unzip --chown=containeruser:containeruser [ "C:/app/psping64.exe", "C:/Windows/psping.exe" ]
 COPY --from=build C:/app/publish .
-HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "psping", "-accepteula", "-q", "-n", "1", "-w", "0", "localhost:1022" ]
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "psping", "-accepteula", "-q", "-n", "1", "-w", "0", "localhost:5000" ]
 USER containeradministrator
-ENTRYPOINT ["dotnet", "Abs.CommonCore.Drex.File.Console.dll", "run"]
+ENTRYPOINT ["dotnet", "Abs.CommonCore.Drex.File.Console.dll"]
