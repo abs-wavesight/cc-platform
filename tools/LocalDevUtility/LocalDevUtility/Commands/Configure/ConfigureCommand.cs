@@ -158,7 +158,7 @@ public static class ConfigureCommand
         {
             using (CliStep.Start("Generating SSH keys"))
             {
-                var command = $"dotnet run {appConfig.CommonCorePlatformRepositoryPath}/services/SftpService/SftpService.csproj -- gen-key --path {appConfig.SshKeysPath}";
+                var command = $"dotnet run --project {appConfig.CommonCorePlatformRepositoryPath}/services/SftpService/SftpService.csproj -- gen-key --path {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
                 powerShellAdapter.RunPowerShellCommand(command);
             }
