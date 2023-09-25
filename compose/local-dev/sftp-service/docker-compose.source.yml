@@ -1,7 +1,7 @@
 ---
 version: '3.9'
 services:
-  cc.openssh:
+  cc.sftp-service:
     build:
       context: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService
       dockerfile: SftpService.Dockerfile

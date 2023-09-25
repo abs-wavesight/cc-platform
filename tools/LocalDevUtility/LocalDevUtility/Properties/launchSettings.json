@@ -2,7 +2,7 @@
   "profiles": {
     "LocalDevUtility": {
       "commandName": "Project",
-      "commandLineArgs": "configure"
+      "commandLineArgs": "run --sftp-service s"
     }
   }
 }
