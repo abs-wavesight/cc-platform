@@ -3,8 +3,8 @@ version: '3.9'
 services:
   cc.sftp-service:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService
-      dockerfile: SftpService.Dockerfile
+      context: ${PATH_TO_CC_PLATFORM_REPO}
+      dockerfile: /services/SftpService/SftpService.Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"
         org.eagle.wavesight.container_type: "infrastructure"
