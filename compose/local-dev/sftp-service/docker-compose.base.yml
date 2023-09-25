@@ -4,10 +4,13 @@ services:
   cc.sftp-service:
     container_name: cc-sftp-service
     hostname: cc-sftp-service
+    environment:
+      - FLAT_LOGS=${FLAT_LOGS:-False}    
     logging:
       driver: local
     ports:
       - 1022:22
+    restart: always
     volumes:
       - type: bind
         source: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService/config
