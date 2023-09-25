@@ -3,8 +3,8 @@ version: '3.9'
 services:
   cc.openssh:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/openssh
-      dockerfile: Dockerfile
+      context: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService
+      dockerfile: SftpService.Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"
         org.eagle.wavesight.container_type: "infrastructure"
