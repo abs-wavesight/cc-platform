@@ -33,4 +33,4 @@ COPY --from=unzip --chown=containeruser:containeruser [ "C:/app/psping64.exe", "
 COPY --from=build C:/app/publish .
 HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "psping", "-accepteula", "-q", "-n", "1", "-w", "0", "localhost:1022" ]
 USER containeradministrator
-ENTRYPOINT ["dotnet", "Abs.CommonCore.Drex.File.Console.dll", "run"]
+ENTRYPOINT ["dotnet", "Abs.CommonCore.SftpService.dll", "run"]
