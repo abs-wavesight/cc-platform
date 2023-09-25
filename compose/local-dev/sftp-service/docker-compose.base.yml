@@ -9,7 +9,7 @@ services:
     logging:
       driver: local
     ports:
-      - 1022:22
+      - 1022:1022
     restart: always
     volumes:
       - type: bind

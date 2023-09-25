@@ -20,7 +20,7 @@ ARG ABS_NUGET_PASSWORD
 WORKDIR C:/app
 COPY ./config ./config
 COPY ./services ./services
-COPY ./nuget.config ./services/SftpService
+COPY ./nuget.config ./services
 
 RUN dotnet restore "services/SftpService"
 RUN dotnet publish "services/SftpService" --no-restore -c Release -o C:\app\publish /p:UseAppHost=false
