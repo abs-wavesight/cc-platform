@@ -155,7 +155,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
           "destination": "drex-message.tar"
         },
         {

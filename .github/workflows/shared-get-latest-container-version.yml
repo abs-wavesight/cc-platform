@@ -4,7 +4,7 @@ on:
     workflow_call:
       inputs:
         name: 
-          description: 'Container name' # cc-drex-service
+          description: 'Container name' # cc-drex-message-service
           type: string
           required: true
         owner:
