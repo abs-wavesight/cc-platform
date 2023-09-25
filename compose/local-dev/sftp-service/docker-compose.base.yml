@@ -14,13 +14,13 @@ services:
     volumes:
       - type: bind
         source: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService/config
-        target: C:/config
+        target: C:/app/config
         read_only: false
       - type: bind
         source: ${ABS_CC_SFTP_PATH}
-        target: C:/sftproot
+        target: C:/app/sftproot
         read_only: false
       - type: bind
         source: ${ABS_CC_SSH_KEYS_PATH}
-        target: C:/ssh-keys
+        target: C:/app/ssh-keys
         read_only: true

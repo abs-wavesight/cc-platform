@@ -158,10 +158,11 @@ public class Program
         foreach (var user in users)
         {
             var userRoot = Path.Combine(root, user.Root);
-            
-            logger.LogInformation($"Adding user '{user.Name}' with root '{userRoot}'");
-            Directory.CreateDirectory(userRoot);
-            server.Users.Add(user.Name, user.Password, userRoot);
+            var location = new DirectoryInfo(userRoot);
+            Directory.CreateDirectory(location.FullName);
+
+            logger.LogInformation($"Adding user '{user.Name}' with root '{location.FullName}'");
+            server.Users.Add(user.Name, user.Password, location.FullName);
         }
     }
 
