@@ -21,7 +21,6 @@ public class Program
     private const string KeyFingerprintFileName = "ssh-host-key-fingerprint.txt";
     private const SignatureHashAlgorithm FingerprintHash = SignatureHashAlgorithm.SHA512;
 
-
     public const string ConfigFolderPath = "config";
     public const string ConfigFileName = "config.json";
 
