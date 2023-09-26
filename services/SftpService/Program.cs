@@ -32,6 +32,7 @@ public class Program
         args ??= Array.Empty<string>();
         var runCommand = SetupRunCommand(args);
         var generateKeyCommand = SetupGenerateKeyCommand(args);
+        var addUserCommand = SetupAddUserCommand(args);
 
         var root = new RootCommand("Installer for the Common Core platform")
         {
@@ -39,6 +40,7 @@ public class Program
         };
         root.Add(runCommand);
         root.Add(generateKeyCommand);
+        root.Add(addUserCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
@@ -75,6 +77,58 @@ public class Program
         command.Add(pathParam);
 
         command.SetHandler(async (path) => await ExecuteGenerateKeyCommandAsync(path, args), pathParam);
+        return command;
+    }
+
+    private static Command SetupAddUserCommand(string[] args)
+    {
+        const string commandName = "add-user";
+        var command = new Command(commandName)
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
+
+        const string userLongParamName = "--user";
+        const string userShortParamName = "-u";
+        var userParam = new Option<string>(userLongParamName)
+        {
+            IsRequired = true
+        };
+        userParam.AddAlias(userShortParamName);
+        command.Add(userParam);
+
+        const string passwordLongParamName = "--password";
+        const string passwordShortParamName = "-p";
+        var passwordParam = new Option<string>(passwordLongParamName)
+        {
+            IsRequired = true
+        };
+        passwordParam.AddAlias(passwordShortParamName);
+        command.Add(passwordParam);
+
+        const string drexLongParamName = "--drex";
+        const string drexShortParamName = "-d";
+        var drexParam = new Option<bool>(drexLongParamName)
+        {
+            IsRequired = false
+        };
+        drexParam.AddAlias(drexShortParamName);
+        drexParam.SetDefaultValue(false);
+        command.Add(drexParam);
+
+        const string restartLongParamName = "--restart";
+        const string restartShortParamName = "-r";
+        var restartParam = new Option<bool>(restartLongParamName)
+        {
+            IsRequired = false
+        };
+        restartParam.AddAlias(restartShortParamName);
+        restartParam.SetDefaultValue(false);
+        command.Add(restartParam);
+
+        command.SetHandler(async (user, password, isDrex, restart) 
+                               => await ExecuteAddUserCommandAsync(user, password, isDrex, restart, args),
+                           userParam, passwordParam, drexParam, restartParam);
         return command;
     }
 
@@ -117,6 +171,37 @@ public class Program
         await File.WriteAllTextAsync(fingerprintFile, fingerprint);
 
         logger.LogInformation("Ssh key created");
+    }
+
+    private static async Task ExecuteAddUserCommandAsync(string user, string password, bool isDrex, bool restart, string[] args)
+    {
+        var logger = Initialize(args);
+        var userType = isDrex ? "drex user" : "client user";
+        logger.LogInformation($"Adding {userType} '{user}'");
+
+        var config = await LoadConfigFileAsync();
+
+        if (isDrex)
+        {
+            config.Sites.Add(new SiteUser { Username = user, Password = password });
+        }
+        else
+        {
+            config.Clients.Add(user);
+        }
+
+        await SaveConfigFileAsync(config);
+
+        logger.LogInformation("User added");
+
+        if (restart)
+        {
+            logger.LogInformation("Restarting application");
+            await Task.Delay(2000);
+
+            // Force restart when running in container
+            Environment.Exit(0 );
+        }
     }
 
     private static ILogger Initialize(string[] args)
@@ -168,14 +253,7 @@ public class Program
 
     private static async Task<SftpUser[]> LoadUsersAsync()
     {
-        var configPath = Path.Combine(ConfigFolderPath, ConfigFileName);
-        if (!File.Exists(configPath))
-        {
-            throw new Exception("Config file not found");
-        }
-
-        var json = await File.ReadAllTextAsync(configPath);
-        var config = JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        var config = await LoadConfigFileAsync();
 
         var clients = config!.Clients
                              .Select(x => new SftpUser { Name = x, Password = config.DefaultPassword, Root = x });
@@ -186,6 +264,26 @@ public class Program
         return clients
                .Concat(sites)
                .ToArray();
+    }
+
+    private static async Task<Configuration> LoadConfigFileAsync()
+    {
+        var configPath = Path.Combine(ConfigFolderPath, ConfigFileName);
+        if (!File.Exists(configPath))
+        {
+            throw new Exception("Config file not found");
+        }
+
+        var json = await File.ReadAllTextAsync(configPath);
+        return JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true })!;
+    }
+
+    private static async Task SaveConfigFileAsync(Configuration config)
+    {
+        var configPath = Path.Combine(ConfigFolderPath, ConfigFileName);
+        
+        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
+        await File.WriteAllTextAsync(configPath, json);
     }
 
     private static void SubscribeEvents(ILogger logger, FileServer server)
