@@ -116,19 +116,9 @@ public class Program
         drexParam.SetDefaultValue(false);
         command.Add(drexParam);
 
-        const string restartLongParamName = "--restart";
-        const string restartShortParamName = "-r";
-        var restartParam = new Option<bool>(restartLongParamName)
-        {
-            IsRequired = false
-        };
-        restartParam.AddAlias(restartShortParamName);
-        restartParam.SetDefaultValue(false);
-        command.Add(restartParam);
-
-        command.SetHandler(async (user, password, isDrex, restart) 
-                               => await ExecuteAddUserCommandAsync(user, password, isDrex, restart, args),
-                           userParam, passwordParam, drexParam, restartParam);
+        command.SetHandler(async (user, password, isDrex) 
+                               => await ExecuteAddUserCommandAsync(user, password, isDrex, args),
+                           userParam, passwordParam, drexParam);
         return command;
     }
 
@@ -173,7 +163,7 @@ public class Program
         logger.LogInformation("Ssh key created");
     }
 
-    private static async Task ExecuteAddUserCommandAsync(string user, string password, bool isDrex, bool restart, string[] args)
+    private static async Task ExecuteAddUserCommandAsync(string user, string password, bool isDrex, string[] args)
     {
         var logger = Initialize(args);
         var userType = isDrex ? "drex user" : "client user";
@@ -193,15 +183,6 @@ public class Program
         await SaveConfigFileAsync(config);
 
         logger.LogInformation("User added");
-
-        if (restart)
-        {
-            logger.LogInformation("Restarting application");
-            await Task.Delay(2000);
-
-            // Force restart when running in container
-            Environment.Exit(0 );
-        }
     }
 
     private static ILogger Initialize(string[] args)
