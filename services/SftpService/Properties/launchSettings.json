@@ -2,7 +2,7 @@
   "profiles": {
     "SftpService": {
       "commandName": "Project",
-      "commandLineArgs": "run"
+      "commandLineArgs": "add-user -u xyz -p 123 -d"
     }
   }
 }
