@@ -21,7 +21,7 @@ public static class Constants
 
     public static class MessageBus
     {
-        public const string DlqReservedName = "dlq";
+        public const string InternalSourceDlqReservedName = "internal-src-dlq";
         public const string InfrastructureLogsReservedName = "int-log";
         public const string SinkLogsReservedName = "snk-log";
 
@@ -52,8 +52,8 @@ public static class Constants
 
             public const string CentralClientDlqTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{QueueSuffix}";
 
-            public const string SiteDlqName = $"{ResourcePrefix}.site.{DlqReservedName}.{QueueSuffix}";
-            public const string CentralDlqName = $"{ResourcePrefix}.central.{DlqReservedName}.{QueueSuffix}";
+            public const string SiteDlqName = $"{ResourcePrefix}.site.{InternalSourceDlqReservedName}.{QueueSuffix}";
+            public const string CentralDlqName = $"{ResourcePrefix}.central.{InternalSourceDlqReservedName}.{QueueSuffix}";
 
             public const string SiteLogQueueName = $"{ResourcePrefix}.site.{InfrastructureLogsReservedName}.{QueueSuffix}";
 
