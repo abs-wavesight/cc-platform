@@ -19,10 +19,10 @@ on:
         required: false
         type: string
         description: Version to use for Vector central release # v1.0.0
-      openssh-version:
+      sftp-service-version:
         required: false
         type: string
-        description: Version to use for OpenSSH release # v1.0.0
+        description: Version to use for Sftp Service release # v1.0.0
 
 concurrency:
   group: central-system-release-${{ github.head_ref }}
@@ -47,13 +47,13 @@ jobs:
       name: "Vector Central Release 2022"
     secrets: inherit
 
-  get-default-openssh-version:
-    name: Get Default OpenSSH Version
-    if: ${{ inputs.openssh-version == '' }}
+  get-default-sftp-service-version:
+    name: Get Default Sftp Service Version
+    if: ${{ inputs.sftp-service-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "OpenSSH Release 2022"
+      name: "Sftp Service Release 2022"
     secrets: inherit
 
   release-component:
@@ -61,7 +61,7 @@ jobs:
     needs: 
       - get-default-rabbitmq-version
       - get-default-vector-central-version
-      - get-default-openssh-version
+      - get-default-sftp-service-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -75,7 +75,7 @@ jobs:
       component-params: >
         -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
         -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}
-        -p `$OPENSSH_RELEASE_TAG:openssh-${{ matrix.windows-version }}-${{ needs.get-default-openssh-version.outputs.version || inputs.openssh-version }} 
+        -p `$SFTP_SERVICE_RELEASE_TAG:sftp-service-${{ matrix.windows-version }}-${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }} 
       release-name-prefix: Central System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

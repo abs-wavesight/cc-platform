@@ -193,32 +193,22 @@
       ]
     },
     {
-      "name": "OpenSsh",
+      "name": "Sftp-Service",
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/openssh:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "openssh.tar"
+          "source": "ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "destination": "sftp-service.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/create-ssh-keys-and-fingerprint.ps1",
-          "destination": "create-ssh-keys-and-fingerprint.ps1"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/openssh/sshd.config",
-          "destination": "sshd.config"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.openssh.yml",
-          "destination": "docker-compose.openssh.yml"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.sftp-service.yml",
+          "destination": "docker-compose.sftp-service.yml"
         }
       ],
       "actions": [
         {
-          "source": "docker-compose.openssh.yml",
+          "source": "docker-compose.sftp-service.yml",
           "action": "replaceParameters"
         }
       ]
