@@ -48,10 +48,6 @@ public static class Constants
             public const string CentralDirectExchangeName = $"{ResourcePrefix}.central.{DirectExchangeSuffix}";
             public const string CentralTopicExchangeName = $"{ResourcePrefix}.central.{TopicExchangeSuffix}";
 
-            public const string SiteClientDlqTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{QueueSuffix}";
-
-            public const string CentralClientDlqTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{QueueSuffix}";
-
             public const string SiteDlqName = $"{ResourcePrefix}.site.{DlqReservedName}.{QueueSuffix}";
             public const string CentralDlqName = $"{ResourcePrefix}.central.{DlqReservedName}.{QueueSuffix}";
 
