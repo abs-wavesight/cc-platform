@@ -67,12 +67,11 @@ public abstract class ComposeOptions
     [ComposeComponentAlias(nameof(VectorSite))]
     public ComposeComponentMode? Vector { get; set; }
 
-    [Description("Alias for \"rabbitmq-local\", \"rabbitmq-remote\", \"vector-site\", \"vector-central\", and \"sftp-service\"")]
+    [Description("Alias for \"rabbitmq-local\", \"rabbitmq-remote\", \"vector-site\", and \"vector-central\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     [ComposeComponentAlias(nameof(RabbitmqRemote))]
     [ComposeComponentAlias(nameof(VectorSite))]
     [ComposeComponentAlias(nameof(VectorCentral))]
-    [ComposeComponentAlias(nameof(SftpService))]
     public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]
