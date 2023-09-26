@@ -30,9 +30,5 @@ public class AddSftpUser
         }
 
         await _commandExecutionService.ExecuteCommandAsync("docker", dockerCommand, string.Empty);
-
-        Console.WriteLine($"Restarting {containerName} container...");
-        const string restartCommand = $"restart {containerName}";
-        await _commandExecutionService.ExecuteCommandAsync("docker", restartCommand, string.Empty);
     }
 }

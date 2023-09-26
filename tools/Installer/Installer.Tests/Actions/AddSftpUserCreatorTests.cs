@@ -8,7 +8,6 @@ public class AddSftpUserCreatorTests
 {
     private const string Name = "some_name";
     private const string ExpectedCommandPrefix = $"exec -it cc.sftp-service cmd.exe /C dotnet Abs.CommonCore.SftpService.dll -u {Name}";
-    private const string RestartCommand = "restart";
     private const string DrexCommand = "-d";
 
     [Fact]
@@ -23,7 +22,6 @@ public class AddSftpUserCreatorTests
 
         // Assert
         commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && v.Contains(DrexCommand)), It.IsAny<string>()), Times.Once);
-        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(RestartCommand)), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
@@ -38,6 +36,5 @@ public class AddSftpUserCreatorTests
 
         // Assert
         commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && !v.Contains(DrexCommand)), It.IsAny<string>()), Times.Once);
-        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(RestartCommand)), It.IsAny<string>()), Times.Once);
     }
 }

@@ -16,6 +16,8 @@ namespace Abs.CommonCore.SftpService;
 [ExcludeFromCodeCoverage]
 public class Program
 {
+    private static FileServer? _server;
+
     private const int SshKeyLength = 2048;
     private const string KeyFileName = "ssh_host_rsa_key";
     private const string KeyFingerprintFileName = "ssh-host-key-fingerprint.txt";
@@ -129,18 +131,18 @@ public class Program
         Rebex.Licensing.Key = PlatformConstants.Rebex_License_Key;
 
         logger.LogInformation("Creating file server");
-        var server = new FileServer();
+        _server = new FileServer();
 
-        server.Bind(1022, FileServerProtocol.Sftp);
+        _server.Bind(1022, FileServerProtocol.Sftp);
 
-        InitializeSettings(logger, server);
-        await AddSshKeyAsync(logger, server);
-        await AddUsersAsync(logger, server);
-        SubscribeEvents(logger, server);
+        InitializeSettings(logger, _server);
+        await AddSshKeyAsync(logger, _server);
+        await AddUsersAsync(logger, _server);
+        SubscribeEvents(logger, _server);
 
-        server.Start();
+        _server.Start();
 
-        while (!cancellation.IsCancellationRequested)
+        while (!cancellation.IsCancellationRequested && _server.IsRunning)
         {
             await Task.Delay(1000, cancellation);
         }
@@ -181,8 +183,16 @@ public class Program
         }
 
         await SaveConfigFileAsync(config);
-
         logger.LogInformation("User added");
+
+        if (_server is null)
+        {
+            return;
+        }
+
+        var sftpUser = new SftpUser { Name = user, Password = password, Root = isDrex ? "" : user };
+        var root = LoadFolderPath(PlatformConstants.SFTP_Path, RootFolderPath);
+        AddUser(logger, sftpUser, _server, root);
     }
 
     private static ILogger Initialize(string[] args)
@@ -223,12 +233,7 @@ public class Program
         logger.LogInformation("Adding users");
         foreach (var user in users)
         {
-            var userRoot = Path.Combine(root, user.Root);
-            var location = new DirectoryInfo(userRoot);
-            Directory.CreateDirectory(location.FullName);
-
-            logger.LogInformation($"Adding user '{user.Name}' with root '{location.FullName}'");
-            server.Users.Add(user.Name, user.Password, location.FullName);
+            AddUser(logger, user, server, root);
         }
     }
 
@@ -245,6 +250,16 @@ public class Program
         return clients
                .Concat(sites)
                .ToArray();
+    }
+
+    private static void AddUser(ILogger logger, SftpUser user, FileServer server, string root)
+    {
+        var userRoot = Path.Combine(root, user.Root);
+        var location = new DirectoryInfo(userRoot);
+        Directory.CreateDirectory(location.FullName);
+
+        logger.LogInformation($"Adding user '{user.Name}' with root '{location.FullName}'");
+        server.Users.Add(user.Name, user.Password, location.FullName);
     }
 
     private static async Task<Configuration> LoadConfigFileAsync()
