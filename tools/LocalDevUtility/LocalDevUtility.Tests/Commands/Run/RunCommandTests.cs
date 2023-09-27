@@ -26,10 +26,10 @@ public class RunCommandTests
     [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --drex-message-service i", new[] { "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --drex-file-service i", new[] { "cc.drex-file-service", "cc.rabbitmq-local", "cc.vector-site", "cc.drex-message-service", "cc.sftp-service" })]
-    [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.sftp-service" })]
-    [InlineData("run -m r --deps i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.sftp-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
+    [InlineData("run -m r --deps i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --deps i --drex-file-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.drex-file-service", "cc.sftp-service" }, new[] { "vector/docker-compose.variant.default.yml" })]
-    [InlineData("run -m r --deps i --log-viz i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.loki", "cc.grafana", "cc.sftp-service" }, new[] { "vector/docker-compose.variant.loki.yml" })]
+    [InlineData("run -m r --deps i --log-viz i --drex-message-service i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central", "cc.drex-message-service", "cc.loki", "cc.grafana" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --disco-service i", new[] { "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --siemens-adapter i", new[] { "cc.siemens-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
