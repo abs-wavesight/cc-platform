@@ -143,9 +143,15 @@ public class RabbitConfigurer : ActionBase
     {
         var user = await GetUserAsync(client, username)
                    ?? throw new Exception("User account does not exist");
+
+        var clientQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
+        const string internalDlqRegex = @"^cc\.drex\.(site|central)\.internal-src-dlq\.q$";
+        const string exchangesRegex = @"^cc\.drex\.(site|central)\.(ed|et)$";
+        const string errorQueueName = "error";
+        const string siteFileShippingQueues = @"^cc\.(drex\.site\.drex-file|drex-file\.site\.).*\.q$";
         var permissionRegex = isSuperUser
             ? ".*"
-            : $"{Regex.Escape(username.ToLower())}";
+            : string.Join("|", clientQueuesRegex, internalDlqRegex, exchangesRegex, errorQueueName, siteFileShippingQueues);
 
         var configurePermissions = isSuperUser
             ? ".*"
