@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpService", "SftpService.csproj", "{2A2A2A20-8939-45F0-B8F0-939EAB99D818}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpService", "SftpService.csproj", "{2A2A2A20-8939-45F0-B8F0-939EAB99D818}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpService.Tests", "..\SftpService.Tests\SftpService.Tests.csproj", "{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2A2A2A20-8939-45F0-B8F0-939EAB99D818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A2A2A20-8939-45F0-B8F0-939EAB99D818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A2A2A20-8939-45F0-B8F0-939EAB99D818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

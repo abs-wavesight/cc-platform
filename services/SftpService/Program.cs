@@ -18,10 +18,10 @@ public class Program
 {
     private static FileServer? _server;
 
-    private const int SshKeyLength = 2048;
-    private const string KeyFileName = "ssh_host_rsa_key";
-    private const string KeyFingerprintFileName = "ssh-host-key-fingerprint.txt";
-    private const SignatureHashAlgorithm FingerprintHash = SignatureHashAlgorithm.SHA512;
+    public const int SshKeyLength = 2048;
+    public const string KeyFileName = "ssh_host_rsa_key";
+    public const string KeyFingerprintFileName = "ssh-host-key-fingerprint.txt";
+    public const SignatureHashAlgorithm FingerprintHash = SignatureHashAlgorithm.SHA512;
 
     public const string ConfigFolderPath = "config";
     public const string ConfigFileName = "config.json";
@@ -103,7 +103,7 @@ public class Program
         const string passwordShortParamName = "-p";
         var passwordParam = new Option<string>(passwordLongParamName)
         {
-            IsRequired = true
+            IsRequired = false
         };
         passwordParam.AddAlias(passwordShortParamName);
         command.Add(passwordParam);
@@ -167,6 +167,11 @@ public class Program
 
     private static async Task ExecuteAddUserCommandAsync(string user, string password, bool isDrex, string[] args)
     {
+        if (isDrex && string.IsNullOrWhiteSpace(password))
+        {
+            throw new ArgumentException("Password is required for drex accounts", nameof(password));
+        }
+
         var logger = Initialize(args);
         var userType = isDrex ? "drex user" : "client user";
         logger.LogInformation($"Adding {userType} '{user}'");
