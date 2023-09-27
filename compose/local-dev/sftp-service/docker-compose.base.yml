@@ -2,8 +2,8 @@
 version: '3.9'
 services:
   cc.sftp-service:
-    container_name: cc-sftp-service
-    hostname: cc-sftp-service
+    container_name: sftp-service
+    hostname: sftp-service
     environment:
       - FLAT_LOGS=${FLAT_LOGS:-False}    
     logging:
