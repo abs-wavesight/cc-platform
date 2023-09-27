@@ -19,8 +19,8 @@ public class LogWriterAdapter : LogWriterBase
 
     private void Write(LogLevel level, Type objectType, int objectId, string area, string message, ArraySegment<byte>? data)
     {
-        var template = (data == null) 
-            ? MessageTemplate 
+        var template = (data == null)
+            ? MessageTemplate
             : MessageTemplateWithData;
 
         if (level <= LogLevel.Verbose)

@@ -118,7 +118,7 @@ public class Program
         drexParam.SetDefaultValue(false);
         command.Add(drexParam);
 
-        command.SetHandler(async (user, password, isDrex) 
+        command.SetHandler(async (user, password, isDrex)
                                => await ExecuteAddUserCommandAsync(user, password, isDrex, args),
                            userParam, passwordParam, drexParam);
         return command;
@@ -277,7 +277,7 @@ public class Program
     private static async Task SaveConfigFileAsync(Configuration config)
     {
         var configPath = Path.Combine(ConfigFolderPath, ConfigFileName);
-        
+
         var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
         await File.WriteAllTextAsync(configPath, json);
     }
