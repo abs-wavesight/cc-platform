@@ -23,6 +23,13 @@ public class Program
     public const string KeyFingerprintFileName = "ssh-host-key-fingerprint.txt";
     public const SignatureHashAlgorithm FingerprintHash = SignatureHashAlgorithm.SHA512;
 
+    public static readonly JsonSerializerOptions SerializerOptions
+        = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true
+        };
+
     public const string ConfigFolderPath = "config";
     public const string ConfigFileName = "config.json";
 
@@ -45,6 +52,8 @@ public class Program
         root.Add(addUserCommand);
 
         var result = await root.InvokeAsync(args);
+
+        // Wait for logger to flush
         await Task.Delay(1000);
         return result;
     }
@@ -151,7 +160,7 @@ public class Program
     private static async Task ExecuteGenerateKeyCommandAsync(DirectoryInfo path, string[] args)
     {
         var logger = Initialize(args);
-        logger.LogInformation($"Creating SSH key in folder '{path}'");
+        logger.LogInformation("Creating SSH key in folder '{Path}'", path);
 
         var key = SshPrivateKey.Generate(SshHostKeyAlgorithm.RSA, SshKeyLength);
 
@@ -174,7 +183,7 @@ public class Program
 
         var logger = Initialize(args);
         var userType = isDrex ? "drex user" : "client user";
-        logger.LogInformation($"Adding {userType} '{user}'");
+        logger.LogInformation("Adding {UserType} '{User}'", userType, user);
 
         var config = await LoadConfigFileAsync();
 
@@ -195,7 +204,15 @@ public class Program
             return;
         }
 
-        var sftpUser = new SftpUser { Name = user, Password = password, Root = isDrex ? "" : user };
+        var sftpUser = new SftpUser
+        {
+            Name = user,
+            Password = password,
+            Root = isDrex
+                ? string.Empty
+                : user
+        };
+
         var root = LoadFolderPath(PlatformConstants.SFTP_Path, RootFolderPath);
         AddUser(logger, sftpUser, _server, root);
     }
@@ -247,10 +264,20 @@ public class Program
         var config = await LoadConfigFileAsync();
 
         var clients = config!.Clients
-                             .Select(x => new SftpUser { Name = x, Password = config.DefaultPassword, Root = x });
+                             .Select(x => new SftpUser
+                             {
+                                 Name = x,
+                                 Password = config.DefaultPassword,
+                                 Root = x
+                             });
 
         var sites = config!.Sites
-                           .Select(x => new SftpUser { Name = x.Username, Password = x.Password, Root = "" });
+                           .Select(x => new SftpUser
+                           {
+                               Name = x.Username,
+                               Password = x.Password,
+                               Root = ""
+                           });
 
         return clients
                .Concat(sites)
@@ -263,7 +290,7 @@ public class Program
         var location = new DirectoryInfo(userRoot);
         Directory.CreateDirectory(location.FullName);
 
-        logger.LogInformation($"Adding user '{user.Name}' with root '{location.FullName}'");
+        logger.LogInformation("Adding user '{Username}' with root '{Location}'", user.Name, location.FullName);
         server.Users.Add(user.Name, user.Password, location.FullName);
     }
 
@@ -276,14 +303,14 @@ public class Program
         }
 
         var json = await File.ReadAllTextAsync(configPath);
-        return JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true })!;
+        return JsonSerializer.Deserialize<Configuration>(json, SerializerOptions)!;
     }
 
     private static async Task SaveConfigFileAsync(Configuration config)
     {
         var configPath = Path.Combine(ConfigFolderPath, ConfigFileName);
 
-        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, WriteIndented = true });
+        var json = JsonSerializer.Serialize(config, SerializerOptions);
         await File.WriteAllTextAsync(configPath, json);
     }
 
@@ -297,6 +324,6 @@ public class Program
         return Environment.GetEnvironmentVariable(environmentVariable) ??
                (!string.IsNullOrWhiteSpace(defaultValue)
                    ? defaultValue
-                   : throw new Exception($"Unable to find environment variable 'environmentVariable'"));
+                   : throw new Exception($"Unable to find environment variable '{environmentVariable}'"));
     }
 }

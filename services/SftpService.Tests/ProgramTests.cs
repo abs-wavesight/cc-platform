@@ -35,7 +35,7 @@ public class ProgramTests
         var returnCode = await Program.Main(new[] { "add-user", "-u", username, "-p", password, "-d" });
 
         var json = await File.ReadAllTextAsync(configPath);
-        var config = JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true })!;
+        var config = JsonSerializer.Deserialize<Configuration>(json, Program.SerializerOptions)!;
 
         var isMatch = config.Sites
                             .Any(x => x.Username == username && x.Password == password);
@@ -62,7 +62,7 @@ public class ProgramTests
         await Program.Main(new[] { "add-user", "-u", username, });
 
         var json = await File.ReadAllTextAsync(configPath);
-        var config = JsonSerializer.Deserialize<Configuration>(json, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true })!;
+        var config = JsonSerializer.Deserialize<Configuration>(json, Program.SerializerOptions)!;
 
         var isMatch = config.Clients
                             .Any(x => x == username);
