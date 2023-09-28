@@ -15,7 +15,8 @@ public class RabbitMqConfigurator : IMessengerConfigurator
     public RabbitMqConfigurator(ILogger logger, BusConnection busConnection, TimeSpan timeout)
     {
         _logger = logger;
-        var address = new Uri($"http://{busConnection.Host}:{busConnection.HttpPort}");
+        var managementApiProtocol = busConnection.Protocol == BusConnectionProtocol.Amqps ? "https" : "http";
+        var address = new Uri($"{managementApiProtocol}://{busConnection.Host}:{busConnection.HttpPort}");
         _managementClient = new ManagementClient(address,
             busConnection.Username,
             busConnection.Password,
