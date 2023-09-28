@@ -32,7 +32,7 @@ inputs = ["filter-container-logs-on-level"]
 connection_string = "amqps://rabbitmq-local:5671"
 tls.ca_file = "C:\\certs\\rabbitmq.cer"
 encoding.codec = "json"
-exchange = "cc.drex.site.ed"
+exchange = "cc.drex.ed"
 routing_key = "cc.drex.site.int-log.q"
 
 [api]

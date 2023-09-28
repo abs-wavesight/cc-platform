@@ -12,8 +12,17 @@ using PasswordGenerator;
 
 namespace Abs.CommonCore.Installer.Actions;
 
-public class RabbitConfigurer : ActionBase
+public partial class RabbitConfigurer : ActionBase
 {
+    [GeneratedRegex(@"^cc\.drex\.(site|central)\.internal-src-dlq\.q$", RegexOptions.Compiled)]
+    private static partial Regex InternalDlqRegex();
+
+    [GeneratedRegex(@"^cc\.drex\.(ed|et)$", RegexOptions.Compiled)]
+    private static partial Regex ExchangesRegex();
+
+    [GeneratedRegex(@"^cc\.(drex\.site\.drex-file|drex-file\.site\.).*\.q$", RegexOptions.Compiled)]
+    private static partial Regex SiteFileShippingRegex();
+
     private const string SystemVhost = "/";
     private const string UsernamePlaceholder = "$USERNAME";
     private const string PasswordPlaceholder = "$PASSWORD";
@@ -145,10 +154,10 @@ public class RabbitConfigurer : ActionBase
                    ?? throw new Exception("User account does not exist");
 
         var clientQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
-        const string internalDlqRegex = @"^cc\.drex\.(site|central)\.internal-src-dlq\.q$";
-        const string exchangesRegex = @"^cc\.drex\.(site|central)\.(ed|et)$";
         const string errorQueueName = "error";
-        const string siteFileShippingQueues = @"^cc\.(drex\.site\.drex-file|drex-file\.site\.).*\.q$";
+        var internalDlqRegex = InternalDlqRegex().ToString();
+        var exchangesRegex = ExchangesRegex().ToString();
+        var siteFileShippingQueues = SiteFileShippingRegex().ToString();
         var permissionRegex = isSuperUser
             ? ".*"
             : string.Join("|", clientQueuesRegex, internalDlqRegex, exchangesRegex, errorQueueName, siteFileShippingQueues);
