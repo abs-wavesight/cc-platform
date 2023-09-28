@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SftpService", "SftpService.csproj", "{2A2A2A20-8939-45F0-B8F0-939EAB99D818}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpService.Tests", "..\SftpService.Tests\SftpService.Tests.csproj", "{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpService.Tests", "SftpService.Tests\SftpService.Tests.csproj", "{9886D260-A82D-4D52-83EB-A7C0A0FCF82A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

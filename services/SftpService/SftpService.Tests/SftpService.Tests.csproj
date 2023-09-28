@@ -23,8 +23,8 @@
 		</PackageReference>
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SftpService\SftpService.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\SftpService.csproj" />
+	</ItemGroup>
 
 </Project>
