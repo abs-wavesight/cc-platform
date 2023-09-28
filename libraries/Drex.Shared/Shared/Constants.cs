@@ -42,11 +42,8 @@ public static class Constants
 
         public static class Message
         {
-            public const string SiteDirectExchangeName = $"{ResourcePrefix}.site.{DirectExchangeSuffix}";
-            public const string SiteTopicExchangeName = $"{ResourcePrefix}.site.{TopicExchangeSuffix}";
-
-            public const string CentralDirectExchangeName = $"{ResourcePrefix}.central.{DirectExchangeSuffix}";
-            public const string CentralTopicExchangeName = $"{ResourcePrefix}.central.{TopicExchangeSuffix}";
+            public const string DirectExchangeName = $"{ResourcePrefix}.{DirectExchangeSuffix}";
+            public const string TopicExchangeName = $"{ResourcePrefix}.{TopicExchangeSuffix}";
 
             public const string SiteClientDlqTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{QueueSuffix}";
 
