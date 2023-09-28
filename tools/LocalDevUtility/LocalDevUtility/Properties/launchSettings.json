@@ -2,7 +2,7 @@
   "profiles": {
     "LocalDevUtility": {
       "commandName": "Project",
-      "commandLineArgs": "test-drex -n xyz -r p -o s -l -f"
+      "commandLineArgs": "run --sftp-service s"
     }
   }
 }

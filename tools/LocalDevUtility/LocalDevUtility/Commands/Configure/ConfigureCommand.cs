@@ -70,7 +70,7 @@ public static class ConfigureCommand
             sshKeysPath = readAppConfig?.SshKeysPath;
         }
 
-        Console.Write($"Local path to use for SFTP (OpenSSH) root -- will be created if it does not exist{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SftpRootPath) ? $" ({readAppConfig.SftpRootPath})" : "")}: ");
+        Console.Write($"Local path to use for SFTP root -- will be created if it does not exist{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.SftpRootPath) ? $" ({readAppConfig.SftpRootPath})" : "")}: ");
         var sftpRootPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(sftpRootPath))
         {
@@ -156,43 +156,15 @@ public static class ConfigureCommand
 
         if (generateSshKeysNow)
         {
-            InstallOpenSsh(powerShellAdapter);
-
             using (CliStep.Start("Generating SSH keys"))
             {
-                const string executionPolicyChangeCommand = "Set-ExecutionPolicy Bypass -Scope Process";
-                powerShellAdapter.RunPowerShellCommand(executionPolicyChangeCommand);
-
-                // OpenSSH client must be enabled
-                var command = $"{appConfig.CommonCorePlatformRepositoryPath}/config/openssh/create-ssh-keys-and-fingerprint.ps1 {appConfig.SshKeysPath}";
+                var command = $"dotnet run --project {appConfig.CommonCorePlatformRepositoryPath}/services/SftpService/SftpService.csproj -- gen-key --path {appConfig.SshKeysPath}";
                 logger.LogInformation($"Running command: {command}");
                 powerShellAdapter.RunPowerShellCommand(command);
             }
         }
 
         return 0;
-    }
-
-    private static void InstallOpenSsh(IPowerShellAdapter powerShellAdapter)
-    {
-        using (CliStep.Start("Installing SSH client."))
-        {
-            // Details: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=powershell
-            const string getStatusCommand = "Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Client*'";
-            const string installedStatus = "Installed";
-            var results = powerShellAdapter.RunPowerShellCommand(getStatusCommand);
-            var isOpenSshClientInstalled = results.Any(r => r.Contains(installedStatus));
-
-            if (isOpenSshClientInstalled)
-            {
-                Console.WriteLine("SSH client already installed.");
-            }
-            else
-            {
-                const string installCommand = "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0";
-                powerShellAdapter.RunPowerShellCommand(installCommand);
-            }
-        }
     }
 
     private static string GetMountParameterForCertDirectory(AppConfig appConfig, string certDirectoryName)
@@ -236,7 +208,7 @@ public static class ConfigureCommand
 
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
         {
-            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreDiscoRepositoryPath}) could not be found");
+            errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreSiemensAdapterRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")

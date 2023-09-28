@@ -4,7 +4,6 @@ using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
-using Abs.CommonCore.Installer.OptionValidators;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
@@ -33,7 +32,7 @@ internal class Program
         var uninstallCommand = SetupUninstallCommand(args);
         var getReleaseVersionCommand = SetupGetVersionCommand(args);
         var getContainerVersionCommand = SetupGetContainerVersionCommand(args);
-        var addOpenSshUserCommand = SetupAddOpenSshUserCommand(args);
+        var addSftpUserCommand = SetupAddSftpUserCommand(args);
 
         var root = new RootCommand("Installer for the Common Core platform")
         {
@@ -50,16 +49,16 @@ internal class Program
         root.Add(uninstallCommand);
         root.Add(getReleaseVersionCommand);
         root.Add(getContainerVersionCommand);
-        root.Add(addOpenSshUserCommand);
+        root.Add(addSftpUserCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
         return result;
     }
 
-    private static Command SetupAddOpenSshUserCommand(string[] args)
+    private static Command SetupAddSftpUserCommand(string[] args)
     {
-        const string commandName = "add-openssh-user";
+        const string commandName = "add-sftp-user";
         var command = new Command(commandName)
         {
             TreatUnmatchedTokensAsErrors = true
@@ -70,14 +69,13 @@ internal class Program
         {
             IsRequired = true
         };
-        usernameParam.AddValidator(AddOpenSshUserCommandOptionsValidator.ValidateUserName);
         command.Add(usernameParam);
 
         const string isDrexParamName = "--drex";
         var isDrexParam = new Option<bool>(isDrexParamName);
         command.Add(isDrexParam);
 
-        command.SetHandler(async (name, isDrex) => await ExecuteAddOpenSshUserCommand(name, isDrex, args), usernameParam, isDrexParam);
+        command.SetHandler(async (name, isDrex) => await ExecuteAddSftpUserCommand(name, isDrex, args), usernameParam, isDrexParam);
 
         return command;
     }
@@ -797,15 +795,15 @@ internal class Program
             });
     }
 
-    private static async Task ExecuteAddOpenSshUserCommand(string name, bool isDrex, string[] args)
+    private static async Task ExecuteAddSftpUserCommand(string name, bool isDrex, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
         var commandExecution = new CommandExecutionService(loggerFactory);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var creator = new OpenSshUserCreator(commandExecution);
-            await creator.AddOpenSshUserAsync(name, isDrex);
+            var creator = new AddSftpUser(commandExecution);
+            await creator.AddSftpUserAsync(name, isDrex);
         });
     }
 

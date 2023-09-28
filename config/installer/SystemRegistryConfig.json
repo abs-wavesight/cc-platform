@@ -397,57 +397,39 @@
       ]
     },
     {
-      "name": "OpenSsh",
+      "name": "Sftp-Service",
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OPENSSH_RELEASE_TAG/",
-          "destination": "c:/abs/temp/OpenSsh/"
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$SFTP_SERVICE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Sftp-Service/"
         }
       ],
       "actions": [
         {
-          "source": "openssh.tar",
+          "source": "sftp-service.tar",
           "action": "install"
         },
         {
-          "source": "docker-compose.openssh.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "source": "docker-compose.sftp-service.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.sftp-service.yml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.openssh.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.sftp-service.yml",
           "action": "replaceParameters"
         },
         {
-          "source": "..\\AdditionalFiles\\openssh-config.json",
-          "destination": "$ABS_PATH\\config\\openssh\\config.json",
+          "source": "..\\AdditionalFiles\\sftp-service-config.json",
+          "destination": "$ABS_PATH\\config\\sftp-service\\config.json",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\openssh\\config.json",
+          "source": "$ABS_PATH\\config\\sftp-service\\config.json",
           "action": "replaceParameters"
-        },		
+        },       
         {
-          "source": "sshd.config",
-          "destination": "$ABS_PATH\\config\\openssh\\sshd.config",
-          "action": "copy"
-        },
-        {
-          "source": "create-ssh-keys-and-fingerprint.ps1",
-          "destination": "$ABS_PATH\\config\\openssh\\create-ssh-keys-and-fingerprint.ps1",
-          "action": "copy"
-        },
-        {
-          "source": "$ABS_PATH\\config\\openssh\\sshd.config",
-          "action": "replaceParameters"
-        },			
-        {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$OPENSSH_ROOT')",
-          "action": "execute"
-        },
-        {
-          "source": "powershell ./create-ssh-keys-and-fingerprint.ps1 '$ABS_PATH\\ssh-keys'",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_ROOT')",
           "action": "execute"
         }
       ]

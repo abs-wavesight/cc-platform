@@ -1,4 +1,4 @@
-﻿name: OpenSsh Release
+﻿name: Sftp Service Release
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ on:
         description: 7 character short SHA for the commit in cc-platform 
 
 concurrency:
-  group: openssh-release-${{ github.head_ref }}
+  group: sftp-service-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,20 +26,20 @@ jobs:
     if: ${{ inputs.platform-commit-sha == '' }}
     uses: ./.github/workflows/shared-get-latest-container-version.yml
     with: 
-      name: "openssh"
+      name: "cc-sftp-service"
     secrets: inherit
 
   release-component:
-    name: OpenSSH Release
+    name: Sftp Service Release
     needs: get-default-platform-commit-sha
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: OpenSSH Release ${{ matrix.windows-version }} ${{ inputs.version }}
-      component_name: OpenSsh
-      tag: openssh-${{ matrix.windows-version }}-${{ inputs.version }}
+      name: Sftp Service Release ${{ matrix.windows-version }} ${{ inputs.version }}
+      component_name: SftpService
+      tag: sftp-service-${{ matrix.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       component-params: > 
         -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 

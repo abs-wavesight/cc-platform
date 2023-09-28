@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SftpService": {
+      "commandName": "Project",
+      "commandLineArgs": "add-user -u xyz -p 123 -d"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+---
+version: '3.9'
+services:
+  cc.sftp-service:
+    container_name: sftp-service
+    hostname: sftp-service
+    environment:
+      - FLAT_LOGS=${FLAT_LOGS:-False}    
+    logging:
+      driver: local
+    ports:
+      - 1022:1022
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_PLATFORM_REPO}/services/SftpService/config
+        target: C:/app/config
+        read_only: false
+      - type: bind
+        source: ${ABS_CC_SFTP_PATH}
+        target: C:/app/sftproot
+        read_only: false
+      - type: bind
+        source: ${ABS_CC_SSH_KEYS_PATH}
+        target: C:/app/ssh-keys
+        read_only: true

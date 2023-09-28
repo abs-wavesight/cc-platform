@@ -1,0 +1,13 @@
+{
+    "clients": [
+        "test_client",
+        "elogs"
+    ],
+    "sites": [
+        {
+            "username": "drex",
+            "password": "P@ssword"
+        }
+    ],
+    "defaultPassword": "P@ssword"
+}

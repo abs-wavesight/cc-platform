@@ -21,3 +21,8 @@ repos:
         language: system 
         entry: dotnet format --no-restore --severity info --verbosity normal tools/LocalDevUtility/LocalDevUtility.sln --include 
         types_or: ["c#"]
+    -   id: dotnet-format-sftp-service
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal services/SftpService/SftpService.sln --include 
+        types_or: ["c#"]        
