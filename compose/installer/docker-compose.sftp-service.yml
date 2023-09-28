@@ -11,6 +11,7 @@ services:
       driver: local
     ports:
       - 1022:1022
+    restart: always	
     volumes:
       - type: bind
         source: $ABS_PATH/config/sftp-service
