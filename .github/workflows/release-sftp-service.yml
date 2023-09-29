@@ -38,7 +38,7 @@ jobs:
         windows-version: [ "2019", "2022" ]
     with:
       name: Sftp Service Release ${{ matrix.windows-version }} ${{ inputs.version }}
-      component_name: SftpService
+      component_name: Sftp-Service
       tag: sftp-service-${{ matrix.windows-version }}-${{ inputs.version }}
       description: ${{ inputs.description }}
       component-params: > 
