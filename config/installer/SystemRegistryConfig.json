@@ -431,7 +431,12 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_ROOT')",
           "action": "execute"
-        }
+        },
+        {
+          "source": "..\\AdditionalFiles\\ssh_host_rsa_key",
+          "destination": "$ABS_PATH\\ssh-keys\\ssh_host_rsa_key",
+          "action": "copy"
+        },	
       ]
     }
   ]
