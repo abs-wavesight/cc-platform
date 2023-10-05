@@ -1,25 +1,28 @@
-﻿using Abs.Messaging;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
+using Rebus.Pipeline;
 
 namespace Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Handlers;
 
-public class ProtobufHandler<T> : IHandleMessages<Message<T>> where T : IMessage, new()
+public class ProtobufHandler<T> : IHandleMessages<T> where T : IMessage, new()
 {
-    private readonly ILogger _logger;
+    protected readonly ILogger _logger;
+    protected readonly IMessageContext _messageContext;
+    protected readonly JsonFormatter formatter = new JsonFormatter(JsonFormatter.Settings.Default);
 
-    public ProtobufHandler(ILogger logger)
+    public ProtobufHandler(ILogger logger, IMessageContext messageContext)
     {
         _logger = logger;
+        _messageContext = messageContext;
     }
 
     /// <summary>
     /// This method will be invoked with a message of type byte
     /// </summary>
-    public virtual async Task Handle(Message<T> message)
+    public virtual async Task Handle(T message)
     {
         await Task.Yield();
-        _logger.LogInformation($"{message.Payload.GetType().Name} Received message: {message.JsonPayload}");
+        _logger.LogInformation($"{message.GetType().Name} Received message: {formatter.Format(message)}");
     }
 }

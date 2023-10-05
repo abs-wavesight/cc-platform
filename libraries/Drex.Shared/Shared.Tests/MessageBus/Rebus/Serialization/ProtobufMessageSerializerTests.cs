@@ -1,7 +1,7 @@
 ﻿using Abs.CommonCore.Contracts.Proto.Disco.Data;
 using Abs.CommonCore.Drex.Shared.MessageBus.Rebus.Serialization;
-using Abs.Messaging;
 using FluentAssertions;
+using Google.Protobuf;
 using Rebus.Messages;
 
 namespace Abs.CommonCore.Drex.Shared.Tests.MessageBus.Rebus.Serialization;
@@ -18,10 +18,9 @@ public class ProtobufMessageSerializerTests
             RequestId = "123",
             Destination = Contracts.Proto.Disco.Destination.Remote
         };
-        var protobufMessage = new Message<DiscoDataRequest>(request);
-        var bodyBytes = protobufMessage.BinaryPayload;
+        var bodyBytes = request.ToByteArray();
         var headers = new Dictionary<string, string> { { "key", "value" } };
-        var message = new Message(headers, protobufMessage);
+        var message = new Message(headers, request);
 
         // Act
         var result = await underTest.Serialize(message);
@@ -43,8 +42,7 @@ public class ProtobufMessageSerializerTests
             RequestId = "321",
             Destination = Contracts.Proto.Disco.Destination.Local
         };
-        var protobufMessage = new Message<DiscoDataRequest>(request);
-        var bodyBytes = protobufMessage.BinaryPayload;
+        var bodyBytes = request.ToByteArray();
         var headers = new Dictionary<string, string> { { "key", "value" } };
         var transportMessage = new TransportMessage(headers, bodyBytes);
 
@@ -52,7 +50,7 @@ public class ProtobufMessageSerializerTests
         var result = await underTest.Deserialize(transportMessage);
 
         // Assert
-        var actualRequest = (result.Body as Message<DiscoDataRequest>)?.Payload;
+        var actualRequest = result.Body as DiscoDataRequest;
         actualRequest.Should().NotBeNull();
         actualRequest?.RequestId.Should().Be(request.RequestId);
         actualRequest?.Destination.Should().Be(request.Destination);
