@@ -16,7 +16,7 @@ namespace Abs.CommonCore.SftpService;
 [ExcludeFromCodeCoverage]
 public class Program
 {
-    private static int _exitCode = 0;
+    private static bool _isRunningSftp;
     private static FileServer? _server;
 
     public const int SshKeyLength = 2048;
@@ -52,11 +52,15 @@ public class Program
         root.Add(generateKeyCommand);
         root.Add(addUserCommand);
 
-        await root.InvokeAsync(args);
+        var returnCode = await root.InvokeAsync(args);
 
         // Wait for logger to flush
         await Task.Delay(1000);
-        return _exitCode;
+
+        // Return exit code of 1 when running sftp to indicate to docker to restart if needed
+        return _isRunningSftp
+            ? 1
+            : returnCode;
     }
 
     private static Command SetupRunCommand(string[] args)
@@ -136,8 +140,7 @@ public class Program
 
     private static async Task ExecuteRunCommandAsync(string[] args, CancellationToken cancellation = default)
     {
-        // Signals that this command should restart if caller allows
-        _exitCode = 1;
+        _isRunningSftp = true;
         var logger = Initialize(args);
 
         Rebex.Licensing.Key = PlatformConstants.Rebex_License_Key;
