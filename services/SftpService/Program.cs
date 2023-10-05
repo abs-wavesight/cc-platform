@@ -16,6 +16,7 @@ namespace Abs.CommonCore.SftpService;
 [ExcludeFromCodeCoverage]
 public class Program
 {
+    private static int _exitCode = 0;
     private static FileServer? _server;
 
     public const int SshKeyLength = 2048;
@@ -51,11 +52,11 @@ public class Program
         root.Add(generateKeyCommand);
         root.Add(addUserCommand);
 
-        var result = await root.InvokeAsync(args);
+        await root.InvokeAsync(args);
 
         // Wait for logger to flush
         await Task.Delay(1000);
-        return result;
+        return _exitCode;
     }
 
     private static Command SetupRunCommand(string[] args)
@@ -135,6 +136,8 @@ public class Program
 
     private static async Task ExecuteRunCommandAsync(string[] args, CancellationToken cancellation = default)
     {
+        // Signals that this command should restart if caller allows
+        _exitCode = 1;
         var logger = Initialize(args);
 
         Rebex.Licensing.Key = PlatformConstants.Rebex_License_Key;
