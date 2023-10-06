@@ -4,7 +4,7 @@ public static class Constants
 {
     public static class MessageHeaders
     {
-        public const string Prefix = "cc.drex";
+        public const string Prefix = "cc";
 
         public const string Client = $"{Prefix}.client";
         public const string Site = $"{Prefix}.site";
