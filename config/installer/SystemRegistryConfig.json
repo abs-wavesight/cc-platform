@@ -429,7 +429,7 @@
           "action": "replaceParameters"
         },       
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_ROOT')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_PATH')",
           "action": "execute"
         },
         {
