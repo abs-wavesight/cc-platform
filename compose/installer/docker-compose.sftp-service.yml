@@ -18,7 +18,7 @@ services:
         target: C:/app/config
         read_only: false
       - type: bind
-        source: $SFTP_SERVICE_ROOT
+        source: $SFTP_SERVICE_PATH
         target: C:/app/sftproot
         read_only: false
       - type: bind
