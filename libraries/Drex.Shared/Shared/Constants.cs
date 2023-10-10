@@ -45,6 +45,7 @@ public static class Constants
             public const string DirectExchangeName = $"{ResourcePrefix}.{DirectExchangeSuffix}";
             public const string TopicExchangeName = $"{ResourcePrefix}.{TopicExchangeSuffix}";
 
+            public const string SiteClientConfigErrorTemplate = $"{ResourcePrefix}.site.{{client}}-config-error.{QueueSuffix}";
             public const string SiteClientDlqTemplate = $"{ResourcePrefix}.site.{{client}}-src-dlq.{QueueSuffix}";
 
             public const string CentralClientDlqTemplate = $"{ResourcePrefix}.central.{{client}}-{{site}}-src-dlq.{QueueSuffix}";
