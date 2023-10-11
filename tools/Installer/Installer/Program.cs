@@ -443,13 +443,12 @@ internal class Program
         drexSiteConfigParam.AddAlias("-dsc");
         command.Add(drexSiteConfigParam);
 
-        var superUserParam = new Option<bool>("--super-user", "Indicates the account is for a super user")
+        var accountTypeParam = new Option<AccountType>("--type", "Indicates the type of the account to create")
         {
-            IsRequired = false
+            IsRequired = true
         };
-        superUserParam.SetDefaultValue(false);
-        superUserParam.AddAlias("-su");
-        command.Add(superUserParam);
+        accountTypeParam.AddAlias("-t");
+        command.Add(accountTypeParam);
 
         var credentialsFileParam = new Option<FileInfo>("--credentials-file", "Updates the file with the generated credentials")
         {
@@ -469,7 +468,7 @@ internal class Program
                 Password = context.ParseResult.GetValueForOption(passwordParam),
                 UpdatePermissions = context.ParseResult.GetValueForOption(updatePermissionsParam),
                 DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
-                SuperUser = context.ParseResult.GetValueForOption(superUserParam),
+                AccountType = context.ParseResult.GetValueForOption(accountTypeParam),
                 CredentialsFile = context.ParseResult.GetValueForOption(credentialsFileParam),
             };
 
@@ -697,13 +696,18 @@ internal class Program
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
+            if (arguments.AccountType == AccountType.Unknown)
+            {
+                throw new Exception("Account type must be specified");
+            }
+
             if (arguments.UpdatePermissions)
             {
-                await RabbitConfigurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.SuperUser);
+                await RabbitConfigurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.AccountType);
                 return;
             }
 
-            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.SuperUser);
+            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType);
 
             if (credentials == null)
             {

@@ -9,6 +9,8 @@ using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
 using PasswordGenerator;
+using AccountType = Abs.CommonCore.Installer.Actions.Models.AccountType;
+using User = EasyNetQ.Management.Client.Model.User;
 
 namespace Abs.CommonCore.Installer.Actions;
 
@@ -36,20 +38,20 @@ public partial class RabbitConfigurer : ActionBase
         _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
     }
 
-    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, bool isSuperUser)
+    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, AccountType accountType)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-        return await ConfigureRabbitAsync(client, username, password, isSuperUser);
+        return await ConfigureRabbitAsync(client, username, password, accountType);
     }
 
-    public static async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, bool isSuperUser)
+    public static async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, AccountType accountType)
     {
         Console.WriteLine($"Updating user '{username}' permissions at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-        await UpdateUserPermissionsAsync(client, username, isSuperUser);
+        await UpdateUserPermissionsAsync(client, username, accountType);
     }
 
     public static async Task UpdateDrexSiteConfigAsync(FileInfo location, RabbitCredentials credentials)
@@ -87,7 +89,7 @@ public partial class RabbitConfigurer : ActionBase
         Console.WriteLine("Credentials file updated");
     }
 
-    private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, bool isSuperUser)
+    private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType)
     {
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
@@ -100,14 +102,14 @@ public partial class RabbitConfigurer : ActionBase
                 .Next()
             : password;
 
-        var isAdded = await AddUserAccountAsync(client, username, password, isSuperUser);
+        var isAdded = await AddUserAccountAsync(client, username, password, accountType);
 
         if (isAdded == false)
         {
             return null;
         }
 
-        Console.WriteLine("User account created.");
+        Console.WriteLine($"{accountType} account created.");
         Console.WriteLine($"User:     {username}");
         Console.WriteLine($"Password: {password}");
         Console.WriteLine();
@@ -119,7 +121,7 @@ public partial class RabbitConfigurer : ActionBase
         };
     }
 
-    private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, bool isSuperUser)
+    private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, AccountType accountType)
     {
         var existingUser = await GetUserAsync(client, username);
 
@@ -140,7 +142,7 @@ public partial class RabbitConfigurer : ActionBase
             .AddTag(UserTags.Management);
 
         await client.CreateUserAsync(user);
-        await UpdateUserPermissionsAsync(client, username, isSuperUser);
+        await UpdateUserPermissionsAsync(client, username, accountType);
 
         var userRecord = await client.GetUserAsync(username);
         return userRecord != null
@@ -148,26 +150,54 @@ public partial class RabbitConfigurer : ActionBase
             : throw new Exception("Unable to create user");
     }
 
-    private static async Task UpdateUserPermissionsAsync(IManagementClient client, string username, bool isSuperUser)
+    private static async Task UpdateUserPermissionsAsync(IManagementClient client, string username, AccountType accountType)
     {
-        var user = await GetUserAsync(client, username)
-                   ?? throw new Exception("User account does not exist");
+        _ = await GetUserAsync(client, username)
+            ?? throw new Exception("User account does not exist");
 
-        var clientQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
+        var permissionRegex = BuildAccountPermissions(accountType, username);
+        var configurePermissions = BuildConfigurePermissions(accountType);
+
+        var vHost = await client.GetVhostAsync(SystemVhost);
+        await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
+    }
+
+    private static string BuildConfigurePermissions(AccountType accountType)
+    {
+        return accountType switch
+        {
+            AccountType.Unknown => throw new Exception($"Unknown account type: {accountType}"),
+            AccountType.LocalDrex => ".*",
+            _ => ""
+        };
+    }
+
+    private static string BuildAccountPermissions(AccountType accountType, string username)
+    {
         const string errorQueueName = "error";
         var internalDlqRegex = InternalDlqRegex().ToString();
         var exchangesRegex = ExchangesRegex().ToString();
         var siteFileShippingQueues = SiteFileShippingRegex().ToString();
-        var permissionRegex = isSuperUser
-            ? ".*"
-            : string.Join("|", clientQueuesRegex, internalDlqRegex, exchangesRegex, errorQueueName, siteFileShippingQueues);
 
-        var configurePermissions = isSuperUser
-            ? ".*"
-            : "";
+        if (accountType == AccountType.Unknown)
+        {
+            throw new Exception($"Unknown account type: {accountType}");
+        }
 
-        var vHost = await client.GetVhostAsync(SystemVhost);
-        await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
+        if (accountType == AccountType.LocalDrex)
+        {
+            return ".*";
+        }
+
+        if (accountType == AccountType.Vector)
+        {
+            const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;
+            const string remoteQueue = Drex.Shared.Constants.MessageBus.Message.CentralLogQueueTemplate;
+            return $"{exchangesRegex}|{errorQueueName}|{siteQueue}|{remoteQueue}";
+        }
+
+        var userQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
+        return string.Join("|", userQueuesRegex, internalDlqRegex, exchangesRegex, errorQueueName, siteFileShippingQueues);
     }
 
     private static async Task<User?> GetUserAsync(IManagementClient client, string username)

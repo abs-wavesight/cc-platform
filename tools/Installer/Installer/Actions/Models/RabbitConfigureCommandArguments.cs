@@ -9,6 +9,6 @@ public class RabbitConfigureCommandArguments
     public string? Password { get; init; }
     public bool UpdatePermissions { get; init; }
     public FileInfo? DrexSiteConfig { get; init; }
-    public bool SuperUser { get; init; }
+    public AccountType AccountType { get; init; }
     public FileInfo? CredentialsFile { get; init; }
 }
