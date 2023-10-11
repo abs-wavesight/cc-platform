@@ -5,11 +5,28 @@
       "key": "central",
       "type": "rabbitmq",
       "host": "rabbitmq-remote",
-      "port": 5672,
-      "httpPort": 15672,
-      "protocol": "amqp",
-      "username": "",
-      "password": ""
+      "port": 5671,
+      "httpPort": 15671,
+      "protocol": "amqps",
+      "Username": "guest",
+      "Password": "guest"
+    }
+  ],
+  "remoteSftpServers": [
+    {
+      "key": "central",
+      "host": "sftp-service",
+      "port": 1022,
+      "protocol": "sftp",
+      "username": "drex",
+      "password": "P@ssword"
+    }
+  ],
+  "maxFileTransferTimeoutSeconds": 300,
+  "fileTransportChannelDestinationMappings": [
+    {
+      "fileTransportChannel": "sftp",
+      "fileTransportDestination": "central"
     }
   ]
 }
