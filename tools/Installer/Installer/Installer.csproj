@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.183" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.185-feature-ado-23353-guest-account" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.208" />
 		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.211" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
