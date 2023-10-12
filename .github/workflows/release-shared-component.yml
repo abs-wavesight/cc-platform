@@ -100,8 +100,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:          
           allowUpdates: true
-          omitBody: true
-          generateReleaseNotes: false
+          body: " "
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
