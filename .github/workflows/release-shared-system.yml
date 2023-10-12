@@ -103,8 +103,8 @@ jobs:
 
       - name: Process Components   
         run: |
-          .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/Release.zip -c SystemConfig.json
-          .\Installer.exe uncompress -s c:/abs/temp/`$component/Release.zip -d c:/abs/installer -c SystemConfig.json
+          .\Installer.exe unchunk -s c:/abs/temp/`$component -d c:/abs/temp/`$component/${{ inputs.windows-version }}.zip -c SystemConfig.json
+          .\Installer.exe uncompress -s c:/abs/temp/`$component/${{ inputs.windows-version }}.zip -d c:/abs/installer -c SystemConfig.json
 
       - name: Bundle installer
         run: |
