@@ -42,7 +42,7 @@ jobs:
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: ${{ inputs.tag-prefix }}-${{ inputs.windows-version }}-${{ inputs.version }}
+          string: ${{ inputs.version }}-${{ inputs.tag-prefix }}
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
@@ -113,21 +113,22 @@ jobs:
 
       - name: Compress contents
         run: |
-          .\Installer.exe compress -s c:/abs/installer -d Release.zip
+          .\Installer.exe compress -s c:/abs/installer -d ${{ inputs.windows-version }}.zip
           
       - name: Chunk contents
         run: |
-          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs
+          .\Installer.exe chunk -s ${{ inputs.windows-version }}.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs
          
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
+          .\Installer.exe release-body -o readme.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
-          bodyFile: release_body.txt
-          name: ${{ inputs.release-name-prefix }} ${{ inputs.windows-version }} ${{ inputs.version }}
+          allowUpdates: true
+          body: "----"
+          name: ${{ inputs.version }} ${{ inputs.release-name-prefix }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
-          artifacts: "Release.zip*,Installer.exe,SystemRegistryConfig.json,SystemConfig.json"
+          artifacts: "readme.txt, ${{ inputs.windows-version }}.zip*, Installer.exe, SystemRegistryConfig.json, SystemConfig.json"
