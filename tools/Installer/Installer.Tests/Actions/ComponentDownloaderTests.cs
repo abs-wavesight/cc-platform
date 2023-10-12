@@ -93,11 +93,12 @@ public class ComponentDownloaderTests
     [Fact]
     public async Task DownloadLatest_Vector_Central_Release()
     {
+        var releaseZip = "2019.zip";
         var configText = await File.ReadAllTextAsync(@"Configs/DownloadTest_LatestVectorCentral_Release.json");
         var tempFile = Path.GetTempFileName();
         var nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
         var expectedFilePath = Path.Combine(Path.GetTempPath(), "Test_Release_Download");
-        var expectedFile = Path.Combine(expectedFilePath, "2019.zip");
+        var expectedFile = Path.Combine(expectedFilePath, releaseZip);
 
         Directory.CreateDirectory(expectedFilePath);
         File.Delete(expectedFile);
@@ -108,7 +109,8 @@ public class ComponentDownloaderTests
         };
 
         var releases = await client.Repository.Release.GetAll("abs-wavesight", "cc-platform");
-        var vectorCentralRelease = releases.FirstOrDefault(x => x.TagName.StartsWith("vector-central"));
+        var vectorCentralRelease = releases
+            .FirstOrDefault(x => x.TagName.StartsWith("vector-central") && x.Assets.Any(y => y.Name == releaseZip));
 
         if (vectorCentralRelease == null)
         {
@@ -127,7 +129,7 @@ public class ComponentDownloaderTests
         var commandExecution = new CommandExecutionService(loggerFactory);
         var registry = new FileInfo(tempFile);
         var config = new FileInfo(@"Configs/DownloaderConfig.json");
-        var parameters = new Dictionary<string, string>();
+        var parameters = new Dictionary<string, string> { { "$WINDOWS_VERSION", "2019" } };
 
         var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters, false);
         await downloader.ExecuteAsync();

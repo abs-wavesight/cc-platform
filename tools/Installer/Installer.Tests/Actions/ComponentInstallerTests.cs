@@ -62,7 +62,7 @@ public class ComponentInstallerTests
         var commandCalls = new List<string>();
         initializer.CommandExecute
             .Setup(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-            .Callback<string, string, string>((c, _, _) => commandCalls.Add(c));
+            .Callback<string, string, string, bool>((c, _, _, _) => commandCalls.Add(c));
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
@@ -117,7 +117,7 @@ public class ComponentInstallerTests
 
         var args = "";
         initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-            .Callback<string, string, string>((_, a, _) => args = a);
+            .Callback<string, string, string, bool>((_, a, _, _) => args = a);
 
         initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
         Assert.Contains(args, "docker-compose.root.yml");
