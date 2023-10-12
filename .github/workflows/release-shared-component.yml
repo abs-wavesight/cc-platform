@@ -101,6 +101,7 @@ jobs:
         with:          
           allowUpdates: true
           omitBody: true
+          generateReleaseNotes: false
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
