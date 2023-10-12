@@ -20,7 +20,7 @@ public partial class CommandExecutionService : ICommandExecutionService
         _verifyOnly = verifyOnly;
     }
 
-    public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory)
+    public async Task ExecuteCommandAsync(string command, string arguments, string workingDirectory, bool throwOnError = true)
     {
         _logger.LogInformation("Executing: {command} {arguments}", command, arguments);
 
@@ -28,6 +28,8 @@ public partial class CommandExecutionService : ICommandExecutionService
         {
             return;
         }
+
+        var isError = false;
 
         var process = new Process();
         process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
@@ -40,9 +42,10 @@ public partial class CommandExecutionService : ICommandExecutionService
 
         process.ErrorDataReceived += (sender, args) =>
         {
-            if (string.IsNullOrWhiteSpace(args.Data) == false)
+            if (!string.IsNullOrWhiteSpace(args.Data))
             {
-                _logger.LogInformation(args.Data?.Trim());
+                _logger.LogError(args.Data?.Trim());
+                isError = true;
             }
         };
         process.OutputDataReceived += (sender, args) =>
@@ -62,5 +65,10 @@ public partial class CommandExecutionService : ICommandExecutionService
         process.BeginOutputReadLine();
 
         await process.WaitForExitAsync();
+
+        if (isError && throwOnError)
+        {
+            throw new Exception("Error while executing command");
+        }
     }
 }

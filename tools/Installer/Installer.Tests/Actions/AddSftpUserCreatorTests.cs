@@ -21,7 +21,7 @@ public class AddSftpUserCreatorTests
         await testObj.AddSftpUserAsync(Name, true);
 
         // Assert
-        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && v.Contains(DrexCommand)), It.IsAny<string>()), Times.Once);
+        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && v.Contains(DrexCommand)), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -35,6 +35,6 @@ public class AddSftpUserCreatorTests
         await testObj.AddSftpUserAsync(Name, false);
 
         // Assert
-        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && !v.Contains(DrexCommand)), It.IsAny<string>()), Times.Once);
+        commandExecution.Verify(x => x.ExecuteCommandAsync("docker", It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && !v.Contains(DrexCommand)), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 }

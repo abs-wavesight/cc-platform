@@ -21,6 +21,7 @@ public class ComponentInstaller : ActionBase
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
+    private const string ReadmeName = "readme.txt";
     private const string AdditionalFilesName = "AdditionalFiles";
 
     private readonly ILoggerFactory _loggerFactory;
@@ -65,6 +66,7 @@ public class ComponentInstaller : ActionBase
         }
 
         _logger.LogInformation("Starting installer");
+        await PrintReadmeFileAsync();
         await ExpandReleaseZipFile();
 
         var components = DetermineComponents(specificComponents);
@@ -451,12 +453,31 @@ public class ComponentInstaller : ActionBase
              DateTime.UtcNow.Subtract(startTime) > containerHealthyTime);
     }
 
+    private async Task PrintReadmeFileAsync()
+    {
+        var current = Directory.GetCurrentDirectory();
+        var readmePath = Path.Combine(current, ReadmeName);
+        var readmeExists = File.Exists(readmePath);
+
+        if (!readmeExists)
+        {
+            return;
+        }
+
+        var readmeLines = await File.ReadAllLinesAsync(readmePath);
+
+        foreach (var line in readmeLines)
+        {
+            _logger.LogInformation(line);
+        }
+    }
+
     private async Task ExpandReleaseZipFile()
     {
         _logger.LogInformation("Preparing install components");
 
         var current = Directory.GetCurrentDirectory();
-        var files = Directory.GetFiles(current, $"{ReleaseZipName}*", SearchOption.TopDirectoryOnly);
+        var files = Directory.GetFiles(current, "*.zip", SearchOption.TopDirectoryOnly);
 
         if (files.Length == 0)
         {

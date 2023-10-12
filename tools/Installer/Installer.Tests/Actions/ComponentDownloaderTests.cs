@@ -64,7 +64,7 @@ public class ComponentDownloaderTests
         var (_, CommandExecute, Downloader) = Initialize(@"Configs/RegistryConfig.json");
         await Downloader.ExecuteAsync(new[] { "RabbitMq" });
 
-        CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+        CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(2));
     }
 
     [Theory]
@@ -97,7 +97,7 @@ public class ComponentDownloaderTests
         var tempFile = Path.GetTempFileName();
         var nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
         var expectedFilePath = Path.Combine(Path.GetTempPath(), "Test_Release_Download");
-        var expectedFile = Path.Combine(expectedFilePath, "Release.zip");
+        var expectedFile = Path.Combine(expectedFilePath, "2019.zip");
 
         Directory.CreateDirectory(expectedFilePath);
         File.Delete(expectedFile);

@@ -11,8 +11,6 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentDownloader : ActionBase
 {
-    private const string ReleaseFileName = "Release.zip";
-
     private readonly IDataRequestService _dataRequestService;
     private readonly ICommandExecutionService _commandExecutionService;
     private readonly ILogger _logger;
@@ -20,9 +18,10 @@ public class ComponentDownloader : ActionBase
     private readonly InstallerComponentDownloaderConfig? _downloaderConfig;
     private readonly InstallerComponentRegistryConfig _registryConfig;
     private readonly string? _nugetEnvironmentVariable;
+    private readonly Dictionary<string, string> _parameters;
 
     public ComponentDownloader(ILoggerFactory loggerFactory, IDataRequestService dataRequestService, ICommandExecutionService commandExecutionService,
-        FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
+                               FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
     {
         _dataRequestService = dataRequestService;
         _commandExecutionService = commandExecutionService;
@@ -41,6 +40,7 @@ public class ComponentDownloader : ActionBase
             ReadMissingParameters(mergedParameters);
         }
 
+        _parameters = mergedParameters;
         _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
             (c, t) => t.ReplaceConfigParameters(mergedParameters));
     }
@@ -155,9 +155,11 @@ public class ComponentDownloader : ActionBase
             Credentials = new Credentials(_nugetEnvironmentVariable)
         };
 
+        var windowsVersion = _parameters.GetWindowsVersion();
+        var releaseFilename = $"{windowsVersion}.zip";
         var release = await client.Repository.Release.Get(segments.Owner, segments.Repo, segments.Tag);
         var files = release.Assets
-            .Where(x => x.Name.Contains(ReleaseFileName, StringComparison.OrdinalIgnoreCase))
+            .Where(x => x.Name.Contains(releaseFilename, StringComparison.OrdinalIgnoreCase))
             .Select(x => new { Url = new Uri(x.Url, UriKind.Absolute), Filename = x.Name });
 
         await files
