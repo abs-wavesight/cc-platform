@@ -9,7 +9,7 @@ public class ProtobufHandler<T> : IHandleMessages<T> where T : IMessage, new()
 {
     protected readonly ILogger _logger;
     protected readonly IMessageContext _messageContext;
-    protected readonly JsonFormatter formatter = new JsonFormatter(JsonFormatter.Settings.Default);
+    protected readonly JsonFormatter formatter = new JsonFormatter(new JsonFormatter.Settings(true));
 
     public ProtobufHandler(ILogger logger, IMessageContext messageContext)
     {
