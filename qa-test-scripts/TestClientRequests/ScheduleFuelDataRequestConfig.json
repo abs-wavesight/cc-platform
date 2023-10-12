@@ -1,0 +1,32 @@
+﻿{
+  "DestinationQueue": "cc.disco.create-schedule.request.q",
+  "NSamples": 5,
+  "SamplingIntervalInMs": 100,
+  "Request": {
+    "requestId": "test_us-20359-2",
+    "scheduleId": "test_us-20359-2",
+    "destination": "Local",
+    "scheduleRange": {
+      "cronExpression": "0/5 * * ? ?",
+      "start": "00:05:00.000",
+      "end": "00:00:00.000",
+      "intervalMilliseconds": "300000"
+    },
+    "fuelDataTypes": {
+      "dataType": [
+        "Unknown",
+        "TankLevel_HeavyFuelOil",
+        "TankLevel_MarineDieselOil",
+        "TankLevel_LightFuelOil",
+        "TankLevel_LiquefiedNaturalGas",
+        "TankLevel_Ethanol",
+        "TankLevel_Methanol",
+        "TankLevel_Propane",
+        "TankLevel_Butane"
+      ]
+    }
+  },
+  "Headers": {
+    "cc.disco.client":  "test-client"
+  }
+}

@@ -1,0 +1,20 @@
+﻿{
+  "DestinationQueue": "cc.disco.data.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "Request": {
+	"requestId": "test-client_sa-21984-2neg",
+    "destination": "Local",
+    "onDemandRange": {
+      "start": "2023-07-26T14:23:52Z",
+      "end": "2023-07-27T14:23:52Z",
+      "intervalMilliseconds": "3600000"
+    },
+    "draftDataTypes": {
+      "dataType": []
+    }
+  },
+  "Headers": {
+    "cc.disco.client":  "test-client"
+  }
+}
