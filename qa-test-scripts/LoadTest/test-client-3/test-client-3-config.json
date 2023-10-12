@@ -1,0 +1,21 @@
+﻿{
+  "key": "test-client-3",
+  "datasetToVendorMapping": [
+    {
+      "datatype": "Navigation",
+      "vendor": "Siemens"
+    },
+    {
+      "datatype": "Draft",
+      "vendor": "Siemens"
+    },
+    {
+      "datatype": "Weather",
+      "vendor": "Siemens"
+    },
+    {
+      "datatype": "Fuel",
+      "vendor": "Siemens"
+    }
+  ] 
+} 

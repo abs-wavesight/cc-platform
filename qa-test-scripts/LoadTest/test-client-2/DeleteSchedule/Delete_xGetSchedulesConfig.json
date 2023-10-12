@@ -1,0 +1,12 @@
+﻿{
+  "RequestType": "GetSchedules",
+  "DestinationQueue": "cc.disco.get-schedules.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "Request": {
+    "requestId": "test-client-2_sa-20402-2"
+  },
+  "Headers": {
+    "cc.disco.client": "test-client-2"
+  }
+}

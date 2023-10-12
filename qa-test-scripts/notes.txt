@@ -1,0 +1,92 @@
+docker login -u <username> -p <token> ghcr.io/abs-wavesight
+docker login -u anna-ustymenko -p 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 ghcr.io/abs-wavesight
+
+1---# delete all containers
+docker rm $(docker ps -aq)
+
+2---# list of images 
+docker images -a
+docker rmi dced4d881a86
+# delete all images
+docker rmi -f $(docker images -q)
+
+3---#prune network
+docker network prune
+
+------------------Install DISCO----------------------
+cd C:\ABS\cc-disco
+docker-compose -f docker-compose.disco.yml up
+
+------------------Start manually---------------------
+docker run -p 15672:15672 -p 5672:5672 -h rabbitmq-local ghcr.io/abs-wavesight/rabbitmq:windows-2019
+docker run ghcr.io/abs-wavesight/cc-disco:windows-2019
+docker run ghcr.io/abs-wavesight/cc-adapters-siemens:windows-2019
+
+------------------Copy Configs-----------------------
+cd C:\ABS\cc-disco\client\TestClient\DiscoClientConfig
+docker cp test-client-config.json <ContainerId>:/app/config/client-configs
+
+docker cp siemens-config.json <ContainerId>:/app/config/vendor-configs
+
+-------------------Container CMD Access---------------
+docker exec -ti <ContainerId> cmd
+
+-------------------Follow Log Output------------------
+docker logs -f -n 50 <ContainerId>
+
+-------------------Test Client------------------------
+dotnet tool update  Abs.CommonCore.Disco.TestClient --global --configfile C:\ABS\cc-disco\nuget.config
+disco-test-client "C:\ABS\cc-disco\client\TestClient\Examples\TestScenario1" "C:\ABS\cc-disco\client\TestClient\ConnectionConfig.json" "C:\ABS\cc-disco\client\TestClient\LogFolder"
+
+
+
+
+
+
+
+
+
+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
+cc-local run --deps i -r -m r
+
+cc-local run --rabbitmq-local i -b -m r
+docker ps
+cc-local run --rabbitmq-remote i -b -m r
+docker ps
+cc-local run --vector-site i -b -m r
+docker logs --follow vector-site
+cc-local run --vector-central i -b -m r
+
+docker-compose --env-file=../env.dev --profile all -f docker-compose.siemens-adapter.yml up --build --remove-orphans --abort-on-container-exit
+docker-compose --profile all -f docker-compose.siemens-adapter.yml up --build --remove-orphans --abort-on-container-exit
+
+docker-compose --profile all -f docker-compose.disco.yml up --build --remove-orphans --abort-on-container-exit
+docker-compose -f docker-compose.disco.yml up
+
+fuel, location, draft, weather
+
+
+docker login -u anna-ustymenko -p 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 ghcr.io/abs-wavesight
+
+
+docker pull ghcr.io/abs-wavesight/rabbitmq:windows-2019
+docker pull ghcr.io/abs-wavesight/cc-disco:windows-2019
+docker run -p 15672:15672 -p 5672:5672 -h rabbitmq-local ghcr.io/abs-wavesight/rabbitmq:windows-2019
+docker run ghcr.io/abs-wavesight/cc-disco:windows-2019
+
+docker cp C:\ABS\cc-disco\client\TestClient\DiscoClientConfig\test-client-config.json c1c76ed5efc8:/app/configclient-configs
+disco-test-client "Examples/TestScenario1", "ConnectionConfig.json", "LogFolder"
+9961590f22fc 
+
+
+
+
+ABS (file://azusccdemo001/ABS)
+
+User:     test1
+Password: YvxmruvDM\fk8obBa2B$Cujw184$yV6W
+
+azuscctest002.absns.cloud
+
+Invoke-Command -ComputerName azusccdemo001 -ScriptBlock {disco-test-client "c:\ABS\cc-disco\client\TestClient\Examples\TestScenario1" "c:\ABS\cc-disco\client\TestClient\ConnectionConfig.json" "c:\ABS\cc-disco\client\TestClient\LogFolder"}
+\\azuscctest002\ABS\disco-test-client "\\azusccdemo001\ABS\cc-disco\client\TestClient\Examples\TestScenario1" "\\azusccdemo001\ABS\cc-disco\client\TestClient\ConnectionConfig.json" "\\azusccdemo001\ABS\cc-disco\client\TestClient\LogFolder"

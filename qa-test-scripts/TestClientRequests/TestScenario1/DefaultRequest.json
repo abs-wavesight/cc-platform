@@ -1,0 +1,9 @@
+﻿{
+  "DestinationQueue": "cc.disco.data.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "Request": "ErrorLogger_DefaultRequest_NoRequestBody",
+  "Headers": {
+    "cc.disco.client": "test-client"
+  }
+}
