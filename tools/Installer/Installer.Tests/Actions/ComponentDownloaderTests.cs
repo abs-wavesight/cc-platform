@@ -93,7 +93,7 @@ public class ComponentDownloaderTests
     [Fact]
     public async Task DownloadLatest_Vector_Central_Release()
     {
-        var releaseZip = "2019.zip";
+        const string releaseZip = "2019.zip";
         var configText = await File.ReadAllTextAsync(@"Configs/DownloadTest_LatestVectorCentral_Release.json");
         var tempFile = Path.GetTempFileName();
         var nugetEnvironmentVariable = Environment.GetEnvironmentVariable(Constants.NugetEnvironmentVariableName);
