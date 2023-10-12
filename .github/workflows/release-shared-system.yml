@@ -123,6 +123,10 @@ jobs:
         run: |
           .\Installer.exe release-body -o readme.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
+      - name: Build release version file
+        run: |
+          echo "${{ inputs.version }}" > version.txt
+
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
@@ -131,4 +135,4 @@ jobs:
           name: ${{ inputs.version }} ${{ inputs.release-name-prefix }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
-          artifacts: "readme.txt, ${{ inputs.windows-version }}.zip*, Installer.exe, SystemRegistryConfig.json, SystemConfig.json"
+          artifacts: "readme.txt, version.txt, ${{ inputs.windows-version }}.zip*, Installer.exe, SystemRegistryConfig.json, SystemConfig.json"
