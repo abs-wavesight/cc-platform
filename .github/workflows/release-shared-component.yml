@@ -94,7 +94,7 @@ jobs:
       
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o readme.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe release-body -o readme.txt -p "`$VERSION:${{ inputs.version }}" -p "`$DESCRIPTION:${{ inputs.description }}" -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
       
       - name: Build release
         uses: ncipollo/release-action@v1
