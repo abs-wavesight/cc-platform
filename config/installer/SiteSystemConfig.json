@@ -11,8 +11,6 @@
   "parameters": {
     "$ABS_PATH": "c:/abs",
     "$RABBIT_LOCATION": "local",
-    "$DREX_SHARED_ACCOUNT_USERNAME": "",
-    "$DREX_SHARED_ACCOUNT_PASSWORD": "",
     "$FDZ_ROOT_PATH": "c:/abs/fdz"
   }
 }

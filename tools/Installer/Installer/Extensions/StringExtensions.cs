@@ -1,5 +1,4 @@
-﻿
-namespace Abs.CommonCore.Installer.Extensions;
+﻿namespace Abs.CommonCore.Installer.Extensions;
 
 public static class StringExtensions
 {
@@ -27,5 +26,16 @@ public static class StringExtensions
         }
 
         return text;
+    }
+
+    public static string RequireReplace(this string text, string oldValue, string newValue)
+    {
+        var index = text.IndexOf(oldValue, StringComparison.OrdinalIgnoreCase);
+
+        return index != -1
+            ? text
+                .Replace(oldValue, newValue)
+            : throw new Exception($"Unable to find text '{oldValue}'");
+
     }
 }

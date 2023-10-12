@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
+using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
@@ -12,6 +14,11 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentInstaller : ActionBase
 {
+    private readonly Uri _localRabbitLocation = new("https://localhost:15672");
+    private const string LocalRabbitUsername = "guest";
+    private const string LocalRabbitPassword = "guest";
+    private const string DrexSiteUsername = "drex";
+
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
     private const string AdditionalFilesName = "AdditionalFiles";
@@ -83,6 +90,11 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.Compress or
                     ComponentActionAction.Uncompress)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
+            .ThenByDescending(x =>
+                x.Action.Action is ComponentActionAction.PostDrexInstall or
+                    ComponentActionAction.PostRabbitMqInstall or
+                    ComponentActionAction.PostVectorInstall)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ToArray();
 
         foreach (var action in actions)
@@ -154,50 +166,25 @@ public class ComponentInstaller : ActionBase
     {
         try
         {
-            if (action.Action is ComponentActionAction.Execute or ComponentActionAction.ExecuteImmediate)
+            await (action.Action switch
             {
-                await RunExecuteCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Install)
-            {
-                await RunInstallCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.UpdatePath)
-            {
-                await RunUpdatePathCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Copy)
-            {
-                await RunCopyCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.ReplaceParameters)
-            {
-                await RunReplaceParametersCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Chunk)
-            {
-                await RunChunkCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Unchunk)
-            {
-                await RunUnchunkCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Compress)
-            {
-                await RunCompressCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.Uncompress)
-            {
-                await RunUncompressCommandAsync(component, rootLocation, action);
-            }
-            else if (action.Action == ComponentActionAction.RunDockerCompose)
-            {
-                await RunDockerComposeCommandAsync(component, rootLocation, action);
-            }
-            else
-            {
-                throw new Exception($"Unknown action command: {action.Action}");
-            }
+                ComponentActionAction.Execute => RunExecuteCommandAsync(component, rootLocation, action),
+                ComponentActionAction.ExecuteImmediate => RunExecuteCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Copy => RunCopyCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Install => RunInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.UpdatePath => RunUpdatePathCommandAsync(component, rootLocation, action),
+                ComponentActionAction.ReplaceParameters => RunReplaceParametersCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Chunk => RunChunkCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Unchunk => RunUnchunkCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Compress => RunCompressCommandAsync(component, rootLocation, action),
+                ComponentActionAction.Uncompress => RunUncompressCommandAsync(component, rootLocation, action),
+                ComponentActionAction.RunDockerCompose => RunDockerComposeCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostDrexInstall => RunPostDrexInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostVectorInstall => RunPostVectorInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
+                _ => throw new Exception($"Unknown action command: {action.Action}")
+            });
         }
         catch (Exception ex)
         {
@@ -327,6 +314,70 @@ public class ComponentInstaller : ActionBase
         {
             await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
         }
+    }
+
+    private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                  LocalRabbitPassword, DrexSiteUsername, null,
+                                  AccountType.LocalDrex);
+
+        const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
+        const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
+
+        var envFile = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the drex local account credentials
+        var newText = envFile
+                      .RequireReplace($"{usernameVar}={LocalRabbitPassword}", $"{usernameVar}={account!.Username}")
+                      .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
+
+        _logger.LogInformation("Updating local drex account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostRabbitMqInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running RabbitMq post install for '{action.Source}'");
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+        var password = RabbitConfigurer.GeneratePassword();
+
+        // Replace the guest password with a new one
+        var newText = configText
+            .RequireReplace("\"password\": \"guest\",", $"\"password\": \"{password}\",");
+
+        _logger.LogInformation("Altering guest account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostVectorInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                  LocalRabbitPassword, DrexSiteUsername, null,
+                                  AccountType.Vector);
+
+        var config = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the vector account credentials
+        var newText = config
+                      .RequireReplace($"{LocalRabbitUsername}:{LocalRabbitPassword}", $"{account!.Username}:{HttpUtility.UrlEncode(account.Password)}");
+
+        _logger.LogInformation("Updating vector account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running post install for '{action.Source}'");
+        var parts = action.Source.Split(' ');
+        await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
     }
 
     private async Task WaitForDockerContainersHealthyAsync(int totalContainers, TimeSpan totalTime, TimeSpan checkInterval)

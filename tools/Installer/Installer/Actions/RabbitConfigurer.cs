@@ -46,6 +46,17 @@ public partial class RabbitConfigurer : ActionBase
         return await ConfigureRabbitAsync(client, username, password, accountType);
     }
 
+    public static string GeneratePassword()
+    {
+        return new Password()
+               .IncludeLowercase()
+               .IncludeUppercase()
+               .IncludeNumeric()
+               .IncludeSpecial()
+               .LengthRequired(32)
+               .Next();
+    }
+
     public static async Task UpdateUserPermissionsAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, AccountType accountType)
     {
         Console.WriteLine($"Updating user '{username}' permissions at '{rabbit}'");
@@ -93,13 +104,7 @@ public partial class RabbitConfigurer : ActionBase
     {
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
-            ? new Password()
-                .IncludeLowercase()
-                .IncludeUppercase()
-                .IncludeNumeric()
-                .IncludeSpecial()
-                .LengthRequired(32)
-                .Next()
+            ? GeneratePassword()
             : password;
 
         var isAdded = await AddUserAccountAsync(client, username, password, accountType);

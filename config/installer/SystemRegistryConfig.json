@@ -137,6 +137,14 @@
         {
           "source": "$ABS_PATH\\config",
           "action": "runDockerCompose"
+        },
+        {
+          "source": "net stop dockerd",
+          "action": "postInstall"
+        },	
+		{
+          "source": "net start dockerd",
+          "action": "postInstall"
         }
       ]
     },
@@ -246,6 +254,14 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
           "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",          
+          "action": "postRabbitMqInstall"
+        },		
+        {          
+          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\remote\\remote.definitions.json",
+          "action": "postRabbitMqInstall"
         }
       ]
     },
@@ -285,7 +301,11 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
-        }
+        },
+        {          
+          "source": "$ABS_PATH\\config\\vector\\vector.toml",
+          "action": "postVectorInstall"
+        }			
       ]
     },
     {
@@ -324,7 +344,11 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
-        }
+        },
+        {          
+          "source": "$ABS_PATH\\config\\vector\\vector.toml",
+          "action": "postVectorInstall"
+        }		
       ]
     },
     {
@@ -343,7 +367,7 @@
         },
         {
           "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex-shared\\",
+          "destination": "$ABS_PATH\\config\\drex-shared\\site-config.json",
           "action": "copy"
         },
         {
@@ -359,7 +383,11 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "replaceParameters"
-        }
+        },
+        {          
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postDrexInstall"
+        },			
       ]
     },
     {
