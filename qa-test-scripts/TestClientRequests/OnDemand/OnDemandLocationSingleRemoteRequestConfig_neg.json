@@ -1,0 +1,23 @@
+﻿{
+  "DestinationQueue": "cc.disco.data.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "RequestType": "OnDemand",
+  "Request": {
+    "requestId": "test-client_sa-21122-dslr-neg",
+    "destination": "Remote",
+    "onDemandSingle": {
+      "target": "2023-07-26T14:23:52Z"
+    },
+    "locationDataTypes": {
+      "dataType": [
+        "Unknown",
+        "Latitude",
+        "Longitude"
+      ]
+    }
+  },
+  "Headers": {
+    "cc.disco.client":  "test-client-neg"
+  }
+}

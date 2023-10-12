@@ -1,0 +1,20 @@
+﻿{
+  "DestinationQueue": "cc.disco.create-schedule.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "RequestType": "CreateSchedule",
+  "Request": {
+    "requestId": "test-client_sa-20359-sdsneg",
+    "scheduleId": "test-client_sa-20359-sdsneg",
+    "destination": "Local",
+    "scheduleSingle": {
+      "cronExpression": ""
+    },
+    "draftDataTypes": {
+      "dataType": []
+    }
+  },
+  "Headers": {
+    "cc.disco.client": "test-client"
+  }
+}

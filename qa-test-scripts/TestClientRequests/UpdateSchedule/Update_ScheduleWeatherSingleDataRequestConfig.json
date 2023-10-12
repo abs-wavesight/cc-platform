@@ -1,0 +1,32 @@
+﻿{
+  "DestinationQueue": "cc.disco.create-schedule.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "RequestType": "CreateSchedule",
+  "Request": {
+    "requestId": "test_us-20359-sws",
+    "scheduleId": "test_us-20359-sws",
+    "destination": "Local",
+    "scheduleSingle": {
+      "cronExpression": "* * * ? ?"
+    },
+    "weatherDataTypes": {
+      "dataType": [
+        "Unknown",
+        "WetTemperature",
+        "DryTemperature",
+        "RelativeWindSpeed",
+        "TrueWindDirection",
+        "SeaWaterTemperature",
+        "SeaWaterDepth",
+        "AirPressure",
+        "RelativeHumidity",
+        "Swell",
+        "SeaScale"
+      ]
+    }
+  },
+  "Headers": {
+    "cc.disco.client":  "test-client"
+  }
+}

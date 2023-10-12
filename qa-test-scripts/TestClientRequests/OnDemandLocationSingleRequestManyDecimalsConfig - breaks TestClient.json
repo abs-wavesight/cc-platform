@@ -1,0 +1,23 @@
+﻿{
+  "DestinationQueue": "cc.disco.data.request.q",
+  "NSamples": 1,
+  "SamplingIntervalInMs": 1,
+  "RequestType": "OnDemand",
+  "Request": {
+    "requestId": "454a68bd-b9b7-4ec5-9250-d65c87688ed7",
+    "destination": "Unknown",
+    "onDemandSingle": {
+      "target": "2023-07-26T14:23.518673200Z"
+    },
+    "locationDataTypes": {
+      "dataType": [
+		"Unknown",
+        "Latitude",
+        "Longitude"
+      ]
+    }
+  },
+  "Headers": {
+    "cc.disco.client":  "test-client"
+  }
+}
