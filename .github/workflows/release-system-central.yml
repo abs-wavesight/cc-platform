@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "RabbitMQ Release 2022"
+      name: "RabbitMQ Release"
     secrets: inherit
 
   get-default-vector-central-version:
@@ -44,7 +44,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Vector Central Release 2022"
+      name: "Vector Central Release"
     secrets: inherit
 
   get-default-sftp-service-version:
@@ -53,7 +53,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Sftp Service Release 2022"
+      name: "Sftp Service Release"
     secrets: inherit
 
   release-component:
@@ -73,9 +73,9 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
-        -p `$VECTOR_CENTRAL_RELEASE_TAG:vector-central-${{ matrix.windows-version }}-${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}
-        -p `$SFTP_SERVICE_RELEASE_TAG:sftp-service-${{ matrix.windows-version }}-${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }} 
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq
+        -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
+        -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
       release-name-prefix: Central System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
