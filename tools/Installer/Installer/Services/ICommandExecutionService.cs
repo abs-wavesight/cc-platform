@@ -2,5 +2,5 @@
 
 public interface ICommandExecutionService
 {
-    Task ExecuteCommandAsync(string command, string arguments, string workingDirectory);
+    Task ExecuteCommandAsync(string command, string arguments, string workingDirectory, bool throwOnError = true);
 }

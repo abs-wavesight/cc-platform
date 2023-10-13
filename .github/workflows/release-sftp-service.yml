@@ -37,12 +37,11 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: Sftp Service Release ${{ matrix.windows-version }} ${{ inputs.version }}
+      name: ${{ inputs.version }} Sftp Service Release
       component_name: Sftp-Service
-      tag: sftp-service-${{ matrix.windows-version }}-${{ inputs.version }}
+      tag: ${{ inputs.version }}-sftp-service
       description: ${{ inputs.description }}
-      component-params: > 
-        -p `$WINDOWS_VERSION:${{ matrix.windows-version }} 
+      component-params: >         
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit

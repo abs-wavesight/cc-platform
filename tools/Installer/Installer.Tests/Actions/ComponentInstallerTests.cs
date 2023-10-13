@@ -30,7 +30,7 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
         await initializer.Installer.ExecuteAsync(new[] { "CopyTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
         await initializer.Installer.ExecuteAsync(new[] { "InstallTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("x-action", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("x-action", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -61,12 +61,12 @@ public class ComponentInstallerTests
 
         var commandCalls = new List<string>();
         initializer.CommandExecute
-            .Setup(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, string, string>((c, _, _) => commandCalls.Add(c));
+            .Setup(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+            .Callback<string, string, string, bool>((c, _, _, _) => commandCalls.Add(c));
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(2));
         Assert.True(commandCalls.Count == 2 && commandCalls[0] == "first" && commandCalls[1] == "last");
     }
 
@@ -76,7 +76,7 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
         await initializer.Installer.ExecuteAsync(new[] { "UpdatePathTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("setx", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("setx", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -116,10 +116,10 @@ public class ComponentInstallerTests
         await initializer.Installer.ExecuteAsync(new[] { "RunDockerComposeTest" });
 
         var args = "";
-        initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, string, string>((_, a, _) => args = a);
+        initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+            .Callback<string, string, string, bool>((_, a, _, _) => args = a);
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
         Assert.Contains(args, "docker-compose.root.yml");
         Assert.Contains(args, "docker-compose.test-app1.yml");
         Assert.Contains(args, "docker-compose.test-app2.yml");
@@ -135,7 +135,7 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/ParameterizedRegistryConfig.json", parameters: parameters);
         await initializer.Installer.ExecuteAsync(new[] { "RabbitMq" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(paramValue, It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(paramValue, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]

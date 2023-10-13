@@ -81,26 +81,27 @@ jobs:
           
       - name: Download components       
         run: |
-          .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
-          .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
+          .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
       - name: Compress contents
         run: |
-          .\Installer.exe compress -s c:/abs/installer -d Release.zip
+          .\Installer.exe compress -s c:/abs/installer -d ${{ inputs.windows-version }}.zip
           
       - name: Chunk contents
         run: |
-          .\Installer.exe chunk -s Release.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
+          .\Installer.exe chunk -s ${{ inputs.windows-version }}.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
       
       - name: Build release body
         run: |
-          .\Installer.exe release-body -o release_body.txt -p "`$DESCRIPTION:${{ inputs.description }}" -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
+          .\Installer.exe release-body -o readme.txt -p "`$VERSION:${{ inputs.version }}" -p "`$DESCRIPTION:${{ inputs.description }}" -p `$DOWNLOAD_PATH:c:/abs ${{ inputs.component-params }}
       
       - name: Build release
         uses: ncipollo/release-action@v1
-        with:
-          bodyFile: release_body.txt
+        with:          
+          allowUpdates: true
+          body: "----"
           name: ${{ inputs.name }}
           tag: ${{ steps.build-tag.outputs.lowercase }}
           commit: main
-          artifacts: "Release.zip*"
+          artifacts: "readme.txt, ${{ inputs.windows-version }}.zip*"
