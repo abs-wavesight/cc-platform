@@ -29,30 +29,14 @@ jobs:
       name: "vector"
     secrets: inherit
 
-  get-current-version:
+  get-next-version:
     name: Get Current Vector Central Version
     if: ${{ inputs.version == '' }}
-    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
       name: "Vector Site Release"
     secrets: inherit
-
-  get-next-version:
-    name: Get Next Vector Central Version
-    runs-on: ubuntu-latest
-    needs: get-current-version
-    if: ${{ inputs.version == '' }}
-    outputs: 
-      version: ${{ steps.bump_version.outputs.next-version }}
-    steps:
-    - name: bump_version
-      id: bump_version
-      shell: bash
-      run: |
-        original=$(echo "${{ needs.get-current-version.outputs.version }}" | sed 's/[^0-9]*//g')
-        next=$((original + 1))
-        echo "::set-output name=next-version::${next}"
 
   release-component:
     name: Vector Site Release
