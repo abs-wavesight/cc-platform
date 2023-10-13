@@ -68,7 +68,7 @@ public partial class CommandExecutionService : ICommandExecutionService
 
         if (isError && throwOnError)
         {
-            throw new Exception("Error while executing command");
+            throw new Exception($"Error while executing command '{command} {arguments}'");
         }
     }
 }

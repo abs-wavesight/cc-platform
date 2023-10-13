@@ -110,7 +110,8 @@ public class ComponentDownloaderTests
 
         var releases = await client.Repository.Release.GetAll("abs-wavesight", "cc-platform");
         var vectorCentralRelease = releases
-            .FirstOrDefault(x => x.TagName.StartsWith("vector-central") && x.Assets.Any(y => y.Name == releaseZip));
+            .FirstOrDefault(x => x.TagName.StartsWith("vector-central") &&
+                                 x.Assets.Any(y => y.Name == releaseZip));
 
         if (vectorCentralRelease == null)
         {
