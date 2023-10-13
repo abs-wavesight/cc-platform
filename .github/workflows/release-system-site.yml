@@ -43,7 +43,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "RabbitMQ Release 2022"
+      name: "RabbitMQ Release"
     secrets: inherit
 
   get-default-vector-site-version:
@@ -52,7 +52,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Vector Site Release 2022"
+      name: "Vector Site Release"
     secrets: inherit
 
   get-default-drex-message-version:
@@ -61,7 +61,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-drex"
-      name: "Drex Message Release 2022"
+      name: "Drex Message Release"
     secrets: inherit
 
   get-default-drex-file-version:
@@ -70,7 +70,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-drex"
-      name: "Drex File Release 2022"
+      name: "Drex File Release"
     secrets: inherit
 
   get-default-openssl-version:
@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "OpenSSL Release 2022"
+      name: "OpenSSL Release"
     secrets: inherit
 
   release-component:
@@ -101,11 +101,11 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:rabbitmq-${{ matrix.windows-version }}-${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }} 
-        -p `$VECTOR_SITE_RELEASE_TAG:vector-site-${{ matrix.windows-version }}-${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }} 
-        -p `$DREX_MESSAGE_RELEASE_TAG:drex-message-${{ matrix.windows-version }}-${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }} 
-        -p `$DREX_FILE_RELEASE_TAG:drex-file-${{ matrix.windows-version }}-${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}
-        -p `$OPENSSL_RELEASE_TAG:openssl-${{ matrix.windows-version }}-${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq 
+        -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
+        -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
+        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
+        -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
       release-name-prefix: Site System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

@@ -7,7 +7,7 @@ on:
           description: 'Git repository name'
           type: string
           required: true
-        name: # RabbitMQ Release 2019
+        name: # RabbitMQ Release
           description: 'Release name'
           type: string
           required: true

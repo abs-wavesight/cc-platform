@@ -14,9 +14,9 @@ public class ReleaseVersionProvider : ActionBase
     public async Task<string?> GetVersionAsync(string releaseName, string owner, string repoName)
     {
         var releaseVersion = (await _releaseDataProvider.GetReleaseNames(owner, repoName))
-            .FirstOrDefault(n => n.StartsWith(releaseName, StringComparison.InvariantCultureIgnoreCase))
-            ?[releaseName.Length..]
-            ?.Trim();
+            .FirstOrDefault(n => n.EndsWith(releaseName, StringComparison.InvariantCultureIgnoreCase))
+            ?.Replace(releaseName, "")
+            .Trim();
 
         return releaseVersion;
     }
