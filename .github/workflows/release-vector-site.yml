@@ -40,13 +40,18 @@ jobs:
 
   get-next-version:
     name: Get Next Vector Central Version
+    runs-on: ubuntu-latest
     needs: get-current-version
-    if: ${{ inputs.version == '' }}
-    uses: christian-draeger/increment-semantic-version@1.0.3
-    with:
-      current-version: ${{ needs.get-current-version.outputs.version }}
-      version-fragment: 'feature'
-    secrets: inherit
+    outputs: 
+      version: ${{ steps.bump_version.outputs.next-version }}
+    steps:
+    - name: bump_version
+      id: bump_version
+      if: ${{ inputs.version == '' }}
+      uses: christian-draeger/increment-semantic-version@1.0.3
+      with:
+        current-version: ${{ needs.get-current-version.outputs.version }}
+        version-fragment: 'feature'
 
   release-component:
     name: Vector Site Release
@@ -58,9 +63,9 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-next-version.outputs.next-version }} Vector Site Release
+      name: ${{ inputs.version || needs.get-next-version.outputs.version }} Vector Site Release
       component_name: vector-site
-      tag: ${{ inputs.version || needs.get-next-version.outputs.next-version }}-vector-site
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-vector-site
       description: ${{ inputs.description || '' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }}
