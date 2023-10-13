@@ -42,19 +42,17 @@ jobs:
     name: Get Next Vector Central Version
     runs-on: ubuntu-latest
     needs: get-current-version
+    if: ${{ inputs.version == '' }}
     outputs: 
       version: ${{ steps.bump_version.outputs.next-version }}
     steps:
-    - name: set_version
-      id: set_version
-      run: echo "::set-output name=version::${{ needs.get-current-version.outputs.version }}"
     - name: bump_version
       id: bump_version
-      if: ${{ inputs.version == '' }}
-      uses: action-pack/increment@v2
-      with:
-        name: 'version'
-        token: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        original=$(echo "${{ needs.get-current-version.outputs.version }}" | sed 's/[^0-9]*//g')
+        next=$((original + 1))
+        echo "::set-output name=next-version::${next}"
 
   release-component:
     name: Vector Site Release
