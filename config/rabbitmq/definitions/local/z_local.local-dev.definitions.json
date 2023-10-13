@@ -37,7 +37,7 @@
       "name": "disco-test-client",
       "password": "disco-test-client",
       "tags": [
-        "administrator"
+        "user"
       ]
     },
     {
@@ -81,15 +81,15 @@
       "user": "disco-test-client",
       "vhost": "/",
       "configure": "",
-      "read": "disco-test-client",
-      "write": "disco-test-client"
+      "read": "^(cc\\.disco\\.ed|cc\\.disco\\.et|.*disco-test-client.*)$",
+      "write": "^(error|cc\\.disco\\.data\\.request\\.q|cc\\.disco\\.ed|cc\\.disco\\.et|.*-schedule\\.request\\.q|.*disco-test-client.*)$"
     },
     {
       "user": "siemens-adapter",
       "vhost": "/",
       "configure": "",
-      "read": "siemens-adapter",
-      "write": "siemens-adapter"
+      "read": "^(cc\\.disco\\.data\\.request\\.siemens\\.q|cc\\.disco\\.ed|cc\\.disco\\.et)$",
+      "write": "^(?=.*siemens\\.q|error|cc\\.disco\\.ed|cc\\.disco\\.et|cc\\.disco\\.data\\.response\\..*\\.q).*$"
     }
   ]
 }
