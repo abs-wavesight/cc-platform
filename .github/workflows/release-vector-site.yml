@@ -45,13 +45,16 @@ jobs:
     outputs: 
       version: ${{ steps.bump_version.outputs.next-version }}
     steps:
+    - name: set_version
+      id: set_version
+      run: echo "::set-output name=version::${{ needs.get-current-version.outputs.version }}"
     - name: bump_version
       id: bump_version
       if: ${{ inputs.version == '' }}
-      uses: christian-draeger/increment-semantic-version@1.0.3
+      uses: action-pack/increment@v2
       with:
-        current-version: ${{ needs.get-current-version.outputs.version }}
-        version-fragment: 'feature'
+        name: 'version'
+        token: ${{ secrets.GITHUB_TOKEN }}
 
   release-component:
     name: Vector Site Release
