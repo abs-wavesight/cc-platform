@@ -4,31 +4,40 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        required: true
+        required: false
         type: string
         description: Unique version for the release
       description:
-        required: true
+        required: false
         type: string
         description: Description of the release
       rabbitmq-version:
         required: false
         type: string
-        description: Version to use for RabbitMQ release # v1.0.0
+        description: Version to use for RabbitMQ release # v100
       vector-central-version:
         required: false
         type: string
-        description: Version to use for Vector central release # v1.0.0
+        description: Version to use for Vector central release # v100
       sftp-service-version:
         required: false
         type: string
-        description: Version to use for Sftp Service release # v1.0.0
+        description: Version to use for Sftp Service release # v100
 
 concurrency:
   group: central-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
+  get-next-version:
+    name: Get Next Version
+    if: ${{ inputs.version == '' }}
+    uses: ./.github/workflows/shared-get-next-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Central System Release"
+    secrets: inherit
+
   get-default-rabbitmq-version:
     name: Get Default RabbitMQ Version
     if: ${{ inputs.rabbitmq-version == '' }}
@@ -62,13 +71,14 @@ jobs:
       - get-default-rabbitmq-version
       - get-default-vector-central-version
       - get-default-sftp-service-version
+      - get-next-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      version: ${{ inputs.version }}
-      description: ${{ inputs.description }}
+      version: ${{ inputs.version || needs.get-next-version.outputs.version }}
+      description: ${{ inputs.description || 'Central System Release' }}
       tag-prefix: central-system
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemConfig.json
