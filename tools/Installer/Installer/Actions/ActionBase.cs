@@ -54,7 +54,7 @@ public abstract class ActionBase
         await StopWindowsServiceAsync(logger, commandExecutionService, name);
 
         logger.LogInformation($"Deleting service '{name}'");
-        await commandExecutionService.ExecuteCommandAsync("sc", $"delete {name}", "");
+        await commandExecutionService.ExecuteCommandAsync("sc", $"delete {name}", "", false);
         await Task.Delay(1000);
 
         var service = GetWindowsServiceByName(name);
@@ -76,7 +76,7 @@ public abstract class ActionBase
         var service = GetWindowsServiceByName(name);
 
         logger.LogInformation($"Stopping service '{name}'");
-        await commandExecutionService.ExecuteCommandAsync("net", $"stop {name}", "");
+        await commandExecutionService.ExecuteCommandAsync("net", $"stop {name}", "", false);
         await Task.Delay(1000);
         service?.Refresh();
         service?.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
