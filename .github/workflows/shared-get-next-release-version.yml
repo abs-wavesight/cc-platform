@@ -38,7 +38,7 @@ jobs:
         outputs: 
             version: ${{ steps.bump_version.outputs.next_version }}
         steps:
-        - name: bump_version
+        - name: Bump Version
           id: bump_version
           shell: bash
           run: |
