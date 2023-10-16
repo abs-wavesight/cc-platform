@@ -30,7 +30,7 @@ jobs:
     secrets: inherit
 
   get-next-version:
-    name: Get Current Vector Central Version
+    name: Get Next Vector Site Version
     if: ${{ inputs.version == '' }}
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
@@ -51,7 +51,7 @@ jobs:
       name: ${{ inputs.version || needs.get-next-version.outputs.version }} Vector Site Release
       component_name: vector-site
       tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-vector-site
-      description: ${{ inputs.description || '' }}
+      description: ${{ inputs.description || 'Vector Site' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }}
       windows-version: ${{ matrix.windows-version }}
