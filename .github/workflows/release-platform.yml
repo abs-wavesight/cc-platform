@@ -1,0 +1,26 @@
+name: Platform Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: Unique version for the release
+      platform-commit-sha: # 6ac7551
+        required: false
+        type: string
+        description: 7 character short SHA for the commit in cc-platform 
+
+concurrency:
+  group: system-release-${{ github.head_ref }}
+  cancel-in-progress: true
+  
+jobs:
+  get-default-platform-commit-sha:
+    name: Get Default Platform Commit SHA
+    if: ${{ inputs.platform-commit-sha == '' }}
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-get-latest-container-version.yml@main
+    with: 
+      name: "openssl"
+    secrets: inherit
