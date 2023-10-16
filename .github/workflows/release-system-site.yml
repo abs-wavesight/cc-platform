@@ -14,23 +14,23 @@ on:
       rabbitmq-version:
         required: false
         type: string
-        description: Version to use for RabbitMQ release # v1.0.0
+        description: Version to use for RabbitMQ release # v100
       vector-site-version:
         required: false
         type: string
-        description: Version to use for Vector site release # v1.0.0
+        description: Version to use for Vector site release # v100
       drex-message-version:
         required: false
         type: string
-        description: Version to use for Drex Message release # v1.0.0
+        description: Version to use for Drex Message release # v100
       drex-file-version:
         required: false
         type: string
-        description: Version to use for Drex File release # v1.0.0
+        description: Version to use for Drex File release # v100
       openssl-version:
         required: false
         type: string
-        description: Version to use for OpenSSL release # v1.0.0
+        description: Version to use for OpenSSL release # v100
 
 concurrency:
   group: site-system-release-${{ github.head_ref }}
