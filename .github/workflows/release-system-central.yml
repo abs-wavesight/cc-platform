@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Central System Release "
+      name: "Central System Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
