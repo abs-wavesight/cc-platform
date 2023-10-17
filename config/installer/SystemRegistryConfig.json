@@ -68,7 +68,7 @@
       ],
       "actions": [
         {
-          "source": "net stop dockerd",
+          "source": "wmic service | findstr /I /R \"dockerd.exe.*Running\" && net stop dockerd",
           "action": "executeImmediate"
         },
         {
@@ -89,7 +89,7 @@
           "action": "executeImmediate"
         },
         {
-          "source": "net start dockerd",
+          "source": "wmic service | findstr /I /R \"dockerd.exe.*Stopped\" && net start dockerd",
           "action": "executeImmediate"
         },
         {
@@ -139,11 +139,11 @@
           "action": "runDockerCompose"
         },
         {
-          "source": "net stop dockerd",
+          "source": "wmic service | findstr /I /R \"dockerd.exe.*Running\" && net stop dockerd",
           "action": "postInstall"
         },	
 		{
-          "source": "net start dockerd",
+          "source": "wmic service | findstr /I /R \"dockerd.exe.*Stopped\" && net start dockerd",
           "action": "postInstall"
         }
       ]
