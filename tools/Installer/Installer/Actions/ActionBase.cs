@@ -89,6 +89,12 @@ public abstract class ActionBase
             return;
         }
 
+        if (service.Status == ServiceControllerStatus.Stopped)
+        {
+            logger.LogInformation($"Service '{name}' is stopped");
+            return;
+        }
+
         await commandExecutionService.ExecuteCommandAsync("net", $"stop {name}", "");
         await Task.Delay(1000);
         service?.Refresh();
@@ -105,6 +111,12 @@ public abstract class ActionBase
             throw new Exception($"Service '{name}' does not exist");
         }
 
+        if (service.Status == ServiceControllerStatus.Running)
+        {
+            logger.LogInformation($"Service '{name}' is already running");
+            return;
+        }
+
         await commandExecutionService.ExecuteCommandAsync("net", $"start {name}", "");
         await Task.Delay(1000);
         service?.Refresh();
@@ -115,7 +127,7 @@ public abstract class ActionBase
     {
         return System.ServiceProcess.ServiceController
             .GetServices()
-            .FirstOrDefault(x => x.DisplayName == name);
+            .FirstOrDefault(x => string.Equals(x.ServiceName, name, StringComparison.OrdinalIgnoreCase));
     }
 
     protected void DeleteRecursiveDirectory(ILogger logger, string path)

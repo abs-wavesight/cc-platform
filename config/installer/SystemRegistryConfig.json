@@ -85,7 +85,7 @@
           "action": "executeImmediate"
         },
         {
-          "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
+          "source": "wmic service | findstr /I /R \"dockerd.exe\" || c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
         {
@@ -93,11 +93,11 @@
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"docker stop $(docker ps -a -q)\"",
+          "source": "powershell -Command \"docker stop $(docker ps -a -q)\" 2>&1",
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"docker rm $(docker ps -a -q)\"",
+          "source": "powershell -Command \"docker rm $(docker ps -a -q)\" 2>&1",
           "action": "executeImmediate"
         },
         {
@@ -204,7 +204,7 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
+          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\" 2>&1",
           "action": "execute"
         },
         {

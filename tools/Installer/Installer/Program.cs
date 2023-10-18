@@ -457,6 +457,13 @@ internal class Program
         credentialsFileParam.AddAlias("-cf");
         command.Add(credentialsFileParam);
 
+        var isSilentParam = new Option<bool>("--silent", "Indicates whether the operation is silent")
+        {
+            IsRequired = false
+        };
+        isSilentParam.AddAlias("-s");
+        command.Add(isSilentParam);
+
         command.SetHandler(async (context) =>
         {
             var arguments = new RabbitConfigureCommandArguments
@@ -470,6 +477,7 @@ internal class Program
                 DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
                 AccountType = context.ParseResult.GetValueForOption(accountTypeParam),
                 CredentialsFile = context.ParseResult.GetValueForOption(credentialsFileParam),
+                IsSilent = context.ParseResult.GetValueForOption(isSilentParam),
             };
 
             await ExecuteConfigureRabbitCommandAsync(arguments, args);
@@ -707,7 +715,7 @@ internal class Program
                 return;
             }
 
-            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType);
+            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType, arguments.IsSilent);
 
             if (credentials == null)
             {

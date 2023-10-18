@@ -14,7 +14,7 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentInstaller : ActionBase
 {
-    private readonly Uri _localRabbitLocation = new("https://localhost:15672");
+    private readonly Uri _localRabbitLocation = new("https://localhost:15671");
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
@@ -307,7 +307,7 @@ public class ComponentInstaller : ActionBase
             arguments = $"--env-file {envFile[0]} " + arguments;
         }
 
-        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
 
         var containerCount = configFiles
             .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
@@ -325,7 +325,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, DrexSiteUsername, null,
-                                  AccountType.LocalDrex);
+                                  AccountType.LocalDrex, true);
 
         const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
         const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
@@ -363,7 +363,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, DrexSiteUsername, null,
-                                  AccountType.Vector);
+                                  AccountType.Vector, true);
 
         var config = await File.ReadAllTextAsync(action.Source);
 
