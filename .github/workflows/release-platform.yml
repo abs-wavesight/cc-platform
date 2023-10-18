@@ -7,20 +7,81 @@ on:
         required: true
         type: string
         description: Unique version for the release
-      platform-commit-sha: # 6ac7551
-        required: false
+      site-system-tag:
+        required: true
         type: string
-        description: 7 character short SHA for the commit in cc-platform 
+        description: Unique tag for the site system release
+      central-system-tag:
+        required: true
+        type: string
+        description: Unique tag for the central system release
 
 concurrency:
   group: system-release-${{ github.head_ref }}
   cancel-in-progress: true
   
 jobs:
-  get-default-platform-commit-sha:
-    name: Get Default Platform Commit SHA
-    if: ${{ inputs.platform-commit-sha == '' }}
-    uses: abs-wavesight/cc-platform/.github/workflows/shared-get-latest-container-version.yml@main
-    with: 
-      name: "openssl"
-    secrets: inherit
+  job1:
+    name: System Release
+    runs-on: windows-2019
+    steps:
+      - name: Build Tag
+        id: build-tag
+        uses: vishalmamidi/lowercase-action@v1
+        with:
+          string: '${{ inputs.version }}-platform'
+
+      - name: Download site system release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/${{ inputs.site-system-tag }}
+          file: '*'
+          regex: true
+          target: 'site/'
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+
+      - name: Rename site files
+        run: |
+            folder="site"
+            prefix="SiteSystem_"
+
+            for file in $folder/*; do
+                if [ -f "$file" ]; then
+                    filename=$(basename "$file")
+                    new_filename="${prefix}${filename}"
+                    mv "$file" "$folder/$new_filename"
+                fi
+            done
+
+      - name: Download central system release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/${{ inputs.central-system-tag }}
+          file: '*'
+          regex: true
+          target: 'central/'
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+      
+      - name: Rename central files
+        run: |
+            folder="central"
+            prefix="CentralSystem_"
+
+            for file in $folder/*; do
+                if [ -f "$file" ]; then
+                    filename=$(basename "$file")
+                    new_filename="${prefix}${filename}"
+                    mv "$file" "$folder/$new_filename"
+                fi
+            done
+
+      - name: Build release
+        uses: ncipollo/release-action@v1
+        with:
+            allowUpdates: true
+            body: "----"
+            name: '${{ inputs.version }} Platform Release'
+            tag: ${{ steps.build-tag.outputs.lowercase }}
+            commit: main
+            artifacts: "*.txt, *.zip*, *.exe, *.json"
+            repo: abs-wavesight/cc-releases
