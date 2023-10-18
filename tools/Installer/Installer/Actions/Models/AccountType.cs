@@ -5,5 +5,7 @@ public enum AccountType
     Vector,
     LocalDrex,
     RemoteDrex,
-    Client
+    Client,
+    Disco,
+    Siemens
 }

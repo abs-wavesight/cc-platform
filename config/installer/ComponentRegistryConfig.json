@@ -212,6 +212,27 @@
           "action": "replaceParameters"
         }
       ]
+    },
+    {
+      "name": "Disco",
+      "files":[
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION",
+          "destination": "disco-file.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.disco.yml",
+          "destination": "docker-compose.disco.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.disco.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }
