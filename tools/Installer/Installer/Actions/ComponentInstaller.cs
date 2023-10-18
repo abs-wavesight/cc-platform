@@ -477,7 +477,7 @@ public class ComponentInstaller : ActionBase
         _logger.LogInformation("Preparing install components");
 
         var current = Directory.GetCurrentDirectory();
-        var files = Directory.GetFiles(current, "*.zip", SearchOption.TopDirectoryOnly);
+        var files = Directory.GetFiles(current, "*.zip*", SearchOption.TopDirectoryOnly);
 
         if (files.Length == 0)
         {

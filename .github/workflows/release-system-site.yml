@@ -4,39 +4,48 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        required: true
+        required: false
         type: string
         description: Unique version for the release
       description:
-        required: true
+        required: false
         type: string
         description: Description of the release
       rabbitmq-version:
         required: false
         type: string
-        description: Version to use for RabbitMQ release # v1.0.0
+        description: Version to use for RabbitMQ release # v100
       vector-site-version:
         required: false
         type: string
-        description: Version to use for Vector site release # v1.0.0
+        description: Version to use for Vector site release # v100
       drex-message-version:
         required: false
         type: string
-        description: Version to use for Drex Message release # v1.0.0
+        description: Version to use for Drex Message release # v100
       drex-file-version:
         required: false
         type: string
-        description: Version to use for Drex File release # v1.0.0
+        description: Version to use for Drex File release # v100
       openssl-version:
         required: false
         type: string
-        description: Version to use for OpenSSL release # v1.0.0
+        description: Version to use for OpenSSL release # v100
 
 concurrency:
   group: site-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
+  get-next-version:
+    name: Get Next Version
+    if: ${{ inputs.version == '' }}
+    uses: ./.github/workflows/shared-get-next-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Site System Release"
+    secrets: inherit
+
   get-default-rabbitmq-version:
     name: Get Default RabbitMQ Version
     if: ${{ inputs.rabbitmq-version == '' }}
@@ -90,13 +99,14 @@ jobs:
       - get-default-drex-message-version
       - get-default-drex-file-version
       - get-default-openssl-version
+      - get-next-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      version: ${{ inputs.version }}
-      description: ${{ inputs.description }}
+      version: ${{ inputs.version || needs.get-next-version.outputs.version }}
+      description: ${{ inputs.description || 'Site System Release' }}
       tag-prefix: site-system
       windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json

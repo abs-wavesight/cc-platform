@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        required: true
+        required: false
         type: string
         description: Unique version for the release
       description:
-        required: true
+        required: false
         type: string
         description: Description of the release
       platform-commit-sha: # 6ac7551
@@ -29,18 +29,29 @@ jobs:
       name: "vector"
     secrets: inherit
 
+  get-next-version:
+    name: Get Next Vector Site Version
+    if: ${{ inputs.version == '' }}
+    uses: ./.github/workflows/shared-get-next-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Vector Site Release"
+    secrets: inherit
+
   release-component:
     name: Vector Site Release
-    needs: get-default-platform-commit-sha
+    needs: 
+      - get-default-platform-commit-sha
+      - get-next-version
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version }} Vector Site Release
+      name: ${{ inputs.version || needs.get-next-version.outputs.version }} Vector Site Release
       component_name: vector-site
-      tag: ${{ inputs.version }}-vector-site
-      description: ${{ inputs.description }}
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-vector-site
+      description: ${{ inputs.description || 'Vector Site' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }}
       windows-version: ${{ matrix.windows-version }}
