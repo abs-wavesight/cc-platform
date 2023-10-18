@@ -1,0 +1,29 @@
+---	
+version: '3'	
+
+services:	
+
+  cc.disco:	
+    container_name: disco	
+    image: ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION
+    environment:
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - FLAT_LOGS=false
+    depends_on:
+      - cc.vector
+      - cc.rabbitmq
+    logging:	
+      driver: local	
+    restart: always	
+    volumes:	
+      - type: volume
+        source: disco-scheduler-storage
+        target: C:/app/scheduler/data
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/config/vendor-configs
+        target: C:/app/config/vendor-configs
+        read_only: true
