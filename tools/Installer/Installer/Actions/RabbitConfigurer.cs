@@ -184,21 +184,17 @@ public partial class RabbitConfigurer : ActionBase
         var exchangesRegex = ExchangesRegex().ToString();
         var siteFileShippingQueues = SiteFileShippingRegex().ToString();
 
-        if (accountType == AccountType.Unknown)
+        switch (accountType)
         {
-            throw new Exception($"Unknown account type: {accountType}");
-        }
-
-        if (accountType == AccountType.LocalDrex)
-        {
-            return ".*";
-        }
-
-        if (accountType == AccountType.Vector)
-        {
-            const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;
-            const string remoteQueue = Drex.Shared.Constants.MessageBus.Message.CentralLogQueueTemplate;
-            return $"{exchangesRegex}|{errorQueueName}|{siteQueue}|{remoteQueue}";
+            case AccountType.Unknown:
+                throw new Exception($"Unknown account type: {accountType}");
+            case AccountType.LocalDrex:
+            case AccountType.Disco:
+                return ".*";
+            case AccountType.Vector:
+                const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;
+                const string remoteQueue = Drex.Shared.Constants.MessageBus.Message.CentralLogQueueTemplate;
+                return $"{exchangesRegex}|{errorQueueName}|{siteQueue}|{remoteQueue}";
         }
 
         var userQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
