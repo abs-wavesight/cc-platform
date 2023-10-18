@@ -22,7 +22,7 @@ services:
       - type: bind	
         source: $ABS_PATH/config/drex-shared
         target: C:/app/config	
-        read_only: true
+        read_only: false
       - type: bind
         source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-local-certs

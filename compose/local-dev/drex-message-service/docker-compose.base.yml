@@ -20,7 +20,7 @@ services:
       - type: bind
         source: ${PATH_TO_CC_DREX_REPO}/config/drex
         target: C:/app/config
-        read_only: true
+        read_only: false
       - type: bind
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/rabbitmq-local-certs
