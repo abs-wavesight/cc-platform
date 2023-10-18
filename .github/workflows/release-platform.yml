@@ -35,7 +35,6 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/${{ inputs.site-system-tag }}
-          file: '*'
           regex: true
           target: 'site/'
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
@@ -57,7 +56,6 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: tags/${{ inputs.central-system-tag }}
-          file: '*'
           regex: true
           target: 'central/'
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
