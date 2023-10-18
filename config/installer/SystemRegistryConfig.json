@@ -85,7 +85,7 @@
           "action": "executeImmediate"
         },
         {
-          "source": "c:\\docker\\dockerd --service-name dockerd --register-service",
+          "source": "wmic service | findstr /I /R \"dockerd.exe\" || c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
         {
