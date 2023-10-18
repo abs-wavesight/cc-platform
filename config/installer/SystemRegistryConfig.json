@@ -204,7 +204,7 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
+          "source": "powershell -Command \"docker-compose --env-file \"$ABS_PATH\\config\\environment.env\" -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\"",
           "action": "execute"
         },
         {
