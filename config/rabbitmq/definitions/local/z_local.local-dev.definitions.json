@@ -82,7 +82,7 @@
       "vhost": "/",
       "configure": "",
       "read": "^(cc\\.disco\\.ed|cc\\.disco\\.et|.*disco-test-client.*)$",
-      "write": "^(error|cc\\.disco\\.data\\.request\\.q|cc\\.disco\\.ed|cc\\.disco\\.et|.*-schedule\\.request\\.q|.*disco-test-client.*)$"
+      "write": "^(error|cc\\.disco\\.data\\.request\\.q|cc\\.disco\\.ed|cc\\.disco\\.et|.*-schedules?\\.request\\.q|.*disco-test-client.*)$"
     },
     {
       "user": "siemens-adapter",
