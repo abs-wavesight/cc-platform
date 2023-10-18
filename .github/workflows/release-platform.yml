@@ -83,7 +83,6 @@ jobs:
             allowUpdates: true
             body: "----"
             name: '${{ inputs.version }} Platform Release'
-            tag: ${{ steps.build-tag.outputs.lowercase }}
             commit: main
             artifacts: "*.txt, *.zip*, *.exe, *.json"
             repo: cc-releases
