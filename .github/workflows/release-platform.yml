@@ -84,7 +84,6 @@ jobs:
             body: "----"
             name: '${{ inputs.version }} Platform Release'
             commit: main
-            artifacts: "*.txt, *.zip*, *.exe, *.json"
+            artifacts: "central/*.*, site/*.*"
             tag: ${{ steps.build-tag.outputs.lowercase }}
             repo: cc-releases
-            token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
