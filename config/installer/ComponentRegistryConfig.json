@@ -219,7 +219,7 @@
         {
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION",
-          "destination": "disco-file.tar"
+          "destination": "disco.tar"
         },
         {
           "type": "file",

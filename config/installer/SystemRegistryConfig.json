@@ -425,36 +425,27 @@
       ]
     },
     {
-      "name": "Drex-File",
+      "name": "Disco",
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_FILE_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Drex-File/"
+          "source": "https://github.com/abs-wavesight/cc-disco/releases/download/$DISCO_FILE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Disco/"
         }
       ],
       "actions": [
         {
-          "source": "drex-file.tar",
+          "source": "disco.tar",
           "action": "install"
         },
         {
-          "source": "docker-compose.drex-file.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "source": "docker-compose.disco.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.disco.yml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "source": "$ABS_PATH\\config\\docker-compose.disco.yml",
           "action": "replaceParameters"
-        },
-        {
-          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
-          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
-          "action": "copy"
-        },
-        {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
-          "action": "execute"
         }
       ]
     },
