@@ -195,12 +195,6 @@ public partial class RabbitConfigurer : ActionBase
                 const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;
                 const string remoteQueue = Drex.Shared.Constants.MessageBus.Message.CentralLogQueueTemplate;
                 return $"{exchangesRegex}|{errorQueueName}|{siteQueue}|{remoteQueue}";
-            case AccountType.Siemens:
-                const string discoTopicRegex = "cc\\.disco\\.et";
-                const string discoDirectRegex = "cc\\.disco\\.ed";
-                const string discoResponseRegex = "cc\\.disco\\.data\\.response\\..*\\.q";
-                const string siemensRegex = "?=.*siemens\\.q";
-                return $"^({siemensRegex}|{errorQueueName}|{discoDirectRegex}|{discoTopicRegex}|{discoResponseRegex}).*$";
         }
 
         var userQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
