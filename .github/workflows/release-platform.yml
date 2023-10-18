@@ -29,7 +29,7 @@ jobs:
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: '${{ inputs.version }}-platform'
+          string: '${{ inputs.version }}'
 
       - name: Download site system release
         uses: dsaltares/fetch-gh-release-asset@master
@@ -85,5 +85,6 @@ jobs:
             name: '${{ inputs.version }} Platform Release'
             commit: main
             artifacts: "*.txt, *.zip*, *.exe, *.json"
+            tag: ${{ steps.build-tag.outputs.lowercase }}
             repo: cc-releases
             token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
