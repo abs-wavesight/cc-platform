@@ -6,8 +6,7 @@
     "Drex-Message",
     "Drex-File",
     "OpenSsl",
-    "Installer",
-    "Disco"
+    "Installer"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
