@@ -307,7 +307,7 @@ public class ComponentInstaller : ActionBase
             arguments = $"--env-file {envFile[0]} " + arguments;
         }
 
-        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
 
         var containerCount = configFiles
             .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
