@@ -19,6 +19,11 @@ on:
         required: true
         type: string
         description: The path to the the csproj file from solution root
+    
+    outputs:
+      nuget-version: 
+        description: NuGet package version
+        value: ${{ jobs.publish-nuget-package.outputs.version }}
    
 defaults:
   run:
@@ -42,6 +47,8 @@ jobs:
     name: Publish Nuget Package
     needs: [get_clean_branch_names]
     runs-on: windows-2019
+    outputs:
+      version: ${{ env.NUGET_PACKAGE_VERSION }}
     env:
       BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
       BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
