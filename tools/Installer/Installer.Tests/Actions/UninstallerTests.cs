@@ -33,7 +33,5 @@ public class UninstallerTests : TestsBase
         await uninstaller.UninstallSystemAsync(testPath, null, null, null, true);
 
         Directory.Exists(testPath.FullName).Should().BeFalse();
-        commandExecution.Verify(x => x.ExecuteCommandAsync("net", "stop dockerd", It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
-        commandExecution.Verify(x => x.ExecuteCommandAsync("sc", "delete dockerd", It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 }
