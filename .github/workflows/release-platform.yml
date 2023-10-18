@@ -86,5 +86,5 @@ jobs:
             tag: ${{ steps.build-tag.outputs.lowercase }}
             commit: main
             artifacts: "*.txt, *.zip*, *.exe, *.json"
-            repo: abs-wavesight/cc-releases
+            repo: cc-releases
             token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
