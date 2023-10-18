@@ -425,6 +425,31 @@
       ]
     },
     {
+      "name": "Disco",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-disco/releases/download/$DISCO_FILE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Disco/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "disco.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.disco.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.disco.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.disco.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
       "name": "Sftp-Service",
       "files": [
         {
