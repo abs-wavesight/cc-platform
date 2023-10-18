@@ -51,7 +51,7 @@ jobs:
         id: build-tag
         uses: vishalmamidi/lowercase-action@v1
         with:
-          string: '${{ inputs.version }}'
+          string: '${{ inputs.version }}-platform-release'
 
       - name: Download site system release
         uses: dsaltares/fetch-gh-release-asset@master
