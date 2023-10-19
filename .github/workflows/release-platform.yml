@@ -7,6 +7,10 @@ on:
         required: true
         type: string
         description: Unique version for the Platform release
+      contracts-version:
+        required: false
+        type: string
+        description: Version to use for Contracts release # v100
       site-system-version:
         required: false
         type: string
@@ -39,12 +43,22 @@ jobs:
       name: "Central System Release"
     secrets: inherit
 
+  get-default-contracts-version:
+    name: Get Default Contracts Version
+    if: ${{ inputs.contracts-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-contracts"
+      name: "Contracts"
+    secrets: inherit
+
   system-release:
     name: System Release
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
     needs:
         - get-default-central-system-release-version
         - get-default-site-system-release-version
+        - get-default-contracts-version
     runs-on: windows-2019
     steps:
       - name: Build Tag
@@ -99,6 +113,16 @@ jobs:
                 fi
             done
 
+      - name: Download contracts release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: 'tags/${{ inputs.contracts-version || needs.get-default-contracts-version.outputs.version }}-contracts'
+          file: '.*'
+          regex: true
+          target: 'contracts/'
+          repo: 'abs-wavesight/cc-contracts'
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
@@ -106,7 +130,7 @@ jobs:
             body: "----"
             name: '${{ inputs.version }} Platform Release'
             commit: main
-            artifacts: "central/*.*, site/*.*"
+            artifacts: "central/*.*, site/*.*, contracts/*.*"
             tag: ${{ steps.build-tag.outputs.lowercase }}
             repo: cc-releases
             token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
