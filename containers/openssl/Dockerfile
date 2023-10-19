@@ -7,7 +7,7 @@ RUN Invoke-WebRequest -UseBasicParsing -Uri https://download.firedaemon.com/Fire
     Expand-Archive -LiteralPath openssl.zip -DestinationPath ./temp ; \
     Copy-Item -Path temp/openssl-3/x64/bin/* -Destination . ; \	
     Remove-Item "openssl.zip" ; \
-	Remove-Item "temp"
+	Remove-Item "temp" -Force -Recurse
 USER containeradministrator
 RUN setx /M PATH $($Env:PATH + ';C:\app\') # add openssl directory to PATH variable
 USER containeruser
