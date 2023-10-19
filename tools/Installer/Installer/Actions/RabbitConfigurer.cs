@@ -52,7 +52,7 @@ public partial class RabbitConfigurer : ActionBase
                .IncludeLowercase()
                .IncludeUppercase()
                .IncludeNumeric()
-               .IncludeSpecial()
+               .IncludeSpecial("!#$%&*@")
                .LengthRequired(32)
                .Next();
     }
