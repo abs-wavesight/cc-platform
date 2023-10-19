@@ -270,20 +270,20 @@ public class Program
         var config = await LoadConfigFileAsync();
 
         var clients = config!.Clients
-                             .Select(x => new SftpUser
-                             {
-                                 Name = x,
-                                 Password = config.DefaultPassword,
-                                 Root = x
-                             });
+             .Select(x => new SftpUser
+             {
+                 Name = x,
+                 Password = config.DefaultPassword,
+                 Root = x
+             });
 
         var sites = config!.Sites
-                           .Select(x => new SftpUser
-                           {
-                               Name = x.Username,
-                               Password = x.Password,
-                               Root = ""
-                           });
+           .Select(x => new SftpUser
+           {
+               Name = x.Username,
+               Password = x.Password,
+               Root = ""
+           });
 
         return clients
                .Concat(sites)
