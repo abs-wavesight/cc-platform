@@ -7,6 +7,10 @@ on:
         required: true
         type: string
         description: Unique version for the Platform release
+      contracts-version:
+        required: true
+        type: string
+        description: Version to use for Contracts release # v100
       site-system-version:
         required: false
         type: string
@@ -99,6 +103,16 @@ jobs:
                 fi
             done
 
+      - name: Download contracts release
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: 'tags/${{ inputs.contracts-version }}-contracts'
+          file: '.*'
+          regex: true
+          target: 'contracts/'
+          repo: cc-contracts
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+
       - name: Build release
         uses: ncipollo/release-action@v1
         with:
@@ -106,7 +120,7 @@ jobs:
             body: "----"
             name: '${{ inputs.version }} Platform Release'
             commit: main
-            artifacts: "central/*.*, site/*.*"
+            artifacts: "central/*.*, site/*.*, contracts/*.*"
             tag: ${{ steps.build-tag.outputs.lowercase }}
             repo: cc-releases
             token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
