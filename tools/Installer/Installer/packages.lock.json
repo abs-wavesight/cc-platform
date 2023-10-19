@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.186, )",
-        "resolved": "1.0.186",
-        "contentHash": "LNMgrFGKxzrB3Q1+KKUSqauUVOvmVGwqlLFwQBfS2S8EmD/gfEWYmCvWBeVBnfRyi7/mqr99Qr3cGowbLhfHxg==",
+        "requested": "[1.0.193-feature-ado-25058-installer-restore, )",
+        "resolved": "1.0.193-feature-ado-25058-installer-restore",
+        "contentHash": "36bJyqhb3pMiKRL9yFhWx9XivNAtXD642xgR6cVhQJ8FzaVUOMg45dKWKU4fykbf4yUUIdjjPksKr/D5d6dp3w==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",

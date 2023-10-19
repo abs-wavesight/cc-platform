@@ -142,9 +142,9 @@
           "source": "wmic service | findstr /I /R \"dockerd.exe.*Running\" && net stop dockerd",
           "action": "postInstall"
         },	
-		{
-          "source": "wmic service | findstr /I /R \"dockerd.exe.*Stopped\" && net start dockerd",
-          "action": "postInstall"
+        {
+          "source": "$ABS_PATH\\config",
+          "action": "systemRestore"
         }
       ]
     },

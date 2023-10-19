@@ -2,7 +2,7 @@
   "profiles": {
     "Installer": {
       "commandName": "Project",
-      "commandLineArgs": "install",
+      "commandLineArgs": "restore",
       "workingDirectory": "C:\\Users\\Administrator\\Downloads"
     }
   }
