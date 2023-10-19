@@ -110,7 +110,7 @@ jobs:
           file: '.*'
           regex: true
           target: 'contracts/'
-          repo: cc-contracts
+          repo: 'abs-wavesight/cc-contracts'
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
 
       - name: Build release
