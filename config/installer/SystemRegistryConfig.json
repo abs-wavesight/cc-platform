@@ -454,6 +454,35 @@
       ]
     },
     {
+      "name": "Siemens",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-adapters-siemens/releases/download/$SIEMENS_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Siemens/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "siemens.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.siemens.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.siemens.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.siemens.yml",
+          "action": "replaceParameters"
+        },
+        {          
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postSiemensInstall"
+        }
+      ]
+    },
+    {
       "name": "Sftp-Service",
       "files": [
         {

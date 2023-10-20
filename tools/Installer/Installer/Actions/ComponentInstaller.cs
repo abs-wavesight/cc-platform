@@ -19,7 +19,8 @@ public class ComponentInstaller : ActionBase
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
     private const string DiscoSiteUsername = "disco";
-    
+    private const string SiemensSiteUsername = "siemens-adapter";
+
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -190,6 +191,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostDiscoInstall => RunPostDiscoInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostSiemensInstall => RunPostSiemensInstallCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -374,11 +376,32 @@ public class ComponentInstaller : ActionBase
 
         var configText = await File.ReadAllTextAsync(action.Source);
 
-        // Replace the guest password with a new one
+        // Replace the default password with a new one
         var newText = configText
-            .RequireReplace($"{passwordVar}=disco", $"{passwordVar}={account!.Password}");
+            .RequireReplace($"{passwordVar}={DiscoSiteUsername}", $"{passwordVar}={account!.Password}");
 
-        _logger.LogInformation("Altering guest account");
+        _logger.LogInformation("Altering default account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostSiemensInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running Siemens post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                  LocalRabbitPassword, SiemensSiteUsername, null,
+                                  AccountType.Siemens);
+
+        const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the default password with a new one
+        var newText = configText
+            .RequireReplace($"{passwordVar}={SiemensSiteUsername}", $"{passwordVar}={account!.Password}");
+
+        _logger.LogInformation("Altering default account");
         await File.WriteAllTextAsync(action.Source, newText);
     }
 
