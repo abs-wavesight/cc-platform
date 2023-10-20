@@ -143,6 +143,7 @@ public class ComponentInstallerTests
     {
         var loggerFactory = NullLoggerFactory.Instance;
         var commandExecution = new CommandExecutionService(loggerFactory);
+        var serviceManager = new Mock<IServiceManager>();
         var registry = new FileInfo(@"Configs/InstallTest_RegistryConfig.json");
         var config = new FileInfo(@"Configs/InstallerConfig.json");
         var parameters = new Dictionary<string, string>();
@@ -155,7 +156,7 @@ public class ComponentInstallerTests
 
         await File.WriteAllTextAsync(sourcePath, "This is some test content");
 
-        var installer = new ComponentInstaller(loggerFactory, commandExecution, registry, config, parameters, false);
+        var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager.Object, registry, config, parameters, false);
         await installer.ExecuteAsync();
 
         Assert.True(File.Exists(destinationPath));
@@ -164,6 +165,7 @@ public class ComponentInstallerTests
     private static (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
     {
         var commandExecute = new Mock<ICommandExecutionService>();
+        var serviceManager = new Mock<IServiceManager>();
 
         var registryFileInfo = new FileInfo(registryFile);
         var installerFileInfo = string.IsNullOrWhiteSpace(installerFile) == false
@@ -171,7 +173,7 @@ public class ComponentInstallerTests
             : null;
 
         parameters ??= new Dictionary<string, string>();
-        var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, registryFileInfo, installerFileInfo, parameters, false);
+        var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, serviceManager.Object, registryFileInfo, installerFileInfo, parameters, false);
         return (commandExecute, downloader);
     }
 }

@@ -33,6 +33,7 @@ internal class Program
         var getReleaseVersionCommand = SetupGetVersionCommand(args);
         var getContainerVersionCommand = SetupGetContainerVersionCommand(args);
         var addSftpUserCommand = SetupAddSftpUserCommand(args);
+        var addRestoreCommand = SetupRestoreCommand(args);
 
         var root = new RootCommand("Installer for the Common Core platform")
         {
@@ -50,6 +51,7 @@ internal class Program
         root.Add(getReleaseVersionCommand);
         root.Add(getContainerVersionCommand);
         root.Add(addSftpUserCommand);
+        root.Add(addRestoreCommand);
 
         var result = await root.InvokeAsync(args);
         await Task.Delay(1000);
@@ -185,7 +187,8 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt) => await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt)
+                               => await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
     }
@@ -457,6 +460,13 @@ internal class Program
         credentialsFileParam.AddAlias("-cf");
         command.Add(credentialsFileParam);
 
+        var isSilentParam = new Option<bool>("--silent", "Indicates whether the operation is silent")
+        {
+            IsRequired = false
+        };
+        isSilentParam.AddAlias("-s");
+        command.Add(isSilentParam);
+
         command.SetHandler(async (context) =>
         {
             var arguments = new RabbitConfigureCommandArguments
@@ -470,6 +480,7 @@ internal class Program
                 DrexSiteConfig = context.ParseResult.GetValueForOption(drexSiteConfigParam),
                 AccountType = context.ParseResult.GetValueForOption(accountTypeParam),
                 CredentialsFile = context.ParseResult.GetValueForOption(credentialsFileParam),
+                IsSilent = context.ParseResult.GetValueForOption(isSilentParam),
             };
 
             await ExecuteConfigureRabbitCommandAsync(arguments, args);
@@ -591,6 +602,62 @@ internal class Program
         return command;
     }
 
+    private static Command SetupRestoreCommand(string[] args)
+    {
+        var command = new Command("restore", "Restore installed components")
+        {
+            TreatUnmatchedTokensAsErrors = true
+        };
+
+        var registryParam = new Option<FileInfo>("--registry", "Location of registry configuration")
+        {
+            IsRequired = true
+        };
+        registryParam.SetDefaultValue(new FileInfo("SystemRegistryConfig.json"));
+        registryParam.AddAlias("-r");
+        command.Add(registryParam);
+
+        var installConfigParam = new Option<FileInfo>("--config", "Location of install configuration")
+        {
+            IsRequired = false
+        };
+        installConfigParam.AddAlias("-ic");
+        command.Add(installConfigParam);
+
+        var composePathParam = new Option<string>("--compose-path", "Path to compose files")
+        {
+            IsRequired = true
+        };
+        composePathParam.AddAlias("-cp");
+        composePathParam.SetDefaultValue("$ABS_PATH\\config");
+        command.Add(composePathParam);
+
+        var parameterParam = new Option<string[]>("--parameter", "Specific colon separated key value pair to use as a config parameter")
+        {
+            IsRequired = false
+        };
+        parameterParam.AddAlias("-p");
+        parameterParam.AllowMultipleArgumentsPerToken = true;
+        command.Add(parameterParam);
+
+        var verifyOnlyParam = new Option<bool>("--verify", "Verify actions without making any changes");
+        verifyOnlyParam.SetDefaultValue(false);
+        verifyOnlyParam.IsRequired = false;
+        verifyOnlyParam.AddAlias("-v");
+        command.Add(verifyOnlyParam);
+
+        var noPromptParam = new Option<bool>("--no-prompt", "Indicates to not prompt for missing parameters");
+        noPromptParam.SetDefaultValue(false);
+        noPromptParam.IsRequired = false;
+        noPromptParam.AddAlias("-np");
+        command.Add(noPromptParam);
+
+        command.SetHandler(async (registryConfig, installerConfig, composePath, parameters, verifyOnly, noPrompt)
+            => await ExecuteRestoreCommandAsync(registryConfig, installerConfig, composePath, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, composePathParam, parameterParam, verifyOnlyParam, noPromptParam);
+
+        return command;
+    }
+
     private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
     {
         var config = new FileInfo("SystemConfig.json");
@@ -623,13 +690,15 @@ internal class Program
 
         var configParameters = BuildConfigParameters(parameters);
         var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters);
-        var (_, loggerFactory) = Initialize(filePath, args);
+        var (logger, loggerFactory) = Initialize(filePath, args);
         var promptForMissingParameters = !noPrompt;
+
+        var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
             await installer.ExecuteAsync(components);
         }, true);
     }
@@ -707,7 +776,7 @@ internal class Program
                 return;
             }
 
-            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType);
+            var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType, arguments.IsSilent);
 
             if (credentials == null)
             {
@@ -729,14 +798,57 @@ internal class Program
 
     private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
     {
-        var (_, loggerFactory) = Initialize(args);
+        var (logger, loggerFactory) = Initialize(args);
         var commandExecution = new CommandExecutionService(loggerFactory);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+            var uninstaller = new Uninstaller(loggerFactory, commandExecution, serviceManager);
             await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         });
+    }
+
+    private static async Task ExecuteRestoreCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string composePath, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
+    {
+        var configParameters = BuildConfigParameters(parameters);
+
+        var config = new FileInfo("SystemConfig.json");
+        if (installerConfig == null && config.Exists)
+        {
+            installerConfig = config;
+        }
+
+        composePath = composePath.ReplaceConfigParameters(configParameters);
+
+        var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters, "restore");
+        var (logger, loggerFactory) = Initialize(filePath, args);
+        var promptForMissingParameters = !noPrompt;
+
+        var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
+
+        var component = new Component
+        {
+            Name = "Direct",
+            Actions = new List<ComponentAction>(),
+            Files = new List<ComponentFile>(),
+            AdditionalProperties = new Dictionary<string, object>()
+        };
+
+        var action = new ComponentAction
+        {
+            Action = ComponentActionAction.SystemRestore,
+            Source = composePath.ReplaceConfigParameters(configParameters),
+            Destination = "",
+            AdditionalProperties = new Dictionary<string, object>()
+        };
+
+        await ExecuteCommandAsync(loggerFactory, async () =>
+        {
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            await installer.RunSystemRestoreCommandAsync(component, action.Source, action);
+        }, true);
     }
 
     private static async Task ExecuteCommandAsync(ILoggerFactory loggerFactory, Func<Task> action, bool logError = false)
@@ -873,7 +985,7 @@ internal class Program
         return (logger, loggerFactory);
     }
 
-    private static string BuildInstallLogFileLocation(FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> configParameters)
+    private static string BuildInstallLogFileLocation(FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> configParameters, string suffix = "install")
     {
         var config = installerConfig != null
             ? ConfigParser.LoadConfig<InstallerComponentInstallerConfig>(installerConfig.FullName)
@@ -882,7 +994,7 @@ internal class Program
         configParameters
             .MergeParameters(config?.Parameters);
 
-        return BuildLogFileLocation(registryConfig, configParameters, "install");
+        return BuildLogFileLocation(registryConfig, configParameters, suffix);
     }
 
     private static string BuildDownloadLogFileLocation(FileInfo registryConfig, FileInfo? downloaderConfig, Dictionary<string, string> configParameters)

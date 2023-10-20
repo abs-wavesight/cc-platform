@@ -38,12 +38,12 @@ public partial class RabbitConfigurer : ActionBase
         _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
     }
 
-    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, AccountType accountType)
+    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, AccountType accountType, bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
-        return await ConfigureRabbitAsync(client, username, password, accountType);
+        return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
     }
 
     public static string GeneratePassword()
@@ -52,7 +52,6 @@ public partial class RabbitConfigurer : ActionBase
                .IncludeLowercase()
                .IncludeUppercase()
                .IncludeNumeric()
-               .IncludeSpecial()
                .LengthRequired(32)
                .Next();
     }
@@ -100,14 +99,14 @@ public partial class RabbitConfigurer : ActionBase
         Console.WriteLine("Credentials file updated");
     }
 
-    private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType)
+    private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType, bool isSilent)
     {
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
             ? GeneratePassword()
             : password;
 
-        var isAdded = await AddUserAccountAsync(client, username, password, accountType);
+        var isAdded = await AddUserAccountAsync(client, username, password, accountType, isSilent);
 
         if (isAdded == false)
         {
@@ -126,11 +125,11 @@ public partial class RabbitConfigurer : ActionBase
         };
     }
 
-    private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, AccountType accountType)
+    private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, AccountType accountType, bool isSilent)
     {
         var existingUser = await GetUserAsync(client, username);
 
-        if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase))
+        if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase) && !isSilent)
         {
             Console.WriteLine($"User '{username}' exists already. Continuing will change the user credentials.");
             Console.Write($"Type username '{username}' to continue: ");

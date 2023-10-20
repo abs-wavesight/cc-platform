@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.192, )",
-        "resolved": "1.0.192",
-        "contentHash": "2qf/poxy1YRdPMaLlkUFPJkh6pCYxzqs3sx2rkPC0lWAHLaLAt+PB/Q7v7PLksFuVBUJO9K3bIFiD39d7N1TBw==",
+        "requested": "[1.0.194, )",
+        "resolved": "1.0.194",
+        "contentHash": "nrUJIkREfLwXkTPY/QXwD2llkwVA/RfK71LqXAwxegnJmgbLe3PuBPZVObi2x4aYuotWOpKTlnP3JdWr2mnXYw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",

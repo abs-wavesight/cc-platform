@@ -11,4 +11,5 @@ public class RabbitConfigureCommandArguments
     public FileInfo? DrexSiteConfig { get; init; }
     public AccountType AccountType { get; init; }
     public FileInfo? CredentialsFile { get; init; }
+    public bool IsSilent { get; init; }
 }
