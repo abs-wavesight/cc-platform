@@ -8,8 +8,8 @@ services:
     image: ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
-      - BusConnection__username=$SIEMENS_RABBIT_USERNAME
-      - BusConnection__password=$SIEMENS_RABBIT_PASSWORD
+      - BusConnection__username=${SIEMENS_RABBIT_USERNAME}
+      - BusConnection__password=${SIEMENS_RABBIT_PASSWORD}
       - FLAT_LOGS=false
     depends_on:
       - cc.vector

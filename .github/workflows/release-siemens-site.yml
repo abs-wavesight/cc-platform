@@ -41,7 +41,7 @@ on:
         description: Version to use for siemens release # v100
 
 concurrency:
-  group: site-system-release-${{ github.head_ref }}
+  group: siemens-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Site System Release"
+      name: "Siemens System Release"
     secrets: inherit
 
   get-default-rabbitmq-version:

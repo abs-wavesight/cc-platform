@@ -385,7 +385,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, DiscoSiteUsername, null,
-                                  AccountType.Disco);
+                                  AccountType.Disco, true);
 
         const string passwordVar = "DISCO_RABBIT_PASSWORD";
 
@@ -406,7 +406,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, SiemensSiteUsername, null,
-                                  AccountType.Siemens);
+                                  AccountType.Siemens, true);
 
         const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
 
