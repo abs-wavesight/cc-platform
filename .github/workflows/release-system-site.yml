@@ -31,6 +31,10 @@ on:
         required: false
         type: string
         description: Version to use for OpenSSL release # v100
+      disco-version:
+        required: false
+        type: string
+        description: Version to use for disco release # v100
 
 concurrency:
   group: site-system-release-${{ github.head_ref }}
@@ -91,6 +95,15 @@ jobs:
       name: "OpenSSL Release"
     secrets: inherit
 
+  get-default-disco-version:
+    name: Get Default Disco Version
+    if: ${{ inputs.disco-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-disco"
+      name: "Disco Release"
+    secrets: inherit
+
   release-component:
     name: Site System Release
     needs: 
@@ -100,6 +113,7 @@ jobs:
       - get-default-drex-file-version
       - get-default-openssl-version
       - get-next-version
+      - get-default-disco-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -116,6 +130,7 @@ jobs:
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
+        -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
       release-name-prefix: Site System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

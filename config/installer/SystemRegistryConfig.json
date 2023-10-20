@@ -429,7 +429,7 @@
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-disco/releases/download/$DISCO_FILE_RELEASE_TAG/",
+          "source": "https://github.com/abs-wavesight/cc-disco/releases/download/$DISCO_RELEASE_TAG/",
           "destination": "c:/abs/temp/Disco/"
         }
       ],

@@ -5,11 +5,11 @@ services:
 
   cc.disco:	
     container_name: disco	
-    image: ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION
+    image: ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
-      - ServiceBusConfiguration__BusConnection__username=${DISCO_RABBIT_USERNAME}
-      - ServiceBusConfiguration__BusConnection__password=${DISCO_RABBIT_PASSWORD}
+      - ServiceBusConfiguration__BusConnection__username=$DISCO_RABBIT_USERNAME
+      - ServiceBusConfiguration__BusConnection__password=$DISCO_RABBIT_PASSWORD
       - FLAT_LOGS=false
     depends_on:
       - cc.vector
