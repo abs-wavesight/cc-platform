@@ -446,6 +446,10 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.disco.yml",
           "action": "replaceParameters"
+        },
+        {          
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postDiscoInstall"
         }
       ]
     },

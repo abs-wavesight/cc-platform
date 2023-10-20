@@ -18,6 +18,8 @@ public class ComponentInstaller : ActionBase
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
+    private const string DiscoSiteUsername = "disco";
+    
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -95,7 +97,9 @@ public class ComponentInstaller : ActionBase
             .ThenByDescending(x =>
                 x.Action.Action is ComponentActionAction.PostDrexInstall or
                     ComponentActionAction.PostRabbitMqInstall or
-                    ComponentActionAction.PostVectorInstall)
+                    ComponentActionAction.PostVectorInstall or
+                    ComponentActionAction.PostDiscoInstall or
+                    ComponentActionAction.PostSiemensInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ToArray();
 
@@ -185,6 +189,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostVectorInstall => RunPostVectorInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostDiscoInstall => RunPostDiscoInstallCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -351,6 +356,27 @@ public class ComponentInstaller : ActionBase
         // Replace the guest password with a new one
         var newText = configText
             .RequireReplace("\"password\": \"guest\",", $"\"password\": \"{password}\",");
+
+        _logger.LogInformation("Altering guest account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running DISCO post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                  LocalRabbitPassword, DiscoSiteUsername, null,
+                                  AccountType.Disco);
+
+        const string passwordVar = "DISCO_RABBIT_PASSWORD";
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the guest password with a new one
+        var newText = configText
+            .RequireReplace($"{passwordVar}=disco", $"{passwordVar}={account!.Password}");
 
         _logger.LogInformation("Altering guest account");
         await File.WriteAllTextAsync(action.Source, newText);
