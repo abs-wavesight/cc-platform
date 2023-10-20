@@ -117,27 +117,10 @@ public class ComponentInstaller : ActionBase
         _logger.LogInformation($"{component.Name}: Running system restore for '{action.Source}'");
         await _serviceManager.StartServiceAsync(DockerServiceName);
 
-        var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
-        var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
+        await StopAllContainersAsync();
+        await DockerSystemPruneAsync();
 
-        var arguments = configFiles
-                        .Select(x => $"-f {x}")
-                        .StringJoin(" ");
-
-        if (envFile.Length == 1)
-        {
-            arguments = $"--env-file {envFile[0]} " + arguments;
-        }
-
-        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
-
-        var containerCount = configFiles
-            .Count(x => !x.Contains(".root.", StringComparison.OrdinalIgnoreCase));
-
-        if (WaitForDockerContainersHealthy)
-        {
-            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
-        }
+        await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
     private Component[] DetermineComponents(string[]? specificComponents)
@@ -330,7 +313,7 @@ public class ComponentInstaller : ActionBase
     private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running docker compose for '{action.Source}'");
-        await RunSystemRestoreCommandAsync(component, rootLocation, action);
+        await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
     private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -517,5 +500,41 @@ public class ComponentInstaller : ActionBase
         _logger.LogInformation($"Creating {AdditionalFilesName} folder");
         var path = Path.Combine(_registryConfig.Location, AdditionalFilesName);
         Directory.CreateDirectory(path);
+    }
+
+    private async Task StopAllContainersAsync()
+    {
+        await _commandExecutionService.ExecuteCommandAsync("powershell",
+                                                           "-Command \"docker stop $(docker ps -a -q)\" 2>&1", "");
+    }
+
+    private async Task DockerSystemPruneAsync()
+    {
+        await _commandExecutionService.ExecuteCommandAsync(@"c:\docker\docker", "system prune -f", "");
+    }
+
+    private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
+    {
+        var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
+        var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
+
+        var arguments = configFiles
+                        .Select(x => $"-f {x}")
+                        .StringJoin(" ");
+
+        if (envFile.Length == 1)
+        {
+            arguments = $"--env-file {envFile[0]} " + arguments;
+        }
+
+        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
+
+        var containerCount = configFiles
+            .Count(x => !x.Contains(".root.", StringComparison.OrdinalIgnoreCase));
+
+        if (WaitForDockerContainersHealthy)
+        {
+            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+        }
     }
 }
