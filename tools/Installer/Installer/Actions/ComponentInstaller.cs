@@ -18,6 +18,7 @@ public class ComponentInstaller : ActionBase
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
+    private const string VectorUsername = "vector";
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -362,7 +363,7 @@ public class ComponentInstaller : ActionBase
 
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, DrexSiteUsername, null,
+                                  LocalRabbitPassword, VectorUsername, null,
                                   AccountType.Vector, true);
 
         var config = await File.ReadAllTextAsync(action.Source);
