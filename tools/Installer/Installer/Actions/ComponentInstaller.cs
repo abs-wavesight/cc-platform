@@ -18,6 +18,7 @@ public class ComponentInstaller : ActionBase
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
+    private const string VectorUsername = "vector";
     private const string DockerServiceName = "dockerd";
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
@@ -376,7 +377,7 @@ public class ComponentInstaller : ActionBase
 
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, DrexSiteUsername, null,
+                                  LocalRabbitPassword, VectorUsername, null,
                                   AccountType.Vector, true);
 
         var config = await File.ReadAllTextAsync(action.Source);
@@ -462,7 +463,7 @@ public class ComponentInstaller : ActionBase
             : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
 
         return (container.State.Health == null || !string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
-&& container.State.Running && container.State.Restarting == false &&
+            && container.State.Running && container.State.Restarting == false &&
             ((container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase)) ||
              DateTime.UtcNow.Subtract(startTime) > containerHealthyTime);
     }
