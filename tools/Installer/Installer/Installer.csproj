@@ -18,9 +18,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.186" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.208" />
-		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.211" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.194" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.211" />
+		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.213" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />

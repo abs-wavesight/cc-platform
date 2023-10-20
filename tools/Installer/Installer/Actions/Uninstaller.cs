@@ -16,11 +16,13 @@ public class Uninstaller : ActionBase
 
     private readonly ILogger _logger;
     private readonly ICommandExecutionService _commandExecutionService;
+    private readonly IServiceManager _serviceManager;
 
-    public Uninstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService)
+    public Uninstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, IServiceManager serviceManager)
     {
         _logger = loggerFactory.CreateLogger<Uninstaller>();
         _commandExecutionService = commandExecutionService;
+        _serviceManager = serviceManager;
     }
 
     public async Task UninstallSystemAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker)
@@ -111,7 +113,7 @@ public class Uninstaller : ActionBase
     {
         Console.WriteLine("Removing docker");
 
-        await RemoveWindowsServiceAsync(_logger, _commandExecutionService, "dockerd", true);
+        await _serviceManager.DeleteServiceAsync("dockerd", true);
         DeleteRecursiveDirectory(_logger, dockerLocation.FullName);
         var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable)!;
 

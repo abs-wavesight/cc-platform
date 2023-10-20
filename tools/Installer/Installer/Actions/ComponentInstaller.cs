@@ -19,6 +19,7 @@ public class ComponentInstaller : ActionBase
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
     private const string VectorUsername = "vector";
+    private const string DockerServiceName = "dockerd";
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -27,6 +28,7 @@ public class ComponentInstaller : ActionBase
 
     private readonly ILoggerFactory _loggerFactory;
     private readonly ICommandExecutionService _commandExecutionService;
+    private readonly IServiceManager _serviceManager;
     private readonly ILogger _logger;
 
     private readonly InstallerComponentInstallerConfig? _installerConfig;
@@ -35,11 +37,12 @@ public class ComponentInstaller : ActionBase
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
-    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
+    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, IServiceManager serviceManager,
         FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
     {
         _loggerFactory = loggerFactory;
         _commandExecutionService = commandExecutionService;
+        _serviceManager = serviceManager;
         _logger = loggerFactory.CreateLogger<ComponentInstaller>();
 
         _installerConfig = installerConfig != null
@@ -98,6 +101,7 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostRabbitMqInstall or
                     ComponentActionAction.PostVectorInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
             .ToArray();
 
         foreach (var action in actions)
@@ -106,6 +110,34 @@ public class ComponentInstaller : ActionBase
         }
 
         _logger.LogInformation("Installer complete");
+    }
+
+    public async Task RunSystemRestoreCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running system restore for '{action.Source}'");
+        await _serviceManager.StartServiceAsync(DockerServiceName);
+
+        var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
+        var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
+
+        var arguments = configFiles
+                        .Select(x => $"-f {x}")
+                        .StringJoin(" ");
+
+        if (envFile.Length == 1)
+        {
+            arguments = $"--env-file {envFile[0]} " + arguments;
+        }
+
+        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
+
+        var containerCount = configFiles
+            .Count(x => !x.Contains(".root.", StringComparison.OrdinalIgnoreCase));
+
+        if (WaitForDockerContainersHealthy)
+        {
+            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+        }
     }
 
     private Component[] DetermineComponents(string[]? specificComponents)
@@ -186,6 +218,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostVectorInstall => RunPostVectorInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -296,27 +329,8 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
-        var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
-
-        var arguments = configFiles
-            .Select(x => $"-f {x}")
-            .StringJoin(" ");
-
-        if (envFile.Length == 1)
-        {
-            arguments = $"--env-file {envFile[0]} " + arguments;
-        }
-
-        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
-
-        var containerCount = configFiles
-            .Count(x => x.Contains(".root.", StringComparison.OrdinalIgnoreCase) == false);
-
-        if (WaitForDockerContainersHealthy)
-        {
-            await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
-        }
+        _logger.LogInformation($"{component.Name}: Running docker compose for '{action.Source}'");
+        await RunSystemRestoreCommandAsync(component, rootLocation, action);
     }
 
     private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -449,7 +463,7 @@ public class ComponentInstaller : ActionBase
             : DateTime.Parse(container.State.StartedAt).ToUniversalTime();
 
         return (container.State.Health == null || !string.Equals(container.State.Health.Status, "unhealthy", StringComparison.OrdinalIgnoreCase))
-&& container.State.Running && container.State.Restarting == false &&
+            && container.State.Running && container.State.Restarting == false &&
             ((container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase)) ||
              DateTime.UtcNow.Subtract(startTime) > containerHealthyTime);
     }
@@ -486,8 +500,8 @@ public class ComponentInstaller : ActionBase
         }
 
         // Must stop docker first. Ours is dockerd, default can be docker
-        await StopWindowsServiceAsync(_logger, _commandExecutionService, "dockerd");
-        await StopWindowsServiceAsync(_logger, _commandExecutionService, "docker");
+        await _serviceManager.StopServiceAsync("dockerd");
+        await _serviceManager.StopServiceAsync("docker");
 
         var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
         var installLocation = new DirectoryInfo(_registryConfig.Location);
