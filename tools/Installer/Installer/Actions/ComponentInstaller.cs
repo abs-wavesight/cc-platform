@@ -27,6 +27,7 @@ public class ComponentInstaller : ActionBase
 
     private readonly ILoggerFactory _loggerFactory;
     private readonly ICommandExecutionService _commandExecutionService;
+    private readonly IServiceManager _serviceManager;
     private readonly ILogger _logger;
 
     private readonly InstallerComponentInstallerConfig? _installerConfig;
@@ -35,11 +36,12 @@ public class ComponentInstaller : ActionBase
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
-    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService,
+    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, IServiceManager serviceManager,
         FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
     {
         _loggerFactory = loggerFactory;
         _commandExecutionService = commandExecutionService;
+        _serviceManager = serviceManager;
         _logger = loggerFactory.CreateLogger<ComponentInstaller>();
 
         _installerConfig = installerConfig != null
@@ -112,7 +114,7 @@ public class ComponentInstaller : ActionBase
     public async Task RunSystemRestoreCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running system restore for '{action.Source}'");
-        await StartWindowsServiceAsync(_logger, _commandExecutionService, DockerServiceName);
+        await _serviceManager.StartServiceAsync(DockerServiceName);
 
         var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
         var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
@@ -497,8 +499,8 @@ public class ComponentInstaller : ActionBase
         }
 
         // Must stop docker first. Ours is dockerd, default can be docker
-        await StopWindowsServiceAsync(_logger, _commandExecutionService, "dockerd");
-        await StopWindowsServiceAsync(_logger, _commandExecutionService, "docker");
+        await _serviceManager.StopServiceAsync("dockerd");
+        await _serviceManager.StopServiceAsync("docker");
 
         var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
         var installLocation = new DirectoryInfo(_registryConfig.Location);

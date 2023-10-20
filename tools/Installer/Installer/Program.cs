@@ -690,13 +690,15 @@ internal class Program
 
         var configParameters = BuildConfigParameters(parameters);
         var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters);
-        var (_, loggerFactory) = Initialize(filePath, args);
+        var (logger, loggerFactory) = Initialize(filePath, args);
         var promptForMissingParameters = !noPrompt;
+
+        var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
             await installer.ExecuteAsync(components);
         }, true);
     }
@@ -796,12 +798,13 @@ internal class Program
 
     private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
     {
-        var (_, loggerFactory) = Initialize(args);
+        var (logger, loggerFactory) = Initialize(args);
         var commandExecution = new CommandExecutionService(loggerFactory);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var uninstaller = new Uninstaller(loggerFactory, commandExecution);
+            var uninstaller = new Uninstaller(loggerFactory, commandExecution, serviceManager);
             await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         });
     }
@@ -819,30 +822,31 @@ internal class Program
         composePath = composePath.ReplaceConfigParameters(configParameters);
 
         var filePath = BuildInstallLogFileLocation(registryConfig, installerConfig, configParameters, "restore");
-        var (_, loggerFactory) = Initialize(filePath, args);
+        var (logger, loggerFactory) = Initialize(filePath, args);
         var promptForMissingParameters = !noPrompt;
+
+        var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
+        var serviceManager = new WindowsServiceManager(logger, commandExecution);
+
+        var component = new Component
+        {
+            Name = "Direct",
+            Actions = new List<ComponentAction>(),
+            Files = new List<ComponentFile>(),
+            AdditionalProperties = new Dictionary<string, object>()
+        };
+
+        var action = new ComponentAction
+        {
+            Action = ComponentActionAction.SystemRestore,
+            Source = composePath.ReplaceConfigParameters(configParameters),
+            Destination = "",
+            AdditionalProperties = new Dictionary<string, object>()
+        };
 
         await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
-
-            var component = new Component
-            {
-                Name = "Direct",
-                Actions = new List<ComponentAction>(),
-                Files = new List<ComponentFile>(),
-                AdditionalProperties = new Dictionary<string, object>()
-            };
-
-            var action = new ComponentAction
-            {
-                Action = ComponentActionAction.SystemRestore,
-                Source = composePath.ReplaceConfigParameters(configParameters),
-                Destination = "",
-                AdditionalProperties = new Dictionary<string, object>()
-            };
-
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
             await installer.RunSystemRestoreCommandAsync(component, action.Source, action);
         }, true);
     }

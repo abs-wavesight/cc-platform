@@ -17,7 +17,9 @@ public class UninstallerTests : TestsBase
         Directory.CreateDirectory(config);
 
         var commandExecution = new Mock<ICommandExecutionService>();
-        var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
+        var serviceManager = new Mock<IServiceManager>();
+
+        var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object, serviceManager.Object);
         await uninstaller.UninstallSystemAsync(null, testPath, null, true, null);
 
         Directory.Exists(config).Should().BeFalse();
@@ -29,7 +31,9 @@ public class UninstallerTests : TestsBase
         var testPath = Directory.CreateTempSubdirectory("uninstall_test");
 
         var commandExecution = new Mock<ICommandExecutionService>();
-        var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object);
+        var serviceManager = new Mock<IServiceManager>();
+
+        var uninstaller = new Uninstaller(NullLoggerFactory.Instance, commandExecution.Object, serviceManager.Object);
         await uninstaller.UninstallSystemAsync(testPath, null, null, null, true);
 
         Directory.Exists(testPath.FullName).Should().BeFalse();
