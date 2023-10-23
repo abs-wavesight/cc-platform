@@ -6,5 +6,6 @@ public enum AccountType
     LocalDrex,
     RemoteDrex,
     Client,
-    Disco
+    Disco,
+    Siemens
 }
