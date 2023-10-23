@@ -23,7 +23,6 @@ public class ComponentInstaller : ActionBase
     private const string DiscoSiteUsername = "disco";
     private const string SiemensSiteUsername = "siemens-adapter";
 
-
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
     private const string ReadmeName = "readme.txt";
