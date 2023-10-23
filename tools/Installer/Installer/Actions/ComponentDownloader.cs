@@ -55,6 +55,12 @@ public class ComponentDownloader : ActionBase
         _logger.LogInformation("Starting downloader");
         Directory.CreateDirectory(_registryConfig.Location);
 
+        var registeredComponentsLog = $"Registered components: {_registryConfig.Components.Select(c => c.Name).ToArray().StringJoin(", ")}";
+        _logger.LogInformation(registeredComponentsLog);
+
+        var requiredComponentsLog = $"Required components: {specificComponents?.StringJoin(", ")}";
+        _logger.LogInformation(requiredComponentsLog);
+
         var components = DetermineComponents(_registryConfig, specificComponents, _downloaderConfig?.Components);
 
         await components

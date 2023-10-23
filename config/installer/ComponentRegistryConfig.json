@@ -218,7 +218,7 @@
       "files":[
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION",
+          "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA",
           "destination": "disco.tar"
         },
         {
@@ -230,6 +230,27 @@
       "actions": [
         {
           "source": "docker-compose.disco.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Siemens",
+      "files":[
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
+          "destination": "siemens.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.siemens.yml",
+          "destination": "docker-compose.siemens.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.siemens.yml",
           "action": "replaceParameters"
         }
       ]
