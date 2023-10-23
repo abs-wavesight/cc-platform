@@ -55,18 +55,11 @@ public class ComponentDownloader : ActionBase
         _logger.LogInformation("Starting downloader");
         Directory.CreateDirectory(_registryConfig.Location);
 
-        var registredComponents = _registryConfig.Components.Select(c => c.Name).ToArray();
-        if (registredComponents != null && registredComponents.Length > 0)
-        {
-            var registerdComponentsLog = "Registred components: " + string.Join(Environment.NewLine + "----", registredComponents);
-            _logger.LogInformation(registerdComponentsLog);
-        }
+        var registerdComponentsLog = $"Required components: {_registryConfig.Components.Select(c => c.Name).ToArray().StringJoin(", ")}";
+        _logger.LogInformation(registerdComponentsLog);
 
-        if (specificComponents != null && specificComponents.Length > 0)
-        {
-            var requiredComponentsLog = "Required components: " + string.Join(Environment.NewLine + "----", specificComponents);
-            _logger.LogInformation(requiredComponentsLog);
-        }
+        var requiredComponentsLog = $"Required components: {specificComponents?.StringJoin(", ")}";
+        _logger.LogInformation(requiredComponentsLog);
 
         var components = DetermineComponents(_registryConfig, specificComponents, _downloaderConfig?.Components);
 
