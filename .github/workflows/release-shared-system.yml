@@ -118,7 +118,7 @@ jobs:
       - name: Compress contents
         run: |
           .\Installer.exe compress -s c:/abs/installer -d ${{ inputs.windows-version }}.zip         	 
-		  
+
       - name: Chunk contents
         run: |
           .\Installer.exe chunk -s ${{ inputs.windows-version }}.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs
