@@ -29,3 +29,6 @@ services:
         source: $ABS_PATH/config/vendor-configs
         target: C:/app/config/vendor-configs
         read_only: true
+
+volumes:
+  disco-scheduler-storage:
