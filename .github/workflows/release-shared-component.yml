@@ -87,6 +87,10 @@ jobs:
       - name: Compress contents
         run: |
           .\Installer.exe compress -s c:/abs/installer -d ${{ inputs.windows-version }}.zip
+
+      - name: Remove logs
+        run: |
+          del c:/abs/installer/*.log
           
       - name: Chunk contents
         run: |
