@@ -84,14 +84,14 @@ jobs:
           .\Installer.exe download -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
           .\Installer.exe install -np -r ComponentRegistryConfig.json -c ${{ inputs.component_name }} -p `$DOWNLOAD_PATH:c:/abs -p `$WINDOWS_VERSION:${{ inputs.windows-version }} ${{ inputs.component-params }}
 
+      - name: Remove logs
+        run: |
+          del c:/abs/installer/*.log
+
       - name: Compress contents
         run: |
           .\Installer.exe compress -s c:/abs/installer -d ${{ inputs.windows-version }}.zip
 
-      - name: Remove logs
-        run: |
-          del c:/abs/installer/*.log
-          
       - name: Chunk contents
         run: |
           .\Installer.exe chunk -s ${{ inputs.windows-version }}.zip -d .\ --size (1 * 1024 * 1024 * 1024) -rs         
