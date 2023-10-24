@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
+using Google.Protobuf;
 using Microsoft.Azure.Functions.Worker.Http;
-using ProtoBuf;
 
 namespace ProtoJsonInput;
 
@@ -11,7 +11,7 @@ public class RequestHandler
     private const string ContentTypeHeader = "Content-Type";
     private const string ProtobufMediaType = "application/protobuf";
     private const string JsonMediaType = "application/json";
-    public static async Task<T?> ParseBody<T>(HttpRequestData request) where T : class
+    public static async Task<T?> ParseBody<T>(HttpRequestData request) where T : class, IMessage, new()
     {
         if (!request.Headers.TryGetValues(ContentTypeHeader, out var values))
         {
@@ -28,8 +28,9 @@ public class RequestHandler
 
         if (type.MediaType.Equals(ProtobufMediaType, StringComparison.OrdinalIgnoreCase))
         {
-            var body = request.Body;
-            return Serializer.Deserialize<T>(body);
+            var t = new T();
+            t.MergeFrom(request.Body);
+            return t;
         }
 
         if (type.MediaType.Equals(JsonMediaType, StringComparison.OrdinalIgnoreCase))
@@ -41,7 +42,7 @@ public class RequestHandler
     }
 
     public static async Task<HttpResponseData> GenerateResponse<T>(HttpRequestData req, T model,
-        HttpStatusCode responseCode = HttpStatusCode.OK)
+        HttpStatusCode responseCode = HttpStatusCode.OK) where T : IMessage
     {
         if (!req.Headers.TryGetValues(AcceptHeader, out var values))
         {
@@ -55,13 +56,7 @@ public class RequestHandler
             
             response.Headers.Add(ContentTypeHeader, ProtobufMediaType);
 
-            byte[] protobufData;
-            using (var stream = new MemoryStream())
-            {
-                Serializer.Serialize(stream, model);
-                protobufData = stream.ToArray();
-            }
-
+            var protobufData = model.ToByteArray();
             await response.WriteBytesAsync(protobufData);
             return response;
         }

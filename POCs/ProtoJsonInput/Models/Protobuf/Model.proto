@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "ProtoJsonInput";
+option csharp_namespace = "Models";
 
-message Person {
+message Model {
     int32 id = 1;
     string data = 2;
 }
