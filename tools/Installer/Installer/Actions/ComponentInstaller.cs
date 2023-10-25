@@ -338,8 +338,8 @@ public class ComponentInstaller : ActionBase
 
         // Replace the drex local account credentials
         var newText = envFile
-                      .RequireReplace($"{usernameVar}={LocalRabbitPassword}", $"{usernameVar}={account!.Username}")
-                      .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
+            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
 
         _logger.LogInformation("Updating local drex account");
         await File.WriteAllTextAsync(action.Source, newText);
@@ -369,13 +369,15 @@ public class ComponentInstaller : ActionBase
                                   LocalRabbitPassword, DiscoSiteUsername, null,
                                   AccountType.Disco, true);
 
+        const string usernameVar = "DISCO_RABBIT_USERNAME";
         const string passwordVar = "DISCO_RABBIT_PASSWORD";
 
         var configText = await File.ReadAllTextAsync(action.Source);
 
         // Replace the default password with a new one
         var newText = configText
-            .RequireReplace($"{passwordVar}={DiscoSiteUsername}", $"{passwordVar}={account!.Password}");
+            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
 
         _logger.LogInformation("Altering default account");
         await File.WriteAllTextAsync(action.Source, newText);
@@ -390,13 +392,15 @@ public class ComponentInstaller : ActionBase
                                   LocalRabbitPassword, SiemensSiteUsername, null,
                                   AccountType.Siemens, true);
 
+        const string usernameVar = "SIEMENS_RABBIT_USERNAME";
         const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
 
         var configText = await File.ReadAllTextAsync(action.Source);
 
         // Replace the default password with a new one
         var newText = configText
-            .RequireReplace($"{passwordVar}={SiemensSiteUsername}", $"{passwordVar}={account!.Password}");
+            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
 
         _logger.LogInformation("Altering default account");
         await File.WriteAllTextAsync(action.Source, newText);

@@ -473,6 +473,11 @@
           "action": "copy"
         },
         {
+          "source": "..\\AdditionalFiles\\siemens-config.json",
+          "destination": "$ABS_PATH\\config\\vendor-configs\\siemens-config.json",
+          "action": "copy"
+        },
+        {
           "source": "$ABS_PATH\\config\\docker-compose.siemens.yml",
           "action": "replaceParameters"
         },
