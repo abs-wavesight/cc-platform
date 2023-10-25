@@ -44,7 +44,7 @@
       "name": "siemens-adapter",
       "password": "siemens-adapter",
       "tags": [
-        "user"
+        "administrator"
       ]
     }
   ],
