@@ -394,7 +394,7 @@ public class ComponentInstaller : ActionBase
 
         const string usernameVar = "SIEMENS_RABBIT_USERNAME";
         const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
-        
+
         var configText = await File.ReadAllTextAsync(action.Source);
 
         // Replace the default password with a new one
