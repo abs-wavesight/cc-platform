@@ -142,8 +142,17 @@ public partial class RabbitConfigurer : ActionBase
             }
         }
 
-        var user = UserInfo.ByPassword(username, password)
-            .AddTag(UserTags.Management);
+        var user = UserInfo.ByPassword(username, password);
+
+        if (accountType == AccountType.Disco)
+        {
+            //Easy qnet requires admin permissions
+            user.AddTag(UserTags.Administrator);
+        }
+        else
+        {
+            user.AddTag(UserTags.Management);
+        }
 
         await client.CreateUserAsync(user);
         await UpdateUserPermissionsAsync(client, username, accountType);
