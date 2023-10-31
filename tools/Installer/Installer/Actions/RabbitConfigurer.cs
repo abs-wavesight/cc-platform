@@ -172,6 +172,7 @@ public partial class RabbitConfigurer : ActionBase
         {
             AccountType.Unknown => throw new Exception($"Unknown account type: {accountType}"),
             AccountType.LocalDrex => ".*",
+            AccountType.Disco => ".*",
             _ => ""
         };
     }
