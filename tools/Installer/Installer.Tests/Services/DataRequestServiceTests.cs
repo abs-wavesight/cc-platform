@@ -17,7 +17,7 @@ public class DataRequestServiceTests
     public async Task VerifyOnly_FileNotDownloaded()
     {
         var dataRequest = new DataRequestService(NullLoggerFactory.Instance, false);
-        var result = await dataRequest.RequestByteArrayAsync("https://abswavesight.com");
+        var result = await dataRequest.RequestByteArrayAsync("https://www.abswavesight.com/");
         Assert.True(result.Length > 0);
     }
 }
