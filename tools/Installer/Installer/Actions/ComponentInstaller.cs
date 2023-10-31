@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Management;
+using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions.Models;
@@ -10,6 +11,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable CA1416
 namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentInstaller : ActionBase
@@ -27,6 +29,14 @@ public class ComponentInstaller : ActionBase
     private const string ReleaseZipName = "Release.zip";
     private const string ReadmeName = "readme.txt";
     private const string AdditionalFilesName = "AdditionalFiles";
+
+    private const string Win32OptionalFeatures = "Win32_OptionalFeature";
+    private const string Win32ContainerFeature = "Containers";
+    private const string Win32InstalledStatus = "InstallState";
+    private const string Win32PropertyName = "Name";
+
+    // https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-optionalfeature
+    private const string Win32FeatureEnabled = "1"; // 1 is enabled, 2 is disabled
 
     private readonly ILoggerFactory _loggerFactory;
     private readonly ICommandExecutionService _commandExecutionService;
@@ -72,6 +82,13 @@ public class ComponentInstaller : ActionBase
         }
 
         _logger.LogInformation("Starting installer");
+        var shouldContinue = await EnableContainersAsync();
+
+        if (!shouldContinue)
+        {
+            return;
+        }
+
         await PrintReadmeFileAsync();
         await ExpandReleaseZipFile();
 
@@ -501,6 +518,42 @@ public class ComponentInstaller : ActionBase
             && container.State.Running && container.State.Restarting == false &&
             ((container.State.Health != null && string.Equals(container.State.Health.Status, "healthy", StringComparison.OrdinalIgnoreCase)) ||
              DateTime.UtcNow.Subtract(startTime) > containerHealthyTime);
+    }
+
+    private async Task<bool> EnableContainersAsync()
+    {
+        await Task.Yield();
+        _logger.LogInformation("Checking if windows containers are enabled");
+
+        var mc = new ManagementClass(Win32OptionalFeatures);
+        var containerFeature = mc.GetInstances()
+            .OfType<ManagementBaseObject>()
+            .FirstOrDefault(x =>
+            {
+                var propertyLookup = x.Properties
+                    .OfType<PropertyData>()
+                    .ToDictionary(x => x.Name, x => x.Value);
+
+                propertyLookup.TryGetValue(Win32PropertyName, out var name);
+                propertyLookup.TryGetValue(Win32InstalledStatus, out var installed);
+
+                return name?.ToString() == Win32ContainerFeature && installed?.ToString() == Win32FeatureEnabled;
+            });
+
+        if (containerFeature is not null)
+        {
+            _logger.LogInformation("Containers are enabled");
+            return true;
+        }
+
+        _logger.LogInformation("Containers are not enabled. Enabling to continue");
+
+        //powershell -Command Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart
+        await _commandExecutionService.ExecuteCommandAsync("powershell",
+            "-Command Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart", "");
+
+        _logger.LogInformation("Containers are enabled. Restart machine to continue");
+        return false;
     }
 
     private async Task PrintReadmeFileAsync()
