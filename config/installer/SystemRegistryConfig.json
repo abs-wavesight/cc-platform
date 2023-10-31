@@ -450,6 +450,14 @@
         {          
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postDiscoInstall"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/vendor-configs')",
+          "action": "execute"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/client-configs')",
+          "action": "execute"
         }
       ]
     },
