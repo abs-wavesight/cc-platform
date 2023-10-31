@@ -29,6 +29,10 @@ services:
         source: $ABS_PATH/config/vendor-configs
         target: C:/app/config/vendor-configs
         read_only: true
+      - type: bind
+        source: $ABS_PATH/config/client-configs
+        target: C:/app/config/client-configs
+        read_only: true
 
 volumes:
   disco-scheduler-storage:
