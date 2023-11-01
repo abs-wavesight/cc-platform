@@ -81,6 +81,7 @@ public class ComponentDownloaderTests
         var parameters = new Dictionary<string, string>();
 
         var expectedFile = @"c:\abs\installer\RabbitMq\download_file";
+        Directory.CreateDirectory(@"c:\abs\installer\RabbitMq\");
         File.Delete(expectedFile);
 
         var downloader = new ComponentDownloader(loggerFactory, dataRequest, commandExecution, registry, config, parameters, false);
