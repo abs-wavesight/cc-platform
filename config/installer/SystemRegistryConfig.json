@@ -81,10 +81,6 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -NoRestart",
-          "action": "executeImmediate"
-        },
-        {
           "source": "wmic service | findstr /I /R \"dockerd.exe\" || c:\\docker\\dockerd --service-name dockerd --register-service",
           "action": "executeImmediate"
         },
