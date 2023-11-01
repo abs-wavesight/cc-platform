@@ -5,6 +5,7 @@ using Abs.CommonCore.Contracts.Json.Drex;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Extensions;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,9 @@ public partial class RabbitConfigurer : ActionBase
 {
     [GeneratedRegex(@"^cc\.drex\.(site|central)\.internal-src-dlq\.q$", RegexOptions.Compiled)]
     private static partial Regex InternalDlqRegex();
+
+    [GeneratedRegex(@"^cc\.drex\.(site|central)\..*log.*\.q$", RegexOptions.Compiled)]
+    private static partial Regex InternalRegex();
 
     [GeneratedRegex(@"^cc\.drex\.(ed|et)$", RegexOptions.Compiled)]
     private static partial Regex ExchangesRegex();
@@ -160,20 +164,20 @@ public partial class RabbitConfigurer : ActionBase
             ?? throw new Exception("User account does not exist");
 
         var permissionRegex = BuildAccountPermissions(accountType, username);
-        var configurePermissions = BuildConfigurePermissions(accountType);
+        var configurePermissions = BuildConfigurePermissions(accountType, permissionRegex);
 
         var vHost = await client.GetVhostAsync(SystemVhost);
         await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
     }
 
-    private static string BuildConfigurePermissions(AccountType accountType)
+    private static string BuildConfigurePermissions(AccountType accountType, string permissionsRegex)
     {
         return accountType switch
         {
             AccountType.Unknown => throw new Exception($"Unknown account type: {accountType}"),
             AccountType.LocalDrex => ".*",
             AccountType.Disco => ".*",
-            _ => ""
+            _ => permissionsRegex
         };
     }
 
@@ -181,6 +185,7 @@ public partial class RabbitConfigurer : ActionBase
     {
         const string errorQueueName = "error";
         var internalDlqRegex = InternalDlqRegex().ToString();
+        var internalRegex = InternalRegex().ToString();
         var exchangesRegex = ExchangesRegex().ToString();
         var siteFileShippingQueues = SiteFileShippingRegex().ToString();
 
@@ -204,7 +209,8 @@ public partial class RabbitConfigurer : ActionBase
         }
 
         var userQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
-        return string.Join("|", userQueuesRegex, internalDlqRegex, exchangesRegex, errorQueueName, siteFileShippingQueues);
+        return new[] { userQueuesRegex, internalDlqRegex, internalRegex, exchangesRegex, errorQueueName, siteFileShippingQueues }
+            .StringJoin("|");
     }
 
     private static async Task<User?> GetUserAsync(IManagementClient client, string username)
