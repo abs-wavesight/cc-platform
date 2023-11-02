@@ -18,7 +18,7 @@ public class HealthCheckController : ControllerBase
     private const string CacheKey = "Health_Check";
     private const string ContainerHealthyState = "running";
     private const string ContainerHealthyStatus = "healthy";
-    private TimeSpan _cacheTime = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(1);
 
     public HealthCheckController(ILogger<HealthCheckController> logger, IMemoryCache cache, MonitorContainer[] containersToCheck)
     {
@@ -40,14 +40,7 @@ public class HealthCheckController : ControllerBase
                 return health;
             });
 
-        if (string.IsNullOrWhiteSpace(result))
-        {
-            return Ok("All containers are healthy");
-        }
-        else
-        {
-            return Problem(statusCode: 503, detail: result);
-        }
+        return string.IsNullOrWhiteSpace(result) ? Ok("All containers are healthy") : Problem(statusCode: 503, detail: result);
     }
 
     private async Task<string> LoadCurrentHealthAsync()
