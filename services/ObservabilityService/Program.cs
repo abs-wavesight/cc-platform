@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Abs.CommonCore.ObservabilityService.Services;
 using ObservabilityService.Models;
 
 const string ContainersConfigFile = "Config/AllContainers.json";
@@ -16,6 +17,8 @@ builder.Services.AddMemoryCache();
 var json = await System.IO.File.ReadAllTextAsync(ContainersConfigFile);
 var containerInfo = JsonSerializer.Deserialize<MonitorContainer[]>(json)!;
 builder.Services.AddSingleton<MonitorContainer[]>(containerInfo);
+
+builder.Services.AddSingleton<IDockerContainerHealthService>(new DockerContainerHealthService());
 
 var app = builder.Build();
 
