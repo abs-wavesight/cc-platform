@@ -1,0 +1,24 @@
+[
+  {
+    "Name": "drex-file-service"
+  },
+  {
+    "Name": "disco-service"
+  },
+  {
+    "Name": "drex-message-service"
+  },
+  {
+    "Name": "vector-site"
+  },
+  {
+    "Name": "rabbitmq-local"
+  },
+  {
+    "Name": "sftp-service"
+  },
+  {
+    "Name": "siemens-adapter",
+    "IsRequired": false
+  }
+]
