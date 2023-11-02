@@ -35,6 +35,10 @@ on:
         required: false
         type: string
         description: Version to use for disco release # v100
+      observability-service-version:
+        required: false
+        type: string
+        description: Version to use for Observability Service release # v100        
 
 concurrency:
   group: site-system-release-${{ github.head_ref }}
@@ -104,6 +108,15 @@ jobs:
       name: "Disco Release"
     secrets: inherit
 
+  get-default-observability-service-version:
+    name: Get Default Observability Service Version
+    if: ${{ inputs.observability-service-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "Observability Service Release"
+    secrets: inherit
+
   release-component:
     name: Site System Release
     needs: 
@@ -114,6 +127,7 @@ jobs:
       - get-default-openssl-version
       - get-next-version
       - get-default-disco-version
+      - get-default-observability-service-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -131,6 +145,7 @@ jobs:
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
+        -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}-observability-service
       release-name-prefix: Site System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

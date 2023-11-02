@@ -7,7 +7,8 @@
     "Drex-File",
     "OpenSsl",
     "Installer",
-    "Disco"
+    "Disco",
+	"Observability-Service"	
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",

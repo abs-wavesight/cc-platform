@@ -533,6 +533,31 @@
           "action": "copy"
         }
       ]
+    },
+	{
+      "name": "Observability-Service",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OBSERVABILITY_SERVICE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Sftp-Service/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "observability-service.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.observability-service.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.observability-service.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.observability-service.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }
