@@ -2,5 +2,5 @@
 version: '3.9'
 
 services:
-  cc.sftp-service:
+  cc.observability-service:
     image: ghcr.io/abs-wavesight/cc-observability-service:windows-${WINDOWS_VERSION}

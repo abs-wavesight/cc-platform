@@ -18,6 +18,9 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "sftp-service", imageName: "cc-sftp-service")]
     public ComposeComponentMode? SftpService { get; set; }
 
+    [ComposeComponent(composePath: "observability-service", imageName: "cc-observability-service")]
+    public ComposeComponentMode? ObservabilityService { get; set; }
+
     [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
@@ -82,9 +85,6 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "siemens-adapter", imageName: "cc-adapters-siemens")]
     [ComposeComponentDependency(nameof(DiscoService))]
     public ComposeComponentMode? SiemensAdapter { get; set; }
-
-    [ComposeComponent(composePath: "observability-service", imageName: "cc-observability-service")]
-    public ComposeComponentMode? ObservabilityService { get; set; }
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
