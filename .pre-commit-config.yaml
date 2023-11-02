@@ -26,3 +26,8 @@ repos:
         language: system 
         entry: dotnet format --no-restore --severity info --verbosity normal services/SftpService/SftpService.sln --include 
         types_or: ["c#"]        
+    -   id: dotnet-format-observability-service
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --no-restore --severity info --verbosity normal services/ObservabilityService/ObservabilityService.sln --include 
+        types_or: ["c#"]           
