@@ -83,6 +83,9 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(nameof(DiscoService))]
     public ComposeComponentMode? SiemensAdapter { get; set; }
 
+    [ComposeComponent(composePath: "observability-service", imageName: "cc-observability-service")]
+    public ComposeComponentMode? ObservabilityService { get; set; }
+
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
         .Where(i => i.PropertyType == typeof(ComposeComponentMode?) || i.PropertyType == typeof(ComposeComponentMode))
