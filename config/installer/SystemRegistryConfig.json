@@ -89,11 +89,11 @@
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"docker stop $(docker ps -a -q)\" 2>&1",
+          "source": "powershell -Command \"c:\\docker\\docker stop $(c:\\docker\\docker ps -a -q)\" 2>&1",
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command \"docker rm $(docker ps -a -q)\" 2>&1",
+          "source": "powershell -Command \"c:\\docker\\docker rm $(c:\\docker\\docker ps -a -q)\" 2>&1",
           "action": "executeImmediate"
         },
         {
