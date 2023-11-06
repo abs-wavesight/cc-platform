@@ -127,10 +127,10 @@ public class ComponentDownloader : ActionBase
         Directory.CreateDirectory(directory);
 
         _logger.LogInformation($"Pulling image '{source}'");
-        await _commandExecutionService.ExecuteCommandAsync("docker", $"pull {source}", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"pull {source}", rootLocation);
 
         _logger.LogInformation($"Saving image '{source}' to '{destination}'");
-        await _commandExecutionService.ExecuteCommandAsync("docker", $"save -o {containerFile} {source}", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"save -o {containerFile} {source}", rootLocation);
     }
 
     private async Task ProcessSimpleFileAsync(Component component, string source, string destination)

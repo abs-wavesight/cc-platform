@@ -247,7 +247,7 @@ public class ComponentInstaller : ActionBase
         _logger.LogInformation($"{component.Name}: Running installation for '{action.Source}'");
         if (action.Source.EndsWith(".tar"))
         {
-            await _commandExecutionService.ExecuteCommandAsync("docker", $"load -i {action.Source}", rootLocation);
+            await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"load -i {action.Source}", rootLocation);
         }
         else
         {
@@ -632,7 +632,7 @@ public class ComponentInstaller : ActionBase
             arguments = $"--env-file {envFile[0]} " + arguments;
         }
 
-        await _commandExecutionService.ExecuteCommandAsync("docker-compose", $"{arguments} up --build --detach 2>&1", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerComposePath, $"{arguments} up --build --detach 2>&1", rootLocation);
 
         var containerCount = configFiles
             .Count(x => !x.Contains(".root.", StringComparison.OrdinalIgnoreCase));
