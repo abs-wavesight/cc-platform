@@ -1,8 +1,4 @@
-using System.Text.Json;
 using Abs.CommonCore.ObservabilityService.Services;
-using Abs.CommonCore.Platform.Extensions;
-using Docker.DotNet;
-using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using ObservabilityService.Models;
@@ -41,6 +37,8 @@ public class HealthCheckController : ControllerBase
                 return health;
             });
 
-        return string.IsNullOrWhiteSpace(result) ? Ok("All containers are healthy") : Problem(statusCode: 503, detail: result);
+        return string.IsNullOrWhiteSpace(result)
+            ? Ok("All containers are healthy")
+            : Problem(statusCode: 503, detail: result);
     }
 }
