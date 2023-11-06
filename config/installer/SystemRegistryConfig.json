@@ -540,7 +540,7 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OBSERVABILITY_SERVICE_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Sftp-Service/"
+          "destination": "c:/abs/temp/Observability-Service/"
         }
       ],
       "actions": [
