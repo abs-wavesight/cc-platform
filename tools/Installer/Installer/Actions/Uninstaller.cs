@@ -93,7 +93,7 @@ public class Uninstaller : ActionBase
         }
 
         Console.WriteLine("Pruning unused components");
-        await _commandExecutionService.ExecuteCommandAsync("docker", "system prune -a -f", "");
+        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, "system prune -a -f", "");
         Console.WriteLine("System components removed");
     }
 

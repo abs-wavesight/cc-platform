@@ -42,7 +42,8 @@ public class ComponentInstallerTests
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
         await initializer.Installer.ExecuteAsync(new[] { "InstallTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(Abs.CommonCore.Installer.Constants.DockerPath,
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -116,10 +117,10 @@ public class ComponentInstallerTests
         await initializer.Installer.ExecuteAsync(new[] { "RunDockerComposeTest" });
 
         var args = "";
-        initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+        initializer.CommandExecute.Setup(x => x.ExecuteCommandAsync(Abs.CommonCore.Installer.Constants.DockerComposePath, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
             .Callback<string, string, string, bool>((_, a, _, _) => args = a);
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("docker-compose", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(Abs.CommonCore.Installer.Constants.DockerComposePath, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
         Assert.Contains(args, "docker-compose.root.yml");
         Assert.Contains(args, "docker-compose.test-app1.yml");
         Assert.Contains(args, "docker-compose.test-app2.yml");
