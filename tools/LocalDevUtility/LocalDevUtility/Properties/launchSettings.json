@@ -2,7 +2,7 @@
   "profiles": {
     "LocalDevUtility": {
       "commandName": "Project",
-      "commandLineArgs": "run --sftp-service s"
+      "commandLineArgs": "run --observability-service s"
     }
   }
 }

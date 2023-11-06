@@ -214,6 +214,27 @@
       ]
     },
     {
+      "name": "Observability-Service",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "destination": "observability-service.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.observability-service.yml",
+          "destination": "docker-compose.observability-service.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.observability-service.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },	
+    {
       "name": "Disco",
       "files":[
         {

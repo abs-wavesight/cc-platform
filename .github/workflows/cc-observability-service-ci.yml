@@ -1,0 +1,38 @@
+name: Observability Service CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'services/ObservabilityService/**/*'
+      - '.github/workflows/cc-observability-service-ci.yml'
+      - 'nuget.config'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'services/ObservabilityService/**/*'
+      - '.github/workflows/cc-observability-service-ci.yml'
+      - 'nuget.config'
+  workflow_dispatch:
+
+concurrency:
+  group: cc-observability-service-${{ github.head_ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-test-publish:
+    name: Build, Test, Publish
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
+    with:
+      image-name: cc-observability-service
+      label-description: ABS Common Core Observability Service
+      docker-context-directory: .
+      solution-directory: services/ObservabilityService
+      solution-name: ObservabilityService.sln
+      dockerfile-name: ObservabilityService.Dockerfile
+      check-code-formatting: true
+    secrets: inherit
