@@ -35,9 +35,9 @@ public static class Constants
         {
             public const string DrexFileReservedName = "drex-file";
 
-            public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request-{{version}}.{QueueSuffix}";
-            public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response-{{version}}.{QueueSuffix}";
-            public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification-{{version}}.{QueueSuffix}";
+            public const string SiteFileRequestQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-request.{QueueSuffix}";
+            public const string SiteFileResponseQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-response.{QueueSuffix}";
+            public const string SiteFileNotificationQueueTemplate = $"cc.{DrexFileReservedName}.site.{{client}}-notification.{QueueSuffix}";
         }
 
         public static class Message

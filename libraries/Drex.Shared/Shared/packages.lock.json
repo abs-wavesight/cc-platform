@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.158, )",
-        "resolved": "1.0.158",
-        "contentHash": "drVnLqAuNOMbKxTzC+2BcjDD+/tiZr+PFlvobrcotKtkcoLAky3kFu3gOEW3mKIkcSfY9d6o8RRgSVZVQLbymA==",
+        "requested": "[1.0.212-feature-ado-25940-change-drex-versioning, )",
+        "resolved": "1.0.212-feature-ado-25940-change-drex-versioning",
+        "contentHash": "cUZu3YExjJwTjL8IF3ooIdyrXZzL6Uhv8aSJhDYSdIS1MAXyWebveDrhSxASMESV1yMBr1PAB13zrdrPKmAAZw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",
