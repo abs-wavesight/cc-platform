@@ -247,7 +247,8 @@ public class ComponentInstaller : ActionBase
         _logger.LogInformation($"{component.Name}: Running installation for '{action.Source}'");
         if (action.Source.EndsWith(".tar"))
         {
-            await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"load -i {action.Source}", rootLocation);
+            var dockerPath = DockerPath.GetDockerPath();
+            await _commandExecutionService.ExecuteCommandAsync(dockerPath, $"load -i {action.Source}", rootLocation);
         }
         else
         {
@@ -609,13 +610,15 @@ public class ComponentInstaller : ActionBase
 
     private async Task StopAllContainersAsync()
     {
+        var dockerPath = DockerPath.GetDockerPath();
         await _commandExecutionService.ExecuteCommandAsync("powershell",
-                                                           "-Command \"docker stop $(docker ps -a -q)\" 2>&1", "");
+                                                           $"-Command \"{dockerPath} stop $({dockerPath} ps -a -q)\" 2>&1", "");
     }
 
     private async Task DockerSystemPruneAsync()
     {
-        await _commandExecutionService.ExecuteCommandAsync(@"c:\docker\docker", "system prune -f", "");
+        var dockerPath = DockerPath.GetDockerPath();
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, "system prune -f", "");
     }
 
     private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
@@ -632,7 +635,8 @@ public class ComponentInstaller : ActionBase
             arguments = $"--env-file {envFile[0]} " + arguments;
         }
 
-        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerComposePath, $"{arguments} up --build --detach 2>&1", rootLocation);
+        var dockerComposePath = DockerPath.GetDockerPath();
+        await _commandExecutionService.ExecuteCommandAsync(dockerComposePath, $"{arguments} up --build --detach 2>&1", rootLocation);
 
         var containerCount = configFiles
             .Count(x => !x.Contains(".root.", StringComparison.OrdinalIgnoreCase));
