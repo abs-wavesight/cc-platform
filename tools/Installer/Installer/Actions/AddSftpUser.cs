@@ -29,6 +29,7 @@ public class AddSftpUser
             dockerCommand += $" -p \"{password}\" -d";
         }
 
-        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, dockerCommand, string.Empty);
+        var dockerPath = DockerPath.GetDockerPath();
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, dockerCommand, string.Empty);
     }
 }

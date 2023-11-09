@@ -124,13 +124,14 @@ public class ComponentDownloader : ActionBase
         var rootLocation = Path.Combine(_registryConfig.Location, component.Name);
         var containerFile = Path.Combine(rootLocation, destination);
         var directory = Path.GetDirectoryName(containerFile)!;
+        var dockerPath = DockerPath.GetDockerPath();
         Directory.CreateDirectory(directory);
 
         _logger.LogInformation($"Pulling image '{source}'");
-        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"pull {source}", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, $"pull {source}", rootLocation);
 
         _logger.LogInformation($"Saving image '{source}' to '{destination}'");
-        await _commandExecutionService.ExecuteCommandAsync(Constants.DockerPath, $"save -o {containerFile} {source}", rootLocation);
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, $"save -o {containerFile} {source}", rootLocation);
     }
 
     private async Task ProcessSimpleFileAsync(Component component, string source, string destination)

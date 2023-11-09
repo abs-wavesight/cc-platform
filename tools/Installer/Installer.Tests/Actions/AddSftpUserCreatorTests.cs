@@ -1,4 +1,5 @@
 ﻿using Abs.CommonCore.Drex.Shared;
+using Abs.CommonCore.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
 using Moq;
@@ -22,7 +23,8 @@ public class AddSftpUserCreatorTests
         await testObj.AddSftpUserAsync(Name, true);
 
         // Assert
-        commandExecution.Verify(x => x.ExecuteCommandAsync(Abs.CommonCore.Installer.Constants.DockerPath,
+        var dockerPath = DockerPath.GetDockerPath();
+        commandExecution.Verify(x => x.ExecuteCommandAsync(dockerPath,
             It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && v.Contains(DrexCommand)), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 
@@ -37,7 +39,8 @@ public class AddSftpUserCreatorTests
         await testObj.AddSftpUserAsync(Name, false);
 
         // Assert
-        commandExecution.Verify(x => x.ExecuteCommandAsync(Abs.CommonCore.Installer.Constants.DockerPath,
+        var dockerPath = DockerPath.GetDockerPath();
+        commandExecution.Verify(x => x.ExecuteCommandAsync(dockerPath,
             It.Is<string>(v => v.StartsWith(ExpectedCommandPrefix) && !v.Contains(DrexCommand)), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
     }
 }
