@@ -31,6 +31,6 @@ WORKDIR C:/app
 ENV DOTNET_ENVIRONMENT=docker
 COPY --from=unzip --chown=containeruser:containeruser [ "C:/app/psping64.exe", "C:/Windows/psping.exe" ]
 COPY --from=build C:/app/publish .
-HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "psping", "-accepteula", "-q", "-n", "1", "-w", "0", "localhost:5000/HealthCheck" ]
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "psping", "-accepteula", "-q", "-n", "1", "-w", "0", "localhost:80/HealthCheck" ]
 USER containeradministrator
 ENTRYPOINT ["dotnet", "Abs.CommonCore.ObservabilityService.dll", "run"]
