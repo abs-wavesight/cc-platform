@@ -17,8 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.212-feature-ado-25940-change-drex-versioning" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.204" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.218" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.211" />
 		<PackageReference Include="Polly" Version="7.2.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
