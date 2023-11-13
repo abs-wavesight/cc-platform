@@ -10,5 +10,7 @@ services:
     logging:
       driver: local
     ports:
-      - 5259:5000
+      - 5259:80
     restart: always	
+    volumes:
+      - \\.\pipe\docker_engine:\\.\pipe\docker_engine
