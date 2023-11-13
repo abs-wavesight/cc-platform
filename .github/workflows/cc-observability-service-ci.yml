@@ -6,12 +6,16 @@ on:
     paths:
       - 'services/ObservabilityService/**/*'
       - '.github/workflows/cc-observability-service-ci.yml'
+      - 'compose/installer/docker-compose.observability-service.yml'
+      - 'compose/local-dev/observability-service/*'
       - 'nuget.config'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'services/ObservabilityService/**/*'
       - '.github/workflows/cc-observability-service-ci.yml'
+      - 'compose/installer/docker-compose.observability-service.yml'
+      - 'compose/local-dev/observability-service/*'      
       - 'nuget.config'
   workflow_dispatch:
 
