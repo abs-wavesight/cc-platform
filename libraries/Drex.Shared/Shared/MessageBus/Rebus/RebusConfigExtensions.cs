@@ -24,7 +24,9 @@ public static class RebusConfigExtensions
         string topicExchangeName,
         ILoggerFactory loggerFactory,
         Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
-        bool enableSsl = false)
+        bool enableSsl = false,
+        int? numberOfWorkers = null,
+        int? maxParallelism = null)
     {
         return rebusConfigurer
             .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
@@ -51,6 +53,17 @@ public static class RebusConfigExtensions
                 {
                     o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
                 }
+
+                if (numberOfWorkers > 0)
+                {
+                    o.SetNumberOfWorkers(numberOfWorkers.Value);
+                }
+
+                if (maxParallelism > 0)
+                {
+                    o.SetMaxParallelism(maxParallelism.Value);
+                }
+
                 // o.LogPipeline(verbose: true);
             })
             .SetSerialization(serializerConfig);
@@ -99,7 +112,9 @@ public static class RebusConfigExtensions
         string? deadLetterQueueName,
         ILoggerFactory loggerFactory,
         Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
-        bool enableSsl = false)
+        bool enableSsl = false,
+        int? numberOfWorkers = null,
+        int? maxParallelism = null)
     {
         return rebusConfigurer
             .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
@@ -122,6 +137,16 @@ public static class RebusConfigExtensions
                 {
                     o.SimpleRetryStrategy(errorQueueAddress: deadLetterQueueName);
                 }
+
+                if (numberOfWorkers > 0)
+                {
+                    o.SetNumberOfWorkers(numberOfWorkers.Value);
+                }
+
+                if (maxParallelism > 0)
+                {
+                    o.SetMaxParallelism(maxParallelism.Value);
+                }
             })
             .SetSerialization(serializerConfig);
     }
@@ -134,7 +159,9 @@ public static class RebusConfigExtensions
         Func<TransportMessage, Task<ForwardAction>> messageForwarder,
         ILoggerFactory loggerFactory,
         Action<StandardConfigurer<ISerializer>>? serializerConfig = null,
-        bool enableSsl = false)
+        bool enableSsl = false,
+        int? numberOfWorkers = null,
+        int? maxParallelism = null)
     {
         return rebusConfigurer
             .Logging(l => l.MicrosoftExtensionsLogging(loggerFactory))
@@ -151,7 +178,19 @@ public static class RebusConfigExtensions
                 }
             })
             .Routing(r => r.AddTransportMessageForwarder(transportMessage => messageForwarder(transportMessage)))
-            .Options(o => o.SetBusName(busName))
+            .Options(o => {
+                o.SetBusName(busName);
+
+                if (numberOfWorkers > 0)
+                {
+                    o.SetNumberOfWorkers(numberOfWorkers.Value);
+                }
+
+                if (maxParallelism > 0)
+                {
+                    o.SetMaxParallelism(maxParallelism.Value);
+                }
+            })
             .SetSerialization(serializerConfig);
     }
 
