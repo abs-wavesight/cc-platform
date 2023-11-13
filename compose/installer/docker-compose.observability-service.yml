@@ -10,5 +10,5 @@ services:
     logging:
       driver: local
     ports:
-      - 5259:5000
+      - 5259:80
     restart: always	
