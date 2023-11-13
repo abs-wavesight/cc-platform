@@ -6,12 +6,16 @@ on:
     paths:
       - 'services/SftpService/**/*'
       - '.github/workflows/cc-sftp-service-ci.yml'
+      - 'compose/installer/docker-compose.sftp-service.yml'
+      - 'compose/local-dev/sftp-service/*'      
       - 'nuget.config'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'services/SftpService/**/*'
       - '.github/workflows/cc-sftp-service-ci.yml'
+      - 'compose/installer/docker-compose.sftp-service.yml'
+      - 'compose/local-dev/sftp-service/*'            
       - 'nuget.config'
   workflow_dispatch:
 
