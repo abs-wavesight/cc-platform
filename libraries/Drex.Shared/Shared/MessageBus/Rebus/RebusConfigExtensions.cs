@@ -178,7 +178,7 @@ public static class RebusConfigExtensions
                 }
             })
             .Routing(r => r.AddTransportMessageForwarder(transportMessage => messageForwarder(transportMessage)))
-            .Options(o => 
+            .Options(o =>
             {
                 o.SetBusName(busName);
 
