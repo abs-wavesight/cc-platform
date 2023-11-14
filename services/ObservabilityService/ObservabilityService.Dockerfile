@@ -23,6 +23,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:$DOTNET_TAG
 WORKDIR C:/app
 ENV DOTNET_ENVIRONMENT=docker
 COPY --from=build C:/app/publish .
-HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD [ "curl", "--fail", "http://localhost:80/HealthCheck", "||", "exit", "1" ]
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=1 CMD curl --fail http://localhost:80/HealthCheck || exit 1
 USER containeradministrator
 ENTRYPOINT ["dotnet", "Abs.CommonCore.ObservabilityService.dll", "run"]
