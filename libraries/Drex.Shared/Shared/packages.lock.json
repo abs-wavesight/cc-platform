@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.218, )",
-        "resolved": "1.0.218",
-        "contentHash": "AnLQpyzJgAKrBpxMClRnq/guCrqZUMydtLGfFLpAlETASXPRFcMfat+RXCdoGVWdpqTWd4axOGrIkjoajM3lHw==",
+        "requested": "[1.0.232-feature-ado-22060-add-version, )",
+        "resolved": "1.0.232-feature-ado-22060-add-version",
+        "contentHash": "opHomBmpIwvvfKhqus0lTYTFMNhqw1q3jCQeYdrrLnGtiYf48h74+H+XXZ3pOxcLKl2Ts5XRYJVGucWKJUL9kw==",
         "dependencies": {
           "Google.Protobuf": "3.23.3",
           "Grpc.AspNetCore": "2.32.0",
