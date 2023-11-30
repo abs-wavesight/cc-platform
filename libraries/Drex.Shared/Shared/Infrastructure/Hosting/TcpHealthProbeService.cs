@@ -35,6 +35,15 @@ public class TcpHealthProbeService : BackgroundService
             healthChecksConfig.HealthCheckProbeTcpPort);
     }
 
+    protected virtual async Task<bool> CustomHealthCheckAsync()
+    {
+        var result = false;
+
+        await Task.Run(() => result = true);
+
+        return result;
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
@@ -56,6 +65,12 @@ public class TcpHealthProbeService : BackgroundService
         {
             var result = await _healthCheckService.CheckHealthAsync(stoppingToken);
             var isHealthy = result.Status == HealthStatus.Healthy;
+
+            if (isHealthy)
+            {
+                isHealthy = await CustomHealthCheckAsync();
+            }
+
             if (!isHealthy)
             {
                 _listener.Stop();
