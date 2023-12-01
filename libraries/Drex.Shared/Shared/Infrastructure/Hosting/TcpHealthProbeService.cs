@@ -37,11 +37,9 @@ public class TcpHealthProbeService : BackgroundService
 
     protected virtual async Task<bool> CustomHealthCheckAsync()
     {
-        var result = false;
+        await Task.CompletedTask;
 
-        await Task.Run(() => result = true);
-
-        return result;
+        return true;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
