@@ -68,7 +68,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v3        
         with:
-          submodules: ${{ github.event.inputs.useSubmodules == 'true' }}
+          submodules: true
           fetch-depth: 0
           token: ${{ secrets.GH_PAT || ' ' }}
 
