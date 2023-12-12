@@ -65,10 +65,10 @@ jobs:
         uses: abs-wavesight/cc-platform/actions/dump-context@main
         
         
-      - name: Checkout branch
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
         uses: actions/checkout@v3        
         with:
-          submodules: true
+          submodules: ${{ inputs.use-submodules }}
           fetch-depth: 0
           token: ${{ secrets.GH_PAT || ' ' }}
 
@@ -83,7 +83,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
 
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
