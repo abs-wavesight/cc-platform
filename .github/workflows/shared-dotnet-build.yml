@@ -35,6 +35,15 @@ on:
         type: boolean
         default: false
         description: If true, will fail build if formatting changes are detected (using dotnet format)
+      useSubmodules:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will it will restore Submodules  
+      submoduleToken:          
+        required: false
+        type: string
+        description: Token for private submodules
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -58,9 +67,14 @@ jobs:
 
       - name: Dump context
         uses: abs-wavesight/cc-platform/actions/dump-context@main
-
-      - uses: actions/checkout@v3
-        name: Checkout branch
+        
+        
+      - name: Checkout branch
+        uses: actions/checkout@v3        
+        with:
+          submodules: ${{ github.event.inputs.useSubmodules == 'true' }}
+          fetch-depth: 0
+          token: ${{ inputs.submoduleToken || ' ' }}
 
       - name: Cache nuget packages
         uses: actions/cache@v3
