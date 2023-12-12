@@ -35,12 +35,12 @@ on:
         type: boolean
         default: false
         description: If true, will fail build if formatting changes are detected (using dotnet format)
-      useSubmodules:
+      use-submodules:
         required: false
         type: boolean
         default: false
         description: If true, will it will restore Submodules  
-      submoduleToken:          
+      submodule-token:          
         required: false
         type: string
         description: Token for private submodules
