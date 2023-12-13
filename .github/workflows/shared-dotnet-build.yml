@@ -41,7 +41,7 @@ on:
         default: false
         description: If true, will it will restore Submodules
       dotnet-version:        
-        required: true
+        required: false
         type: string
         default: '7.0.x'
         description: .NET SDK Version
