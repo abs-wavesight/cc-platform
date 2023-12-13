@@ -70,11 +70,18 @@ jobs:
         uses: abs-wavesight/cc-platform/actions/dump-context@main        
         
       - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        if: inputs.use-submodules == true
         uses: actions/checkout@v3        
         with:
-          submodules: ${{ inputs.use-submodules }}
+          submodules: true
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT || ' ' }}
+          token: ${{ secrets.GH_PAT || ' ' }}          
+          
+      - name: Checkout branch 
+        if: inputs.use-submodules == false
+        uses: actions/checkout@v3
+        with:
+          submodules: false
 
       - name: Cache nuget packages
         uses: actions/cache@v3
