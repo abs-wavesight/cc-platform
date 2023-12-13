@@ -35,6 +35,16 @@ on:
         type: boolean
         default: false
         description: If true, will fail build if formatting changes are detected (using dotnet format)
+      use-submodules:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will it will restore Submodules
+      dotnet-version:        
+        required: true
+        type: string
+        default: '7.0.x'
+        description: .NET SDK Version
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -58,9 +68,14 @@ jobs:
 
       - name: Dump context
         uses: abs-wavesight/cc-platform/actions/dump-context@main
-
-      - uses: actions/checkout@v3
-        name: Checkout branch
+        
+        
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        uses: actions/checkout@v3        
+        with:
+          submodules: ${{ inputs.use-submodules }}
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
 
       - name: Cache nuget packages
         uses: actions/cache@v3
@@ -73,7 +88,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: ${{ inputs.dotnet-version}}
 
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
