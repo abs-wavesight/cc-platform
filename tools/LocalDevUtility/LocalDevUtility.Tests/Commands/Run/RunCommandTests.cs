@@ -60,6 +60,10 @@ public class RunCommandTests
     private void AssertComposeConfigIsValid(LocalDevUtilityFixture fixture, string composeCommandPart)
     {
         var configCommand = $"{composeCommandPart} config";
+
+        _testOutput.WriteLine("-------------configCommand-----------");
+        _testOutput.WriteLine(configCommand);
+
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
         _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
         _testOutput.WriteLine("-------------configCommandOutput-----------");
