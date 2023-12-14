@@ -62,6 +62,8 @@ public class RunCommandTests
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
         _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
+        _testOutput.WriteLine("-------------configCommandOutput-----------");
+        _testOutput.WriteLine(configCommandOutput.First());
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: local-dev");
     }
