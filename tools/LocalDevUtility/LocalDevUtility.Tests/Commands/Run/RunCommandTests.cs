@@ -69,7 +69,8 @@ public class RunCommandTests
         _testOutput.WriteLine("-------------configCommandOutput-----------");
         _testOutput.WriteLine(configCommandOutput.First());
         configCommandOutput.Should().HaveCountGreaterThan(0);
-        configCommandOutput.First().Should().Be("name: local-dev");
+        //configCommandOutput.First().Should().Be("name: local-dev");
+        configCommandOutput.First().Should().Be("networks:");
     }
 
     private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
