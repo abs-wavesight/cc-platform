@@ -63,7 +63,7 @@ public class RunCommandTests
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
         _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
-        configCommandOutput.First().Should().Be("name: abs-cc");
+        configCommandOutput.First().Should().Be("name: local-dev");
     }
 
     private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
