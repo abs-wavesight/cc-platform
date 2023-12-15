@@ -63,7 +63,6 @@ public class LocalDevUtilityFixture
         var dummydrexServicePath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/service");
         Directory.CreateDirectory(dummydrexServicePath);
 
-        /*
         var dummydrexClientPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/client");
         Directory.CreateDirectory(dummydrexClientPath);
 
@@ -73,7 +72,6 @@ public class LocalDevUtilityFixture
         CopyFile(repoRootPath, dummydrexServicePath, "nuget.config");
         CopyFile(repoRootPath, dummydrexClientPath, "nuget.config");
         CopyFile(repoRootPath, dummydrexDemoPath, "nuget.config");
-        */
 
         var dummyDiscoRepoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo");
         Directory.CreateDirectory(dummyDiscoRepoPath);
