@@ -41,7 +41,7 @@ on:
         default: false
         description: If true, will it will restore Submodules
       dotnet-version:        
-        required: false
+        required: true
         type: string
         default: '7.0.x'
         description: .NET SDK Version
@@ -67,7 +67,8 @@ jobs:
     steps:
 
       - name: Dump context
-        uses: abs-wavesight/cc-platform/actions/dump-context@main        
+        uses: abs-wavesight/cc-platform/actions/dump-context@main
+        
         
       - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
         uses: actions/checkout@v3        
