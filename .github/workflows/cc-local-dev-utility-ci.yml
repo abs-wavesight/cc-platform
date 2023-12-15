@@ -26,7 +26,7 @@ defaults:
 jobs:
   build:
     name: Build & Run Tests
-    uses: ./.github/workflows/shared-dotnet-build.yml
+    uses: ./.github/workflows/shared-dotnet-build.yml@test-unit-test-error
     with:
       solution-directory: tools/LocalDevUtility
       solution-name: LocalDevUtility.sln
@@ -38,7 +38,7 @@ jobs:
   publish-nuget-package:
     name: Publish Nuget Package
     needs: [build]
-    uses: ./.github/workflows/shared-publish-nuget-package.yml
+    uses: ./.github/workflows/shared-publish-nuget-package.yml@test-unit-test-error
     with:
       solution-directory: tools/LocalDevUtility
       nuget-working-directory: tools/LocalDevUtility/LocalDevUtility
