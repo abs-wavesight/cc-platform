@@ -30,7 +30,7 @@ jobs:
     with:
       solution-directory: tools/LocalDevUtility
       solution-name: LocalDevUtility.sln
-      install-docker-compose: true
+      install-docker-compose: false
       check-code-formatting: true
       run-integration-tests: false
     secrets: inherit
