@@ -1,4 +1,4 @@
-name: Local Dev Utility CI Test 2
+name: Local Dev Utility CI Test
 
 on:
   push:
