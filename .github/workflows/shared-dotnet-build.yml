@@ -94,7 +94,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ inputs.dotnet-version}}
+          dotnet-version: 7.0.x
 
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
