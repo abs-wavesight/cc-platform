@@ -9,6 +9,13 @@ on:
       - '.github/workflows/shared-dotnet-build.yml'
       - '.github/workflows/shared-publish-nuget-package.yml'
       - 'nuget.config'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'libraries/Platform/**/*'
+      - '.github/workflows/cc-platform-package-ci.yml'
+      - '.github/workflows/shared-dotnet-build.yml'
+      - '.github/workflows/shared-publish-nuget-package.yml'
   workflow_dispatch:
 
 concurrency:
