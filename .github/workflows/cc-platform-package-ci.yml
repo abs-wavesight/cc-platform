@@ -12,7 +12,6 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/workflows/cc-platform-package-ci.yml'
       - '.github/workflows/shared-dotnet-build.yml'
       - '.github/workflows/shared-publish-nuget-package.yml'
       - 'nuget.config'      
