@@ -35,16 +35,6 @@ on:
         type: boolean
         default: false
         description: If true, will fail build if formatting changes are detected (using dotnet format)
-      use-submodules:
-        required: false
-        type: boolean
-        default: false
-        description: If true, will it will restore Submodules
-      dotnet-version:        
-        required: false
-        type: string
-        default: '7.0.x'
-        description: .NET SDK Version
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -71,7 +61,7 @@ jobs:
 
       - uses: actions/checkout@v3
         name: Checkout branch
-        
+
       - name: Cache nuget packages
         uses: actions/cache@v3
         with:
