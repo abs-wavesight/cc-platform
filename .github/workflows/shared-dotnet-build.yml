@@ -75,7 +75,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN || ' ' }}          
+          token: ${{ secrets.GH_PAT || ' ' }}          
           
       - name: Checkout branch 
         if: inputs.use-submodules == false
