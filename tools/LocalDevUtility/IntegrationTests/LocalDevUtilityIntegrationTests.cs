@@ -64,11 +64,18 @@ public class LocalDevUtilityIntegrationTests
                     var statusCommandJsonResult = new List<DockerComposeStatusItem>();
                     foreach (var commandResult in statusCommandRawResult)
                     {
-                        var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
-
-                        if (dockerComposeStatusItem != null)
+                        try
                         {
-                            statusCommandJsonResult.Add(dockerComposeStatusItem);
+                            var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
+
+                            if (dockerComposeStatusItem != null)
+                            {
+                                statusCommandJsonResult.Add(dockerComposeStatusItem);
+                            }
+                        }
+                        catch
+                        {
+                            commandResult.Should().Be("TEST");
                         }
                     }
 
