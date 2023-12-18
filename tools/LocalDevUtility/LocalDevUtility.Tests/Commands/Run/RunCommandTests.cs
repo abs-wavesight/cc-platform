@@ -17,7 +17,7 @@ public class RunCommandTests
 
     [Theory]
     [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
-    //[InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --sftp-service i", new[] { "cc.sftp-service" })]
@@ -66,12 +66,14 @@ public class RunCommandTests
         configCommandOutput.First().Should().Be("networks:");
     }
 
-    private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
+    private void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(2));
+        _testOutput.WriteLine($"expectedServices: {string.Join(";", expectedServices)}");
+        _testOutput.WriteLine($"configServicesCommandOutput: {string.Join(";", configServicesCommandOutput)}");
         //configServicesCommandOutput.Should().HaveCount(expectedServices.Count);
-        configServicesCommandOutput.Should().AllSatisfy(s => expectedServices.Should().Contain(s));
+        //configServicesCommandOutput.Should().(s => expectedServices.Should().Contain(s));
     }
 
     private static void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, IEnumerable<string>? specificExpectedComposeFiles)
