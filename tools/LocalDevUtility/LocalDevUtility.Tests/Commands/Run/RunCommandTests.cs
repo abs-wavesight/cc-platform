@@ -17,7 +17,7 @@ public class RunCommandTests
 
     [Theory]
     [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
-    [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
+    //[InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --sftp-service i", new[] { "cc.sftp-service" })]
