@@ -75,7 +75,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT || ' ' }}          
+          token: ${{ secrets.GITHUB_TOKEN || ' ' }}          
           
       - name: Checkout branch 
         if: inputs.use-submodules == false
@@ -173,7 +173,7 @@ jobs:
           path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_covered: false
+          skip_covered: true
           fail_below_threshold: false
           show_class_names: true
           show_missing: true
