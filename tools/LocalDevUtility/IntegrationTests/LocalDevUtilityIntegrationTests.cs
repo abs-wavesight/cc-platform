@@ -75,7 +75,7 @@ public class LocalDevUtilityIntegrationTests
                         }
                         catch
                         {
-                            commandResult.Should().Be("TEST");
+                            commandResult.Should().Be(string.Join(" ; ", statusCommandRawResult));
                         }
                     }
 
