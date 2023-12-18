@@ -62,7 +62,6 @@ public class RunCommandTests
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
         configCommandOutput.Should().HaveCountGreaterThan(0);
-        //configCommandOutput.First().Should().Be("name: local-dev");
         configCommandOutput.First().Should().Be("networks:");
     }
 
@@ -72,8 +71,7 @@ public class RunCommandTests
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(2));
         _testOutput.WriteLine($"expectedServices: {string.Join(";", expectedServices)}");
         _testOutput.WriteLine($"configServicesCommandOutput: {string.Join(";", configServicesCommandOutput)}");
-        //configServicesCommandOutput.Should().HaveCount(expectedServices.Count);
-        //configServicesCommandOutput.Should().(s => expectedServices.Should().Contain(s));
+        configServicesCommandOutput.Should().AllSatisfy(s => expectedServices.Should().Contain(s));
     }
 
     private static void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, IEnumerable<string>? specificExpectedComposeFiles)
