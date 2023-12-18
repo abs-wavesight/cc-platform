@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.CommandLine.Parsing;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
@@ -60,9 +61,16 @@ public class LocalDevUtilityIntegrationTests
                 try
                 {
                     var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
-                    var test = string.Join("\n", statusCommandRawResult);
-                    _testOutput.WriteLine("statusCommandRawResult: {0}", test);
-                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
+                    var statusCommandJsonResult = new List<DockerComposeStatusItem>();
+                    foreach (var commandResult in statusCommandRawResult)
+                    {
+                        var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
+
+                        if (dockerComposeStatusItem != null)
+                        {
+                            statusCommandJsonResult.Add(dockerComposeStatusItem);
+                        }
+                    }
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
@@ -74,10 +82,10 @@ public class LocalDevUtilityIntegrationTests
 
                     expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
-                        .Where(i => i.Project == "abs-cc").Should()
+                        .Where(i => i.Networks == "local-dev_default").Should()
                         .AllSatisfy(i =>
                         {
-                            i.State.Should().Be("running");
+                            i.State.Should().BeOneOf("running");
                             i.Health.Should().BeOneOf("healthy", string.Empty);
                             i.ExitCode.Should().Be(0);
                         });

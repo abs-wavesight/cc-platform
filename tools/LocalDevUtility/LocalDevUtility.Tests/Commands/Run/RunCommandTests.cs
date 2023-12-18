@@ -69,8 +69,6 @@ public class RunCommandTests
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(2));
-        Console.WriteLine($"expectedServices: {string.Join(";", expectedServices)}");
-        Console.WriteLine($"configServicesCommandOutput: {string.Join(";", configServicesCommandOutput)}");
         expectedServices.Should().AllSatisfy(s => configServicesCommandOutput.Should().Contain(s));
     }
 
