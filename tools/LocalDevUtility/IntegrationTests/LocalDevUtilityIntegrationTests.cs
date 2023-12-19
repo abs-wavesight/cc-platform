@@ -41,18 +41,13 @@ public class LocalDevUtilityIntegrationTests
 
         // Stop first just in case something was running before we started
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
-        var stopCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
-        Console.WriteLine("--STOPCOMMANDOUTPUT--");
-        Console.WriteLine(string.Join("-;-", stopCommandOutput));
+        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
 
         try
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            Console.WriteLine("\n\n\n Executing run command");
             var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
-
-            Console.WriteLine(string.Join("---;---", runCommandOutput));
 
             // Assert
             var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
@@ -68,23 +63,7 @@ public class LocalDevUtilityIntegrationTests
                 try
                 {
                     var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
-                    var statusCommandJsonResult = new List<DockerComposeStatusItem>();
-                    foreach (var commandResult in statusCommandRawResult)
-                    {
-                        try
-                        {
-                            var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
-
-                            if (dockerComposeStatusItem != null)
-                            {
-                                statusCommandJsonResult.Add(dockerComposeStatusItem);
-                            }
-                        }
-                        catch
-                        {
-                            commandResult.Should().Be(string.Join("--;--", statusCommandRawResult));
-                        }
-                    }
+                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
@@ -96,7 +75,7 @@ public class LocalDevUtilityIntegrationTests
 
                     expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
-                        .Where(i => i.Networks == "local-dev_default").Should()
+                        .Where(i => i.Project == "abs-cc").Should()
                         .AllSatisfy(i =>
                         {
                             i.State.Should().BeOneOf("running", "created");
