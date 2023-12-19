@@ -1,5 +1,6 @@
 ﻿using System.CommandLine.Parsing;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
@@ -43,6 +44,10 @@ public class LocalDevUtilityIntegrationTests
         var stopCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
         Console.WriteLine("--STOPCOMMANDOUTPUT--");
         Console.WriteLine(string.Join("-;-", stopCommandOutput));
+
+        var dockerVersionCommand = fixture.RealPowerShellAdapter.RunPowerShellCommand("docker-compose --version", fixture.Logger, TimeSpan.FromMinutes(6));
+        Console.WriteLine("--DOCKER-COMPOSE --VERSION--");
+        Console.WriteLine(string.Join("--;--", dockerVersionCommand));
 
         try
         {
