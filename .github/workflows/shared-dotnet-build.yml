@@ -96,11 +96,6 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version}}
 
-      - name: Display System32 content
-        run: |
-          Write-Host "Listing all files in C:\Windows\System32"
-          Get-ChildItem -Path "C:\Windows\System32" -Recurse | ForEach-Object { Write-Host $_.FullName }
-
       - name: Setup Docker Compose and Update PATH
         if: inputs.install-docker-compose == true
         run: |
