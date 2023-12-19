@@ -96,20 +96,30 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version}}
 
-      - name: Display PATH Environment Variable with New Lines  
+      - name: Display System32 content
         run: |
-          $pathArray = $env:PATH -split ';' 
-          Write-Host "Current PATH:" 
-          foreach ($path in $pathArray) { Write-Host $path }
+          Write-Host "Listing all files in C:\Windows\System32"
+          Get-ChildItem -Path "C:\Windows\System32" -Recurse | ForEach-Object { Write-Host $_.FullName }
 
-      - name: Install docker-compose
+      - name: Setup Docker Compose and Update PATH
         if: inputs.install-docker-compose == true
         run: |
-          Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-windows-x86_64.exe" -Destination $Env:ProgramFiles\Docker\docker-compose.exe
+          Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination "C:\Windows\System32\docker-compose.exe"
+          $env:PATH += ";C:\Windows\System32"
+          Write-Host "PATH environment variable updated"
 
       - name: Confirm docker compose
         if: inputs.install-docker-compose == true
         run: docker-compose --version
+
+      - name: Display Docker Paths  
+        run: |
+          $dockerPathArray = where docker -split ';' 
+          Write-Host "Docker Path:" 
+          foreach ($path in $dockerPathArray) { Write-Host $path }
+          $dockerComposePathArray = where docker-compose -split ';' 
+          Write-Host "Docker Compose Path:" 
+          foreach ($path in $dockerComposePathArray) { Write-Host $path }
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
