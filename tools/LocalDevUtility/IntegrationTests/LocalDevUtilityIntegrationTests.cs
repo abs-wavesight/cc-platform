@@ -29,7 +29,6 @@ public class LocalDevUtilityIntegrationTests
     // [InlineData("--siemens-adapter i", new[] { "cc.siemens-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     public async Task Utility_GivenValidRunCommand_ShouldStartExpectedComposeServices(string componentParameters, string[] expectedServices)
     {
-        Console.WriteLine("TEST OUTPUT");
         // Arrange
         var fixture = new LocalDevUtilityFixture(_testOutput);
         var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;

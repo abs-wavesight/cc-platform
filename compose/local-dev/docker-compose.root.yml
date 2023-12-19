@@ -1,8 +1,8 @@
 ---
-version: '3.9'
+version: "2"
 
 networks:
-  abs-cc_default:
+  default:
     ipam:
       driver: default
       config:
