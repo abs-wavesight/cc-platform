@@ -6,6 +6,7 @@ using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
+using Spectre.Console;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,15 +46,15 @@ public class LocalDevUtilityIntegrationTests
         Console.WriteLine("--STOPCOMMANDOUTPUT--");
         Console.WriteLine(string.Join("-;-", stopCommandOutput));
 
-        var dockerVersionCommand = fixture.RealPowerShellAdapter.RunPowerShellCommand("docker-compose --version", fixture.Logger, TimeSpan.FromMinutes(6));
-        Console.WriteLine("--DOCKER-COMPOSE --VERSION--");
-        Console.WriteLine(string.Join("--;--", dockerVersionCommand));
-
         try
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+            var dockerCommand = "cd \"D:\\a\\cc-platform\\cc-platform\\compose\\local-dev\"; docker-compose -f docker-compose.root.yml -f ./rabbitmq/docker-compose.base.yml -f ./rabbitmq/docker-compose.image.yml --profile rabbitmq-local up --build --detach";
+            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(dockerCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+            //var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+
+            Console.WriteLine(string.Join("---;---", runCommandOutput));
 
             // Assert
             var composeUpCommand = runCommandOutput.Single(s => s.Contains("docker-compose ") && s.Contains(" up "));
