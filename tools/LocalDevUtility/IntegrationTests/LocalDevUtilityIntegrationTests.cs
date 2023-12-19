@@ -40,7 +40,9 @@ public class LocalDevUtilityIntegrationTests
 
         // Stop first just in case something was running before we started
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
-        fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+        var stopCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+        Console.WriteLine("--STOPCOMMANDOUTPUT--");
+        Console.WriteLine(stopCommandOutput);
 
         try
         {
