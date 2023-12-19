@@ -62,7 +62,7 @@ public class RunCommandTests
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
         configCommandOutput.Should().HaveCountGreaterThan(0);
-        configCommandOutput.First().Should().Be("networks:");
+        configCommandOutput.First().Should().Be("name: abs-cc");
     }
 
     private void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
