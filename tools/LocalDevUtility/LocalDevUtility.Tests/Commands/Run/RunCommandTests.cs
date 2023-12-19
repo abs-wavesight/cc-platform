@@ -17,14 +17,14 @@ public class RunCommandTests
 
     [Theory]
     [InlineData("run -m r --openssl i", new[] { "cc.openssl-generate-certs" })]
-    [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
-    [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
-    [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
     [InlineData("run -m r --sftp-service i", new[] { "cc.sftp-service" })]
     [InlineData("run -m r --observability-service i", new[] { "cc.observability-service" })]
     [InlineData("run -m r --rabbitmq i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-local i", new[] { "cc.rabbitmq-local" })]
     [InlineData("run -m r --rabbitmq-remote i", new[] { "cc.rabbitmq-remote" })]
+    [InlineData("run -m r --vector i", new[] { "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.default.yml" })]
+    [InlineData("run -m r --grafana i", new[] { "cc.grafana", "cc.loki", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --loki i", new[] { "cc.loki", "cc.rabbitmq-local", "cc.vector-site" }, new[] { "vector/docker-compose.variant.loki.yml" })]
     [InlineData("run -m r --drex-message-service i", new[] { "cc.drex-message-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --drex-file-service i", new[] { "cc.drex-file-service", "cc.rabbitmq-local", "cc.vector-site", "cc.drex-message-service", "cc.sftp-service" })]
     [InlineData("run -m r --deps i", new[] { "cc.rabbitmq-local", "cc.rabbitmq-remote", "cc.vector-site", "cc.vector-central" })]
@@ -61,6 +61,7 @@ public class RunCommandTests
     {
         var configCommand = $"{composeCommandPart} config";
         var configCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configCommand, TimeSpan.FromMinutes(2));
+        _testOutput.WriteLine($"Compose Config Output:{Environment.NewLine}{string.Join(Environment.NewLine, configCommandOutput)}");
         configCommandOutput.Should().HaveCountGreaterThan(0);
         configCommandOutput.First().Should().Be("name: abs-cc");
     }
@@ -69,7 +70,8 @@ public class RunCommandTests
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(2));
-        expectedServices.Should().AllSatisfy(s => configServicesCommandOutput.Should().Contain(s));
+        configServicesCommandOutput.Should().HaveCount(expectedServices.Count);
+        configServicesCommandOutput.Should().AllSatisfy(s => expectedServices.Should().Contain(s));
     }
 
     private static void AssertSpecificExpectedComposeFilesArePresent(string composeCommandPart, IEnumerable<string>? specificExpectedComposeFiles)
