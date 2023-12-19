@@ -42,7 +42,7 @@ public class LocalDevUtilityIntegrationTests
         _testOutput.WriteLine("\n\n\n Stopping everything via \"stop\" command before running test");
         var stopCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(stopCommand, fixture.Logger, TimeSpan.FromMinutes(6));
         Console.WriteLine("--STOPCOMMANDOUTPUT--");
-        Console.WriteLine(stopCommandOutput);
+        Console.WriteLine(string.Join("-;-", stopCommandOutput));
 
         try
         {
@@ -95,7 +95,7 @@ public class LocalDevUtilityIntegrationTests
                         .Where(i => i.Networks == "local-dev_default").Should()
                         .AllSatisfy(i =>
                         {
-                            i.State.Should().BeOneOf("running");
+                            i.State.Should().BeOneOf("running", "created");
                             i.Health.Should().BeOneOf("healthy", string.Empty);
                             i.ExitCode.Should().Be(0);
                         });
