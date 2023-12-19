@@ -50,9 +50,8 @@ public class LocalDevUtilityIntegrationTests
         {
             // Act
             _testOutput.WriteLine("\n\n\n Executing run command");
-            var dockerCommand = "cd \"D:\\a\\cc-platform\\cc-platform\\compose\\local-dev\"; docker-compose -f docker-compose.root.yml -f ./rabbitmq/docker-compose.base.yml -f ./rabbitmq/docker-compose.image.yml --profile rabbitmq-local up --build --detach";
-            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(dockerCommand, fixture.Logger, TimeSpan.FromMinutes(6));
-            //var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
+            Console.WriteLine("\n\n\n Executing run command");
+            var runCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(runCommand, fixture.Logger, TimeSpan.FromMinutes(6));
 
             Console.WriteLine(string.Join("---;---", runCommandOutput));
 
