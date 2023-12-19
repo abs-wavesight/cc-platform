@@ -105,10 +105,7 @@ jobs:
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
         run: |
-          $url = "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe"
-          $destination = "C:\Program Files\Docker\docker-compose.exe"
-          Invoke-WebRequest -Uri $url -OutFile $destination
-          [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\Docker", [EnvironmentVariableTarget]::Machine)
+          Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-windows-x86_64.exe" -Destination $Env:ProgramFiles\Docker\docker-compose.exe
 
       - name: Confirm docker compose
         if: inputs.install-docker-compose == true
