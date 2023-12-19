@@ -104,10 +104,7 @@ public static class RunCommand
         {
             Console.WriteLine("\nNow running the following Docker Compose command:");
             Console.WriteLine(composeCommandBuilder.ToString());
-            var commandOutput = powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
-            Console.WriteLine("\nBegin Output of Docker Compose command:");
-            Console.WriteLine(string.Join("\n", commandOutput));
-            Console.WriteLine("\nEnd Output of Docker Compose command.");
+            powerShellAdapter.RunPowerShellCommand(composeCommandBuilder.ToString());
         }
 
         if (runOptions.Mode is RunMode.o)
