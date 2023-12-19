@@ -98,7 +98,9 @@ jobs:
 
       - name: Display PATH Environment Variable with New Lines  
         run: |
-          $pathArray = $env:PATH -split ';' Write-Host "Current PATH:" foreach ($path in $pathArray) { Write-Host $path }
+          $pathArray = $env:PATH -split ';' 
+          Write-Host "Current PATH:" 
+          foreach ($path in $pathArray) { Write-Host $path }
 
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
