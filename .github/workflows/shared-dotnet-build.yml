@@ -109,10 +109,10 @@ jobs:
 
       - name: Display Docker Paths  
         run: |
-          $dockerPathArray = where docker -split ';' 
+          $dockerPathArray = "where docker" | cmd -split ';' 
           Write-Host "Docker Path:" 
           foreach ($path in $dockerPathArray) { Write-Host $path }
-          $dockerComposePathArray = where docker-compose -split ';' 
+          $dockerComposePathArray = "where docker-compose" | cmd -split ';' 
           Write-Host "Docker Compose Path:" 
           foreach ($path in $dockerComposePathArray) { Write-Host $path }
 
