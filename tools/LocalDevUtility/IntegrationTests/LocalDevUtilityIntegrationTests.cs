@@ -58,23 +58,12 @@ public class LocalDevUtilityIntegrationTests
             var stopwatch = Stopwatch.StartNew();
             var allServicesAreStoodUp = false;
             Exception? lastException = null;
-            var debugCommandResult = "";
             while (!allServicesAreStoodUp && stopwatch.Elapsed < TimeSpan.FromSeconds(180))
             {
                 try
                 {
                     var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
-                    var statusCommandJsonResult = new List<DockerComposeStatusItem>();
-                    foreach (var commandResult in statusCommandRawResult)
-                    {
-                        debugCommandResult = commandResult;
-                        var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
-
-                        if (dockerComposeStatusItem != null)
-                        {
-                            statusCommandJsonResult.Add(dockerComposeStatusItem);
-                        }
-                    }
+                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
@@ -101,7 +90,6 @@ public class LocalDevUtilityIntegrationTests
                 {
                     Console.WriteLine("--Exception--");
                     Console.WriteLine(ex.Message);
-                    Console.WriteLine(debugCommandResult);
                     lastException = ex;
                 }
             }
