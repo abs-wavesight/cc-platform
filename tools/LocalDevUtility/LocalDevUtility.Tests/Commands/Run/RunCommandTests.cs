@@ -66,7 +66,7 @@ public class RunCommandTests
         configCommandOutput.First().Should().Be("name: abs-cc");
     }
 
-    private static void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
+    private void AssertComposeStartsExpectedServices(LocalDevUtilityFixture fixture, string composeCommandPart, IReadOnlyCollection<string> expectedServices)
     {
         var configServicesCommand = $"{composeCommandPart} config --services";
         var configServicesCommandOutput = fixture.RealPowerShellAdapter.RunPowerShellCommand(configServicesCommand, TimeSpan.FromMinutes(2));

@@ -35,6 +35,16 @@ on:
         type: boolean
         default: false
         description: If true, will fail build if formatting changes are detected (using dotnet format)
+      use-submodules:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will it will restore Submodules
+      dotnet-version:        
+        required: false
+        type: string
+        default: '7.0.x'
+        description: .NET SDK Version        
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -59,8 +69,19 @@ jobs:
       - name: Dump context
         uses: abs-wavesight/cc-platform/actions/dump-context@main
 
-      - uses: actions/checkout@v3
-        name: Checkout branch
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        if: inputs.use-submodules == true
+        uses: actions/checkout@v3        
+        with:
+          submodules: true
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
+
+      - name: Checkout branch 
+        if: inputs.use-submodules == false
+        uses: actions/checkout@v3
+        with:
+          submodules: false
 
       - name: Cache nuget packages
         uses: actions/cache@v3
@@ -73,11 +94,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: ${{ inputs.dotnet-version}}
 
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
-        run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination C:\Windows\System32\docker-compose.exe
+        run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination "C:\ProgramData\Chocolatey\bin\docker-compose.exe"
 
       - name: Confirm docker-compose
         if: inputs.install-docker-compose == true
@@ -152,9 +173,10 @@ jobs:
           path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_covered: false
+          skip_covered: true
           fail_below_threshold: false
           show_class_names: true
           show_missing: true
           link_missing_lines: true
           link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+          only_changed_files: true

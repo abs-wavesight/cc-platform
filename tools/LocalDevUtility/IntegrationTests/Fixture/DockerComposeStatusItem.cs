@@ -3,6 +3,7 @@
 public class DockerComposeStatusItem
 {
     /*
+     * This is the format of 2.18 docker-compose.
      * {
     "ID": "10fa8c0e2ced81dd35ec60378fd5a7c147a4fa18cbdd4ef2c71f468117b96aac",
     "Name": "drex-message-service-i",
