@@ -58,6 +58,7 @@ public class LocalDevUtilityIntegrationTests
             var stopwatch = Stopwatch.StartNew();
             var allServicesAreStoodUp = false;
             Exception? lastException = null;
+            var debugCommandResult = "";
             while (!allServicesAreStoodUp && stopwatch.Elapsed < TimeSpan.FromSeconds(180))
             {
                 try
@@ -66,8 +67,7 @@ public class LocalDevUtilityIntegrationTests
                     var statusCommandJsonResult = new List<DockerComposeStatusItem>();
                     foreach (var commandResult in statusCommandRawResult)
                     {
-                        Console.WriteLine("__________________________");
-                        Console.WriteLine(commandResult);
+                        debugCommandResult = commandResult;
                         var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
 
                         if (dockerComposeStatusItem != null)
@@ -99,6 +99,9 @@ public class LocalDevUtilityIntegrationTests
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("--Exception--");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(debugCommandResult);
                     lastException = ex;
                 }
             }
