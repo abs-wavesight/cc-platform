@@ -1,12 +1,9 @@
-﻿using System.CommandLine.Parsing;
-using System.Diagnostics;
-using System.Net.Sockets;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using Abs.CommonCore.LocalDevUtility.IntegrationTests.Fixture;
 using Abs.CommonCore.LocalDevUtility.Tests.Fixture;
 using FluentAssertions;
-using Spectre.Console;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -63,19 +60,15 @@ public class LocalDevUtilityIntegrationTests
                 try
                 {
                     var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
-                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
+                    var statusCommandResult = string.Join("\n", statusCommandRawResult);
+                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(statusCommandResult);
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
 
-                    if (statusCommandJsonResult != null)
-                    {
-                        _testOutput.WriteLine("TestOutput Project: {0}", string.Join(" ", statusCommandJsonResult.Select(i => i.Project).ToArray()));
-                    }
-
                     expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
-                        .Where(i => i.Project == "abs-cc" || i.Labels?.IndexOf("com.docker.compose.project=abs-cc") >= 0).Should()
+                        .Where(i => i.Project == "abs-cc").Should()
                         .AllSatisfy(i =>
                         {
                             i.State.Should().BeOneOf("running", "created");
@@ -88,8 +81,6 @@ public class LocalDevUtilityIntegrationTests
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("--Exception--");
-                    Console.WriteLine(ex.Message);
                     lastException = ex;
                 }
             }
