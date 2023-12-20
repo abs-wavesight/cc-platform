@@ -66,6 +66,8 @@ public class LocalDevUtilityIntegrationTests
                     var statusCommandJsonResult = new List<DockerComposeStatusItem>();
                     foreach (var commandResult in statusCommandRawResult)
                     {
+                        Console.WriteLine("__________________________");
+                        Console.WriteLine(commandResult);
                         var dockerComposeStatusItem = JsonSerializer.Deserialize<DockerComposeStatusItem>(commandResult);
 
                         if (dockerComposeStatusItem != null)
