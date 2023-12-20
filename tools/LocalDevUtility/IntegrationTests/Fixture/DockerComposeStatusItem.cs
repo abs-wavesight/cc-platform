@@ -31,5 +31,6 @@ public class DockerComposeStatusItem
     public string? State { get; set; }
     public string? Status { get; set; }
     public string? Health { get; set; }
+    public string? Labels { get; set; }
     public int ExitCode { get; set; }
 }

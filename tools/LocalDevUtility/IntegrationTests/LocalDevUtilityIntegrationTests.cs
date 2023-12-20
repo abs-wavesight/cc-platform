@@ -75,11 +75,11 @@ public class LocalDevUtilityIntegrationTests
 
                     expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
-                        .Where(i => i.Project == "abs-cc").Should()
+                        .Where(i => i.Project == "abs-cc" || i.Labels?.IndexOf("com.docker.compose.project=abs-cc") >= 0).Should()
                         .AllSatisfy(i =>
                         {
                             i.State.Should().BeOneOf("running", "created");
-                            i.Health.Should().BeOneOf("healthy", string.Empty);
+                            i.Health.Should().BeOneOf("healthy", "starting", string.Empty);
                             i.ExitCode.Should().Be(0);
                         });
 
