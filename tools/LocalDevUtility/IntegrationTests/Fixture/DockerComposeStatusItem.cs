@@ -3,6 +3,7 @@
 public class DockerComposeStatusItem
 {
     /*
+     * This is the format of 2.18 docker-compose.
      * {
     "ID": "10fa8c0e2ced81dd35ec60378fd5a7c147a4fa18cbdd4ef2c71f468117b96aac",
     "Name": "drex-message-service-i",
@@ -31,6 +32,5 @@ public class DockerComposeStatusItem
     public string? State { get; set; }
     public string? Status { get; set; }
     public string? Health { get; set; }
-    public string? Labels { get; set; }
     public int ExitCode { get; set; }
 }
