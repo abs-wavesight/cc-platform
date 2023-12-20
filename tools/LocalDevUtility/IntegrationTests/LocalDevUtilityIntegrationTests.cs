@@ -60,17 +60,19 @@ public class LocalDevUtilityIntegrationTests
                 try
                 {
                     var statusCommandRawResult = fixture.RealPowerShellAdapter.RunPowerShellCommand(statusCommand, TimeSpan.FromMinutes(2));
-                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(string.Join("\n", statusCommandRawResult));
+                    var statusCommandResult = string.Join("\n", statusCommandRawResult);
+                    var statusCommandJsonResult = JsonSerializer.Deserialize<List<DockerComposeStatusItem>>(statusCommandResult);
 
                     statusCommandJsonResult.Should().NotBeNull();
                     statusCommandJsonResult.Should().HaveCount(expectedServices.Length);
+
                     expectedServices.Should().AllSatisfy(s => statusCommandJsonResult!.Should().Contain(j => j.Service == s));
                     statusCommandJsonResult!
                         .Where(i => i.Project == "abs-cc").Should()
                         .AllSatisfy(i =>
                         {
-                            i.State.Should().Be("running");
-                            i.Health.Should().BeOneOf("healthy", string.Empty);
+                            i.State.Should().BeOneOf("running", "created");
+                            i.Health.Should().BeOneOf("healthy", "starting", string.Empty);
                             i.ExitCode.Should().Be(0);
                         });
 

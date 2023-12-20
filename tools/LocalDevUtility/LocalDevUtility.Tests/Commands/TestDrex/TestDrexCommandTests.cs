@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Abs.CommonCore.LocalDevUtility.Tests.Commands.TestDrex;
 
-[Collection(nameof(RunCommandTests))]
+[Collection(nameof(TestDrexCommandTests))]
 public class TestDrexCommandTests
 {
     private readonly ITestOutputHelper _testOutput;

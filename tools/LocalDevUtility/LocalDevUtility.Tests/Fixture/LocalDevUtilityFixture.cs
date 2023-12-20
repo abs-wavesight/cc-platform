@@ -60,8 +60,18 @@ public class LocalDevUtilityFixture
         var dummyFdzRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-fdz-root");
         Directory.CreateDirectory(dummyFdzRootPath);
 
-        var dummydrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
-        Directory.CreateDirectory(dummydrexPath);
+        var dummydrexServicePath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/service");
+        Directory.CreateDirectory(dummydrexServicePath);
+
+        var dummydrexClientPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/client");
+        Directory.CreateDirectory(dummydrexClientPath);
+
+        var dummydrexDemoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/demo");
+        Directory.CreateDirectory(dummydrexDemoPath);
+
+        CopyFile(repoRootPath, dummydrexServicePath, "nuget.config");
+        CopyFile(repoRootPath, dummydrexClientPath, "nuget.config");
+        CopyFile(repoRootPath, dummydrexDemoPath, "nuget.config");
 
         var dummyDiscoRepoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo");
         Directory.CreateDirectory(dummyDiscoRepoPath);
