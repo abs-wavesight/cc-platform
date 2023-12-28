@@ -10,6 +10,8 @@ services:
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12446:5000"
     restart: always
     volumes:
       - type: bind
@@ -19,5 +21,4 @@ services:
       - type: bind
         source: ${PATH_TO_CC_SIEMENS_ADAPTER_REPO}/config/vendor-configs
         target: C:/app/config
-        read_only: true    
-
+        read_only: true

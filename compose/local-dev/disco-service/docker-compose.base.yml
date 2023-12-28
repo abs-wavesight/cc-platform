@@ -11,6 +11,8 @@ services:
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12445:5000"
     restart: always
     volumes:
       - type: volume
