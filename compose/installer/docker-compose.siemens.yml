@@ -10,6 +10,8 @@ services:
       - BusConnection__username=${SIEMENS_RABBIT_USERNAME}
       - BusConnection__password=${SIEMENS_RABBIT_PASSWORD}
       - FLAT_LOGS=false
+    ports:
+      - "12446:5000"
     depends_on:
       - cc.vector
       - cc.rabbitmq
