@@ -15,11 +15,11 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.211, )",
-        "resolved": "1.0.211",
-        "contentHash": "425JWQ5LQpdz+33onGuC7qIbt21IqGMbDtqwnVoJb4IjSiUj9Xjv5uJ/RbzscULuACI0hmboHXCa7+CMiijJTQ==",
+        "requested": "[1.0.213, )",
+        "resolved": "1.0.213",
+        "contentHash": "bylu3yeURP22J9Fi15RHrgpfxSElIZoyueFlV+8P+VL4uv0W6mos6x3Ym5ZJGDG5EbSQPV83BtrL8lrPOCfvvQ==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.158",
+          "Abs.CommonCore.Contracts": "1.0.248",
           "EasyNetQ.Management.Client": "2.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "7.0.0",
