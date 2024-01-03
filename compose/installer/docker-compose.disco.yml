@@ -11,6 +11,8 @@ services:
       - ServiceBusConfiguration__BusConnection__username=${DISCO_RABBIT_USERNAME}
       - ServiceBusConfiguration__BusConnection__password=${DISCO_RABBIT_PASSWORD}
       - FLAT_LOGS=false
+    ports:
+      - "12445:5000"
     depends_on:
       - cc.vector
       - cc.rabbitmq
