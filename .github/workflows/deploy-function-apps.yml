@@ -1,0 +1,85 @@
+name: Deploy Azure Function Apps
+
+on:
+  workflow_call:
+    inputs:   
+      resource_group_name:
+        description: 'Specifies the Azure Resource Group'
+        required: true
+        type: string   
+      artifactFunctions:
+        description: 'Specifies the name of the artifact containing builded functions'
+        required: true
+        type: string
+      functionAppSuffix:
+        description: 'Specifies the function app suffix. Example: dev or qa '
+        required: true
+        type: string
+      artifactConfigName:
+        required: true
+        type: string
+        description: 'Specifies the name of the artifact containing configuration'
+      artifactConfigFile:
+        required: true
+        type: string
+        description: 'Specifies the file name in the artifact containing configuration'
+    
+
+jobs: 
+  deploy:    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download config Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifactConfigName }}
+          path: ${{ github.workspace }}/downloaded-artifacts-conf
+  
+      - name: Download functions artifacts       
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifactFunctions }}
+          path: ${{ github.workspace }}/downloaded-artifacts-func   
+      
+      - name: Log in to Azure using Service Principal
+        shell: bash
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_AD_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Set Subscription and Check functionAppSuffix
+        shell: bash
+        run: |
+          if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
+            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}
+            echo "Using DEV subscription"
+          elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
+            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_QA }}
+            echo "Using QA subscription"
+          else
+            echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{ inputs.functionAppSuffix }}."
+            exit 1
+          fi
+
+      - name: Azure Function App Zip Deploy
+        shell: bash
+        run: |         
+          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf/${{ inputs.artifactConfigFile }}"
+          functionConfigs=$(jq -c '.[]' $artifactPath)
+
+          for config in $functionConfigs; do
+            use=$(echo $config | jq -r '.Use')
+            if [ "$use" = "true" ]; then
+              if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
+                functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME_DEV')                
+              elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
+                functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME_QA')                
+              else
+                echo "Invalid functionAppSuffix value: ${{ inputs.functionAppSuffix }}"
+                exit 1
+              fi            
+              artifactName=$(echo $config | jq -r '.Name')
+              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/${artifactName}.zip"
+              echo "Deploy ${artifactName}"
+              az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
+            fi
+          done  
