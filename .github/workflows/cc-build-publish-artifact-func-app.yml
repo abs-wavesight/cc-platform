@@ -1,0 +1,95 @@
+name: 'Build and Publish Func App with Dynamic Config'
+
+on:
+  workflow_call:
+    inputs:
+      solutionName:
+        required: true
+        type: string
+        description: 'Solution file'
+      solutionDirectory:
+        required: true
+        type: string
+        description: 'Solution file path'
+      dotnetVersion:
+        required: true
+        type: string 
+        description: '.NET SDK Version'     
+      artifactConfigName:
+        required: true
+        type: string
+        description: 'Specifies the name of the artifact containing builded functions'
+      artifactConfigFile:
+        required: true
+        type: string
+        description: 'Specifies the file name in the artifact containing configuration'
+      artifactOutput:
+        required: true
+        type: string
+        description: 'Specifies the name of the artifact containing builded functions'  
+    secrets:
+      GH_PAT:
+        required: false
+env:
+  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages  
+  
+jobs:
+  build_and_publish:
+    runs-on: windows-2019
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
+
+      - name: Cache nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.NUGET_PACKAGE_PATH }}
+          key: ${{ runner.OS }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: ${{ runner.OS }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ inputs.dotnetVersion }}
+
+      - name: Restore dependencies
+        working-directory: ${{ inputs.solutionDirectory }}
+        run: dotnet restore ${{ inputs.solutionName }} --packages ${{ env.NUGET_PACKAGE_PATH }}
+
+      - name: 'Build the Project'
+        working-directory: ${{ inputs.solutionDirectory }}
+        run: dotnet build ${{ inputs.solutionName }} --configuration Release --no-restore
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifactConfigName }}
+          path: downloaded-artifacts/      
+
+      - name: Publish
+        working-directory: ${{ inputs.solutionDirectory }}
+        shell: pwsh
+        run: |
+          $artifactPath = Join-Path -Path "${{ github.workspace }}/downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"
+          $functionConfigs = Get-Content $artifactPath | ConvertFrom-Json
+          $artifactOutputDir = "${{ github.workspace }}/artifacts"
+          New-Item -ItemType Directory -Force -Path $artifactOutputDir
+          foreach ($config in $functionConfigs) {
+            if ($config.Use -eq "true") {
+               $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
+               dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
+               $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
+               Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
+               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"
+            }
+          }
+
+      - name: Upload All Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifactOutput }}
+          path: "${{ github.workspace }}/artifacts"
