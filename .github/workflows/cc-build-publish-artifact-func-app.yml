@@ -90,10 +90,10 @@ jobs:
                
                Write-Host "Setup version: ${{ inputs.tagVersion }}"
 
-               $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
-               $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
-               $hostJson.version = "${{ inputs.tagVersion }}"
-               $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
+            #    $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
+            #    $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
+            #    $hostJson.version = "${{ inputs.tagVersion }}"
+            #    $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
