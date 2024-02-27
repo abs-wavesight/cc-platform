@@ -98,7 +98,7 @@ jobs:
           }
           $zipFileName = "${{ inputs.artifactOutput }}.zip"
           $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
-          Compress-Archive -Path "$artifactOutputDir\artifacts\*" -DestinationPath $zipFilePath
+          Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
           Write-Host "Created zip: $zipFilePath"
           echo "ZIP_FILE=$zipFileName" >> $GITHUB_ENV
 
