@@ -35,7 +35,7 @@ on:
       GH_PAT:
         required: false
 env:
-  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages  
+  NUGET_PACKAGE_PATH: ${{ github.workspace }}\.nuget\packages  
   
 jobs:
   build_and_publish:
@@ -79,9 +79,9 @@ jobs:
         working-directory: ${{ inputs.solutionDirectory }}
         shell: pwsh
         run: |
-          $artifactPath = Join-Path -Path "${{ github.workspace }}/downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"
+          $artifactPath = Join-Path -Path "${{ github.workspace }}\downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"
           $functionConfigs = Get-Content $artifactPath | ConvertFrom-Json
-          $artifactOutputDir = "${{ github.workspace }}/artifacts"
+          $artifactOutputDir = "${{ github.workspace }}\artifacts"
           New-Item -ItemType Directory -Force -Path $artifactOutputDir
           foreach ($config in $functionConfigs) {            
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
@@ -111,7 +111,7 @@ jobs:
             tag: ${{ inputs.tagVersion }}
             commit: ${{ github.sha }}
             name: Release ${{ inputs.tagVersion }}
-            artifacts: ${{ github.workspace }}/${{ inputs.artifactOutput }}.zip             
+            artifacts: ${{ github.workspace }}\${{ inputs.artifactOutput }}.zip             
 
       - name: Tag current build
         run: |
