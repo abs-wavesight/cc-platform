@@ -111,7 +111,7 @@ jobs:
             tag: ${{ inputs.tagVersion }}
             commit: ${{ github.sha }}
             name: Release ${{ inputs.tagVersion }}
-            artifacts: ${{ env.ZIP_FILE }}              
+            artifacts: ${{ github.workspace }}/${{ inputs.artifactOutput }}.zip             
 
       - name: Tag current build
         run: |
