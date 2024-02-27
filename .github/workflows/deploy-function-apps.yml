@@ -48,6 +48,7 @@ jobs:
             fileName: ${{ inputs.artifactFunctions }}.zip
             tag: ${{ inputs.tagVersion }}
             out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+            extract: true
 
       - name: List files in target folder
         run: ls -l ${{ github.workspace }}/downloaded-artifacts-func 
