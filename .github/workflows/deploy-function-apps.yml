@@ -46,7 +46,7 @@ jobs:
         uses: robinraju/release-downloader@v1.9
         with:
             fileName: ${{ inputs.artifactFunctions }}.zip
-            tag: ${{github.event.inputs.tagVersion}}
+            tag: ${{ inputs.tagVersion }}
             out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
 
       - name: List files in target folder
