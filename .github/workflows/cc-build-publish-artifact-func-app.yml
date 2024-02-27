@@ -87,9 +87,11 @@ jobs:
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
                
+               Write-Host "Setup version: ${{ inputs.tagVersion }}"
+
                $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
                $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
-               $hostJson.version = "${{ github.event.inputs.tagVersion }}"
+               $hostJson.version = "${{ inputs.tagVersion }}"
                $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
