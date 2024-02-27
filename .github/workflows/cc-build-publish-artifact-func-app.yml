@@ -75,7 +75,7 @@ jobs:
           name: ${{ inputs.artifactConfigName }}
           path: downloaded-artifacts/      
 
-      - name: Publish
+      - name: Publish Version ${{ github.event.inputs.tagVersion }}
         working-directory: ${{ inputs.solutionDirectory }}
         shell: pwsh
         run: |
@@ -103,7 +103,7 @@ jobs:
           echo "ZIP_FILE=$zipFileName" >> $GITHUB_ENV
 
 
-      - name: Publish to GitHub Release
+      - name: Publish to GitHub Release ${{ github.event.inputs.tagVersion }}
         uses: ncipollo/release-action@v1
         with:
             allowUpdates: true
