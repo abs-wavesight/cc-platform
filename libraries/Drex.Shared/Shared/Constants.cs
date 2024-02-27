@@ -17,6 +17,7 @@ public static class Constants
         public const string ContainerName = $"{ContainerPrefix}.name";
         public const string ContainerType = $"{ContainerPrefix}.type";
         public const string ContainerImage = $"{ContainerPrefix}.image";
+        public const string VesselImo = $"{Prefix}.vessel.imo";
     }
 
     public static class MessageBus
