@@ -100,7 +100,7 @@ jobs:
           $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
           Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
           Write-Host "Created zip: $zipFilePath"
-          echo "ZIP_FILE=$zipFileName" >> $GITHUB_ENV
+          echo "ZIP_FILE=$zipFilePath" >> $GITHUB_ENV
 
 
       - name: Publish to GitHub Release ${{ github.event.inputs.tagVersion }}
@@ -111,7 +111,7 @@ jobs:
             tag: ${{ inputs.tagVersion }}
             commit: ${{ github.sha }}
             name: Release ${{ inputs.tagVersion }}
-            artifacts: ${{ github.workspace }}/${{ env.ZIP_FILE }}              
+            artifacts: ${{ env.ZIP_FILE }}              
 
       - name: Tag current build
         run: |
