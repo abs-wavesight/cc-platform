@@ -75,7 +75,7 @@ jobs:
         shell: bash
         run: |         
           artifactPath="${{ github.workspace }}/downloaded-artifacts-conf/${{ inputs.artifactConfigFile }}"
-          functionConfigs = Get-Content $configPath | ConvertFrom-Json
+          functionConfigs=$(jq -c '.[]' <"$artifactPath")
 
           for config in $functionConfigs; do
             use=$(echo $config | jq -r '.Use')
