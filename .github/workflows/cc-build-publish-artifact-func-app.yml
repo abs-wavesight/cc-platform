@@ -3,6 +3,10 @@ name: 'Build and Publish Func App with Dynamic Config'
 on:
   workflow_call:
     inputs:
+      tagVersion:
+         required: true
+         type: string
+         description: 'Solution tag'
       solutionName:
         required: true
         type: string
@@ -60,6 +64,12 @@ jobs:
         working-directory: ${{ inputs.solutionDirectory }}
         run: dotnet restore ${{ inputs.solutionName }} --packages ${{ env.NUGET_PACKAGE_PATH }}
 
+      - name: Update version 
+        working-directory: ${{ inputs.solutionDirectory }}
+        run: |            
+            jq --arg newVersion "${{ github.event.inputs.tagVersion }}" '.version = $newVersion' host.json > host.json.tmp && mv host.json.tmp host.json
+        shell: bash
+
       - name: 'Build the Project'
         working-directory: ${{ inputs.solutionDirectory }}
         run: dotnet build ${{ inputs.solutionName }} --configuration Release --no-restore
@@ -78,18 +88,36 @@ jobs:
           $functionConfigs = Get-Content $artifactPath | ConvertFrom-Json
           $artifactOutputDir = "${{ github.workspace }}/artifacts"
           New-Item -ItemType Directory -Force -Path $artifactOutputDir
-          foreach ($config in $functionConfigs) {
-            if ($config.Use -eq "true") {
+          foreach ($config in $functionConfigs) {            
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
-               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"
-            }
+               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"            
           }
+          $zipFileName = "${{ inputs.artifactOutput }}.zip"
+          $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
+          Compress-Archive -Path "$artifactOutputDir\artifacts\*" -DestinationPath $zipFilePath
+          Write-Host "Created zip: $zipFilePath"
+          echo "ZIP_FILE=$zipFileName" >> $GITHUB_ENV
 
-      - name: Upload All Artifacts
-        uses: actions/upload-artifact@v3
+
+      - name: Publish to GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          name: ${{ inputs.artifactOutput }}
-          path: "${{ github.workspace }}/artifacts"
+            allowUpdates: true
+            body: "---"
+            tag: ${{ inputs.tagVersion }}
+            commit: ${{ github.sha }}
+            name: Release ${{ inputs.tagVersion }}
+            artifacts: ${{ github.workspace }}/${{ env.ZIP_FILE }}              
+
+      - name: Tag current build
+        run: |
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git tag ${{ inputs.tagVersion }}
+            git push origin ${{ inputs.tagVersion }}
+        shell: pwsh
+  
+          
