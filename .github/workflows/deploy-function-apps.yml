@@ -2,7 +2,11 @@ name: Deploy Azure Function Apps
 
 on:
   workflow_call:
-    inputs:   
+    inputs:  
+      tagVersion:
+        description: 'Specifies the Azure Resource Group'
+        required: true
+        type: string    
       resource_group_name:
         description: 'Specifies the Azure Resource Group'
         required: true
@@ -29,17 +33,24 @@ jobs:
   deploy:    
     runs-on: ubuntu-latest
     steps:
-      - name: Download config Artifact
+      - name: Download config from local Artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifactConfigName }}
-          path: ${{ github.workspace }}/downloaded-artifacts-conf
-  
-      - name: Download functions artifacts       
-        uses: actions/download-artifact@v3
+          path: ${{ github.workspace }}/downloaded-artifacts-conf 
+      
+      - name: List files in target folder
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf
+          
+      - name: Download functions from Release Artifacts
+        uses: robinraju/release-downloader@v1.9
         with:
-          name: ${{ inputs.artifactFunctions }}
-          path: ${{ github.workspace }}/downloaded-artifacts-func   
+            fileName: ${{ inputs.artifactFunctions }}.zip
+            tag: ${{github.event.inputs.tagVersion}}
+            out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+
+      - name: List files in target folder
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func 
       
       - name: Log in to Azure using Service Principal
         shell: bash
