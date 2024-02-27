@@ -78,8 +78,9 @@ jobs:
       - name: Publish Version ${{ github.event.inputs.tagVersion }}
         working-directory: ${{ inputs.solutionDirectory }}
         shell: pwsh
+        id: publish
         run: |
-          $artifactPath = Join-Path -Path "${{ github.workspace }}\downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"
+          $artifactPath = Join-Path -Path "${{ github.workspace }}\downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"          
           $functionConfigs = Get-Content $artifactPath | ConvertFrom-Json
           $artifactOutputDir = "${{ github.workspace }}\artifacts"
           New-Item -ItemType Directory -Force -Path $artifactOutputDir
@@ -101,19 +102,17 @@ jobs:
           $zipFileName = "${{ inputs.artifactOutput }}.zip"
           $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
           Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
-          Write-Host "Created zip: $zipFilePath"
-          echo "ZIP_FILE=$zipFilePath" >> $GITHUB_ENV
-
+          Write-Host "Created zip: $zipFilePath"     
+         
 
       - name: Publish to GitHub Release ${{ github.event.inputs.tagVersion }}
         uses: ncipollo/release-action@v1
         with:
-            allowUpdates: true
-            body: "---"
+            allowUpdates: true            
             tag: ${{ inputs.tagVersion }}
             commit: ${{ github.sha }}
             name: Release ${{ inputs.tagVersion }}
-            artifacts: ${{ github.workspace }}\${{ inputs.artifactOutput }}.zip             
+            artifacts: ${{ github.workspace }}\${{ inputs.artifactOutput }}.zip, ${{ github.workspace }}\downloaded-artifacts\${{ inputs.artifactConfigFile}}             
 
       - name: Tag current build
         run: |
