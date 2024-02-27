@@ -63,12 +63,7 @@ jobs:
       - name: Restore dependencies
         working-directory: ${{ inputs.solutionDirectory }}
         run: dotnet restore ${{ inputs.solutionName }} --packages ${{ env.NUGET_PACKAGE_PATH }}
-
-      - name: Update version 
-        working-directory: ${{ inputs.solutionDirectory }}
-        run: |            
-            jq --arg newVersion "${{ github.event.inputs.tagVersion }}" '.version = $newVersion' host.json > host.json.tmp && mv host.json.tmp host.json
-        shell: bash
+      
 
       - name: 'Build the Project'
         working-directory: ${{ inputs.solutionDirectory }}
@@ -91,6 +86,12 @@ jobs:
           foreach ($config in $functionConfigs) {            
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
+               
+               $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
+               $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
+               $hostJson.version = "${{ github.event.inputs.tagVersion }}"
+               $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
+               
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
                Write-Host "Zipped $($config.Name) function app to: $zipFilePath"            
