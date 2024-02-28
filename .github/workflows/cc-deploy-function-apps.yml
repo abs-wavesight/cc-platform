@@ -42,12 +42,28 @@ jobs:
       - name: List files in target folder
         run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf
           
-      - name: Download functions from Release Artifacts
+      # - name: Download functions from Release Artifacts
+      #   uses: robinraju/release-downloader@v1.9
+      #   with:
+      #       fileName: ${{ inputs.artifactFunctions }}.zip
+      #       tag: ${{ inputs.tagVersion }}
+      #       out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+
+      - name: Download functions from Release Artifacts (Specific Tag)
         uses: robinraju/release-downloader@v1.9
+        if: inputs.tagVersion != 'latest'
         with:
-            fileName: ${{ inputs.artifactFunctions }}.zip
-            tag: ${{ inputs.tagVersion }}
-            out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+          fileName: ${{ inputs.artifactFunctions }}.zip
+          tag: ${{ inputs.tagVersion }}
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+      
+      - name: Download functions from Release Artifacts (Latest)
+        uses: robinraju/release-downloader@v1.9
+        if: inputs.tagVersion == 'latest'
+        with:
+          fileName: ${{ inputs.artifactFunctions }}.zip
+          latest: true
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func          
 
       - name: Manual expand archive files
         shell: pwsh
