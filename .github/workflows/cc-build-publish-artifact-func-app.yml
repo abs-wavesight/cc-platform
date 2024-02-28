@@ -3,6 +3,10 @@ name: 'Build and Publish Func App with Dynamic Config'
 on:
   workflow_call:
     inputs:
+      tagVersion:
+         required: true
+         type: string
+         description: 'Version tag'
       solutionName:
         required: true
         type: string
@@ -18,20 +22,20 @@ on:
       artifactConfigName:
         required: true
         type: string
-        description: 'Specifies the name of the artifact containing builded functions'
+        description: 'Specifies the name of the local artifact containing config file for current solution'
       artifactConfigFile:
         required: true
         type: string
-        description: 'Specifies the file name in the artifact containing configuration'
+        description: 'Specifies the config file name from loact artifact containing configuration. This name will also used for uploading to Release Assets'
       artifactOutput:
         required: true
         type: string
-        description: 'Specifies the name of the artifact containing builded functions'  
+        description: 'Specifies the name of the Release Asset that will contain builded functions'  
     secrets:
       GH_PAT:
         required: false
 env:
-  NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages  
+  NUGET_PACKAGE_PATH: ${{ github.workspace }}\.nuget\packages  
   
 jobs:
   build_and_publish:
@@ -59,6 +63,7 @@ jobs:
       - name: Restore dependencies
         working-directory: ${{ inputs.solutionDirectory }}
         run: dotnet restore ${{ inputs.solutionName }} --packages ${{ env.NUGET_PACKAGE_PATH }}
+      
 
       - name: 'Build the Project'
         working-directory: ${{ inputs.solutionDirectory }}
@@ -70,26 +75,51 @@ jobs:
           name: ${{ inputs.artifactConfigName }}
           path: downloaded-artifacts/      
 
-      - name: Publish
+      - name: Publish Version 
         working-directory: ${{ inputs.solutionDirectory }}
         shell: pwsh
+        id: publish
         run: |
-          $artifactPath = Join-Path -Path "${{ github.workspace }}/downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"
+          $artifactPath = Join-Path -Path "${{ github.workspace }}\downloaded-artifacts" -ChildPath "${{ inputs.artifactConfigFile }}"          
           $functionConfigs = Get-Content $artifactPath | ConvertFrom-Json
-          $artifactOutputDir = "${{ github.workspace }}/artifacts"
+          $artifactOutputDir = "${{ github.workspace }}\artifacts"
           New-Item -ItemType Directory -Force -Path $artifactOutputDir
-          foreach ($config in $functionConfigs) {
-            if ($config.Use -eq "true") {
+          foreach ($config in $functionConfigs) {            
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
+               
+               Write-Host "Setup version: ${{ inputs.tagVersion }}"
+
+               $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
+               $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
+               $hostJson.version = "${{ inputs.tagVersion }}"
+               $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
+               
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
-               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"
-            }
+               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"            
           }
+          $zipFileName = "${{ inputs.artifactOutput }}.zip"
+          $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
+          Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
+          Write-Host "Created zip: $zipFilePath"     
+         
 
-      - name: Upload All Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Publish to GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          name: ${{ inputs.artifactOutput }}
-          path: "${{ github.workspace }}/artifacts"
+            allowUpdates: true            
+            tag: ${{ inputs.tagVersion }}
+            commit: ${{ github.sha }}
+            name: Release ${{ inputs.tagVersion }}
+            artifacts: ${{ github.workspace }}\${{ inputs.artifactOutput }}.zip, ${{ github.workspace }}\downloaded-artifacts\${{ inputs.artifactConfigFile}}             
+
+      - name: Tag current build
+        run: |
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git tag ${{ inputs.tagVersion }}
+            git push origin ${{ inputs.tagVersion }}
+        shell: pwsh
+  
+          

@@ -2,7 +2,11 @@ name: Deploy Azure Function Apps
 
 on:
   workflow_call:
-    inputs:   
+    inputs:  
+      tagVersion:
+        description: 'Specifies the Azure Resource Group'
+        required: true
+        type: string    
       resource_group_name:
         description: 'Specifies the Azure Resource Group'
         required: true
@@ -29,24 +33,49 @@ jobs:
   deploy:    
     runs-on: ubuntu-latest
     steps:
-      - name: Download config Artifact
+      - name: Download config from local Artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifactConfigName }}
-          path: ${{ github.workspace }}/downloaded-artifacts-conf
-  
-      - name: Download functions artifacts       
-        uses: actions/download-artifact@v3
+          path: ${{ github.workspace }}/downloaded-artifacts-conf 
+      
+      - name: List files in target folder
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf  
+
+      - name: Download functions from Release Artifacts (Specific Tag)
+        uses: robinraju/release-downloader@v1.9
+        if: inputs.tagVersion != 'latest'
         with:
-          name: ${{ inputs.artifactFunctions }}
-          path: ${{ github.workspace }}/downloaded-artifacts-func   
+          fileName: ${{ inputs.artifactFunctions }}.zip
+          tag: ${{ inputs.tagVersion }}
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+      
+      - name: Download functions from Release Artifacts (Latest)
+        uses: robinraju/release-downloader@v1.9
+        if: inputs.tagVersion == 'latest'
+        with:
+          fileName: ${{ inputs.artifactFunctions }}.zip
+          latest: true
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func          
+
+      - name: Manual expand archive files
+        shell: pwsh
+        run: |
+            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func/functions"
+            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func/${{ inputs.artifactFunctions }}.zip"
+        
+            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath
+            
+
+      - name: List files in target folder
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func/functions
       
       - name: Log in to Azure using Service Principal
         shell: bash
         run: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_AD_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: Set Subscription and Check functionAppSuffix
+      - name: Define Subscription
         shell: bash
         run: |
           if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
@@ -64,7 +93,7 @@ jobs:
         shell: bash
         run: |         
           artifactPath="${{ github.workspace }}/downloaded-artifacts-conf/${{ inputs.artifactConfigFile }}"
-          functionConfigs=$(jq -c '.[]' $artifactPath)
+          functionConfigs=$(jq -c '.[]' <"$artifactPath")
 
           for config in $functionConfigs; do
             use=$(echo $config | jq -r '.Use')
@@ -78,8 +107,9 @@ jobs:
                 exit 1
               fi            
               artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/${artifactName}.zip"
+              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/functions/${artifactName}.zip"
               echo "Deploy ${artifactName}"
+              echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
               az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
