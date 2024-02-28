@@ -23,6 +23,9 @@ public class MessageMetadata
     [Description(Constants.MessageHeaders.DestinationClient)]
     public string? DestinationClient { get; set; }
 
+    [Description(Constants.MessageHeaders.VesselImo)]
+    public string? IMO { get; set; }
+
     private MessageMetadata(IReadOnlyDictionary<string, string> headers)
     {
         headers.TryGetValue(GetType().GetDescription(nameof(Client))!, out var client);
@@ -42,6 +45,9 @@ public class MessageMetadata
 
         headers.TryGetValue(GetType().GetDescription(nameof(DestinationClient))!, out var destinationClient);
         DestinationClient = destinationClient;
+
+        headers.TryGetValue(GetType().GetDescription(nameof(IMO))!, out var imo);
+        IMO = imo;
     }
 
     public static MessageMetadata FromHeaders(IReadOnlyDictionary<string, string> headers)
