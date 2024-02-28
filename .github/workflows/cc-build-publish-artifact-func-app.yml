@@ -92,7 +92,7 @@ jobs:
 
                $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
                $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
-               $hostJson.tagVersion = "${{ inputs.tagVersion }}"
+               Add-Member -InputObject $hostJson -MemberType NoteProperty -Name "tagVersion" -Value "${{ inputs.tagVersion }}"
                $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
