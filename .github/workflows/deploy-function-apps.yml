@@ -48,10 +48,18 @@ jobs:
             fileName: ${{ inputs.artifactFunctions }}.zip
             tag: ${{ inputs.tagVersion }}
             out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
-            extract: true
+
+      - name: Manual expand files
+        shell: pwsh
+        run: |
+            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func/functions"
+            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func/${{ inputs.artifactFunctions }}.zip"
+        
+            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath
+            
 
       - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func 
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func/functions
       
       - name: Log in to Azure using Service Principal
         shell: bash
@@ -90,7 +98,7 @@ jobs:
                 exit 1
               fi            
               artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/${artifactName}.zip"
+              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/functions/${artifactName}.zip"
               echo "Deploy ${artifactName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
               az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
