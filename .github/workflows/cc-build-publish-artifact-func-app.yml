@@ -6,7 +6,7 @@ on:
       tagVersion:
          required: true
          type: string
-         description: 'Solution tag'
+         description: 'Version tag'
       solutionName:
         required: true
         type: string
@@ -22,15 +22,15 @@ on:
       artifactConfigName:
         required: true
         type: string
-        description: 'Specifies the name of the artifact containing builded functions'
+        description: 'Specifies the name of the local artifact containing config file for current solution'
       artifactConfigFile:
         required: true
         type: string
-        description: 'Specifies the file name in the artifact containing configuration'
+        description: 'Specifies the config file name from loact artifact containing configuration. This name will also used for uploading to Release Assets'
       artifactOutput:
         required: true
         type: string
-        description: 'Specifies the name of the artifact containing builded functions'  
+        description: 'Specifies the name of the Release Asset that will contain builded functions'  
     secrets:
       GH_PAT:
         required: false
@@ -75,7 +75,7 @@ jobs:
           name: ${{ inputs.artifactConfigName }}
           path: downloaded-artifacts/      
 
-      - name: Publish Version ${{ github.event.inputs.tagVersion }}
+      - name: Publish Version 
         working-directory: ${{ inputs.solutionDirectory }}
         shell: pwsh
         id: publish
@@ -90,10 +90,10 @@ jobs:
                
                Write-Host "Setup version: ${{ inputs.tagVersion }}"
 
-            #    $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
-            #    $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
-            #    $hostJson.version = "${{ inputs.tagVersion }}"
-            #    $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
+               $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
+               $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
+               $hostJson.version = "${{ inputs.tagVersion }}"
+               $hostJson | ConvertTo-Json | Set-Content $hostJsonPath
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
@@ -105,7 +105,7 @@ jobs:
           Write-Host "Created zip: $zipFilePath"     
          
 
-      - name: Publish to GitHub Release ${{ github.event.inputs.tagVersion }}
+      - name: Publish to GitHub Release
         uses: ncipollo/release-action@v1
         with:
             allowUpdates: true            

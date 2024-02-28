@@ -49,7 +49,7 @@ jobs:
             tag: ${{ inputs.tagVersion }}
             out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
 
-      - name: Manual expand files
+      - name: Manual expand archive files
         shell: pwsh
         run: |
             $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func/functions"
