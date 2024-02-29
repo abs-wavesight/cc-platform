@@ -6,6 +6,7 @@ public class AppConfig
     public string? CommonCoreDrexRepositoryPath { get; set; }
     public string? CommonCoreDiscoRepositoryPath { get; set; }
     public string? CommonCoreSiemensAdapterRepositoryPath { get; set; }
+    public string? CommonCoreKdiAdapterRepositoryPath { get; set; }
     public string? ContainerWindowsVersion { get; set; }
     public string? CertificatePath { get; set; }
     public string? SftpRootPath { get; set; }
