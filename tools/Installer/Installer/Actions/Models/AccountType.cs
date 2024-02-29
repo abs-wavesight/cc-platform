@@ -7,5 +7,7 @@ public enum AccountType
     RemoteDrex,
     Client,
     Disco,
-    Siemens
+    Siemens,
+    Kdi
+
 }
