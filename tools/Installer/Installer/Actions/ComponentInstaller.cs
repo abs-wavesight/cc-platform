@@ -24,6 +24,7 @@ public class ComponentInstaller : ActionBase
     private const string DockerServiceName = "dockerd";
     private const string DiscoSiteUsername = "disco";
     private const string SiemensSiteUsername = "siemens-adapter";
+    private const string KdiSiteUsername = "kdi-adapter";
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -120,7 +121,8 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostRabbitMqInstall or
                     ComponentActionAction.PostVectorInstall or
                     ComponentActionAction.PostDiscoInstall or
-                    ComponentActionAction.PostSiemensInstall)
+                    ComponentActionAction.PostSiemensInstall or
+                    ComponentActionAction.PostKdiInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
             .ToArray();
@@ -224,6 +226,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostDiscoInstall => RunPostDiscoInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostSiemensInstall => RunPostSiemensInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostKdiInstall => RunPostKdiInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
@@ -412,6 +415,29 @@ public class ComponentInstaller : ActionBase
 
         const string usernameVar = "SIEMENS_RABBIT_USERNAME";
         const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the default password with a new one
+        var newText = configText
+            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
+
+        _logger.LogInformation("Altering default account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostKdiInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running Kdi post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                  LocalRabbitPassword, KdiSiteUsername, null,
+                                  AccountType.Kdi, true);
+
+        const string usernameVar = "KDI_RABBIT_USERNAME";
+        const string passwordVar = "KDI_RABBIT_PASSWORD";
 
         var configText = await File.ReadAllTextAsync(action.Source);
 

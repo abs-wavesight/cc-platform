@@ -206,6 +206,12 @@ public partial class RabbitConfigurer : ActionBase
                 const string discoResponseRegex = "cc\\.disco\\.data\\.response\\..*\\.q";
                 const string siemensRegex = "?=.*siemens\\.q";
                 return $"^({siemensRegex}|{errorQueueName}|{discoDirectRegex}|{discoTopicRegex}|{discoResponseRegex}).*$";
+            case AccountType.Kdi:
+                const string kdiDiscoTopicRegex = "cc\\.disco\\.et";
+                const string kdiDiscoDirectRegex = "cc\\.disco\\.ed";
+                const string kdiDiscoResponseRegex = "cc\\.disco\\.data\\.response\\..*\\.q";
+                const string kdiRegex = "?=.*kdi\\.q";
+                return $"^({kdiRegex}|{errorQueueName}|{kdiDiscoDirectRegex}|{kdiDiscoTopicRegex}|{kdiDiscoResponseRegex}).*$";
         }
 
         var userQueuesRegex = @$".*(\.|\-)({Regex.Escape(username.ToLower())})(\.|\-).*";
