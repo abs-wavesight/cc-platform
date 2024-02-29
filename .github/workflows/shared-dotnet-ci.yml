@@ -41,6 +41,11 @@ on:
         required: false
         type: boolean
         description: If true, will fail build if formatting changes are detected (using dotnet format)
+      use-submodules:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will it will restore Submodules
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -76,6 +81,7 @@ jobs:
       run-integration-tests: ${{ inputs.run-integration-tests }}
       run-e2e-tests: ${{ inputs.run-e2e-tests }}
       check-code-formatting: ${{ inputs.check-code-formatting }}
+      use-submodules: ${{ inputs.use-submodules }}
     secrets: inherit
 
   push-image:
