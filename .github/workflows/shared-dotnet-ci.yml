@@ -46,6 +46,11 @@ on:
         type: boolean
         default: false
         description: If true, will it will restore Submodules
+      dotnet-version:        
+        required: false
+        type: string
+        default: '7.0.x'
+        description: .NET SDK Version
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -82,6 +87,7 @@ jobs:
       run-e2e-tests: ${{ inputs.run-e2e-tests }}
       check-code-formatting: ${{ inputs.check-code-formatting }}
       use-submodules: ${{ inputs.use-submodules }}
+      dotnet-version: ${{ inputs.dotnet-version }}
     secrets: inherit
 
   push-image:
