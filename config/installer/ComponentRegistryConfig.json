@@ -233,10 +233,10 @@
           "action": "replaceParameters"
         }
       ]
-    },	
+    },
     {
       "name": "Disco",
-      "files":[
+      "files": [
         {
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA",
@@ -257,7 +257,7 @@
     },
     {
       "name": "Siemens",
-      "files":[
+      "files": [
         {
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
@@ -278,10 +278,10 @@
     },
     {
       "name": "Kdi",
-      "files":[
+      "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$KDI_COMMIT_SHA",
           "destination": "kdi.tar"
         },
         {
