@@ -145,7 +145,7 @@ jobs:
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
-        -p `$KDI_RELEASE_TAG:${{ needs.get-default-kdi-version.outputs.version || inputs.kdi-version }}-kdi
+        -p `$KDI_RELEASE_TAG:${{ needs.get-default-kdi-version.outputs.version || inputs.kdi-version }}
       release-name-prefix: Kdi System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
