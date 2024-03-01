@@ -1,0 +1,30 @@
+---	
+version: '3'	
+
+services:	
+  cc.kdi:	
+    container_name: kdi	
+    image: ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$KDI_COMMIT_SHA
+    environment:
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - BusConnection__username=${KDI_RABBIT_USERNAME}
+      - BusConnection__password=${KDI_RABBIT_PASSWORD}
+      - FLAT_LOGS=false
+    ports:
+      - "12446:5000"
+    depends_on:
+      - cc.vector
+      - cc.rabbitmq
+      - cc.disco
+    logging:	
+      driver: local	
+    restart: always	
+    volumes:
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/config/vendor-configs
+        target: C:/app/config/vendor-configs
+        read_only: true

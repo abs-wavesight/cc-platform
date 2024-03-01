@@ -46,6 +46,13 @@
       "tags": [
         "administrator"
       ]
+    },
+    {
+      "name": "kdi-adapter",
+      "password": "kdi-adapter",
+      "tags": [
+        "administrator"
+      ]
     }
   ],
   "permissions": [
@@ -90,6 +97,13 @@
       "configure": "",
       "read": "siemens-adapter",
       "write": "siemens-adapter"
+    },
+    {
+      "user": "kdi-adapter",
+      "vhost": "/",
+      "configure": "",
+      "read": "kdi-adapter",
+      "write": "kdi-adapter"
     }
   ]
 }

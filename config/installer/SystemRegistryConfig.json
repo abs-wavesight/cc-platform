@@ -492,6 +492,40 @@
       ]
     },
     {
+      "name": "Kdi",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-adapters-kdi/releases/download/$KDI_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Kdi/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "kdi.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.kdi.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.kdi.yml",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\kdi-config.json",
+          "destination": "$ABS_PATH\\config\\vendor-configs\\kdi-config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.kdi.yml",
+          "action": "replaceParameters"
+        },
+        {          
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postKdiInstall"
+        }
+      ]
+    },
+    {
       "name": "Sftp-Service",
       "files": [
         {

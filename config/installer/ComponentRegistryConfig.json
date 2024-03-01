@@ -275,6 +275,27 @@
           "action": "replaceParameters"
         }
       ]
+    },
+    {
+      "name": "Kdi",
+      "files":[
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
+          "destination": "kdi.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.kdi.yml",
+          "destination": "docker-compose.kdi.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.kdi.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }

@@ -49,6 +49,13 @@ public static class ConfigureCommand
             ccSiemensAdapterRepositoryLocalPath = readAppConfig?.CommonCoreSiemensAdapterRepositoryPath;
         }
 
+        Console.Write($"\"cc-adapters-kdi\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreKdiAdapterRepositoryPath) ? $" ({readAppConfig.CommonCoreKdiAdapterRepositoryPath})" : "")}: ");
+        var ccKdiAdapterRepositoryLocalPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccKdiAdapterRepositoryLocalPath))
+        {
+            ccKdiAdapterRepositoryLocalPath = readAppConfig?.CommonCoreKdiAdapterRepositoryPath;
+        }
+
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
         var containerWindowsVersion = Console.ReadLine() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(containerWindowsVersion))
@@ -109,6 +116,7 @@ public static class ConfigureCommand
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
             CommonCoreDiscoRepositoryPath = ccDiscoRepositoryLocalPath,
             CommonCoreSiemensAdapterRepositoryPath = ccSiemensAdapterRepositoryLocalPath,
+            CommonCoreKdiAdapterRepositoryPath = ccKdiAdapterRepositoryLocalPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
@@ -209,6 +217,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSiemensAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSiemensAdapterRepositoryPath).Exists)
         {
             errors.Add($"\"cc-adapters-siemens\" repository path ({appConfig.CommonCoreSiemensAdapterRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreKdiAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreKdiAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-adapters-kdi\" repository path ({appConfig.CommonCoreKdiAdapterRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")

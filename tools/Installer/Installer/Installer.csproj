@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.248" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.341" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.211" />
 		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.213" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
