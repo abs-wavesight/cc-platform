@@ -46,6 +46,13 @@
       "tags": [
         "administrator"
       ]
+    },
+    {
+      "name": "kdi-adapter",
+      "password": "kdi-adapter",
+      "tags": [
+        "administrator"
+      ]
     }
   ],
   "permissions": [
@@ -90,6 +97,13 @@
       "configure": ".*",
       "read": "^(cc\\.disco\\.data\\.request\\.siemens\\.q|cc\\.disco\\.ed|cc\\.disco\\.et)$",
       "write": "^(?=.*siemens\\.q|error|cc\\.disco\\.ed|cc\\.disco\\.et|cc\\.disco\\.data\\.response\\..*\\.q).*$"
+    },
+    {
+      "user": "kdi-adapter",
+      "vhost": "/",
+      "configure": ".*",
+      "read": "^(cc\\.disco\\.data\\.request\\.kdi\\.q|cc\\.disco\\.ed|cc\\.disco\\.et)$",
+      "write": "^(?=.*kdi\\.q|error|cc\\.disco\\.ed|cc\\.disco\\.et|cc\\.disco\\.data\\.response\\..*\\.q).*$"
     }
   ]
 }
