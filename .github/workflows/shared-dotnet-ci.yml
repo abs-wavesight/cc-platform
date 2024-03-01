@@ -100,8 +100,19 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
-        name: Checkout branch
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        if: inputs.use-submodules == true
+        uses: actions/checkout@v3        
+        with:
+          submodules: true
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
+
+      - name: Checkout branch 
+        if: inputs.use-submodules == false
+        uses: actions/checkout@v3
+        with:
+          submodules: false
 
       - name: Construct tag-friendly shortened git SHA
         working-directory: ${{ inputs.solution-directory }}
