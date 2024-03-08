@@ -10,9 +10,9 @@ services:
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
-    ports:
-      - "12446:5000"
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - type: bind
         source: ${PATH_TO_CERTS}/local-certs

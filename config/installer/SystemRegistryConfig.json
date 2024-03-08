@@ -502,6 +502,10 @@
       ],
       "actions": [
         {
+          "source": "netsh advfirewall firewall add rule name=\"Open MQTT\" dir=in action=allow protocol=TCP localport=1883",
+          "action": "executeImmediate"
+        },
+        {
           "source": "kdi.tar",
           "action": "install"
         },
