@@ -10,8 +10,8 @@ services:
       - BusConnection__username=${KDI_RABBIT_USERNAME}
       - BusConnection__password=${KDI_RABBIT_PASSWORD}
       - FLAT_LOGS=false
-    ports:
-      - "12446:5000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - cc.vector
       - cc.rabbitmq
