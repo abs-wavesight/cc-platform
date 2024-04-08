@@ -27,7 +27,7 @@ on:
         required: true
         type: string
         description: 'Specifies the file name in the artifact containing configuration'
-      releaseFolder:
+      repository:
         required: false
         type: string
         description: 'The source repository path'
@@ -51,7 +51,7 @@ jobs:
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion != 'latest'
         with:
-          repository: ${{ inputs.releaseFolder }}
+          repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           tag: ${{ inputs.tagVersion }}
           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
@@ -61,7 +61,7 @@ jobs:
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion == 'latest'
         with:
-          repository: ${{ inputs.releaseFolder }}
+          repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           latest: true
           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
