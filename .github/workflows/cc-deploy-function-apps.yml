@@ -27,6 +27,11 @@ on:
         required: true
         type: string
         description: 'Specifies the file name in the artifact containing configuration'
+      releaseFolder:
+        required: false
+        type: string
+        description: 'The source repository path'
+        default: ${{ github.repository }}
     
 
 jobs: 
@@ -46,17 +51,21 @@ jobs:
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion != 'latest'
         with:
+          repository: ${{ inputs.releaseFolder }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           tag: ${{ inputs.tagVersion }}
           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+          token: ${{ secrets.GH_TOKEN }}
       
       - name: Download functions from Release Artifacts (Latest)
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion == 'latest'
         with:
+          repository: ${{ inputs.releaseFolder }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           latest: true
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func          
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+          token: ${{ secrets.GH_TOKEN }}          
 
       - name: Manual expand archive files
         shell: pwsh
