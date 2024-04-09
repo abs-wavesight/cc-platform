@@ -39,10 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set unique directory names
+        id: unique-path
         run: |
           $random = Get-Random -Minimum 10000 -Maximum 99999
-          $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random-${GITHUB_RUN_NUMBER}"
-          echo "UNIQUE_PATH_SUFFIX=$uniquePathSuffix" >> $GITHUB_ENV
+          $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random"          
+          echo "::set-output name=uniquePathSuffix::$uniquePathSuffix"
           Write-Host "TMP folder $uniquePathSuffix"
         shell: pwsh
 
@@ -50,10 +51,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifactConfigName }}
-          path: ${{ github.workspace }}/downloaded-artifacts-conf-${{ env.UNIQUE_PATH_SUFFIX }}
+          path: ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}
       
       - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf-${{ env.UNIQUE_PATH_SUFFIX }}   
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix}}   
 
       - name: Download functions from Release Artifacts (Specific Tag)
         uses: robinraju/release-downloader@v1.9
@@ -62,7 +63,7 @@ jobs:
           repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           tag: ${{ inputs.tagVersion }}
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }} 
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
           token: ${{ secrets.GH_TOKEN }}
       
       - name: Download functions from Release Artifacts (Latest)
@@ -72,18 +73,18 @@ jobs:
           repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           latest: true
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }} 
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
           token: ${{ secrets.GH_TOKEN }}          
 
       - name: Manual expand archive files
         shell: pwsh
         run: |
-            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }}/functions"
-            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }}/${{ inputs.artifactFunctions }}.zip"        
+            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions"
+            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
             Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath            
 
       - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }}/functions
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions
       
       - name: Log in to Azure using Service Principal
         shell: bash
@@ -107,7 +108,7 @@ jobs:
       - name: Azure Function App Zip Deploy
         shell: bash
         run: |         
-          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf-${{ env.UNIQUE_PATH_SUFFIX }}/${{inputs.artifactConfigFile }}"
+          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{inputs.artifactConfigFile }}"
           functionConfigs=$(jq -c '.[]' <"$artifactPath")
 
           for config in $functionConfigs; do
@@ -122,7 +123,7 @@ jobs:
                 exit 1
               fi            
               artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ env.UNIQUE_PATH_SUFFIX }}/functions/${artifactName}.zip"
+              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
               echo "Deploy ${artifactName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
               az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
