@@ -88,10 +88,10 @@ jobs:
         shell: bash
         run: |
           if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}
+            az account set --subscription ${{ secrets.AZURE_DEV_SUBSCRIPTION_ID  }}
             echo "Using DEV subscription"
           elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_QA }}
+            az account set --subscription ${{ secrets.AZURE_QA_SUBSCRIPTION_ID }}
             echo "Using QA subscription"
           else
             echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{ inputs.functionAppSuffix }}."
