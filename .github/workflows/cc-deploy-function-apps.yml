@@ -41,7 +41,9 @@ jobs:
       - name: Set unique directory names
         run: |
           $random = Get-Random -Minimum 10000 -Maximum 99999
-          echo "UNIQUE_PATH_SUFFIX=$(Get-Date -Format "yyyyMMddHHmmss")-$random-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random-${GITHUB_RUN_NUMBER}"
+          echo "UNIQUE_PATH_SUFFIX=$uniquePathSuffix" >> $GITHUB_ENV
+          Write-Host "TMP folder $uniquePathSuffix"
         shell: pwsh
 
       - name: Download config from local Artifact
