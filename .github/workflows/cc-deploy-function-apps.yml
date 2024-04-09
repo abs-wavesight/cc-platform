@@ -27,48 +27,64 @@ on:
         required: true
         type: string
         description: 'Specifies the file name in the artifact containing configuration'
+      repository:
+        required: false
+        type: string
+        description: 'The source repository path'
+        default: ${{ github.repository }}
     
 
 jobs: 
   deploy:    
     runs-on: ubuntu-latest
     steps:
+      - name: Set unique directory names
+        id: unique-path
+        run: |
+          $random = Get-Random -Minimum 10000 -Maximum 99999
+          $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random"          
+          echo "::set-output name=uniquePathSuffix::$uniquePathSuffix"
+          Write-Host "TMP folder $uniquePathSuffix"
+        shell: pwsh
+
       - name: Download config from local Artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifactConfigName }}
-          path: ${{ github.workspace }}/downloaded-artifacts-conf 
+          path: ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}
       
       - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf  
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix}}   
 
       - name: Download functions from Release Artifacts (Specific Tag)
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion != 'latest'
         with:
+          repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           tag: ${{ inputs.tagVersion }}
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
+          token: ${{ secrets.GH_TOKEN }}
       
       - name: Download functions from Release Artifacts (Latest)
         uses: robinraju/release-downloader@v1.9
         if: inputs.tagVersion == 'latest'
         with:
+          repository: ${{ inputs.repository }}
           fileName: ${{ inputs.artifactFunctions }}.zip
           latest: true
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func          
+          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
+          token: ${{ secrets.GH_TOKEN }}          
 
       - name: Manual expand archive files
         shell: pwsh
         run: |
-            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func/functions"
-            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func/${{ inputs.artifactFunctions }}.zip"
-        
-            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath
-            
+            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions"
+            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
+            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath            
 
       - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func/functions
+        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions
       
       - name: Log in to Azure using Service Principal
         shell: bash
@@ -79,20 +95,20 @@ jobs:
         shell: bash
         run: |
           if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}
+            az account set --subscription ${{ secrets.AZURE_DEV_SUBSCRIPTION_ID  }}
             echo "Using DEV subscription"
           elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_QA }}
+            az account set --subscription ${{ secrets.AZURE_QA_SUBSCRIPTION_ID }}
             echo "Using QA subscription"
           else
-            echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{ inputs.functionAppSuffix }}."
+            echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{inputs.functionAppSuffix }}."
             exit 1
           fi
 
       - name: Azure Function App Zip Deploy
         shell: bash
         run: |         
-          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf/${{ inputs.artifactConfigFile }}"
+          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{inputs.artifactConfigFile }}"
           functionConfigs=$(jq -c '.[]' <"$artifactPath")
 
           for config in $functionConfigs; do
@@ -107,7 +123,7 @@ jobs:
                 exit 1
               fi            
               artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func/functions/${artifactName}.zip"
+              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
               echo "Deploy ${artifactName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
               az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
