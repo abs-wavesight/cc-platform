@@ -39,9 +39,9 @@ on:
           required: true
       AZURE_TENANT_ID:
           required: true
-      AZURE_SUBSCRIPTION_ID_DEV:
+      AZURE_DEV_SUBSCRIPTION_ID:
           required: true
-      AZURE_SUBSCRIPTION_ID_QA:
+      AZURE_QA_SUBSCRIPTION_ID:
           required: true
     
 
@@ -98,10 +98,10 @@ jobs:
         id: azure-subscription
         run: |
           if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
-            echo "id=${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}" >> $GITHUB_OUTPUT
+            echo "id=${{ secrets.AZURE_DEV_SUBSCRIPTION_ID  }}" >> $GITHUB_OUTPUT
             echo "Using DEV subscription"
           elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
-            echo "id=${{ secrets.AZURE_SUBSCRIPTION_ID_QA  }}" >> $GITHUB_OUTPUT
+            echo "id=${{ secrets.AZURE_QA_SUBSCRIPTION_ID  }}" >> $GITHUB_OUTPUT
             echo "Using QA subscription"
           else
             echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{ inputs.functionAppSuffix }}."
