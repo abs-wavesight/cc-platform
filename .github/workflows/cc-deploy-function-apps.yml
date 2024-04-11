@@ -74,30 +74,26 @@ jobs:
             $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func/functions"
             $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func/${{ inputs.artifactFunctions }}.zip"
         
-            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath
-            
-
-      - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-func/functions
-      
-      - name: Log in to Azure using Service Principal
-        shell: bash
-        run: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_AD_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath               
 
       - name: Define Subscription
-        shell: bash
+        id: azure-subscription
         run: |
           if [ ${{ inputs.functionAppSuffix }} = "dev" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}
+            echo "id=${{ secrets.AZURE_SUBSCRIPTION_ID_DEV  }}" >> $GITHUB_OUTPUT
             echo "Using DEV subscription"
           elif [ ${{ inputs.functionAppSuffix }} = "qa" ]; then
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_QA }}
+            echo "id=${{ secrets.AZURE_SUBSCRIPTION_ID_QA  }}" >> $GITHUB_OUTPUT
             echo "Using QA subscription"
           else
             echo "::warning::The functionAppSuffix input is not recognized. Expected 'dev' or 'qa', but got ${{ inputs.functionAppSuffix }}."
             exit 1
           fi
+
+      - name: Login via Azure CLI
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ steps.azure-subscription.outputs.id }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
 
       - name: Azure Function App Zip Deploy
         shell: bash
