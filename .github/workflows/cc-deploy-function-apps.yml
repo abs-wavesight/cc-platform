@@ -27,7 +27,17 @@ on:
         required: true
         type: string
         description: 'Specifies the file name in the artifact containing configuration'
-    
+    secrets:
+      AZURE_CLIENT_ID:
+          required: true
+      AZURE_AD_CLIENT_SECRET:
+          required: true
+      AZURE_TENANT_ID:
+          required: true
+      AZURE_SUBSCRIPTION_ID_DEV:
+          required: true
+      AZURE_SUBSCRIPTION_ID_QA:
+          required: true
 
 jobs: 
   deploy:    

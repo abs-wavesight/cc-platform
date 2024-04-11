@@ -32,7 +32,7 @@ on:
         type: string
         description: 'Specifies the name of the Release Asset that will contain builded functions'  
     secrets:
-      GH_PAT:
+      GH_TOKEN:
         required: false
 env:
   NUGET_PACKAGE_PATH: ${{ github.workspace }}\.nuget\packages  
@@ -46,7 +46,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT || ' ' }}
+          token: ${{ secrets.GH_TOKEN || ' ' }}
 
       - name: Cache nuget packages
         uses: actions/cache@v3
