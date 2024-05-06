@@ -19,7 +19,12 @@ on:
         required: true
         type: string
         description: The path to the the csproj file from solution root
-    
+      dotnet-version:        
+        required: false
+        type: string
+        default: '7.0.x'
+        description: .NET SDK Version      
+
     outputs:
       nuget-version: 
         description: NuGet package version
@@ -67,7 +72,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: ${{ inputs.dotnet-version}}
 
       - name: Construct version number
         working-directory: ${{ env.SOLUTION_DIRECTORY }}
