@@ -34,6 +34,6 @@ jobs:
         echo "Tag-friendly branch name: $tagFriendlyBranchName"
         echo "tagFriendlyBranchName=$tagFriendlyBranchName" >> $Env:GITHUB_OUTPUT
         
-        $tagFriendlyBranchNameWithPrefixDash=($tagFriendlyBranchName -eq "${{ env.MAIN_BRANCH }}") ? "" : "-$tagFriendlyBranchName"
+        $tagFriendlyBranchNameWithPrefixDash=(($tagFriendlyBranchName -eq "${{ env.MAIN_BRANCH }}") -or ($tagFriendlyBranchName -eq "")) ? "" : "-$tagFriendlyBranchName"
         echo "Tag-friendly branch name (with prefix dash): $tagFriendlyBranchNameWithPrefixDash"
         echo "tagFriendlyBranchNameWithPrefixDash=$tagFriendlyBranchNameWithPrefixDash" >> $Env:GITHUB_OUTPUT

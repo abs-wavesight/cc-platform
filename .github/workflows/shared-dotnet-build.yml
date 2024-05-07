@@ -15,6 +15,11 @@ on:
         required: false
         type: string
         description: Partial filter statement to be used with dotnet test (e.g., "& FullyQualifiedName!~FileShipper")
+      run-unit-tests:
+        required: false
+        type: boolean
+        default: true
+        description: Flag allows run or skip unit tests
       run-integration-tests:
         required: false
         type: boolean
@@ -127,6 +132,7 @@ jobs:
         run: dotnet format "${{ inputs.solution-directory }}/${{ inputs.solution-name }}" --verify-no-changes
 
       - name: Run unit tests
+        if: inputs.run-unit-tests == true
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
@@ -146,13 +152,14 @@ jobs:
 
       - name: Report test results
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: (success() || failure()) && inputs.run-unit-tests == true
         with:
           name: Test Results ${{ inputs.test-project-filter-part }}
           path: ./${{ inputs.solution-directory }}/**/TestResults/*.trx
           reporter: dotnet-trx
 
       - name: Merge coverage results
+        if: inputs.run-unit-tests == true
         working-directory: ${{ inputs.solution-directory }}
         run: |
           dotnet tool install --global dotnet-coverage
@@ -160,6 +167,7 @@ jobs:
           dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
       - name: Workaround for invalid link paths in coverage report 
+        if: inputs.run-unit-tests == true
         uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
         with:
           cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
