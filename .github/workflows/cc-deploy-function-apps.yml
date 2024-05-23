@@ -28,7 +28,7 @@ on:
         type: string
         description: 'The source repository path'
         default: ${{ github.repository }}
-      subscription_id:
+      subscription_key_from_secret:
         required: true
         type: string
         description: 'The Azure subscription ID'  
@@ -98,7 +98,7 @@ jobs:
       - name: Login via Azure CLI
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ inputs.subscription_id }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets[inputs.subscription_key_from_secret]}}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
 
       - name: Azure Function App Zip Deploy
         shell: bash
