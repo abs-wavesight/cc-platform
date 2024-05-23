@@ -109,9 +109,11 @@ jobs:
           for config in $functionConfigs; do
             use=$(echo $config | jq -r '.Use')
             if [ "$use" = "true" ]; then
-              functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME')                               
+              functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME') 
+              function_name_suffix= ${{ inputs.function_name_suffix }}
+              
               if [ -n "${{ inputs.function_name_suffix }}" ]; then
-                functionName="${functionName}-${inputs.function_name_suffix}"
+                functionName="${functionName}-${function_name_suffix}"
               fi
                          
               artifactName=$(echo $config | jq -r '.Name')
