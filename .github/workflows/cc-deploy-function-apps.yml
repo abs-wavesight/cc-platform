@@ -48,6 +48,7 @@ on:
 jobs: 
   deploy:    
     runs-on: ubuntu-latest
+    name: Deploy${{ inputs.function_name_suffix }}
     steps:
       - name: Set unique directory names
         id: unique-path
