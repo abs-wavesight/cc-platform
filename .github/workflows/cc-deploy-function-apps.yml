@@ -110,7 +110,7 @@ jobs:
             use=$(echo $config | jq -r '.Use')
             if [ "$use" = "true" ]; then
               functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME') 
-              function_name_suffix= ${{ inputs.function_name_suffix }}
+              function_name_suffix=${{ inputs.function_name_suffix }}
               
               if [ -n "${{ inputs.function_name_suffix }}" ]; then
                 functionName="${functionName}-${function_name_suffix}"
