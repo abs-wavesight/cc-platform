@@ -28,7 +28,7 @@ on:
         type: string
         description: 'The source repository path'
         default: ${{ github.repository }}
-      subscribtion_ID:
+      subscribtion_id:
         required: true
         type: string
         description: 'The Azure subscription ID'  
