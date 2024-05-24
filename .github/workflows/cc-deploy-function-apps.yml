@@ -36,14 +36,29 @@ on:
         required: false
         type: string
         description: 'The Azure function app name suffix' 
-        default: ''     
-    secrets:
-      AZURE_CLIENT_ID:
-          required: true
-      AZURE_AD_CLIENT_SECRET:
-          required: true
-      AZURE_TENANT_ID:
-          required: true    
+        default: ''   
+      azure_client_id:
+        required: false
+        type: string
+        description: 'The Azure client ID (AZURE_CLIENT_ID)'
+      azure_client_secret:
+        description: 'Azure Client Secret (AZURE_AD_CLIENT_SECRET)'
+        type: string
+        required: false
+      subscription_id:
+        description: 'Azure Subscription ID'
+        type: string
+        required: false
+      azure_tenant_id:
+        description: 'Azure Tenant ID (AZURE_TENANT_ID)'
+        type: string
+        required: false 
+        
+    secrets:      
+      GH_TOKEN:
+          required: true 
+      subscription_key_from_secret:
+            required: false
 
 jobs: 
   deploy:    
@@ -95,10 +110,17 @@ jobs:
             $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
             Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath         
 
+      - name: Set Azure Credentials
+        run: |
+          echo "AZURE_CLIENT_ID=${{ inputs.azure_client_id || secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "AZURE_CLIENT_SECRET=${{ inputs.azure_client_secret || secrets.AZURE_AD_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "SUBSCRIPTION_ID=${{ inputs.subscription_id || secrets[inputs.subscription_key_from_secret] }}" >> $GITHUB_ENV
+          echo "AZURE_TENANT_ID=${{ inputs.azure_tenant_id || secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+      
       - name: Login via Azure CLI
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets[inputs.subscription_key_from_secret]}}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
+          creds: '{"clientId":"${{ env.AZURE_CLIENT_ID }}","clientSecret":"${{ env.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ env.SUBSCRIPTION_ID }}","tenantId":"${{ env.AZURE_TENANT_ID }}"}'  
 
       - name: Azure Function App Zip Deploy
         shell: bash
