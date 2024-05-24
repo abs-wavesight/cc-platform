@@ -120,7 +120,7 @@ jobs:
                          
               artifactName=$(echo $config | jq -r '.Name')
               zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
-              echo "Deploy ${artifactName}" to ${functionName}"
+              echo "Deploy ${artifactName} to ${functionName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
               az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
