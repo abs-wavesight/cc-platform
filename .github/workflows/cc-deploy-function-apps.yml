@@ -29,7 +29,7 @@ on:
         description: 'The source repository path'
         default: ${{ github.repository }}
       subscription_key_from_secret:
-        required: true
+        required: false
         type: string
         description: 'The Azure subscription ID'  
       function_name_suffix:
@@ -56,9 +56,7 @@ on:
         
     secrets:      
       GH_TOKEN:
-          required: true 
-      subscription_key_from_secret:
-            required: false
+          required: true       
 
 jobs: 
   deploy:    
