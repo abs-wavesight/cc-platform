@@ -27,11 +27,7 @@ on:
         required: false
         type: string
         description: 'The source repository path'
-        default: ${{ github.repository }}
-      subscription_key_from_secret:
-        required: false
-        type: string
-        description: 'The Azure subscription ID'  
+        default: ${{ github.repository }}       
       function_name_suffix:
         required: false
         type: string
@@ -45,15 +41,14 @@ on:
         description: 'Azure Client Secret (AZURE_AD_CLIENT_SECRET)'
         type: string
         required: false
-      subscription_id:
-        description: 'Azure Subscription ID'
+      subscription_id_key_from_secret:
+        required: true
         type: string
-        required: false
+        description: 'The Azure subscription ID' 
       azure_tenant_id:
         description: 'Azure Tenant ID (AZURE_TENANT_ID)'
         type: string
-        required: false 
-        
+        required: false         
     secrets:      
       GH_TOKEN:
           required: true       
@@ -106,17 +101,14 @@ jobs:
         run: |
             $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions"
             $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
-            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath  
-            
-      - name: Debug subscription_key_from_secret
-        run: |
-          echo "Subscription Key From Secret: ${{ inputs.subscription_id }}"
+            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath             
+      
 
       - name: Set Azure Credentials
         run: |
           echo "AZURE_CLIENT_ID=${{ inputs.azure_client_id || secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
           echo "AZURE_CLIENT_SECRET=${{ inputs.azure_client_secret || secrets.AZURE_AD_CLIENT_SECRET }}" >> $GITHUB_ENV
-          echo "SUBSCRIPTION_ID=${{ inputs.subscription_id || secrets[inputs.subscription_key_from_secret] }}" >> $GITHUB_ENV
+          echo "SUBSCRIPTION_ID=${{  secrets[inputs.subscription_id_key_from_secret] }}" >> $GITHUB_ENV
           echo "AZURE_TENANT_ID=${{ inputs.azure_tenant_id || secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
       
       - name: Login via Azure CLI
