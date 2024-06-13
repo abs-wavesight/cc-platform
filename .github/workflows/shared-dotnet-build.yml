@@ -184,7 +184,10 @@ jobs:
           skip_covered: true
           fail_below_threshold: false
           show_class_names: true
-          show_missing: true
-          link_missing_lines: true
-          link_missing_lines_source_dir: ${{ inputs.solution-directory }}
-          only_changed_files: true
+          show_missing: false
+          # link_missing_lines: true
+          # link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+          only_changed_files: false
+          show_branch: true
+          show_line: false
+
