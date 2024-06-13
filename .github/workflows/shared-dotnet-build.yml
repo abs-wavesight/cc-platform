@@ -158,13 +158,13 @@ jobs:
           path: ./${{ inputs.solution-directory }}/**/TestResults/*.trx
           reporter: dotnet-trx
 
-      - name: Merge coverage results
-        if: inputs.run-unit-tests == true
-        working-directory: ${{ inputs.solution-directory }}
-        run: |
-          dotnet tool install --global dotnet-coverage
-          mkdir Coverage/
-          dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
+      # - name: Merge coverage results
+      #   if: inputs.run-unit-tests == true
+      #   working-directory: ${{ inputs.solution-directory }}
+      #   run: |
+      #     dotnet tool install --global dotnet-coverage
+      #     mkdir Coverage/
+      #     dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
       - name: Workaround for invalid link paths in coverage report 
         if: inputs.run-unit-tests == true
@@ -178,12 +178,12 @@ jobs:
         uses: 5monkeys/cobertura-action@master
         with:
           report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
-          path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
+          path: '*/cobertura.xml'
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           skip_covered: true
           fail_below_threshold: false
-          show_class_names: true
+          show_class_names: false
           show_missing: false
           # link_missing_lines: true
           # link_missing_lines_source_dir: ${{ inputs.solution-directory }}
