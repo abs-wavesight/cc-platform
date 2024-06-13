@@ -136,6 +136,11 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -m:1
 
+      - name: Run unit tests
+        if: inputs.run-unit-tests == true
+        working-directory: ${{ inputs.solution-directory }}
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+
       - name: Log in to docker registry
         if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
         run: docker login ghcr.io -u USERNAME --password "${{ secrets.GITHUB_TOKEN }}"
@@ -158,39 +163,42 @@ jobs:
           path: ./${{ inputs.solution-directory }}/**/TestResults/*.trx
           reporter: dotnet-trx
 
-      - name: Merge coverage results
-        if: inputs.run-unit-tests == true
-        working-directory: ${{ inputs.solution-directory }}
-        run: |
-          dotnet tool install --global dotnet-coverage
-          mkdir Coverage/
-          dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
+      # - name: Merge coverage results
+      #   if: inputs.run-unit-tests == true
+      #   working-directory: ${{ inputs.solution-directory }}
+      #   run: |
+      #     dotnet tool install --global dotnet-coverage
+      #     mkdir Coverage/
+      #     dotnet-coverage merge *.cobertura.xml --recursive --output Coverage/cobertura.xml --output-format cobertura 
 
-      - name: Workaround for invalid link paths in coverage report 
-        if: inputs.run-unit-tests == true
-        uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
-        with:
-          cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
-          source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
+      # - name: Workaround for invalid link paths in coverage report 
+      #   if: inputs.run-unit-tests == true
+      #   uses: abs-wavesight/cc-platform/actions/fix-code-coverage-paths@main
+      #   with:
+      #     cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
+      #     source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
   
-      - name: Report changed code coverage
-        if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
-        uses: 5monkeys/cobertura-action@master
-        with:
-          report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
-          path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
-          minimum_coverage: 80
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_covered: true
-          fail_below_threshold: false
-          show_class_names: true
-          show_missing: true
-          link_missing_lines: true
-          link_missing_lines_source_dir: ${{ inputs.solution-directory }}
-          only_changed_files: true
+      # - name: Report changed code coverage
+      #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
+      #   uses: 5monkeys/cobertura-action@master
+      #   with:
+      #     report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
+      #     path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
+      #     minimum_coverage: 80
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     skip_covered: true
+      #     fail_below_threshold: false
+      #     show_class_names: true
+      #     show_missing: true
+      #     link_missing_lines: true
+      #     link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+      #     only_changed_files: true
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./lcov.info
 
       # - name: Report code coverage
       #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
