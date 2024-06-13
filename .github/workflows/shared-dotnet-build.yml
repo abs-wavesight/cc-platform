@@ -173,21 +173,41 @@ jobs:
           cobertura-xml-path: ${{ github.workspace }}/${{ inputs.solution-directory }}/Coverage/cobertura.xml
           source-directory: ${{ github.workspace }}/${{ inputs.solution-directory }}
   
-      - name: Report code coverage
+      - name: Report changed code coverage
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
         uses: 5monkeys/cobertura-action@master
         with:
           report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
-          path: '**/*cobertura.xml'
+          path: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
           minimum_coverage: 80
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           skip_covered: true
           fail_below_threshold: false
-          show_class_names: false
-          show_missing: false
-          # link_missing_lines: true
-          # link_missing_lines_source_dir: ${{ inputs.solution-directory }}
-          only_changed_files: false
-          show_branch: true
-          show_line: false
+          show_class_names: true
+          show_missing: true
+          link_missing_lines: true
+          link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+          only_changed_files: true
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+
+      # - name: Report code coverage
+      #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
+      #   uses: 5monkeys/cobertura-action@master
+      #   with:
+      #     report_name: "Coverage: ${{ inputs.solution-name }} ${{ inputs.test-project-filter-part }}"
+      #     path: '*.cobertura.xml'
+      #     minimum_coverage: 80
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     skip_covered: true
+      #     fail_below_threshold: false
+      #     show_class_names: false
+      #     show_missing: false
+      #     # link_missing_lines: true
+      #     # link_missing_lines_source_dir: ${{ inputs.solution-directory }}
+      #     only_changed_files: false
+      #     show_branch: false
+      #     show_line: false
+
 
