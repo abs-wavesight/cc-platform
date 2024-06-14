@@ -194,17 +194,17 @@ jobs:
       #     link_missing_lines_source_dir: ${{ inputs.solution-directory }}
       #     only_changed_files: true
 
-      - name: Code Coverage Summary Report
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
-          fail_below_min: true
-          format: markdown
-          hide_branch_rate: false
-          hide_complexity: true
-          indicators: true
-          output: both
-          thresholds: '60 80'
+      # - name: Code Coverage Summary Report
+      #   uses: irongut/CodeCoverageSummary@v1.3.0
+      #   with:
+      #     filename: ${{ inputs.solution-directory }}/Coverage/cobertura.xml
+      #     fail_below_min: true
+      #     format: markdown
+      #     hide_branch_rate: false
+      #     hide_complexity: true
+      #     indicators: true
+      #     output: both
+      #     thresholds: '60 80'
 
       # - name: Report code coverage
       #   if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
@@ -224,4 +224,55 @@ jobs:
       #     show_branch: false
       #     show_line: false
 
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        if: inputs.use-submodules == true
+        uses: actions/checkout@v3        
+        with:
+          submodules: true
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
 
+      - name: Checkout branch 
+        if: inputs.use-submodules == false
+        uses: actions/checkout@v3
+        with:
+          submodules: false
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ inputs.dotnet-version}}
+
+      - name: Restore Dependencies
+        run: dotnet restore src/Example.sln
+
+      - name: Build
+        run: dotnet build src/Example.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test src/Example.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
