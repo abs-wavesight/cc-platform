@@ -134,7 +134,8 @@ jobs:
       - name: Run unit tests
         if: inputs.run-unit-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" /p:CollectCoverage=true -m:1
+        run: |
+          dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" /p:CollectCoverage=true -m:1
 
       # - name: Run unit tests
       #   if: inputs.run-unit-tests == true
@@ -162,6 +163,13 @@ jobs:
           name: Test Results ${{ inputs.test-project-filter-part }}
           path: ./${{ inputs.solution-directory }}/**/TestResults/*.trx
           reporter: dotnet-trx
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: ./**/*cobertura.xml
+          retention-days: 5
 
       # - name: Merge coverage results
       #   if: inputs.run-unit-tests == true
@@ -227,40 +235,18 @@ jobs:
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
-    
+    needs: build
+
     steps:
-      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
-        if: inputs.use-submodules == true
-        uses: actions/checkout@v3        
+      - name: Download code coverage results
+        uses: actions/download-artifact@v2
         with:
-          submodules: true
-          fetch-depth: 0
-          token: ${{ secrets.GH_PAT || ' ' }}
-
-      - name: Checkout branch 
-        if: inputs.use-submodules == false
-        uses: actions/checkout@v3
-        with:
-          submodules: false
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ inputs.dotnet-version}}
-
-      - name: Restore Dependencies
-        run: dotnet restore src/Example.sln
-
-      - name: Build
-        run: dotnet build src/Example.sln --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test src/Example.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+          name: code-coverage-report
 
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: coverage/**/coverage.cobertura.xml
+          filename: /**/*.cobertura.xml
           badge: true
           fail_below_min: true
           format: markdown
