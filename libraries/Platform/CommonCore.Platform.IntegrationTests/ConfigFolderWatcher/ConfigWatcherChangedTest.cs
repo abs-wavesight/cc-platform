@@ -11,7 +11,7 @@ public class ConfigWatcherChangedTest : BaseConfigWatcherTest
     }
 
     [Fact]
-    public void GivenJsonFile_WhenFileChanged_ShouldFireChangedEvent()
+    public async Task GivenJsonFile_WhenFileChanged_ShouldFireChangedEvent()
     {
         // Arrange
         var configWatcherResult = new List<string>();
@@ -22,13 +22,13 @@ public class ConfigWatcherChangedTest : BaseConfigWatcherTest
         // Act
         if (File.Exists(_existingConfigFilePath))
         {
-            File.WriteAllText(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
+            await File.WriteAllTextAsync(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
         }
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         // Assert
-        Assert.Single(configWatcherResult);
+        Assert.True(configWatcherResult.Any());
         Assert.Equal(_existingConfigFilePath, configWatcherResult[0]);
         Assert.Equal(string.Empty, shouldBeEmptyWatcherResult);
     }

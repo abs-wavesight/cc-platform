@@ -3,7 +3,7 @@
 public class ConfigWatcherAddedTest : BaseConfigWatcherTest
 {
     [Fact]
-    public void GivenJsonFile_WhenFileAdded_ShouldFireAddedEvent()
+    public async Task GivenJsonFile_WhenFileAdded_ShouldFireAddedEvent()
     {
         // Arrange
         var configWatcherResult = string.Empty;
@@ -12,14 +12,14 @@ public class ConfigWatcherAddedTest : BaseConfigWatcherTest
         // Act
         var newFilePath = CreateNewConfigFile(ConfigFolderPath);
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         // Assert
         Assert.Equal(newFilePath, configWatcherResult);
     }
 
     [Fact]
-    public void GivenTextFile_WhenFileAdded_ShouldNotFireAddedEvent()
+    public async Task GivenTextFile_WhenFileAdded_ShouldNotFireAddedEvent()
     {
         // Arrange
         var configWatcherResult = string.Empty;
@@ -29,9 +29,9 @@ public class ConfigWatcherAddedTest : BaseConfigWatcherTest
         var newFilePath = Path.Combine(ConfigFolderPath, newFileName);
 
         // Act
-        using (var sw = File.CreateText(newFilePath))
+        await using (var sw = File.CreateText(newFilePath))
         {
-            sw.WriteLine("test new text file");
+            await sw.WriteLineAsync("test new text file");
         }
 
         if (!File.Exists(newFilePath))
@@ -39,7 +39,7 @@ public class ConfigWatcherAddedTest : BaseConfigWatcherTest
             Assert.Fail($"The file {newFilePath} should exists here.");
         }
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         // Assert
         Assert.Equal(string.Empty, configWatcherResult);

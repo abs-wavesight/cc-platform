@@ -25,7 +25,7 @@ public abstract class BaseConfigWatcherTest : IDisposable
             throw new DirectoryNotFoundException(testFolderPath);
         }
 
-        var folderPath = Path.Combine(testFolderPath, $"TestFolderToWatch_{DateTime.Now.Ticks}");
+        var folderPath = Path.Combine(testFolderPath, $"TestFolderToWatch_{Guid.NewGuid():N}");
 
         if (!Directory.Exists(folderPath))
         {
