@@ -135,7 +135,7 @@ jobs:
         if: inputs.run-unit-tests == true
         working-directory: ${{ inputs.solution-directory }}
         run: |
-          dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura" /p:CollectCoverage=true -m:1
+          dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName!~Integration & FullyQualifiedName!~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura,xml" /p:CollectCoverage=true -m:1
 
       - name: Log in to docker registry
         if: (inputs.run-integration-tests == true || inputs.run-e2e-tests == true)
@@ -144,12 +144,12 @@ jobs:
       - name: Run integration tests
         if: inputs.run-integration-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura" /p:CollectCoverage=true -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~Integration ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura,xml" /p:CollectCoverage=true -m:1
 
       - name: Run end-to-end tests
         if: inputs.run-e2e-tests == true
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura" /p:CollectCoverage=true -m:1
+        run: dotnet test ${{ inputs.solution-name }} -c Release --no-build --filter "FullyQualifiedName~EndToEnd ${{ inputs.test-project-filter-part }}" --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage;Format=cobertura,xml" /p:CollectCoverage=true -m:1
 
       - name: Report test results
         uses: dorny/test-reporter@v1
