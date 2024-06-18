@@ -1,11 +1,13 @@
-﻿namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher;
+﻿using System.Collections.Concurrent;
+
+namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher;
 
 public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
 {
     private readonly string _existingConfigFilePath;
 
     private string _shouldBeEmptyWatcherChangedResult = string.Empty;
-    private readonly List<string> _configWatcherChangedResult = new();
+    private readonly BlockingCollection<string> _configWatcherChangedResult = new();
     private string _configWatcherAddedResult = string.Empty;
     private string _configWatcherDeletedResult = string.Empty;
 
@@ -78,14 +80,11 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
             File.WriteAllText(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
         }
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        var taken = _configWatcherChangedResult.TryTake(out var item, DelayBetweenFileSystemOperations);
 
         // Assert
-        Assert.Single(_configWatcherChangedResult);
-        Assert.Equal(_existingConfigFilePath, _configWatcherChangedResult[0]);
+        Assert.True(taken);
+        Assert.Equal(_existingConfigFilePath, item);
         Assert.Equal(string.Empty, _shouldBeEmptyWatcherChangedResult);
-
-        // Clear
-        _configWatcherChangedResult.Clear();
     }
 }
