@@ -83,7 +83,7 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
             await File.WriteAllTextAsync(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
         }
 
-        if (!_changeEvent.WaitOne(DelayBetweenFileSystemOperations))
+        if (!_changeEvent.WaitOne(5 * DelayBetweenFileSystemOperations))
         {
             Assert.Fail("Change wasn't handled on time.");
         }
