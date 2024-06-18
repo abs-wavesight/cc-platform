@@ -1,15 +1,14 @@
-﻿using System.Collections.Concurrent;
-
-namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher;
+﻿namespace Abs.CommonCore.Platform.IntegrationTests.ConfigFolderWatcher;
 
 public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
 {
     private readonly string _existingConfigFilePath;
-
+    private readonly List<string> _configWatcherChangedResult = new();
     private string _shouldBeEmptyWatcherChangedResult = string.Empty;
-    private readonly BlockingCollection<string> _configWatcherChangedResult = new();
     private string _configWatcherAddedResult = string.Empty;
     private string _configWatcherDeletedResult = string.Empty;
+
+    private readonly AutoResetEvent _changeEvent = new (true);
 
     public ConfigWatcherAllEventsTest()
     {
@@ -18,10 +17,14 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
     }
 
     [Fact]
-    public void FireAllEventsUsingOneConfigWatcherInstance()
+    public async Task FireAllEventsUsingOneConfigWatcherInstance()
     {
         // Arrange
-        ConfigFolderWatcher.Changed += (_, filePath) => _configWatcherChangedResult.Add(filePath);
+        ConfigFolderWatcher.Changed += (_, filePath) =>
+        {
+            _configWatcherChangedResult.Add(filePath);
+            _changeEvent.Set();
+        };
         ConfigFolderWatcher.Added += (_, filePath) =>
         {
             _configWatcherAddedResult = filePath;
@@ -30,18 +33,18 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
         ConfigFolderWatcher.Deleted += (_, filePath) => _configWatcherDeletedResult = filePath;
 
         // Act Assert
-        ActAssertClearChangedEvent();
+        await ActAssertClearChangedEvent();
 
-        ActAssertClearAddedEvent();
+        await ActAssertClearAddedEvent();
 
-        ActAssertClearChangedEvent();
+        await ActAssertClearChangedEvent();
 
-        ActAssertClearChangedEvent();
+        await ActAssertClearChangedEvent();
 
-        ActAssertClearDeletedEvent();
+        await ActAssertClearDeletedEvent();
     }
 
-    private void ActAssertClearDeletedEvent()
+    private async Task ActAssertClearDeletedEvent()
     {
         // Act
         var filePathForDelete = CreateNewConfigFile(ConfigFolderPath);
@@ -51,18 +54,18 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
             File.Delete(filePathForDelete);
         }
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         // Assert
         Assert.Equal(filePathForDelete, _configWatcherDeletedResult);
     }
 
-    private void ActAssertClearAddedEvent()
+    private async Task ActAssertClearAddedEvent()
     {
         // Act
         var newFilePath = CreateNewConfigFile(ConfigFolderPath);
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         // Assert
         Assert.Equal(newFilePath, _configWatcherAddedResult);
@@ -72,19 +75,25 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
         _shouldBeEmptyWatcherChangedResult = string.Empty;
     }
 
-    private void ActAssertClearChangedEvent()
+    private async Task ActAssertClearChangedEvent()
     {
         // Act
         if (File.Exists(_existingConfigFilePath))
         {
-            File.WriteAllText(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
+            await File.WriteAllTextAsync(_existingConfigFilePath, $"{{ \"test\": {DateTime.Now.Ticks} }}");
         }
 
-        var taken = _configWatcherChangedResult.TryTake(out var item, DelayBetweenFileSystemOperations);
+        if (!_changeEvent.WaitOne(DelayBetweenFileSystemOperations))
+        {
+            Assert.Fail("Change wasn't handled on time.");
+        }
 
         // Assert
-        Assert.True(taken);
-        Assert.Equal(_existingConfigFilePath, item);
+        Assert.True(_configWatcherChangedResult.Any());
+        Assert.Equal(_existingConfigFilePath, _configWatcherChangedResult[0]);
         Assert.Equal(string.Empty, _shouldBeEmptyWatcherChangedResult);
+
+        // Clear
+        _configWatcherChangedResult.Clear();
     }
 }

@@ -3,7 +3,7 @@
 public class ConfigFolderWatcherTest : BaseConfigWatcherTest
 {
     [Fact]
-    public void GivenJsonFile_WhenFileDeleted_ShouldFireDeletedEvent()
+    public async Task GivenJsonFile_WhenFileDeleted_ShouldFireDeletedEvent()
     {
         var configWatcherResult = string.Empty;
         ConfigFolderWatcher.Deleted += (_, filePath) => configWatcherResult = filePath;
@@ -15,7 +15,7 @@ public class ConfigFolderWatcherTest : BaseConfigWatcherTest
             File.Delete(filePathForDelete);
         }
 
-        Task.Delay(DelayBetweenFileSystemOperations).Wait();
+        await Task.Delay(DelayBetweenFileSystemOperations);
 
         Assert.Equal(filePathForDelete, configWatcherResult);
     }
