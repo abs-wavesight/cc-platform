@@ -8,7 +8,7 @@ public class ConfigWatcherAllEventsTest : BaseConfigWatcherTest
     private string _configWatcherAddedResult = string.Empty;
     private string _configWatcherDeletedResult = string.Empty;
 
-    private readonly AutoResetEvent _changeEvent = new (true);
+    private readonly AutoResetEvent _changeEvent = new(true);
 
     public ConfigWatcherAllEventsTest()
     {
