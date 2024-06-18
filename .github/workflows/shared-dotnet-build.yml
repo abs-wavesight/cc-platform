@@ -163,7 +163,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report.zip
-          path: ./**/src/**/*cobertura.xml
+          path: ./**/*cobertura.xml
           retention-days: 5
 
   coverage:
