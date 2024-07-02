@@ -12,6 +12,7 @@ inputs:
   project-key:
     description: "SonarQube Project Key"
     default: ${{ github.event.repository.name }}
+    type: string
 
 runs:
   using: "composite"
