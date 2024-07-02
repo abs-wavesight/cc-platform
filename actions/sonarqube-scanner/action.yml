@@ -5,7 +5,10 @@ inputs:
     description: "Working directory for dotnet"
     required: false
     default: src
-  dotnetVersion:
+  solution-name:
+    description: "Working directory for dotnet"
+    required: false
+  dotnet-version:
     required: true
     type: string
     description: ".NET SDK Version"
@@ -21,7 +24,7 @@ runs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ inputs.dotnetVersion }}
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: .NET Version
       run: dotnet --version
@@ -44,7 +47,7 @@ runs:
 
     - name: .NET Restore - Install dependencies
       working-directory: ${{ inputs.working-directory }}
-      run: dotnet restore --packages ${{ github.workspace }}\.nuget\packages
+      run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
 
     - name: Set up JDK 17
       uses: actions/setup-java@v1
