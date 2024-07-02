@@ -1,0 +1,78 @@
+name: .NET Restore + Build
+
+inputs:
+  working-directory:
+    description: "Working directory for dotnet"
+    required: false
+    default: src
+  dotnetVersion:
+    required: true
+    type: string
+    description: ".NET SDK Version"
+  project-key:
+    description: "SonarQube Project Key"
+    default: ${{ github.event.repository.name }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ inputs.dotnetVersion }}
+
+    - name: .NET Version
+      run: dotnet --version
+
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+        fetch-depth: 0
+        token: ${{ secrets.GH_TOKEN || ' ' }}
+
+    - name: Set NuGet credentials
+      shell: pwsh
+      run: |
+        $AbsNugetUsername = "USERNAME"
+        echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+        $AbsNugetPassword = "${{ secrets.GH_TOKEN || github.TOKEN }}"
+        echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: .NET Restore - Install dependencies
+      working-directory: ${{ inputs.working-directory }}
+      run: dotnet restore --packages ${{ github.workspace }}\.nuget\packages
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v1
+      with:
+        java-version: 17
+
+    - name: Cache SonarQube packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache SonarQube scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v2
+      with:
+        path: ./.sonar/scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+
+    - name: Install SonarQube scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p ./.sonar/scanner
+        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+    - name: Build and analyze
+      run: |
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+        dotnet build
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
