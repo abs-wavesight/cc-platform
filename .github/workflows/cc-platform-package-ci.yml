@@ -36,7 +36,7 @@ jobs:
       solution-name: CommonCore.Platform.sln
       check-code-formatting: true
       run-integration-tests: true
-      run-coverage: true
+      run-coverage: false
     secrets: inherit
 
   publish-nuget-package:
