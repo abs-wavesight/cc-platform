@@ -71,11 +71,13 @@ runs:
 
     - name: Install SonarQube scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: pwsh
       run: |
         mkdir -p ./.sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
     - name: Build and analyze
+      shell: pwsh
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
         dotnet build
