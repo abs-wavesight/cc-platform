@@ -89,6 +89,6 @@ runs:
     - name: Build and analyze
       shell: pwsh
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.onar-host-url }}"
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.sonar-host-url }}"
         dotnet build
         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
