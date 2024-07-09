@@ -87,8 +87,9 @@ runs:
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
     - name: Build and analyze
-      shell: pwsh
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.sonar-host-url }}"
-        dotnet build
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.sonar-host-url }}" /d:sonar.projectBaseDir=${{ inputs.working-directory }}
+        dotnet build ${{ inputs.solution-name }} --configuration Release 
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}" | tee logs.txt
