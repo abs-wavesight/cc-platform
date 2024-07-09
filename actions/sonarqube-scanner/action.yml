@@ -97,22 +97,22 @@ runs:
         else
           echo "Successfully accessed $URL, status code: $HTTP_STATUS"
         fi
-    - name: SonarQubeAnalyze
-      shell: bash      
+    - name: SonarQube Begin Analysis
+      shell: bash
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin \
-        /k:${{ inputs.project-key }} \
-        /d:sonar.token="${{ inputs.sonar-token }}" \
+        /k:"${{ inputs.project-key }}" \
+        /d:sonar.login="${{ inputs.sonar-token }}" \
         /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
-        /d:sonar.projectBaseDir=${{ inputs.working-directory }}         
+        /d:sonar.projectBaseDir="${{ inputs.working-directory }}"
 
-    - name: Build 
-      shell: bash      
-      run: |        
-        dotnet build ${{ inputs.solution-name }} --configuration Release 
+    - name: Build
+      shell: bash
+      run: |
+        dotnet build ${{ inputs.solution-name }} --configuration Release
 
-    - name: SonarQubeAnalyze
-      shell: bash      
-      run: |        
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}" | tee logs.txt
+    - name: SonarQube End Analysis
+      shell: bash
+      run: |
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ inputs.sonar-token }}" | tee logs.txt
         
