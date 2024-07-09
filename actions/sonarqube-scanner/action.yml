@@ -100,11 +100,7 @@ runs:
     - name: SonarQube Begin Analysis
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin \
-        /k:"${{ inputs.project-key }}" \
-        /d:sonar.login="${{ inputs.sonar-token }}" \
-        /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
-        /d:sonar.projectBaseDir="${{ inputs.working-directory }}"
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ inputs.project-key }}" /d:sonar.login="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.sonar-host-url }}" /d:sonar.projectBaseDir="${{ inputs.working-directory }}"
 
     - name: Build
       shell: bash
