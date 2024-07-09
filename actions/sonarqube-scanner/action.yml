@@ -1,6 +1,15 @@
 name: .NET Restore + Build
 
 inputs:
+  gh-token:
+    description: "GitHub Token"
+    required: false
+  sonar-token:
+    description: "SonarQube Token"
+    required: true
+  sonar-host-url:
+    description: "SonarQube Host URL"
+    required: true
   working-directory:
     description: "Working directory for dotnet"
     required: false
@@ -19,7 +28,6 @@ inputs:
 
 runs:
   using: "composite"
-
   steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -34,7 +42,7 @@ runs:
       with:
         submodules: true
         fetch-depth: 0
-        token: ${{ secrets.GH_TOKEN || ' ' }}
+        token: ${{ inputs.gh-token || ' ' }}
 
     - name: Set NuGet credentials
       shell: pwsh
@@ -42,7 +50,7 @@ runs:
         $AbsNugetUsername = "USERNAME"
         echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-        $AbsNugetPassword = "${{ secrets.GH_TOKEN || github.TOKEN }}"
+        $AbsNugetPassword = "${{ inputs.gh-token || github.TOKEN }}"
         echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: .NET Restore - Install dependencies
@@ -79,6 +87,6 @@ runs:
     - name: Build and analyze
       shell: pwsh
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token="${{ inputs.sonar-token }}" /d:sonar.host.url="${{ inputs.onar-host-url }}"
         dotnet build
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
