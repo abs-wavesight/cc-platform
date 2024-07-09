@@ -35,6 +35,7 @@ runs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: .NET Version
+      shell: pwsh
       run: dotnet --version
 
     - name: Checkout GitHub Action
@@ -55,6 +56,7 @@ runs:
 
     - name: .NET Restore - Install dependencies
       working-directory: ${{ inputs.working-directory }}
+      shell: pwsh
       run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
 
     - name: Set up JDK 17
