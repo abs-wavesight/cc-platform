@@ -86,18 +86,17 @@ runs:
         mkdir -p ./.sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
-      - name: Check URL Access
-        shell: bash
-        run: |
-          URL="${{ inputs.sonar-host-url }}"
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Failed to access $URL, status code: $HTTP_STATUS"
-            exit 1
-          else
-            echo "Successfully accessed $URL, status code: $HTTP_STATUS"
-          fi
-
+    - name: Check URL Access
+      shell: bash
+      run: |
+        URL="${{ inputs.sonar-host-url }}"
+        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "Failed to access $URL, status code: $HTTP_STATUS"
+          exit 1
+        else
+          echo "Successfully accessed $URL, status code: $HTTP_STATUS"
+        fi
     - name: SonarQubeAnalyze
       shell: bash      
       run: |
