@@ -109,6 +109,7 @@ runs:
         dotnet build ${{ inputs.solution-name }} --configuration Release
 
     - name: SonarQube End Analysis
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: |
         ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.login="${{ inputs.sonar-token }}" | tee logs.txt
