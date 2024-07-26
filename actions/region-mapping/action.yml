@@ -40,5 +40,8 @@ runs:
             ;;
         esac
 
+        echo "region_code: $region_code"
+        echo "region_suffix: $region_suffix"
+
         echo "region_code=$region_code" >> $GITHUB_OUTPUT
         echo "region_suffix=$region_suffix" >> $GITHUB_OUTPUT
