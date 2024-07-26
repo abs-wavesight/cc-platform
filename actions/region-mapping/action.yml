@@ -1,0 +1,41 @@
+name: 'Region Mapping'
+description: 'Maps a location to region code and suffix'
+
+inputs:
+  location:
+    description: 'The Azure region to deploy resources.'
+    required: true
+    type: string
+
+    # This code add 2 new variables to enviroment variables
+    # region_code and region_suffix
+
+runs:
+  using: "composite"
+  steps:
+    - name: Map region and suffix
+      shell: bash
+      run: |
+        location="${{ inputs.location }}"
+
+        case "$location" in
+          "South Central US")
+            region_code="southcentralus"
+            region_suffix="scus"
+            ;;
+          "East US")
+            region_code="eastus"
+            region_suffix="eus"
+            ;;
+          "Europe")
+            region_code="europe"
+            region_suffix="eu"
+            ;;            
+          *)
+            echo "Error: Unrecognized location '$location'."
+            exit 1
+            ;;
+        esac
+
+        echo "region_code=$region_code" >> $GITHUB_ENV
+        echo "region_suffix=$region_suffix" >> $GITHUB_ENV    
