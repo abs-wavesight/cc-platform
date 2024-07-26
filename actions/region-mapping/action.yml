@@ -1,0 +1,44 @@
+name: 'Region Mapping'
+
+on:
+  workflow_call:
+    inputs:
+      location:
+        description: 'The Azure region to deploy resources.'
+        required: true
+        type: string
+
+jobs:
+  map_region:
+    runs-on: ubuntu-latest
+    outputs:
+      region_code: ${{ steps.set_output.outputs.region_code }}
+      region_suffix: ${{ steps.set_output.outputs.region_suffix }}
+
+   steps:
+      - name: Map region and suffix
+        id: set_output
+        run: |
+          location="${{ github.event.inputs.location }}"
+
+          case "$location" in
+            "South Central US")
+              region_code="southcentralus"
+              region_suffix="scus"
+              ;;
+            "East US")
+              region_code="eastus"
+              region_suffix="eus"
+              ;;
+            "Europe")
+              region_code="europe"
+              region_suffix="eu"
+              ;;            
+            *)
+              echo "Error: Unrecognized location '$location'."
+              exit 1
+              ;;
+          esac
+
+          echo "::set-output name=region_code::$region_code"
+          echo "::set-output name=region_suffix::$region_suffix"
