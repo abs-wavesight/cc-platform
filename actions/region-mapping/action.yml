@@ -40,8 +40,11 @@ runs:
             ;;
         esac
 
-        echo "region_code: $region_code"
-        echo "region_suffix: $region_suffix"
-      
-        echo "::set-output name=region_code::$region_code"
-        echo "::set-output name=region_suffix::$region_suffix"
+        echo "region_code=$region_code" >> $GITHUB_ENV
+        echo "region_suffix=$region_suffix" >> $GITHUB_ENV
+
+    - name: Set outputs
+      shell: bash
+      run: |     
+        echo "region_code=${{ env.region_code }}" >> $GITHUB_OUTPUT
+        echo "region_suffix=${{ env.region_suffix }}" >> $GITHUB_OUTPUT
