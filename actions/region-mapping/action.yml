@@ -7,11 +7,8 @@ inputs:
     required: true
     type: string
 
-outputs:
-  region_code:
-    description: 'The Azure region code'
-  region_suffix:
-    description: 'The short suffix for the region'
+    # This code add 2 new variables to enviroment variables
+    # region_code and region_suffix
 
 runs:
   using: "composite"
@@ -41,10 +38,4 @@ runs:
         esac
 
         echo "region_code=$region_code" >> $GITHUB_ENV
-        echo "region_suffix=$region_suffix" >> $GITHUB_ENV
-
-    - name: Set outputs
-      shell: bash
-      run: |     
-        echo "region_code=${{ env.region_code }}" >> $GITHUB_OUTPUT
-        echo "region_suffix=${{ env.region_suffix }}" >> $GITHUB_OUTPUT
+        echo "region_suffix=$region_suffix" >> $GITHUB_ENV    
