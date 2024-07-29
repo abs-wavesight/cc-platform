@@ -31,7 +31,7 @@ runs:
             region_code="europe"
             region_suffix="eu"
             ;;
-          "Canada Central"
+          "Canada Central")
             region_code="canadacentral"
             region_suffix="cac"
             ;;
