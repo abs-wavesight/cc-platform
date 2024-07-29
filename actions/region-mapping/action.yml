@@ -30,11 +30,11 @@ runs:
           "Europe")
             region_code="europe"
             region_suffix="eu"
-            ;;            
+            ;;
           "Canada Central"
             region_code="canadacentral"
             region_suffix="cac"
-            ;;            
+            ;;
           *)
             echo "Error: Unrecognized location '$location'."
             exit 1
