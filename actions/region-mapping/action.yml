@@ -40,4 +40,4 @@ runs:
         echo "region_code=$region_code" >> $GITHUB_ENV
         echo "region_suffix=$region_suffix" >> $GITHUB_ENV    
         echo "TF_VAR_REGION_CODE=$region_code" >> $GITHUB_ENV
-        echo "TF_VAR_REGION_SUFFIX=$region_suffix" >> $GITHUB_ENV    
+        echo "TF_VAR_REGION_SUFFIX=$region_suffix" >> $GITHUB_ENV
