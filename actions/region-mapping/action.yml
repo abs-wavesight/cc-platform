@@ -30,7 +30,11 @@ runs:
           "Europe")
             region_code="europe"
             region_suffix="eu"
-            ;;            
+            ;;
+          "Canada Central")
+            region_code="canadacentral"
+            region_suffix="cac"
+            ;;
           *)
             echo "Error: Unrecognized location '$location'."
             exit 1
@@ -39,3 +43,5 @@ runs:
 
         echo "region_code=$region_code" >> $GITHUB_ENV
         echo "region_suffix=$region_suffix" >> $GITHUB_ENV    
+        echo "TF_VAR_REGION_CODE=$region_code" >> $GITHUB_ENV
+        echo "TF_VAR_REGION_SUFFIX=$region_suffix" >> $GITHUB_ENV
