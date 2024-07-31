@@ -27,10 +27,10 @@ runs:
             region_code="eastus"
             region_suffix="eus"
             ;;
-          "Europe")
-            region_code="europe"
+          "West Europe")
+            region_code="westeurope"
             region_suffix="eu"
-            ;;
+            ;;          
           "Canada Central")
             region_code="canadacentral"
             region_suffix="cac"
