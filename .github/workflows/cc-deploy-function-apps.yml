@@ -55,6 +55,7 @@ jobs:
       - name: Set unique directory names
         id: unique-path
         run: |
+          echo "Test var: ${{ vars.TEST_VAR }}"
           $random = Get-Random -Minimum 10000 -Maximum 99999
           $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random"          
           echo "::set-output name=uniquePathSuffix::$uniquePathSuffix"
