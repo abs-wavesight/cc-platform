@@ -55,7 +55,7 @@ on:
 jobs: 
   deploy:    
     runs-on: ubuntu-latest
-    environment: ${{ inputs.envrironment }}
+    environment: ${{ inputs.environment }}
     name: Deploy
     steps:
       - name: Set unique directory names
