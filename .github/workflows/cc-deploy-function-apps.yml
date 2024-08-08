@@ -36,7 +36,12 @@ on:
         required: false
         type: string
         description: 'The Azure function app name suffix' 
-        default: ''     
+        default: ''
+      envrironment:
+        required: true
+        type: string
+        description: 'The environment name'
+        default: ''
     secrets:
       AZURE_CLIENT_ID:
           required: true
@@ -45,11 +50,12 @@ on:
       AZURE_TENANT_ID:
           required: true    
       GH_TOKEN:
-          required: true 
+          required: true
 
 jobs: 
   deploy:    
     runs-on: ubuntu-latest
+    environment: ${{ inputs.envrironment }}
     name: Deploy
     steps:
       - name: Set unique directory names
@@ -101,7 +107,7 @@ jobs:
       - name: Login via Azure CLI
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets[inputs.subscription_key_from_secret]}}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets[inputs.subscription_key_from_secret] }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
 
       - name: Azure Function App Zip Deploy
         shell: bash
