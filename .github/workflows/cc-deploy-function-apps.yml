@@ -28,28 +28,32 @@ on:
         type: string
         description: 'The source repository path'
         default: ${{ github.repository }}
-      subscription_key_from_secret:
-        required: true
-        type: string
-        description: 'The Azure subscription ID'  
       function_name_suffix:
         required: false
         type: string
         description: 'The Azure function app name suffix' 
-        default: ''     
+        default: ''
+      environment:
+        required: true
+        type: string
+        description: 'The environment name'
+        default: ''
     secrets:
       AZURE_CLIENT_ID:
-          required: true
+        required: true
       AZURE_AD_CLIENT_SECRET:
-          required: true
+        required: true
       AZURE_TENANT_ID:
-          required: true    
-      GH_TOKEN:
-          required: true 
+        required: true    
+      GH_PAT:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
 
 jobs: 
   deploy:    
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     name: Deploy
     steps:
       - name: Set unique directory names
@@ -78,7 +82,7 @@ jobs:
           fileName: ${{ inputs.artifactFunctions }}.zip
           tag: ${{ inputs.tagVersion }}
           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
       
       - name: Download functions from Release Artifacts (Latest)
         uses: robinraju/release-downloader@v1.9
@@ -88,7 +92,7 @@ jobs:
           fileName: ${{ inputs.artifactFunctions }}.zip
           latest: true
           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
-          token: ${{ secrets.GH_TOKEN }}          
+          token: ${{ secrets.GH_PAT }}          
 
       - name: Manual expand archive files
         shell: pwsh
@@ -100,7 +104,7 @@ jobs:
       - name: Login via Azure CLI
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets[inputs.subscription_key_from_secret]}}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'      
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
       - name: Azure Function App Zip Deploy
         shell: bash
