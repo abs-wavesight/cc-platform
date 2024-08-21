@@ -1,9 +1,9 @@
-name: 'Region Mapping'
-description: 'Maps a location to region code and suffix'
+name: "Region Mapping"
+description: "Maps a location to region code and suffix"
 
 inputs:
   location:
-    description: 'The Azure region to deploy resources.'
+    description: "The Azure region to deploy resources."
     required: true
     type: string
 
@@ -34,6 +34,10 @@ runs:
           "Canada Central")
             region_code="canadacentral"
             region_suffix="cac"
+            ;;
+          "Central US")
+            region_code="centralus"
+            region_suffix="cus"
             ;;
           *)
             echo "Error: Unrecognized location '$location'."
