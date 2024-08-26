@@ -1,26 +1,30 @@
 name: Log Release Notes
 
 inputs:
-      solution_name:
-        description: 'The name of the solution to update or add'
-        required: true
-        type: string
-      version:
-        description: 'The new version of the solution'
-        required: true
-        type: string
-      wiki_url_root:
-        description: 'The root page under which the environment page will be checked/created'   
-        type: string        
-        default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
-      wiki_page:
-        description: 'The name of the wiki page to update'
-        required: true
-        type: string
-      environment:
-        description: 'The environment (e.g., Development, Production) for which the page will be checked/created'
-        required: true
-        type: string
+  solution_name:
+    description: 'The name of the solution to update or add'
+    required: true
+    type: string
+  version:
+    description: 'The new version of the solution'
+    required: true
+    type: string
+  wiki_url_root:
+    description: 'The root page under which the environment page will be checked/created'   
+    type: string        
+    default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
+  wiki_page:
+    description: 'The name of the wiki page to update'
+    required: true
+    type: string
+  environment:
+    description: 'The environment (e.g., Development, Production) for which the page will be checked/created'
+    required: true
+    type: string
+  auth_token: 
+    description: 'The Azure DevOps Personal Access Token (PAT) for authorization'
+    required: true
+    type: string
 
 runs:
   using: "composite"
@@ -35,7 +39,7 @@ runs:
     - name: Check if environment page exists and create if not 
       shell: bash    
       env:
-        AuthToken: ${{ secrets.AZURE_WIKI_PAT }}
+        AuthToken: ${{ inputs.auth_token }} 
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
@@ -59,6 +63,8 @@ runs:
         else
           echo "Environment page '${ENVIRONMENT}' already exists."
         fi
+
+
 
     # - name: Download Wiki page content
     #   env:
