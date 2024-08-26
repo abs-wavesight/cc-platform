@@ -144,6 +144,7 @@ runs:
         fi
 
         echo "Display File=$FILE"
+        cat $FILE
 
     - name: Update Wiki page content
       shell: bash
