@@ -34,6 +34,7 @@ runs:
 
     - name: Check if environment page exists and create if not 
       shell: bash    
+      AuthToken: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
@@ -41,7 +42,7 @@ runs:
         WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"       
 
         # Check if the environment page exists
-        RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" "$WIKI_URL")
+        RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
 
         if [ "$RESPONSE_CODE" -ne 200 ]; then
           echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
@@ -50,7 +51,7 @@ runs:
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
           
           curl -X PUT \
-               -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+               -H "Authorization: Basic $(echo -n :$AuthToken | base64)" \
                -H "Content-Type: application/json" \
                -d "$JSON_CONTENT" \
                "$WIKI_URL"
