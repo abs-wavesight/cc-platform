@@ -48,6 +48,9 @@ runs:
         WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"
 
         echo "WIKI_URL=$WIKI_URL" >> $GITHUB_ENV
+        echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+
+
 
     - name: Check if environment page exists and create if not 
       shell: bash    
