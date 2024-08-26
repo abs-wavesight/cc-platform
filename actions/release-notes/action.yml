@@ -1,0 +1,104 @@
+name: Log Release Notes
+
+inputs:
+      solution_name:
+        description: 'The name of the solution to update or add'
+        required: true
+        type: string
+      version:
+        description: 'The new version of the solution'
+        required: true
+        type: string
+      wiki_url_root:
+        description: 'The root page under which the environment page will be checked/created'
+        required: true
+        type: string
+      environment:
+        description: 'The environment (e.g., Development, Production) for which the page will be checked/created'
+        required: true
+        type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install curl and jq
+      run: sudo apt-get install -y curl jq
+
+    - name: Check if environment page exists and create if not
+      env:
+        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+      run: |
+        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ENVIRONMENT="${{ inputs.environment }}"
+        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
+
+        # Check if the environment page exists
+        RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" "$WIKI_URL")
+
+        if [ "$RESPONSE_CODE" -ne 200 ]; then
+          echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
+          # Create a new environment page with a default table
+          NEW_PAGE_CONTENT="<h2>${ENVIRONMENT} Environment</h2><table><tr><th>Solution Name</th><th>Version</th></tr></table>"
+          JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
+          
+          curl -X PUT \
+               -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+               -H "Content-Type: application/json" \
+               -d "$JSON_CONTENT" \
+               "https://dev.azure.com/<YourOrganization>/<YourProject>/_apis/wiki/wikis/<WikiName>/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=6.0"
+        else
+          echo "Environment page '${ENVIRONMENT}' already exists."
+        fi
+
+    - name: Download Wiki page content
+      env:
+        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+      run: |
+        ROOT_PAGE="${{ github.event.inputs.root_page }}"
+        ENVIRONMENT="${{ github.event.inputs.environment }}"
+        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
+
+        curl -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+             -H "Accept: application/json" \
+             "$WIKI_URL" | jq -r '.content' > wiki_page.html
+
+    - name: Update or Add Solution in the HTML table
+      run: |
+        SOLUTION_NAME="${{ github.event.inputs.solution_name }}"
+        NEW_VERSION="${{ github.event.inputs.version }}"
+        FILE="wiki_page.html"
+
+        # Check if the table exists
+        if ! grep -q "<table>" $FILE; then
+          echo "Table not found, creating a new table."
+          echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > $FILE
+        fi
+
+        # Check if the solution already exists in the table
+        if grep -q "<td>${SOLUTION_NAME}</td>" $FILE; then
+          echo "Solution found, updating the version."
+          sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" $FILE
+        else
+          echo "Solution not found, adding new entry."
+          sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" $FILE
+        fi
+
+    - name: Update Wiki page content
+      env:
+        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+      run: |
+        ROOT_PAGE="${{ github.event.inputs.root_page }}"
+        ENVIRONMENT="${{ github.event.inputs.environment }}"
+        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
+        
+        UPDATED_CONTENT=$(<wiki_page.html)
+        JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
+        
+        curl -X PUT \
+             -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+             -H "Content-Type: application/json" \
+             -d "$JSON_CONTENT" \
+             "$WIKI_URL"
