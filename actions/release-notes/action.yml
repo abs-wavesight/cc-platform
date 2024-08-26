@@ -117,8 +117,7 @@ runs:
         echo "Fetching Wiki page content from $WIKI_URL"        
 
         # Perform the API call and capture the response
-        RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-            -H "Accept: application/json" \
+        RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \           
             "$WIKI_URL")
 
         # Output the full response for debugging
