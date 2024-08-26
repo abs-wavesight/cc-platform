@@ -30,6 +30,7 @@ runs:
       uses: actions/checkout@v3
 
     - name: Install curl and jq
+      shell: bash
       run: sudo apt-get install -y curl jq
 
     - name: Check if environment page exists and create if not
