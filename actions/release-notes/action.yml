@@ -34,7 +34,8 @@ runs:
 
     - name: Check if environment page exists and create if not 
       shell: bash    
-      AuthToken: ${{ secrets.AZURE_WIKI_PAT }}
+      env:
+        AuthToken: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
