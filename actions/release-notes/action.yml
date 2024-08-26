@@ -66,11 +66,24 @@ runs:
           NEW_PAGE_CONTENT="<h2>${ENVIRONMENT} Environment</h2><table><tr><th>Solution Name</th><th>Version</th></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
           
-          curl -X PUT \
-               -H "Authorization: Basic $(echo -n :$AuthToken | base64)" \
-               -H "Content-Type: application/json" \
-               -d "$JSON_CONTENT" \
-               "$WIKI_URL"
+          RESPONSE=$(curl -X PUT \
+            -H "Authorization: Basic $(echo -n :$AuthToken | base64)" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_CONTENT" \
+            -w "%{http_code}" \
+            "$WIKI_URL")
+
+          RESPONSE_CODE="${RESPONSE: -3}"
+          RESPONSE_BODY="${RESPONSE%???}"
+
+          echo "Response Code: $RESPONSE_CODE"
+          echo "Response Body: $RESPONSE_BODY"
+
+          if [ "$RESPONSE_CODE" -ne 200 ]; then
+            echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
+            exit 1
+          fi
+          
         else
           echo "Environment page '${ENVIRONMENT}' already exists."
         fi
