@@ -43,11 +43,13 @@ runs:
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
+        FILE="wiki_page.html"
         
         WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"
 
         echo "WIKI_URL=$WIKI_URL" >> $GITHUB_ENV
         echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+        echo "FILE=$FILE" >> $GITHUB_ENV
 
     # - name: Test Write
     #   shell: bash    
@@ -111,22 +113,35 @@ runs:
     - name: Download Wiki page content
       shell: bash
       env:
-        AuthToken: ${{ inputs.auth_token }}
+        AuthToken: ${{ inputs.auth_token }}     
       run: |
-       
-        curl -H "Authorization: Basic $(echo -n :$AuthToken | base64)" \
-             -H "Accept: application/json" \
-             "$WIKI_URL" | jq -r '.content' > wiki_page.html
+        echo "Fetching Wiki page content from $WIKI_URL"
 
-        echo "Display wiki_page.html"
-        cat wiki_page.html
+        # Perform the API call and capture the response
+        RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+                         -H "Accept: application/json" \
+                         "$WIKI_URL")
+
+        # Output the full response for debugging
+        echo "Full API Response:"
+        echo "$RESPONSE"
+
+        # Extract the content field using jq
+        echo "$RESPONSE" | jq -r '.content' > "$FILE"
+
+        # Check if the content was extracted successfully
+        if [ -s "$FILE" ]; then
+          echo "$FILE successfully created:"
+          cat "$FILE"
+        else
+          echo "Failed to fetch content or content is empty. Check the API response above for errors."
+        fi
 
     - name: Update or Add Solution in the HTML table
       shell: bash
       run: |
          SOLUTION_NAME="${{ inputs.solution_name }}"
-         NEW_VERSION="${{ inputs.version }}"
-         FILE="wiki_page.html"
+         NEW_VERSION="${{ inputs.version }}"        
          
          echo "SOLUTION_NAME=$SOLUTION_NAME"
          echo "NEW_VERSION=$NEW_VERSION"
@@ -158,7 +173,7 @@ runs:
         AuthToken: ${{ inputs.auth_token }}
       run: |
         
-        UPDATED_CONTENT=$(<wiki_page.html)
+        UPDATED_CONTENT=$(<"$FILE")
         JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
         
         curl -X PUT \
