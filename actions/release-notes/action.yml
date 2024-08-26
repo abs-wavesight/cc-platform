@@ -125,6 +125,9 @@ runs:
         NEW_VERSION="${{ inputs.version }}"
         FILE="wiki_page.html"
 
+        echo "SOLUTION_NAME=$SOLUTION_NAME"
+        echo "NEW_VERSION=$NEW_VERSION"
+
         # Check if the table exists
         if ! grep -q "<table>" $FILE; then
           echo "Table not found, creating a new table."
@@ -139,6 +142,8 @@ runs:
           echo "Solution not found, adding new entry."
           sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" $FILE
         fi
+
+        echo "Display File=$FILE"
 
     - name: Update Wiki page content
       shell: bash
