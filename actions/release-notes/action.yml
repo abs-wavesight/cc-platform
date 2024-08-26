@@ -11,8 +11,7 @@ inputs:
         type: string
       wiki_url_root:
         description: 'The root page under which the environment page will be checked/created'   
-        type: string
-        #default: "https://ABSDigital@dev.azure.com/ABSDigital/Common%20Core/_git/Common-Core.wiki"
+        type: string        
         default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
       wiki_page:
         description: 'The name of the wiki page to update'
@@ -33,7 +32,8 @@ runs:
       shell: bash
       run: sudo apt-get install -y curl jq
 
-    - name: Check if environment page exists and create if not     
+    - name: Check if environment page exists and create if not 
+      shell: bash    
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
