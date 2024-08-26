@@ -51,7 +51,6 @@ runs:
         echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
 
 
-
     - name: Check if environment page exists and create if not 
       shell: bash    
       env:
@@ -68,6 +67,14 @@ runs:
 
           echo "JSON_CONTENT=$JSON_CONTENT"
           echo "WIKI_URL=$WIKI_URL"
+
+          curl -v -X PUT \
+            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "Content-Type: application/json" \
+            -d '{"content": "Test content"}' \
+            "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki/pages?path=/MyTestPage&api-version=7.1-preview.1"       
+
+
           
           RESPONSE=$(curl -v -X PUT \
             -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
