@@ -82,7 +82,7 @@ runs:
         if [ "$RESPONSE_CODE" -ne 200 ]; then
           echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
           # Create a new environment page with a default table
-          NEW_PAGE_CONTENT="<table><tr><th>Solution Name</th><th>Version</th></tr></table>"
+          NEW_PAGE_CONTENT="<table><tr><td>Solution Name</td><td>Version</td></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
 
           echo "JSON_CONTENT=$JSON_CONTENT"
