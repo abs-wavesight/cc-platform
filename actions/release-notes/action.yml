@@ -36,11 +36,10 @@ runs:
       shell: bash
       run: sudo apt-get install -y curl jq
 
-    - name: Preapre Wiki URL
+    - name: Prepare Wiki URL
       shell: bash
       id: prepare-wiki-url
       run: |
-
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
@@ -53,65 +52,70 @@ runs:
     - name: Test Write
       shell: bash    
       env:
-        AuthToken: ${{ inputs.auth_token }}        
-      run: |       
-
-        RESPONSE=$(curl -v -X PUT \
+        AuthToken: ${{ inputs.auth_token }}
+        WIKI_URL: ${{ env.WIKI_URL }}        
+      run: |
+        RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
          -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
          -H "Content-Type: application/json" \
          -d '{"content": "Test content"}' \
-         "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki/pages?path=/MyTestPage&api-version=7.1-preview.1")              
-          
-
-        RESPONSE_CODE="${RESPONSE: -3}"
-        RESPONSE_BODY="${RESPONSE%???}"
+         "$WIKI_URL")
 
         echo "Response Code: $RESPONSE_CODE"
-        echo "Response Body: $RESPONSE_BODY"
 
-        if [ "$RESPONSE_CODE" -ne 200 ]; then
+        if [ "$RESPONSE_CODE" -ne 200 ] && [ "$RESPONSE_CODE" -ne 201 ]; then
           echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
           exit 1
-        fi     
+        fi
 
-    - name: Check if environment page exists and create if not 
-      shell: bash    
-      env:
-        AuthToken: ${{ inputs.auth_token }}        
-      run: |
-        # Check if the environment page exists
-        RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        if [ "$RESPONSE_CODE" -ne 200 ]; then
-          echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
-          # Create a new environment page with a default table
-          NEW_PAGE_CONTENT="<h2>${ENVIRONMENT} Environment</h2><table><tr><th>Solution Name</th><th>Version</th></tr></table>"
-          JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
+    # - name: Check if environment page exists and create if not 
+    #   shell: bash    
+    #   env:
+    #     AuthToken: ${{ inputs.auth_token }}        
+    #   run: |
+    #     # Check if the environment page exists
+    #     RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
 
-          echo "JSON_CONTENT=$JSON_CONTENT"
-          echo "WIKI_URL=$WIKI_URL"
+    #     if [ "$RESPONSE_CODE" -ne 200 ]; then
+    #       echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
+    #       # Create a new environment page with a default table
+    #       NEW_PAGE_CONTENT="<h2>${ENVIRONMENT} Environment</h2><table><tr><th>Solution Name</th><th>Version</th></tr></table>"
+    #       JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
 
-           RESPONSE=$(curl -v -X PUT \
-            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-            -H "Content-Type: application/json" \
-            -d '{"content": "Test content"}' \
-            "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki/pages?path=/MyTestPage&api-version=7.1-preview.1")              
+    #       echo "JSON_CONTENT=$JSON_CONTENT"
+    #       echo "WIKI_URL=$WIKI_URL"
+
+    #        RESPONSE=$(curl -v -X PUT \
+    #         -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+    #         -H "Content-Type: application/json" \
+    #         -d '{"content": "Test content"}' \
+    #         "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki/pages?path=/MyTestPage&api-version=7.1-preview.1")              
           
 
-          RESPONSE_CODE="${RESPONSE: -3}"
-          RESPONSE_BODY="${RESPONSE%???}"
+    #       RESPONSE_CODE="${RESPONSE: -3}"
+    #       RESPONSE_BODY="${RESPONSE%???}"
 
-          echo "Response Code: $RESPONSE_CODE"
-          echo "Response Body: $RESPONSE_BODY"
+    #       echo "Response Code: $RESPONSE_CODE"
+    #       echo "Response Body: $RESPONSE_BODY"
 
-          if [ "$RESPONSE_CODE" -ne 200 ]; then
-            echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
-            exit 1
-          fi
+    #       if [ "$RESPONSE_CODE" -ne 200 ]; then
+    #         echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
+    #         exit 1
+    #       fi
 
-        else
-          echo "Environment page '${ENVIRONMENT}' already exists."
-        fi
+    #     else
+    #       echo "Environment page '${ENVIRONMENT}' already exists."
+    #     fi
 
 
 
