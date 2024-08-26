@@ -92,16 +92,14 @@ runs:
             -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
             -H "Content-Type: application/json" \
             -d "$JSON_CONTENT" \
-            "$WIKI_URL")              
-          
-
-          RESPONSE_CODE="${RESPONSE: -3}"
-          RESPONSE_BODY="${RESPONSE%???}"
-
-          echo "Response Code: $RESPONSE_CODE"
-          echo "Response Body: $RESPONSE_BODY"
+            "$WIKI_URL")          
 
           if [ "$RESPONSE_CODE" -ne 200 ]; then
+            RESPONSE_CODE="${RESPONSE: -3}"
+            RESPONSE_BODY="${RESPONSE%???}"
+
+            echo "Response Code: $RESPONSE_CODE"
+            echo "Response Body: $RESPONSE_BODY"
             echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
             exit 1
           fi
@@ -122,7 +120,7 @@ runs:
 
         # Perform the API call and capture the response
         RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-                         -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" \                         
+                         -H "Accept: */*" \                         
                          "$WIKI_URL")
 
         # Output the full response for debugging
