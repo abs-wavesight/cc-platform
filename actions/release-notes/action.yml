@@ -37,7 +37,7 @@ runs:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT="${{ inputs.environment }}"
         WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
@@ -64,7 +64,7 @@ runs:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT="${{ inputs.environment }}"
         WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
@@ -98,7 +98,7 @@ runs:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT="${{ inputs.environment }}"
         WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
