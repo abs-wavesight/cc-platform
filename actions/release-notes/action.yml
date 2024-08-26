@@ -10,8 +10,7 @@ inputs:
         required: true
         type: string
       wiki_url_root:
-        description: 'The root page under which the environment page will be checked/created'
-        required: true
+        description: 'The root page under which the environment page will be checked/created'   
         type: string
         #default: "https://ABSDigital@dev.azure.com/ABSDigital/Common%20Core/_git/Common-Core.wiki"
         default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
