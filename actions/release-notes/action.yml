@@ -82,7 +82,7 @@ runs:
         if [ "$RESPONSE_CODE" -ne 200 ]; then
           echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
           # Create a new environment page with a default table
-          NEW_PAGE_CONTENT="<h2>${ENVIRONMENT} Environment</h2><table><tr><th>Solution Name</th><th>Version</th></tr></table>"
+          NEW_PAGE_CONTENT="<table><tr><th>Solution Name</th><th>Version</th></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
 
           echo "JSON_CONTENT=$JSON_CONTENT"
@@ -117,24 +117,13 @@ runs:
         echo "Fetching Wiki page content from $WIKI_URL"        
 
         # Perform the API call and capture the response
-        RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+        curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
             -H "Accept: text/html" \
-            "$WIKI_URL")
+            "$WIKI_URL" > "$FILE"
 
         # Output the full response for debugging
         echo "Full API Response:"
-        echo "$RESPONSE"
-
-        # Extract the content field using jq
-        echo "$RESPONSE" | jq -r '.content' > "$FILE"
-
-        # Check if the content was extracted successfully
-        if [ -s "$FILE" ]; then
-          echo "$FILE successfully created:"
-          cat "$FILE"
-        else
-          echo "Failed to fetch content or content is empty. Check the API response above for errors."
-        fi
+        cat "$FILE"        
 
     - name: Update or Add Solution in the HTML table
       shell: bash
