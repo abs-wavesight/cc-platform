@@ -36,16 +36,24 @@ runs:
       shell: bash
       run: sudo apt-get install -y curl jq
 
+    - name: Preapre Wiki URL
+      shell: bash
+      id: prepare-wiki-url
+      run: |
+
+        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_page }}"
+        ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
+        
+        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"
+
+        echo "WIKI_URL=$WIKI_URL" >> $GITHUB_ENV
+
     - name: Check if environment page exists and create if not 
       shell: bash    
       env:
-        AuthToken: ${{ inputs.auth_token }} 
+        AuthToken: ${{ inputs.auth_token }}        
       run: |
-        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_page }}"
-        ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}&api-version=7.1-preview.1"       
-
         # Check if the environment page exists
         RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
 
