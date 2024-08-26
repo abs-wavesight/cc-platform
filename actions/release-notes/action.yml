@@ -145,8 +145,8 @@ runs:
            '/<\/table>/ {print new_row} 1' "$FILE" > tmpfile && mv tmpfile "$FILE"
          fi
 
-    echo "Display File=$FILE"
-    cat "$FILE"
+         echo "Display File=$FILE"
+         cat "$FILE"
 
 
     - name: Update Wiki page content
