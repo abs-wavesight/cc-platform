@@ -118,15 +118,20 @@ runs:
              -H "Accept: application/json" \
              "$WIKI_URL" | jq -r '.content' > wiki_page.html
 
+        echo "Display wiki_page.html"
+        cat wiki_page.html
+
     - name: Update or Add Solution in the HTML table
       shell: bash
       run: |
          SOLUTION_NAME="${{ inputs.solution_name }}"
          NEW_VERSION="${{ inputs.version }}"
          FILE="wiki_page.html"
-     
+         
          echo "SOLUTION_NAME=$SOLUTION_NAME"
          echo "NEW_VERSION=$NEW_VERSION"
+         echo "Display File=$FILE"
+         cat "$FILE"
      
          # Check if the table exists
          if ! grep -q "<table>" "$FILE"; then
