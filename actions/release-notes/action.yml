@@ -114,9 +114,7 @@ runs:
         AuthToken: ${{ inputs.auth_token }}     
       run: |
       
-        echo "Fetching Wiki page content from $WIKI_URL"
-
-        GIT_API_URL="https://dev.azure.com/ABSDigital/Common%20Core/_apis/git/repositories/Common-Core/items?path=$GIT_ITEM_PATH&api-version=7.1-preview.1"
+        echo "Fetching Wiki page content from $WIKI_URL"        
 
         # Perform the API call and capture the response
         RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
