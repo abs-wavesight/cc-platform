@@ -44,7 +44,7 @@ runs:
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"       
+        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}&api-version=7.1-preview.1"       
 
         # Check if the environment page exists
         RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
