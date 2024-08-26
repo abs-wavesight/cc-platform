@@ -118,7 +118,7 @@ runs:
 
         # Perform the API call and capture the response
         RESPONSE=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-                         -H "Accept: */*" \                         
+                         -H "Accept: text/html" \                         
                          "$WIKI_URL")
 
         # Output the full response for debugging
