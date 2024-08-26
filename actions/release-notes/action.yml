@@ -33,9 +33,7 @@ runs:
       shell: bash
       run: sudo apt-get install -y curl jq
 
-    - name: Check if environment page exists and create if not
-      env:
-        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+    - name: Check if environment page exists and create if not     
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
