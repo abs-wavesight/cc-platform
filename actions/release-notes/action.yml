@@ -121,30 +121,32 @@ runs:
     - name: Update or Add Solution in the HTML table
       shell: bash
       run: |
-        SOLUTION_NAME="${{ inputs.solution_name }}"
-        NEW_VERSION="${{ inputs.version }}"
-        FILE="wiki_page.html"
-    
-        echo "SOLUTION_NAME=$SOLUTION_NAME"
-        echo "NEW_VERSION=$NEW_VERSION"
-    
-        # Check if the table exists
-        if ! grep -q "<table>" "$FILE"; then
-          echo "Table not found, creating a new table."
-          echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > "$FILE"
-        fi
-    
-        # Check if the solution already exists in the table
-        if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
-          echo "Solution found, updating the version."
-          sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" "$FILE"
-        else
-          echo "Solution not found, adding new entry."
-          sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" "$FILE"
-        fi
-    
-        echo "Display File=$FILE"
-        cat "$FILE"
+         SOLUTION_NAME="${{ inputs.solution_name }}"
+         NEW_VERSION="${{ inputs.version }}"
+         FILE="wiki_page.html"
+     
+         echo "SOLUTION_NAME=$SOLUTION_NAME"
+         echo "NEW_VERSION=$NEW_VERSION"
+     
+         # Check if the table exists
+         if ! grep -q "<table>" "$FILE"; then
+           echo "Table not found, creating a new table."
+           echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > "$FILE"
+         fi
+     
+         # Check if the solution already exists in the table
+         if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
+           echo "Solution found, updating the version."
+           sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" "$FILE"
+         else
+           echo "Solution not found, adding new entry."
+           # Add the new row manually by splitting the file, appending, and recombining
+           awk -v new_row="<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" \
+           '/<\/table>/ {print new_row} 1' "$FILE" > tmpfile && mv tmpfile "$FILE"
+         fi
+
+    echo "Display File=$FILE"
+    cat "$FILE"
 
 
     - name: Update Wiki page content
