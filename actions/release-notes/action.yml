@@ -13,6 +13,11 @@ inputs:
         description: 'The root page under which the environment page will be checked/created'
         required: true
         type: string
+        default: "https://ABSDigital@dev.azure.com/ABSDigital/Common%20Core/_git/Common-Core.wiki"
+      wiki_page:
+        description: 'The name of the wiki page to update'
+        required: true
+        type: string
       environment:
         description: 'The environment (e.g., Development, Production) for which the page will be checked/created'
         required: true
@@ -31,9 +36,10 @@ runs:
       env:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
+        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_url_root }}"
         ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
+        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
         # Check if the environment page exists
         RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" "$WIKI_URL")
@@ -48,7 +54,7 @@ runs:
                -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
                -H "Content-Type: application/json" \
                -d "$JSON_CONTENT" \
-               "https://dev.azure.com/<YourOrganization>/<YourProject>/_apis/wiki/wikis/<WikiName>/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=6.0"
+               "$WIKI_URL"
         else
           echo "Environment page '${ENVIRONMENT}' already exists."
         fi
@@ -57,9 +63,10 @@ runs:
       env:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
-        ROOT_PAGE="${{ github.event.inputs.root_page }}"
-        ENVIRONMENT="${{ github.event.inputs.environment }}"
-        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
+        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ENVIRONMENT="${{ inputs.environment }}"
+        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
         curl -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
              -H "Accept: application/json" \
@@ -90,10 +97,11 @@ runs:
       env:
         AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
       run: |
-        ROOT_PAGE="${{ github.event.inputs.root_page }}"
-        ENVIRONMENT="${{ github.event.inputs.environment }}"
-        WIKI_URL="${ROOT_PAGE}/${ENVIRONMENT}"
-        
+        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
+        ROOT_PAGE="${{ inputs.wiki_url_root }}"
+        ENVIRONMENT="${{ inputs.environment }}"
+        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
+
         UPDATED_CONTENT=$(<wiki_page.html)
         JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
         
