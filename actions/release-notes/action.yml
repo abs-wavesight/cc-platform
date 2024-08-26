@@ -59,7 +59,7 @@ runs:
          -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
          -H "Content-Type: application/json" \
          -d '{"content": "Test content"}' \
-         "$WIKI_URL")
+         "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki/pages?path=/MyTestPage&api-version=7.1-preview.1")
 
         echo "Response Code: $RESPONSE_CODE"
 
