@@ -13,7 +13,8 @@ inputs:
         description: 'The root page under which the environment page will be checked/created'
         required: true
         type: string
-        default: "https://ABSDigital@dev.azure.com/ABSDigital/Common%20Core/_git/Common-Core.wiki"
+        #default: "https://ABSDigital@dev.azure.com/ABSDigital/Common%20Core/_git/Common-Core.wiki"
+        default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
       wiki_page:
         description: 'The name of the wiki page to update'
         required: true
@@ -39,7 +40,7 @@ runs:
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
         ROOT_PAGE="${{ inputs.wiki_page }}"
         ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
+        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"       
 
         # Check if the environment page exists
         RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" "$WIKI_URL")
@@ -59,54 +60,54 @@ runs:
           echo "Environment page '${ENVIRONMENT}' already exists."
         fi
 
-    - name: Download Wiki page content
-      env:
-        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
-      run: |
-        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_page }}"
-        ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
+    # - name: Download Wiki page content
+    #   env:
+    #     AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+    #   run: |
+    #     WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
+    #     ROOT_PAGE="${{ inputs.wiki_page }}"
+    #     ENVIRONMENT="${{ inputs.environment }}"
+    #     WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
-        curl -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
-             -H "Accept: application/json" \
-             "$WIKI_URL" | jq -r '.content' > wiki_page.html
+    #     curl -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+    #          -H "Accept: application/json" \
+    #          "$WIKI_URL" | jq -r '.content' > wiki_page.html
 
-    - name: Update or Add Solution in the HTML table
-      run: |
-        SOLUTION_NAME="${{ github.event.inputs.solution_name }}"
-        NEW_VERSION="${{ github.event.inputs.version }}"
-        FILE="wiki_page.html"
+    # - name: Update or Add Solution in the HTML table
+    #   run: |
+    #     SOLUTION_NAME="${{ github.event.inputs.solution_name }}"
+    #     NEW_VERSION="${{ github.event.inputs.version }}"
+    #     FILE="wiki_page.html"
 
-        # Check if the table exists
-        if ! grep -q "<table>" $FILE; then
-          echo "Table not found, creating a new table."
-          echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > $FILE
-        fi
+    #     # Check if the table exists
+    #     if ! grep -q "<table>" $FILE; then
+    #       echo "Table not found, creating a new table."
+    #       echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > $FILE
+    #     fi
 
-        # Check if the solution already exists in the table
-        if grep -q "<td>${SOLUTION_NAME}</td>" $FILE; then
-          echo "Solution found, updating the version."
-          sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" $FILE
-        else
-          echo "Solution not found, adding new entry."
-          sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" $FILE
-        fi
+    #     # Check if the solution already exists in the table
+    #     if grep -q "<td>${SOLUTION_NAME}</td>" $FILE; then
+    #       echo "Solution found, updating the version."
+    #       sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" $FILE
+    #     else
+    #       echo "Solution not found, adding new entry."
+    #       sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" $FILE
+    #     fi
 
-    - name: Update Wiki page content
-      env:
-        AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
-      run: |
-        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
-        ROOT_PAGE="${{ inputs.wiki_page }}"
-        ENVIRONMENT="${{ inputs.environment }}"
-        WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
+    # - name: Update Wiki page content
+    #   env:
+    #     AUTH_TOKEN: ${{ secrets.AZURE_WIKI_PAT }}
+    #   run: |
+    #     WIKI_URL_ROOT="${{ inputs.wiki_url_root }}"
+    #     ROOT_PAGE="${{ inputs.wiki_page }}"
+    #     ENVIRONMENT="${{ inputs.environment }}"
+    #     WIKI_URL="${WIKI_URL_ROOT}/${ROOT_PAGE}/${ENVIRONMENT}"
 
-        UPDATED_CONTENT=$(<wiki_page.html)
-        JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
+    #     UPDATED_CONTENT=$(<wiki_page.html)
+    #     JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
         
-        curl -X PUT \
-             -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
-             -H "Content-Type: application/json" \
-             -d "$JSON_CONTENT" \
-             "$WIKI_URL"
+    #     curl -X PUT \
+    #          -H "Authorization: Basic $(echo -n :${{ secrets.AZURE_WIKI_PAT }} | base64)" \
+    #          -H "Content-Type: application/json" \
+    #          -d "$JSON_CONTENT" \
+    #          "$WIKI_URL"
