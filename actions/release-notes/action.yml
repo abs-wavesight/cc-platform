@@ -176,6 +176,9 @@ runs:
           RESPONSE_CODE="${RESPONSE: -3}"
           RESPONSE_BODY="${RESPONSE%???}"  
 
+          echo "Response Code: $RESPONSE_CODE"
+          echo "Response Body: $RESPONSE_BODY"
+
           if [ "$RESPONSE_CODE" -ne 200 ]; then
             RESPONSE_CODE="${RESPONSE: -3}"
             RESPONSE_BODY="${RESPONSE%???}"
