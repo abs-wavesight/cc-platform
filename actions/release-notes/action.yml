@@ -166,6 +166,18 @@ runs:
 
           echo "ETAG=$ETAG"
 
+          PAGE_INFO=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+                 -H "Accept: application/json" \
+                 "$WIKI_URL")
+
+          # Extract the version or id field
+          VERSION=$(echo "$PAGE_INFO" | jq -r '.version') # Check if it's .version
+          PAGE_ID=$(echo "$PAGE_INFO" | jq -r '.id')      # Or it could be an .id field
+
+          echo "Current page version: $VERSION"
+          echo "Page ID: $PAGE_ID"
+          echo "Page Info: $PAGE_INFO"
+
           UPDATED_CONTENT=$(<"$FILE")
 
           # Escape the content to be JSON-safe
