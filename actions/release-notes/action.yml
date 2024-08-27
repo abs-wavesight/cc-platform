@@ -167,18 +167,7 @@ runs:
 
 
           ETAG=$(grep -i 'etag:' headers.txt | awk '{print $2}' | tr -d '\r')
-          echo "ETAG=$ETAG"
-
-         
-   
-          echo "Wiki URL: $WIKI_URL"
-          echo "Response Headers:"
-          echo "$RESPONSE_HEADERS"
-         
-
-    
-          ETAG=$(echo "$RESPONSE_HEADERS" | grep -i 'Etag:' | awk '{print $2}' | tr -d '\r')
-          echo "ETAG=$ETAG"
+          echo "ETAG=$ETAG"  
 
           UPDATED_CONTENT=$(<"$FILE")
 
