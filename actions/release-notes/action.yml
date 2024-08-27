@@ -168,7 +168,7 @@ runs:
           WIKI_URL1="${WIKI_URL_ROOT1}/pages?path=${ROOT_PAGE1}/${ENVIRONMENT1}&api-version=5.0"
 
 
-          RESPONSE_HEADERS=$(curl -s -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" "$WIKI_URL")
+          RESPONSE_HEADERS=$(curl -s -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" "$WIKI_URL1")
    
           echo "Response Headers:"
           echo "$RESPONSE_HEADERS"
