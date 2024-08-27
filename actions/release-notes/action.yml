@@ -162,8 +162,10 @@ runs:
       run: |        
           RESPONSE_HEADERS=$(curl -I -D -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" "$WIKI_URL")
    
+          echo "Wiki URL: $WIKI_URL"
           echo "Response Headers:"
           echo "$RESPONSE_HEADERS"
+         
 
     
           ETAG=$(echo "$RESPONSE_HEADERS" | grep -i 'Etag:' | awk '{print $2}' | tr -d '\r')
