@@ -139,7 +139,7 @@ runs:
          # Check if the table exists
          if ! grep -q "<table>" "$FILE"; then
            echo "Table not found, creating a new table."
-           echo '<table><tr><th>Solution Name</th><th>Version</th></tr></table>' > "$FILE"
+           echo '<table><tr><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
          fi
      
          # Check if the solution already exists in the table
