@@ -160,6 +160,14 @@ runs:
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |   
+          WIKI_URL_ROOT1="${{ inputs.wiki_url_root }}"
+          ROOT_PAGE1="${{ inputs.wiki_page }}"
+          ENVIRONMENT1=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
+          
+        
+          WIKI_URL1="${WIKI_URL_ROOT1}/pages?path=${ROOT_PAGE1}/${ENVIRONMENT1}&api-version=5.0"
+
+
           RESPONSE_HEADERS=$(curl -s -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" "$WIKI_URL")
    
           echo "Response Headers:"
