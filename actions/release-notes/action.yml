@@ -160,23 +160,10 @@ runs:
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |   
-          response=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-             -H "Accept: application/json" \
-             "$WIKI_URL")
+         ETAG=$(curl -s -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+         "$WIKI_URL" | grep -i 'etag:' | awk '{print $2}' | tr -d '\r')
 
-          echo "Response=$response"
-
-          PAGE_INFO=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-                 -H "Accept: application/json" \
-                 "$WIKI_URL")
-
-          # Extract the version or id field
-          VERSION=$(echo "$PAGE_INFO" | jq -r '.version') # Check if it's .version
-          PAGE_ID=$(echo "$PAGE_INFO" | jq -r '.id')      # Or it could be an .id field
-
-          echo "Current page version: $VERSION"
-          echo "Page ID: $PAGE_ID"
-          echo "Page Info: $PAGE_INFO"
+         echo "ETAG: $ETAG"
 
           UPDATED_CONTENT=$(<"$FILE")
 
@@ -189,7 +176,7 @@ runs:
             -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
             -H "Content-Type: application/json" \
             -d "$JSON_CONTENT" \
-            -H "if-Match: $PAGE_ID" \
+            -H "if-Match: $ETAG" \
             "$WIKI_URL")        
 
           RESPONSE_CODE="${RESPONSE: -3}"
