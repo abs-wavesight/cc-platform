@@ -167,9 +167,9 @@ runs:
 
 
           ETAG=$(grep -i 'etag:' headers.txt | awk '{print $2}' | tr -d '\r')
+          echo "ETAG=$ETAG"
 
-          echo "Show file"
-          cat "headers.txt
+         
    
           echo "Wiki URL: $WIKI_URL"
           echo "Response Headers:"
