@@ -128,16 +128,7 @@ runs:
         if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
           echo "Solution found, updating the version."
           NEW_ROW="<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>"
-
-          awk -v RS='</tr>' -v ORS='' -v sol_name="$SOLUTION_NAME" -v new_row="$NEW_ROW" '
-          {
-            print "Processing record: " $0 "</tr>";  # Print each record for debugging
-            if ($0 ~ "<td>" sol_name "<\/td>") {
-              $0 = new_row;
-              print "Match found and replacing with: " $0;
-            }
-            print $0 "</tr>";
-          }' "$FILE"                 
+          sed -i "/<tr><td>${SOLUTION_NAME}<\/td>/,/<\/tr>/c\\${NEW_ROW}" "$FILE"            
         else
           echo "Solution not found, adding new entry."
           sed -i "s|</table>|<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr></table>|" "$FILE"
