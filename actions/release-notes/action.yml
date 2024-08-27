@@ -148,7 +148,7 @@ runs:
            sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" "$FILE"
          else
            echo "Solution not found, adding new entry."          
-           sed -i "/<\/table>/ i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" "$FILE"
+           sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" "$FILE"
          fi
 
          echo "Display File=$FILE"
