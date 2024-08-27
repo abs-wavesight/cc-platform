@@ -128,42 +128,48 @@ runs:
     - name: Update or Add Solution in the HTML table
       shell: bash
       run: |
-         SOLUTION_NAME="${{ inputs.solution_name }}"
-         NEW_VERSION="${{ inputs.version }}"        
-         
-         echo "SOLUTION_NAME=$SOLUTION_NAME"
-         echo "NEW_VERSION=$NEW_VERSION"
-         echo "Display File=$FILE"
-         cat "$FILE"
-     
-         # Check if the table exists
-         if ! grep -q "<table>" "$FILE"; then
-           echo "Table not found, creating a new table."
-           echo '<table><tr><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
-         fi
-     
-         # Check if the solution already exists in the table
-         if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
-           echo "Solution found, updating the version."
-           sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" "$FILE"
-         else
-           echo "Solution not found, adding new entry."          
-           sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" "$FILE"
-         fi
+        SOLUTION_NAME="${{ inputs.solution_name }}"
+        NEW_VERSION="${{ inputs.version }}"        
+        FILE="wiki_page.html"
 
-         echo "Display File=$FILE"
-         cat "$FILE"
+        echo "SOLUTION_NAME=$SOLUTION_NAME"
+        echo "NEW_VERSION=$NEW_VERSION"
+        echo "Display File=$FILE"
+        cat "$FILE"
 
+        # Check if the table exists
+        if ! grep -q "<table>" "$FILE"; then
+          echo "Table not found, creating a new table."
+          echo '<table><tr><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
+        fi
+
+        # Check if the solution already exists in the table
+        if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
+          echo "Solution found, updating the version."
+          sed -i "/<td>${SOLUTION_NAME}<\/td>/!b;n;s/<td>.*<\/td>/<td>${NEW_VERSION}<\/td>/" "$FILE"
+        else
+          echo "Solution not found, adding new entry."
+          # Insert the new row before the closing </table> tag
+          sed -i "/<\/table>/i <tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>" "$FILE"
+        fi
+
+        echo "Display File after update:"
+        cat "$FILE"
 
     - name: Update Wiki page content
       shell: bash
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |
-        
+        FILE="wiki_page.html"
+
+        # Read the updated content from the file
         UPDATED_CONTENT=$(<"$FILE")
+
+        # Escape the content to be JSON-safe
         JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
-        
+
+        # Perform the PUT request to update the Wiki page
         curl -X PUT \
              -H "Authorization: Basic $(echo -n :$AuthToken | base64)" \
              -H "Content-Type: application/json" \
