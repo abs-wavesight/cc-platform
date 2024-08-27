@@ -172,5 +172,5 @@ runs:
           curl -X PUT \
                -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
                -H "Content-Type: application/json" \
-               -d "$JSON_CONTENT" \
+               -d '$JSON_CONTENT' \
                "$WIKI_URL"
