@@ -161,7 +161,7 @@ runs:
         AuthToken: ${{ inputs.auth_token }}
       run: |   
          ETAG=$(curl -s -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-         "$WIKI_URL" | grep -i 'etag:' | awk '{print $2}' | tr -d '\r')
+         "$WIKI_URL")
 
          echo "ETAG: $ETAG"
 
