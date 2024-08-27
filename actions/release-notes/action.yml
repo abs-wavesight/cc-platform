@@ -160,11 +160,11 @@ runs:
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |   
-          ETAG=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+          response=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
              -H "Accept: application/json" \
-             "$WIKI_URL" | jq -r '.etag')
+             "$WIKI_URL")
 
-          echo "ETAG=$ETAG"
+          echo "Response=$response"
 
           PAGE_INFO=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
                  -H "Accept: application/json" \
