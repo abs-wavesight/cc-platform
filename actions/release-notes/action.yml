@@ -127,8 +127,7 @@ runs:
         # Check if the solution already exists in the table
         if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
           echo "Solution found, updating the version."
-          NEW_ROW="<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>"
-          sed -i "/<tr><td>${SOLUTION_NAME}<\/td>/,/<\/tr>/c\\${NEW_ROW}" "$FILE"            
+          sed -i "s|<tr><td>${SOLUTION_NAME}</td><td>[^<]*</td></tr>|<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"           
         else
           echo "Solution not found, adding new entry."
           sed -i "s|</table>|<tr><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr></table>|" "$FILE"
