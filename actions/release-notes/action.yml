@@ -160,8 +160,7 @@ runs:
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |        
-          RESPONSE_HEADERS=$(curl -L -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \           
-            "$WIKI_URL")
+          RESPONSE_HEADERS=$(curl -L -I -H "Authorization: Basic $(echo -n user:$AuthToken | base64)"  "$WIKI_URL")
    
           echo "Wiki URL: $WIKI_URL"
           echo "Response Headers:"
