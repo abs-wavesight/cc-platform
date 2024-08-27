@@ -160,6 +160,12 @@ runs:
       env:
         AuthToken: ${{ inputs.auth_token }}
       run: |   
+          ETAG=$(curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+             -H "Accept: application/json" \
+             "$WIKI_URL" | jq -r '.etag')
+
+          echo "ETAG=$ETAG"
+
           UPDATED_CONTENT=$(<"$FILE")
 
           # Escape the content to be JSON-safe
@@ -171,6 +177,7 @@ runs:
             -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
             -H "Content-Type: application/json" \
             -d "$JSON_CONTENT" \
+            -H "if-Match: $ETAG" \
             "$WIKI_URL")        
 
           RESPONSE_CODE="${RESPONSE: -3}"
