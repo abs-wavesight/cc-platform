@@ -166,11 +166,20 @@ runs:
           # Escape the content to be JSON-safe
           JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
 
-          echo "JSON_CONTENT=$JSON_CONTENT"
+          echo "JSON_CONTENT=$JSON_CONTENT"          
 
-          # Perform the PUT request to update the Wiki page
-          curl -X PUT \
-               -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
-               -H "Content-Type: application/json" \
-               -d '$JSON_CONTENT' \
-               "$WIKI_URL"
+          RESPONSE=$(curl -X PUT \
+            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_CONTENT" \
+            "$WIKI_URL")          
+
+          if [ "$RESPONSE_CODE" -ne 200 ]; then
+            RESPONSE_CODE="${RESPONSE: -3}"
+            RESPONSE_BODY="${RESPONSE%???}"
+
+            echo "Response Code: $RESPONSE_CODE"
+            echo "Response Body: $RESPONSE_BODY"
+            echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
+            exit 1
+          fi
