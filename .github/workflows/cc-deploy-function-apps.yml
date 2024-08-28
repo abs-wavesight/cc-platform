@@ -178,8 +178,14 @@ jobs:
     if: ${{ needs.deploy.outputs.matrix != '[]' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.deploy.outputs.matrix) }}
+      matrix: 
+        include: ${{ fromJson(needs.deploy.outputs.matrix) }}
     steps:
+      - name: Check
+        env:
+          MATRIX: ${{ toJSON(matrix) }}          
+        run: |
+          echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
       - name: Test
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
         with:
