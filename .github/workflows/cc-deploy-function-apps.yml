@@ -50,148 +50,210 @@ on:
       AZURE_SUBSCRIPTION_ID:
         required: true
 
-jobs: 
-  deploy:    
+jobs:
+  step1:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    name: Deploy
+
     outputs:
-      matrix: ${{ steps.prepare-configs.outputs.matrix }}
+      matrix: ${{ steps.setup.outputs.matrix }}
+
     steps:
-      - name: Set unique directory names
-        id: unique-path
-        run: |
-          $random = Get-Random -Minimum 10000 -Maximum 99999
-          $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random"          
-          echo "::set-output name=uniquePathSuffix::$uniquePathSuffix"
-          Write-Host "TMP folder $uniquePathSuffix"
-        shell: pwsh
-
-      - name: Download config from local Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.artifactConfigName }}
-          path: ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}
-      
-      - name: List files in target folder
-        run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix}}   
-
-      - name: Download functions from Release Artifacts (Specific Tag)
-        uses: robinraju/release-downloader@v1.9
-        if: inputs.tagVersion != 'latest'
-        with:
-          repository: ${{ inputs.repository }}
-          fileName: ${{ inputs.artifactFunctions }}.zip
-          tag: ${{ inputs.tagVersion }}
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
-          token: ${{ secrets.GH_PAT }}
-      
-      - name: Download functions from Release Artifacts (Latest)
-        uses: robinraju/release-downloader@v1.9
-        if: inputs.tagVersion == 'latest'
-        with:
-          repository: ${{ inputs.repository }}
-          fileName: ${{ inputs.artifactFunctions }}.zip
-          latest: true
-          out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
-          token: ${{ secrets.GH_PAT }}          
-
-      - name: Manual expand archive files
-        shell: pwsh
-        run: |
-            $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions"
-            $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
-            Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath     
-            
-            # Find the first zip file inside the expanded folder
-            $innerZipPath = Get-ChildItem -Path $destinationPath -Filter '*.zip' | Select-Object -First 1
-
-            if ($null -ne $innerZipPath) {
-              
-                $innerDestinationPath = Join-Path -Path $destinationPath -ChildPath 'inner-unzipped'
-                New-Item -ItemType Directory -Path $innerDestinationPath -Force | Out-Null
-                
-                Expand-Archive -Path $innerZipPath.FullName -DestinationPath $innerDestinationPath                
-               
-            } else {
-                Write-Error "No inner zip file found."
-                exit 1
+    - name: Setup
+      id: setup
+      env:
+        CONFIG: >-
+          [
+            {
+              "project": "foo",
+              "config": "Debug",
+              "nested": [
+                {
+                  "val": "val1"
+                }
+              ]
+            },
+            {
+              "project": "bar",
+              "config": "Release",
+              "nested": [
+                {
+                  "val": "val2"
+                },
+                {
+                  "val": "val3"
+                }
+              ]
             }
+          ]
+      run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
+    
+    - name: Check
+      run: jq . <<< '${{ steps.setup.outputs.matrix }}'
 
-      - name: Read tagVersion from host.json
-        id: read_tag_version
-        working-directory: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/inner-unzipped
-        shell: bash
-        run: |
-           if [ -f "host.json" ]; then
-              TAG_VERSION=$(jq -r '.tagVersion' host.json)
-              echo "tagVersion: $TAG_VERSION"
-              echo "::set-output name=tag_version::$TAG_VERSION"
-           else
-              echo "host.json not found."
-              exit 1
-           fi
+  step2:
+    needs: step1
 
-      - name: Login via Azure CLI
-        uses: azure/login@v2
-        with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
-
-      - name: Azure Function App Zip Deploy
-        shell: bash
-        run: |         
-          artifactPath="${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{inputs.artifactConfigFile }}"
-          functionConfigs=$(jq -c '.[]' <"$artifactPath")
-          matrix_json="[]"
-          version=${{ steps.read_tag_version.outputs.tag_version }}
-
-          for config in $functionConfigs; do
-            use=$(echo $config | jq -r '.Use')
-            if [ "$use" = "true" ]; then
-              functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME') 
-              function_name_suffix=${{ inputs.function_name_suffix }}
-              
-              if [ -n "${{ inputs.function_name_suffix }}" ]; then
-                functionName="${functionName}-${function_name_suffix}"
-              fi
-
-              matrix_entry=$(jq -n \
-                --arg functionName "$functionName" \
-                --arg version "$version" \
-                '{functionName: $functionName, version: $version}')
-              
-              matrix_json=$(echo "$matrix_json" | jq --argjson entry "$matrix_entry" '. + [$entry]')
-                         
-              artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
-              echo "Deploy ${artifactName} to ${functionName}"
-              echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
-              # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
-            fi
-          done  
-          echo "Matrix: $matrix_json"
-          echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"
-
-  log:
-    name: Update Wiki
-    needs: deploy
-    if: ${{ needs.deploy.outputs.matrix != '[]' }}
     runs-on: ubuntu-latest
+
     strategy:
       matrix: 
-        include: ${{ fromJson(needs.deploy.outputs.matrix) }}
+        include: ${{ fromJSON(needs.step1.outputs.matrix) }}
+
     steps:
-      - name: Check
-        env:
-          MATRIX: ${{ toJSON(matrix) }}          
-        run: |
-          echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
-      - name: Test
-        uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
-        with:
-          solution_name: ${{ matrix.functionName }}
-          version: ${{ matrix.version }}
-          wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
-          environment: ${{ github.event.inputs.ENVIRONMENT }}
-          auth_token: ${{ secrets.AZURE_WIKI_PAT }}
+    - name: Check
+      env:
+        MATRIX: ${{ toJSON(matrix) }}
+        PROJECT: ${{ fromJSON(toJSON(matrix)).project }}
+        CONFIG: ${{ fromJSON(toJSON(matrix)).config }}
+        NESTED: ${{ join(fromJSON(toJSON(matrix)).nested.*.val, ', ') }}
+      run: |
+        echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"
+        echo "PROJECT: [$PROJECT]"
+        echo "CONFIG: [$CONFIG]"
+        echo "NESTED: [$NESTED]"
+
+# jobs: 
+#   deploy:    
+#     runs-on: ubuntu-latest
+#     environment: ${{ inputs.environment }}
+#     name: Deploy
+#     outputs:
+#       matrix: ${{ steps.prepare-configs.outputs.matrix }}
+#     steps:
+#       - name: Set unique directory names
+#         id: unique-path
+#         run: |
+#           $random = Get-Random -Minimum 10000 -Maximum 99999
+#           $uniquePathSuffix = "$(Get-Date -Format "yyyyMMddHHmmss")-$random"          
+#           echo "::set-output name=uniquePathSuffix::$uniquePathSuffix"
+#           Write-Host "TMP folder $uniquePathSuffix"
+#         shell: pwsh
+
+#       - name: Download config from local Artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: ${{ inputs.artifactConfigName }}
+#           path: ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}
+      
+#       - name: List files in target folder
+#         run: ls -l ${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix}}   
+
+#       - name: Download functions from Release Artifacts (Specific Tag)
+#         uses: robinraju/release-downloader@v1.9
+#         if: inputs.tagVersion != 'latest'
+#         with:
+#           repository: ${{ inputs.repository }}
+#           fileName: ${{ inputs.artifactFunctions }}.zip
+#           tag: ${{ inputs.tagVersion }}
+#           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
+#           token: ${{ secrets.GH_PAT }}
+      
+#       - name: Download functions from Release Artifacts (Latest)
+#         uses: robinraju/release-downloader@v1.9
+#         if: inputs.tagVersion == 'latest'
+#         with:
+#           repository: ${{ inputs.repository }}
+#           fileName: ${{ inputs.artifactFunctions }}.zip
+#           latest: true
+#           out-file-path: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }} 
+#           token: ${{ secrets.GH_PAT }}          
+
+#       - name: Manual expand archive files
+#         shell: pwsh
+#         run: |
+#             $destinationPath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions"
+#             $zipFilePath = "${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{ inputs.artifactFunctions }}.zip"        
+#             Expand-Archive -Path $zipFilePath -DestinationPath $destinationPath     
+            
+#             # Find the first zip file inside the expanded folder
+#             $innerZipPath = Get-ChildItem -Path $destinationPath -Filter '*.zip' | Select-Object -First 1
+
+#             if ($null -ne $innerZipPath) {
+              
+#                 $innerDestinationPath = Join-Path -Path $destinationPath -ChildPath 'inner-unzipped'
+#                 New-Item -ItemType Directory -Path $innerDestinationPath -Force | Out-Null
+                
+#                 Expand-Archive -Path $innerZipPath.FullName -DestinationPath $innerDestinationPath                
+               
+#             } else {
+#                 Write-Error "No inner zip file found."
+#                 exit 1
+#             }
+
+#       - name: Read tagVersion from host.json
+#         id: read_tag_version
+#         working-directory: ${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/inner-unzipped
+#         shell: bash
+#         run: |
+#            if [ -f "host.json" ]; then
+#               TAG_VERSION=$(jq -r '.tagVersion' host.json)
+#               echo "tagVersion: $TAG_VERSION"
+#               echo "::set-output name=tag_version::$TAG_VERSION"
+#            else
+#               echo "host.json not found."
+#               exit 1
+#            fi
+
+#       - name: Login via Azure CLI
+#         uses: azure/login@v2
+#         with:
+#           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+#       - name: Azure Function App Zip Deploy
+#         shell: bash
+#         run: |         
+#           artifactPath="${{ github.workspace }}/downloaded-artifacts-conf-${{ steps.unique-path.outputs.uniquePathSuffix }}/${{inputs.artifactConfigFile }}"
+#           functionConfigs=$(jq -c '.[]' <"$artifactPath")
+#           matrix_json="[]"
+#           version=${{ steps.read_tag_version.outputs.tag_version }}
+
+#           for config in $functionConfigs; do
+#             use=$(echo $config | jq -r '.Use')
+#             if [ "$use" = "true" ]; then
+#               functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME') 
+#               function_name_suffix=${{ inputs.function_name_suffix }}
+              
+#               if [ -n "${{ inputs.function_name_suffix }}" ]; then
+#                 functionName="${functionName}-${function_name_suffix}"
+#               fi
+
+#               matrix_entry=$(jq -n \
+#                 --arg functionName "$functionName" \
+#                 --arg version "$version" \
+#                 '{functionName: $functionName, version: $version}')
+              
+#               matrix_json=$(echo "$matrix_json" | jq --argjson entry "$matrix_entry" '. + [$entry]')
+                         
+#               artifactName=$(echo $config | jq -r '.Name')
+#               zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
+#               echo "Deploy ${artifactName} to ${functionName}"
+#               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
+#               # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
+#             fi
+#           done  
+#           echo "Matrix: $matrix_json"
+#           echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"
+
+#   log:
+#     name: Update Wiki
+#     needs: deploy
+#     if: ${{ needs.deploy.outputs.matrix != '[]' }}
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix: 
+#         include: ${{ fromJson(needs.deploy.outputs.matrix) }}
+#     steps:
+#       - name: Check
+#         env:
+#           MATRIX: ${{ toJSON(matrix) }}          
+#         run: |
+#           echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
+#       - name: Test
+#         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
+#         with:
+#           solution_name: ${{ matrix.functionName }}
+#           version: ${{ matrix.version }}
+#           wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
+#           environment: ${{ github.event.inputs.ENVIRONMENT }}
+#           auth_token: ${{ secrets.AZURE_WIKI_PAT }}
 
