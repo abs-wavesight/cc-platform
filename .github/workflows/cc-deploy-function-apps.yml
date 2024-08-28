@@ -170,10 +170,13 @@ jobs:
               # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
-          echo "matrix=$(jq -r -c . <<< \"$matrix_json\")" >> $GITHUB_OUTPUT
+          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
 
       - name: Check Matrix
-        run: jq . <<< '${{ steps.setup.outputs.matrix }}'
+        run: |
+          echo "Matrix Output:"
+          echo '${{ steps.setup.outputs.matrix }}'
+          jq . <<< '${{ steps.setup.outputs.matrix }}'
 
   log:
     name: Update Wiki
