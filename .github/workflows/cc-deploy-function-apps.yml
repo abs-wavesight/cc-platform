@@ -49,6 +49,8 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+      AZURE_WIKI_PAT:
+        required: true
 
 jobs: 
   deploy:    
