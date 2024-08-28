@@ -170,7 +170,7 @@ jobs:
             fi
           done  
           echo "Matrix: $matrix_json"
-          echo "::set-output name=matrix::$matrix_json"
+          echo "::set-output name=matrix::(echo $matrix_json | jq -c .)"
 
   log:
      name: Update Wiki
