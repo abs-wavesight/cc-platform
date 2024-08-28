@@ -67,7 +67,7 @@ runs:
         if [ "$RESPONSE_CODE" -ne 200 ]; then
           echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
           # Create a new environment page with a default table
-          NEW_PAGE_CONTENT="<table><tr><td>Solution Name</td><td>Function Name</td><td>Version</td></tr></table>"
+          NEW_PAGE_CONTENT="<table><tr><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
 
           echo "JSON_CONTENT=$JSON_CONTENT"
@@ -126,16 +126,16 @@ runs:
         # Check if the table exists
         if ! grep -q "<table>" "$FILE"; then
           echo "Table not found, creating a new table."
-          echo '<table><tr><td>Solution Name</td><td>Function Name</td><td>Version</td></tr></table>' > "$FILE"
+          echo '<table><tr><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
         fi
 
         # Check if the solution already exists in the table
-        if grep -q "<td>${SOLUTION_NAME}</td>" "$FILE"; then
+        if grep -q "<td>${FUNCTION_NAME}</td>" "$FILE"; then
           echo "Solution found, updating the version."
-          sed -i "s|<tr><td>${SOLUTION_NAME}</td><td>[^<]*</td></tr>|<tr><td>${SOLUTION_NAME}</td><td>${FUNCTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"           
+          sed -i "s|<tr><td>${FUNCTION_NAME}</td><td>[^<]*</td></tr>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"           
         else
           echo "Solution not found, adding new entry."
-          sed -i "s|</table>|<tr><td>${SOLUTION_NAME}</td><td>${FUNCTION_NAME}</td><td>${NEW_VERSION}</td></tr></table>|" "$FILE"
+          sed -i "s|</table>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"
         fi
 
         echo "Display File after update:"

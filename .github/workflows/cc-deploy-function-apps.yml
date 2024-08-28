@@ -192,7 +192,7 @@ jobs:
       - name: publish release notes
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
         with:
-          solution_name: ${{ matrix.solution_name }}
+          solution_name: ${{ matrix.solutionName }}
           az_func_name: ${{ matrix.functionName }}
           version: ${{ matrix.version }}
           wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
