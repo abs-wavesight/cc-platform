@@ -170,21 +170,21 @@ jobs:
             fi
           done  
           echo "Matrix: $matrix_json"
-          echo "::set-output name=matrix::(echo $matrix_json | jq -c .)"
+          echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"
 
   log:
-     name: Update Wiki
-     needs: deploy
-     if: ${{ needs.deploy.outputs.matrix != '[]' }}
-     runs-on: ubuntu-latest
-     strategy:
-       matrix: ${{ fromJson(needs.deploy.outputs.matrix) }}
-     steps:
+    name: Update Wiki
+    needs: deploy
+    if: ${{ needs.deploy.outputs.matrix != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.deploy.outputs.matrix) }}
+    steps:
       - name: Test
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
         with:
           solution_name: ${{ matrix.functionName }}
-          version:  ${{ matrix.version }}
+          version: ${{ matrix.version }}
           wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
           environment: ${{ github.event.inputs.ENVIRONMENT }}
           auth_token: ${{ secrets.AZURE_WIKI_PAT }}
