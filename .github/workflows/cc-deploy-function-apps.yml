@@ -151,15 +151,17 @@ jobs:
             if [ "$use" = "true" ]; then
               functionName=$(echo "$config" | jq -r '.AZURE_FUNCTIONAPP_NAME') 
               function_name_suffix=${{ inputs.function_name_suffix }}
+              solutionName=$(echo "$config" | jq -r '.FUNCTION_PROJECT_PATH')
               
               if [ -n "${{ inputs.function_name_suffix }}" ]; then
-                functionName="${functionName}-${function_name_suffix}"
+                functionName="${functionName}-${function_name_suffix}"                
               fi
 
               matrix_entry=$(jq -n \
                 --arg functionName "$functionName" \
                 --arg version "$version" \
-                '{functionName: $functionName, version: $version}')
+                --arg solutionName "$solutionName" \
+                '{functionName: $functionName, version: $version, solutionName: $solutionName}')
               
               matrix_json=$(echo "$matrix_json" | jq --argjson entry "$matrix_entry" '. + [$entry]')
                          
@@ -170,13 +172,7 @@ jobs:
               # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
-          echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"
-
-      - name: Check Matrix
-        run: |
-          echo "Matrix Output:"
-          echo '${{ steps.setup.outputs.matrix }}'
-          jq . <<< '${{ steps.setup.outputs.matrix }}'
+          echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"     
 
   log:
     name: Update Wiki
@@ -188,15 +184,16 @@ jobs:
       matrix: 
         include: ${{ fromJson(needs.deploy.outputs.matrix) }}
     steps:
-      - name: Check
+      - name: Check Parameters
         env:
           MATRIX: ${{ toJSON(matrix) }}          
         run: |
           echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
-      - name: Test
+      - name: publish release notes
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
         with:
-          solution_name: ${{ matrix.functionName }}
+          solution_name: ${{ matrix.solution_name }}
+          az_func_name: ${{ matrix.functionName }}
           version: ${{ matrix.version }}
           wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
           environment: ${{ github.event.inputs.ENVIRONMENT }}
