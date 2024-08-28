@@ -170,7 +170,7 @@ jobs:
               # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
-          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+          echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"
 
       - name: Check Matrix
         run: |
