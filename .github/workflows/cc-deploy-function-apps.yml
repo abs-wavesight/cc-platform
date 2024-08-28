@@ -174,10 +174,10 @@ jobs:
   log:
      name: Update Wiki
      needs: deploy
-     if: needs.deploy.outputs.outputs.matrix != '[]'
+     if: needs.deploy.outputs.matrix != '[]'
      runs-on: ubuntu-latest
      strategy:
-       matrix: ${{ fromJson(needs.deploy.outputs.outputs.matrix) }}
+       matrix: ${{ fromJson(needs.deploy.outputs.matrix) }}
      steps:
       - name: Test
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
