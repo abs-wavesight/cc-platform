@@ -183,6 +183,7 @@ jobs:
     needs: deploy
     if: ${{ needs.deploy.outputs.matrix != '[]' }}
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     strategy:
       matrix: 
         include: ${{ fromJson(needs.deploy.outputs.matrix) }}
