@@ -135,7 +135,7 @@ runs:
           sed -i "s|<tr><td>${FUNCTION_NAME}</td><td>[^<]*</td></tr>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"           
         else
           echo "Solution not found, adding new entry."
-          sed -i "s|</table>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr>|" "$FILE"
+          sed -i "s|</table>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td></tr></table>|" "$FILE"
         fi
 
         echo "Display File after update:"
