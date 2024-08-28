@@ -196,7 +196,7 @@ jobs:
           solution_name: ${{ matrix.solutionName }}
           az_func_name: ${{ matrix.functionName }}
           version: ${{ matrix.version }}
-          wiki_page: "Common Core/Cloud Platform/Deploy"
+          wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
           environment: ${{ github.event.inputs.ENVIRONMENT }}
           auth_token: ${{ secrets.AZURE_WIKI_PAT }}
 
