@@ -45,7 +45,7 @@ runs:
       id: prepare-wiki-url
       run: |
         WIKI_URL_ROOT="${{ inputs.wiki_url_root }}" 
-        ROOT_PAGE="${{ inputs.wiki_page }}" 
+        ROOT_PAGE=$(echo "${{ inputs.wiki_page }}" | sed 's/ /%20/g')
         ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
         FILE="wiki_page.html"
         
