@@ -67,7 +67,7 @@ runs:
         if [ "$RESPONSE_CODE" -ne 200 ]; then
           echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
           # Create a new environment page with a default table
-          NEW_PAGE_CONTENT="<table><tr><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>"
+          NEW_PAGE_CONTENT="<table><tr style="background-color: #99A3A4;"><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
 
           echo "JSON_CONTENT=$JSON_CONTENT"
@@ -126,7 +126,7 @@ runs:
         # Check if the table exists
         if ! grep -q "<table>" "$FILE"; then
           echo "Table not found, creating a new table."
-          echo '<table><tr><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
+          echo '<table><tr style="background-color: #99A3A4;"><td>Function Name</td><td>Solution Name</td><td>Version</td></tr></table>' > "$FILE"
         fi
 
         # Check if the solution already exists in the table
