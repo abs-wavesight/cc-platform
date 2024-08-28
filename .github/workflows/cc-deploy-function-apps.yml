@@ -183,6 +183,7 @@ jobs:
     strategy:
       matrix: 
         include: ${{ fromJson(needs.deploy.outputs.matrix) }}
+      max-parallel: 1
     steps:
       - name: Check Parameters
         env:
