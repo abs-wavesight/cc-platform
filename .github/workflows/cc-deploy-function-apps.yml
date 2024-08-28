@@ -166,7 +166,7 @@ jobs:
               zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
               echo "Deploy ${artifactName} to ${functionName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
-              az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
+              # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
           echo "::set-output name=matrix::$matrix_json"
@@ -174,7 +174,7 @@ jobs:
   log:
      name: Update Wiki
      needs: deploy
-     if: needs.deploy.outputs.matrix != '[]'
+     if: ${{ needs.deploy.outputs.matrix != '[]' }}
      runs-on: ubuntu-latest
      strategy:
        matrix: ${{ fromJson(needs.deploy.outputs.matrix) }}
