@@ -171,7 +171,7 @@ jobs:
               zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
               echo "Deploy ${artifactName} to ${functionName}"
               echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
-              # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
+              az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
           echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"     
@@ -193,7 +193,7 @@ jobs:
         run: |
           echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
       - name: publish release notes
-        uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
+        uses: abs-wavesight/cc-platform/actions/release-notes
         with:
           solution_name: ${{ matrix.solutionName }}
           az_func_name: ${{ matrix.functionName }}
