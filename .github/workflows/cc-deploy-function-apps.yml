@@ -169,6 +169,7 @@ jobs:
               # az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
             fi
           done  
+          echo "Matrix: $matrix_json"
           echo "::set-output name=matrix::$matrix_json"
 
   log:
@@ -182,8 +183,8 @@ jobs:
       - name: Test
         uses: abs-wavesight/cc-platform/actions/release-notes@feature/ADO-116968-release-notes
         with:
-          solution_name: "Tenant adapter2 "
-          version: "1.0.2" # ${{ inputs.USE_VERSION }}
+          solution_name: ${{ matrix.functionName }}
+          version:  ${{ matrix.version }}
           wiki_page: "Common%20Core/Cloud%20Platform/Deploy"
           environment: ${{ github.event.inputs.ENVIRONMENT }}
           auth_token: ${{ secrets.AZURE_WIKI_PAT }}
