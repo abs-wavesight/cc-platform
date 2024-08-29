@@ -123,7 +123,7 @@ runs:
         # Check if the solution already exists in the table
         if grep -q "<td>${FUNCTION_NAME}</td>" "$FILE"; then
           echo "Solution found, updating the version."
-          sed -i "s|<tr><td>${FUNCTION_NAME}</td><td>[^<]*</td></tr>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td><td>${CURRENT_TIME}</td></tr>|" "$FILE"           
+          sed -i "s|<tr><td>${FUNCTION_NAME}</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td></tr>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td><td>${CURRENT_TIME}</td></tr>|" "$FILE"  
         else
           echo "Solution not found, adding new entry."
           sed -i "s|</table>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td><td>${CURRENT_TIME}</td></tr></table>|" "$FILE"
