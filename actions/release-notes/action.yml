@@ -77,17 +77,7 @@ runs:
             -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
             -H "Content-Type: application/json" \
             -d "$JSON_CONTENT" \
-            "$WIKI_URL")          
-
-          if [ "$RESPONSE_CODE" -ne 200 ]; then
-            RESPONSE_CODE="${RESPONSE: -3}"
-            RESPONSE_BODY="${RESPONSE%???}"
-
-            echo "Response Code: $RESPONSE_CODE"
-            echo "Response Body: $RESPONSE_BODY"
-            echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
-            exit 1
-          fi
+            "$WIKI_URL")    
 
         else
           echo "Environment page '${ENVIRONMENT}' already exists."
