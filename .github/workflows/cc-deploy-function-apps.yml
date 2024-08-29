@@ -193,7 +193,7 @@ jobs:
         run: |
           echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"         
       - name: publish release notes
-        uses: abs-wavesight/cc-platform/actions/release-notes
+        uses: abs-wavesight/cc-platform/actions/release-notes@main
         with:
           solution_name: ${{ matrix.solutionName }}
           az_func_name: ${{ matrix.functionName }}
