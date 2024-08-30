@@ -56,7 +56,7 @@ jobs:
   deploy:    
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    name: Deploy
+    name: Deploy ${{ inputs.environment }}
     outputs:
       matrix: ${{ steps.setup.outputs.matrix }}
     steps:
