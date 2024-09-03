@@ -110,11 +110,11 @@ jobs:
           
       - name: Override envs for .NET 8
         if: inputs.dotnet-version == '8.0.x'
-        env:
-          ASPNET_FULLSERVER_TAG_WIN2019: 8.0-windowsservercore-ltsc2019
-          ASPNET_FULLSERVER_TAG_WIN2022: 8.0-windowsservercore-ltsc2022
-          DOTNET_IMAGE_TAG_WIN2019: 8.0-nanoserver-1809
-          DOTNET_IMAGE_TAG_WIN2022: 8.0-nanoserver-ltsc2022
+        run: |
+          echo "ASPNET_FULLSERVER_TAG_WIN2019=8.0-windowsservercore-ltsc2019" >> $GITHUB_ENV
+          echo "ASPNET_FULLSERVER_TAG_WIN2022=8.0-windowsservercore-ltsc2022" >> $GITHUB_ENV
+          echo "DOTNET_IMAGE_TAG_WIN2019=8.0-nanoserver-1809" >> $GITHUB_ENV
+          echo "DOTNET_IMAGE_TAG_WIN2022=8.0-nanoserver-ltsc2022" >> $GITHUB_ENV
 
       - name: Checkout branch 
         if: inputs.use-submodules == false
