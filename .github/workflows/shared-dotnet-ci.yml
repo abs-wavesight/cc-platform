@@ -57,10 +57,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ inputs.image-name }}
-  ASPNET_FULLSERVER_TAG_WIN2019: 8.0-windowsservercore-ltsc2019
-  ASPNET_FULLSERVER_TAG_WIN2022: 8.0-windowsservercore-ltsc2022
-  DOTNET_IMAGE_TAG_WIN2019: 8.0-nanoserver-1809
-  DOTNET_IMAGE_TAG_WIN2022: 8.0-nanoserver-ltsc2022
+  ASPNET_FULLSERVER_TAG_WIN2019: 7.0-windowsservercore-ltsc2019
+  ASPNET_FULLSERVER_TAG_WIN2022: 7.0-windowsservercore-ltsc2022
+  DOTNET_IMAGE_TAG_WIN2019: 7.0-nanoserver-1809
+  DOTNET_IMAGE_TAG_WIN2022: 7.0-nanoserver-ltsc2022
   POWERSHELL_IMAGE_TAG_WIN2019: lts-7.2-nanoserver-1809
   POWERSHELL_IMAGE_TAG_WIN2022: nanoserver-ltsc2022
   LABEL_PREFIX: org.eagle.wavesight
@@ -108,14 +108,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT || ' ' }}
           
-      - name: Override envs for .NET 8
-        if: inputs.dotnet-version == '8.0.x'
-        run: |
-          echo "ASPNET_FULLSERVER_TAG_WIN2019=8.0-windowsservercore-ltsc2019" >> $GITHUB_ENV
-          echo "ASPNET_FULLSERVER_TAG_WIN2022=8.0-windowsservercore-ltsc2022" >> $GITHUB_ENV
-          echo "DOTNET_IMAGE_TAG_WIN2019=8.0-nanoserver-1809" >> $GITHUB_ENV
-          echo "DOTNET_IMAGE_TAG_WIN2022=8.0-nanoserver-ltsc2022" >> $GITHUB_ENV
-
       - name: Checkout branch 
         if: inputs.use-submodules == false
         uses: actions/checkout@v3
@@ -145,10 +137,46 @@ jobs:
 
       - name: Build and push Docker image
         id: build-and-push-container
+        if: inputs.dotnet-version != '8.0.x'
         uses: mr-smithers-excellent/docker-build-push@v6
         env:
           BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
           BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+        with:
+          buildArgs: >-
+            ASPNET_FULLSERVER_TAG=${{ matrix.os == 'windows-2022' && env.ASPNET_FULLSERVER_TAG_WIN2022 || env.ASPNET_FULLSERVER_TAG_WIN2019 }},
+            DOTNET_TAG=${{ matrix.os == 'windows-2022' && env.DOTNET_IMAGE_TAG_WIN2022 || env.DOTNET_IMAGE_TAG_WIN2019 }},
+            POWERSHELL_NANOSERVER_TAG=${{ matrix.os == 'windows-2022' && env.POWERSHELL_IMAGE_TAG_WIN2022 || env.POWERSHELL_IMAGE_TAG_WIN2019 }},
+            ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",
+            ABS_NUGET_PASSWORD="${{ env.ABS_NUGET_PASSWORD }}"
+          image: ${{ env.IMAGE_NAME }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.ACTOR }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          directory: ${{ inputs.docker-context-directory }}
+          dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
+          pushImage: true
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          labels: >-
+            org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
+            ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
+            ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
+            ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
+            ${{ env.LABEL_PREFIX }}.container_type=application
+          addTimestamp: true
+          platform: windows/amd64
+
+      - name: Build and push Docker image .NET 8
+        id: build-and-push-container-dotnet8
+        if: inputs.dotnet-version == '8.0.x'
+        uses: mr-smithers-excellent/docker-build-push@v6
+        env:
+          BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
+          BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+          ASPNET_FULLSERVER_TAG_WIN2019: 8.0-windowsservercore-ltsc2019
+          ASPNET_FULLSERVER_TAG_WIN2022: 8.0-windowsservercore-ltsc2022
+          DOTNET_IMAGE_TAG_WIN2019: 8.0-nanoserver-1809
+          DOTNET_IMAGE_TAG_WIN2022: 8.0-nanoserver-ltsc2022
         with:
           buildArgs: >-
             ASPNET_FULLSERVER_TAG=${{ matrix.os == 'windows-2022' && env.ASPNET_FULLSERVER_TAG_WIN2022 || env.ASPNET_FULLSERVER_TAG_WIN2019 }},
