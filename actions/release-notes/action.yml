@@ -1,0 +1,177 @@
+name: Log Release Notes
+
+inputs:
+  az_func_name: 
+    description: 'The name of the Azure Function App'
+    required: true
+    type: string
+  solution_name:
+    description: 'The name of the solution to update or add'
+    required: true
+    type: string
+  version:
+    description: 'The new version of the solution'
+    required: true
+    type: string
+  wiki_url_root:
+    description: 'The root page under which the environment page will be checked/created'   
+    type: string        
+    default: "https://dev.azure.com/ABSDigital/Common%20Core/_apis/wiki/wikis/Common-Core.wiki"
+  wiki_page:
+    description: 'The name of the wiki page to update'
+    required: true
+    type: string
+  environment:
+    description: 'The environment (e.g., Development, Production) for which the page will be checked/created'
+    required: true
+    type: string
+  auth_token: 
+    description: 'The Azure DevOps Personal Access Token (PAT) for authorization'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install curl and jq
+      shell: bash
+      run: sudo apt-get install -y curl jq
+
+    - name: Prepare Wiki URL
+      shell: bash
+      id: prepare-wiki-url
+      run: |
+        WIKI_URL_ROOT="${{ inputs.wiki_url_root }}" 
+        ROOT_PAGE=$(echo "${{ inputs.wiki_page }}" | sed 's/ /%20/g')
+        ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed 's/ /%20/g')
+        FILE="wiki_page.html"
+        
+        WIKI_URL="${WIKI_URL_ROOT}/pages?path=${ROOT_PAGE}/${ENVIRONMENT}&api-version=7.1-preview.1"
+
+        echo "WIKI_URL=$WIKI_URL" >> $GITHUB_ENV
+        echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+        echo "FILE=$FILE" >> $GITHUB_ENV           
+               
+
+    - name: Check if environment page exists and create if not 
+      shell: bash    
+      env:
+        AuthToken: ${{ inputs.auth_token }}        
+      run: |
+        # Check if the environment page exists
+        RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
+
+        if [ "$RESPONSE_CODE" -ne 200 ]; then
+          echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
+          # Create a new environment page with a default table
+          NEW_PAGE_CONTENT="<table><tr style=\"background-color: #99A3A4;\"><td>Function Name</td><td>Solution Name</td><td>Version</td><td>Updated Time</td></tr></table>"
+          JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
+
+          echo "JSON_CONTENT=$JSON_CONTENT"
+          echo "WIKI_URL=$WIKI_URL"
+
+           RESPONSE=$(curl -X PUT \
+            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_CONTENT" \
+            "$WIKI_URL")    
+
+        else
+          echo "Environment page '${ENVIRONMENT}' already exists."
+        fi
+
+    - name: Download Wiki page content
+      shell: bash
+      env:
+        AuthToken: ${{ inputs.auth_token }}     
+      run: |
+      
+        echo "Fetching Wiki page content from $WIKI_URL"        
+
+        # Perform the API call and capture the response
+        curl -s -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "Accept: text/html" \
+            "$WIKI_URL" > "$FILE"
+
+        # Output the full response for debugging
+        echo "Full API Response:"
+        cat "$FILE"        
+
+    - name: Update or Add Solution in the HTML table
+      shell: bash
+      run: |
+        FUNCTION_NAME="${{ inputs.az_func_name }}"
+        SOLUTION_NAME="${{ inputs.solution_name }}"
+        NEW_VERSION="${{ inputs.version }}"        
+        FILE="wiki_page.html"
+        CURRENT_TIME=$(TZ="America/Chicago" date '+%m-%d-%Y %H:%M')
+
+        echo "SOLUTION_NAME=$SOLUTION_NAME"
+        echo "NEW_VERSION=$NEW_VERSION"
+        echo "Display File=$FILE"
+        cat "$FILE"
+
+        # Check if the table exists
+        if ! grep -q "<table>" "$FILE"; then
+          echo "Table not found, creating a new table."
+          echo '<table><tr style="background-color: #99A3A4;"><td>Function Name</td><td>Solution Name</td><td>Version</td><td>Updated Time</td></tr></table>' > "$FILE"
+        fi
+
+        # Check if the solution already exists in the table
+        if grep -q "<td>${FUNCTION_NAME}</td>" "$FILE"; then
+          echo "Solution found, updating the version."
+          sed -i "s|<tr><td>${FUNCTION_NAME}</td><td>[^<]*</td><td>[^<]*</td><td>[^<]*</td></tr>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td><td>${CURRENT_TIME}</td></tr>|" "$FILE"  
+        else
+          echo "Solution not found, adding new entry."
+          sed -i "s|</table>|<tr><td>${FUNCTION_NAME}</td><td>${SOLUTION_NAME}</td><td>${NEW_VERSION}</td><td>${CURRENT_TIME}</td></tr></table>|" "$FILE"
+        fi
+
+        echo "Display File after update:"
+        cat "$FILE"
+
+    - name: Update Wiki page content
+      shell: bash
+      env:
+        AuthToken: ${{ inputs.auth_token }}
+      run: |        
+          curl -v -L -D headers.txt \
+            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36" \
+            "$WIKI_URL"
+
+
+          ETAG=$(grep -i 'etag:' headers.txt | awk '{print $2}' | tr -d '\r')
+          echo "ETAG=$ETAG"  
+
+          UPDATED_CONTENT=$(<"$FILE")
+
+          # Escape the content to be JSON-safe
+          JSON_CONTENT=$(jq -n --arg content "$UPDATED_CONTENT" '{content: $content}')
+
+          echo "JSON_CONTENT=$JSON_CONTENT"          
+
+          RESPONSE=$(curl -X PUT \
+            -H "Authorization: Basic $(echo -n user:$AuthToken | base64)" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_CONTENT" \
+            -H "if-Match: $ETAG" \
+            "$WIKI_URL")        
+
+          RESPONSE_CODE="${RESPONSE: -3}"
+          RESPONSE_BODY="${RESPONSE%???}"  
+
+          echo "Response Code: $RESPONSE_CODE"
+          echo "Response Body: $RESPONSE_BODY"
+
+          if [ "$RESPONSE_CODE" -ne 200 ]; then
+            RESPONSE_CODE="${RESPONSE: -3}"
+            RESPONSE_BODY="${RESPONSE%???}"
+
+            echo "Response Code: $RESPONSE_CODE"
+            echo "Response Body: $RESPONSE_BODY"
+            echo "Failed to update the Wiki page. Response code: $RESPONSE_CODE"
+            exit 1
+          fi
