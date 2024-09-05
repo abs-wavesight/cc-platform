@@ -141,14 +141,14 @@ runs:
     - name: Build .NET Project
       shell: bash
       run: |
-        #Build .NET Project
-        pwd 
+        #Build .NET Project 
         dotnet build ./${{ inputs.working-directory }}/${{ inputs.solution-name }} --configuration Release
 
-    # - name: End SonarQube Analysis
-    #   shell: bash
-    #   run: |    
-    #     ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
+    - name: End SonarQube Analysis
+      shell: pwsh
+      run: |   
+        #End SonarQube Analysis 
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
 
     #MDF .NET SONAR SCAN CODE
     # - name: SonarQubeAnalyze
