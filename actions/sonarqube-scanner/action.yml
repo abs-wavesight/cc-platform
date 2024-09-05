@@ -138,12 +138,16 @@ runs:
       shell: pwsh
       run: |
         # Begin SonarQube Analysis
-        .\.sonar\scanner\dotnet-sonarscanner begin \
-          /k:"abs-wavesight_cc-cloud-tenant-adapters_2ff025fe-c212-4b09-9c67-41dd5a766ca7" \
-          /d:sonar.token="${{ inputs.sonar-token }}" \
-          /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
-        
-        dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
+        dotnet sonarscanner begin `
+          /k:"${{ inputs.project-key }}" `
+          /d:sonar.token="${{ inputs.sonar-token }}" `
+          /d:sonar.host.url="${{ inputs.sonar-host-url }}" `
+          /d:sonar.branch.name="${{ inputs.branch-name }}" `
+          /d:sonar.ws.timeout=500 `
+          /d:sonar.projectBaseDir="${{ inputs.working-directory }}" `
+          /d:sonar.scanner.skipJreProvisioning=true   
+
+        dotnet build ${{ inputs.solution-name }}
 
         # End SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
