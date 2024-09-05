@@ -142,7 +142,6 @@ runs:
           /k:"${{ inputs.project-key }}" `
           /d:sonar.token="${{ inputs.sonar-token }}" `
           /d:sonar.host.url="${{ inputs.sonar-host-url }}" `
-          /d:sonar.branch.name="${{ inputs.branch-name }}" `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=".\api" `
           /d:sonar.scanner.skipJreProvisioning=true   
