@@ -128,17 +128,17 @@ runs:
     #********************* DENYS' INITIAL CODE *********************
     
     - name: Show Current Working Directory
-      shell: pwsh
+      shell: bash
       run: |
         pwd 
-        ls
+        ls -l
 
 
     - name: Build and analyze
       shell: pwsh
       run: |
         # Begin SonarQube Analysis
-        dotnet sonarscanner begin `
+        .\.sonar\scanner\dotnet-sonarscanner begin `
           /k:"${{ inputs.project-key }}" `
           /d:sonar.token="${{ inputs.sonar-token }}" `
           /d:sonar.host.url="${{ inputs.sonar-host-url }}" `
