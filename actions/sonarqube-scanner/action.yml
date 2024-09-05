@@ -134,21 +134,25 @@ runs:
         ls -l
 
 
-    - name: Build and analyze
+    - name: Begin SonarQube Analysis
       shell: pwsh
       run: |
-        # Begin SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner begin `
           /k:"${{ inputs.project-key }}" `
           /d:sonar.token="${{ inputs.sonar-token }}" `
           /d:sonar.host.url="${{ inputs.sonar-host-url }}" `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir=".\api" `
+          /d:sonar.projectBaseDir="${{ inputs.working-directory }}" `
           /d:sonar.scanner.skipJreProvisioning=true   
 
-        dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
+    - name: Build .NET Project
+      shell: pwsh
+      run: |
+        dotnet build ${{ inputs.solution-name }} --configuration Release
 
-        # End SonarQube Analysis
+    - name: End SonarQube Analysis
+      shell: pwsh
+      run: |    
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
 
     #MDF .NET SONAR SCAN CODE
