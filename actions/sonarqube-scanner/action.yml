@@ -129,6 +129,7 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner begin `
