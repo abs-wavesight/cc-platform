@@ -143,8 +143,7 @@ runs:
       run: |
         #Build .NET Project
         pwd 
-        ls
-        dotnet build ${{ inputs.solution-name }} --configuration Release
+        dotnet build .\"${{ inputs.working-directory }}\${{ inputs.solution-name }} --configuration Release
 
     # - name: End SonarQube Analysis
     #   shell: bash
