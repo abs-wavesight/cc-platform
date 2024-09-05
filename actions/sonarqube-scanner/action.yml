@@ -130,23 +130,17 @@ runs:
     - name: Begin SonarQube Analysis
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin \
-          /k:${{ inputs.project-key }} \
-          /d:sonar.token=${{ inputs.sonar-token }} \
-          /d:sonar.host.url=${{ inputs.sonar-host-url }} \
-          /d:sonar.ws.timeout=500 \
-          /d:sonar.projectBaseDir=${{ inputs.working-directory }} \
-          /d:sonar.scanner.skipJreProvisioning=true   
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token=${{ inputs.sonar-token }} /d:sonar.host.url=${{ inputs.sonar-host-url }} /d:sonar.ws.timeout=500 /d:sonar.projectBaseDir=${{ inputs.working-directory }} /d:sonar.scanner.skipJreProvisioning=true   
 
     - name: Build .NET Project
       shell: bash
       run: |
         dotnet build ${{ inputs.solution-name }} --configuration Release
 
-    - name: End SonarQube Analysis
-      shell: bash
-      run: |    
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
+    # - name: End SonarQube Analysis
+    #   shell: bash
+    #   run: |    
+    #     ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
 
     #MDF .NET SONAR SCAN CODE
     # - name: SonarQubeAnalyze
