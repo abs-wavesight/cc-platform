@@ -128,8 +128,8 @@ runs:
 
     #MDF .NET SONAR SCAN CODE
 
-    - name: Check Sonar Versions
-      shell: bash
+    - name: Check Sonar Version
+      shell: pwsh
       run: |
         dotnet-sonarscanner --version
         dotnet --version
