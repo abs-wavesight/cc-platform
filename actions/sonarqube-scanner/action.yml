@@ -130,11 +130,20 @@ runs:
     - name: Begin SonarQube Analysis
       shell: pwsh
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:${{ inputs.project-key }} /d:sonar.token=${{ inputs.sonar-token }} /d:sonar.host.url=${{ inputs.sonar-host-url }} /d:sonar.ws.timeout=500 /d:sonar.projectBaseDir=.\api /d:sonar.scanner.skipJreProvisioning=true   
+        #Begin SonarQube Analysis
+        .\.sonar\scanner\dotnet-sonarscanner begin `
+          /k:${{ inputs.project-key }} `
+          /d:sonar.token=${{ inputs.sonar-token }} `
+          /d:sonar.host.url=${{ inputs.sonar-host-url }} `
+          /d:sonar.ws.timeout=500 /d:sonar.projectBaseDir=.\api `
+          /d:sonar.scanner.skipJreProvisioning=true   
 
     - name: Build .NET Project
       shell: pwsh
       run: |
+        #Build .NET Project
+        pwd 
+        ls
         dotnet build ${{ inputs.solution-name }} --configuration Release
 
     # - name: End SonarQube Analysis
