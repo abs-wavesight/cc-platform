@@ -138,6 +138,7 @@ runs:
           /d:sonar.host.url=${{ inputs.sonar-host-url }} `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=.\api `
+          /d:sonar.scanner.scanAll=false `
           /d:sonar.scanner.skipJreProvisioning=true
 
         #Build .NET Project 
