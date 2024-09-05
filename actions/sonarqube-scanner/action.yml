@@ -131,13 +131,13 @@ runs:
       shell: bash
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin \
-          /k:"${{ inputs.project-key }}" \
-          /d:sonar.token="${{ inputs.sonar-token }}" \
-          /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
+          /k:${{ inputs.project-key }} \
+          /d:sonar.token=${{ inputs.sonar-token }} \
+          /d:sonar.host.url=${{ inputs.sonar-host-url }} \
           /d:sonar.ws.timeout=500 \
-          /d:sonar.projectBaseDir="${{ inputs.working-directory }}" \
+          /d:sonar.projectBaseDir=${{ inputs.working-directory }} \
           /d:sonar.scanner.skipJreProvisioning=true   
-  
+
     - name: Build .NET Project
       shell: bash
       run: |
