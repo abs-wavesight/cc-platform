@@ -140,7 +140,7 @@ runs:
           /d:sonar.scanner.skipJreProvisioning=true
 
         #Build .NET Project 
-        dotnet build .\.api\${{ inputs.solution-name }} --configuration Release
+        dotnet build .\api\${{ inputs.solution-name }} --configuration Release
 
         #End SonarQube Analysis 
         .\.sonar\scanner\dotnet-sonarscanner end `
