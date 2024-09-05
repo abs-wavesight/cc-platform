@@ -69,24 +69,26 @@ runs:
         java-version: 17
 
     - name: Cache SonarQube packages
-      uses: actions/cache@v2
+      uses: actions/cache@v1
       with:
-        path: ~/.sonar/cache
+        path: ~\.sonar\cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
     - name: Cache SonarQube scanner
       id: cache-sonar-scanner
-      uses: actions/cache@v2
+      uses: actions/cache@v1
       with:
-        path: ./.sonar/scanner
+        path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
 
-    - name: Install SonarScanner for MSBuild
-      shell: bash
-      run: dotnet tool install --global dotnet-sonarscanner # --version 6.0.0 # --version 5.15.0 # 3.0.3723 # 6.0
-
+    - name: Install SonarQube scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
     # - name: Install SonarQube scanner
     #   if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
@@ -95,7 +97,7 @@ runs:
     #     mkdir -p ./.sonar/scanner
     #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
-    - name: Check URL Access
+    - name: Check SonareQube URL Access
       shell: bash
       run: |
         URL="${{ inputs.sonar-host-url }}"
@@ -124,16 +126,29 @@ runs:
     #   run: |
     #     ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}" | tee logs.txt
     #********************* DENYS' INITIAL CODE *********************
-        
-
-    #MDF .NET SONAR SCAN CODE
-
-    - name: Check Sonar Version
+    
+    - name: Show Current Working Directory
       shell: pwsh
       run: |
-        dotnet-sonarscanner --version
-        dotnet --version
+        pwd 
+        ls
 
+
+    - name: Build and analyze
+      shell: pwsh
+      run: |
+        # Begin SonarQube Analysis
+        .\.sonar\scanner\dotnet-sonarscanner begin \
+          /k:"abs-wavesight_cc-cloud-tenant-adapters_2ff025fe-c212-4b09-9c67-41dd5a766ca7" \
+          /d:sonar.token="${{ inputs.sonar-token }}" \
+          /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
+        
+        dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
+
+        # End SonarQube Analysis
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
+
+    #MDF .NET SONAR SCAN CODE
     # - name: SonarQubeAnalyze
     #   shell: bash
     #   working-directory: ${{ inputs.working-directory }}
