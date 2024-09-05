@@ -144,7 +144,7 @@ runs:
           /d:sonar.host.url="${{ inputs.sonar-host-url }}" `
           /d:sonar.branch.name="${{ inputs.branch-name }}" `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir="${{ inputs.working-directory }}" `
+          /d:sonar.projectBaseDir=".\api" `
           /d:sonar.scanner.skipJreProvisioning=true   
 
         dotnet build ${{ inputs.solution-name }}
