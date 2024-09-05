@@ -126,13 +126,6 @@ runs:
     #   run: |
     #     ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}" | tee logs.txt
     #********************* DENYS' INITIAL CODE *********************
-    
-    - name: Show Current Working Directory
-      shell: bash
-      run: |
-        pwd 
-        ls -l
-
 
     - name: Begin SonarQube Analysis
       shell: bash
@@ -142,9 +135,9 @@ runs:
           /d:sonar.token="${{ inputs.sonar-token }}" \
           /d:sonar.host.url="${{ inputs.sonar-host-url }}" \
           /d:sonar.ws.timeout=500 \
-          /d:sonar.projectBaseDir="./api" \
+          /d:sonar.projectBaseDir="${{ inputs.working-directory }}" \
           /d:sonar.scanner.skipJreProvisioning=true   
-
+  
     - name: Build .NET Project
       shell: bash
       run: |
