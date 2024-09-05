@@ -128,7 +128,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         # Begin SonarQube Analysis
-        dotnet sonarscanner begin \
+        ./.sonar/scanner/dotnet-sonarscanner begin \
           /k:${{ inputs.project-key }} \
           /d:sonar.token=${{ inputs.sonar-token }} \
           /d:sonar.host.url=${{ inputs.sonar-host-url }} \
@@ -142,7 +142,7 @@ runs:
 
         # End SonarQube Analysis
         for i in {1..3}; do
-          if dotnet sonarscanner end /d:sonar.token=${{ inputs.sonarqube-token }}; then
+          if ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonarqube-token }}; then
             break
           else
             echo "Retry $i failed, retrying in 30 seconds..."
