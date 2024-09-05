@@ -101,20 +101,63 @@ runs:
         else
           echo "Successfully accessed $URL, status code: $HTTP_STATUS"
         fi
-        
-    - name: SonarQube Begin Analysis
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin -k:"${{ inputs.project-key }}" -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.host.url="${{ inputs.sonar-host-url }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}"
 
-    - name: Build
+    #********************* DENYS' INITIAL CODE *********************   
+    # - name: SonarQube Begin Analysis
+    #   shell: bash
+    #   run: |
+    #     ./.sonar/scanner/dotnet-sonarscanner begin -k:"${{ inputs.project-key }}" -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.host.url="${{ inputs.sonar-host-url }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}"
+
+    # - name: Build
+    #   shell: bash
+    #   working-directory: ${{ inputs.working-directory }}
+    #   run: |
+    #     dotnet build ${{ inputs.solution-name }} --configuration Release
+
+    # - name: SonarQube End Analysis      
+    #   shell: bash
+    #   run: |
+    #     ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}" | tee logs.txt
+    #********************* DENYS' INITIAL CODE *********************
+        
+
+    #MDF .NET SONAR SCAN CODE
+
+    - name: SonarQubeAnalyze
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        dotnet build ${{ inputs.solution-name }} --configuration Release
+        # Begin SonarQube Analysis
+        dotnet sonarscanner begin \
+          /k:${{ inputs.project-key }} \
+          /d:sonar.token=${{ inputs.sonar-token }} \
+          /d:sonar.host.url=${{ inputs.sonar-host-url }} \
+          /d:sonar.branch.name=${{ inputs.branch-name }} \
+          /d:sonar.ws.timeout=500 \
+          /d:sonar.projectBaseDir=${{ inputs.working-directory }} \
+          /d:sonar.scanner.skipJreProvisioning=true
+          
+        # Build the .net Project
+        dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
 
-    - name: SonarQube End Analysis      
+        # End SonarQube Analysis
+        for i in {1..3}; do
+          if dotnet sonarscanner end /d:sonar.token=${{ inputs.sonarqube-token }}; then
+            break
+          else
+            echo "Retry $i failed, retrying in 30 seconds..."
+            sleep 30
+          fi
+        done | tee logs.txt
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-token }}
+      continue-on-error: true
+
+    - name: Export Sonar Report File
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.login="${{ inputs.sonar-token }}" -d:sonar.projectBaseDir="${{ inputs.working-directory }}" | tee logs.txt
-        
+        LINE=$(grep "you can find the results at:" logs.txt)
+        URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
+        echo "url=$URL" >> $GITHUB_OUTPUT
+        echo "sonar_output_url=$URL"
+
