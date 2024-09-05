@@ -139,11 +139,11 @@ runs:
           /d:sonar.scanner.skipJreProvisioning=true   
 
     - name: Build .NET Project
-      shell: pwsh
+      shell: bash
       run: |
         #Build .NET Project
         pwd 
-        dotnet build .\"${{ inputs.working-directory }}\${{ inputs.solution-name }} --configuration Release
+        dotnet build ./${{ inputs.working-directory }}/${{ inputs.solution-name }} --configuration Release
 
     # - name: End SonarQube Analysis
     #   shell: bash
