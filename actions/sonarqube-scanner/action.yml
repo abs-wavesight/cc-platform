@@ -146,7 +146,7 @@ runs:
           /d:sonar.projectBaseDir=".\api" `
           /d:sonar.scanner.skipJreProvisioning=true   
 
-        dotnet build ${{ inputs.solution-name }}
+        dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
 
         # End SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ inputs.sonar-token }}"
