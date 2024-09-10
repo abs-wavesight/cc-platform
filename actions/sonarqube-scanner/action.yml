@@ -89,6 +89,12 @@ runs:
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+    
+    - name: PWD
+      shell: bash
+      run: |
+        pwd
+        ls -l 
 
     # - name: Install SonarQube scanner
     #   if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
@@ -129,7 +135,7 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
-      working-directory: ${{ inputs.working-directory }}
+      #working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
         #/d:sonar.scanner.scanAll=false ` - This is to scan only the changed files
