@@ -58,6 +58,7 @@ runs:
         echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: .NET Restore - Install dependencies
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
 
@@ -84,7 +85,6 @@ runs:
 
     - name: Install SonarQube scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      working-directory: ${{ inputs.working-directory }}
       shell: pwsh
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
@@ -135,7 +135,7 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
-      working-directory: ${{ inputs.working-directory }}
+      #working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
         #/d:sonar.scanner.scanAll=false ` - This is to scan only the changed files
