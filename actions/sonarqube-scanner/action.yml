@@ -58,7 +58,6 @@ runs:
         echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: .NET Restore - Install dependencies
-      working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
 
@@ -70,7 +69,6 @@ runs:
 
     - name: Cache SonarQube packages
       uses: actions/cache@v1
-      working-directory: ${{ inputs.working-directory }}
       with:
         path: ~\.sonar\cache
         key: ${{ runner.os }}-sonar
@@ -79,7 +77,6 @@ runs:
     - name: Cache SonarQube scanner
       id: cache-sonar-scanner
       uses: actions/cache@v1
-      working-directory: ${{ inputs.working-directory }}
       with:
         path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
