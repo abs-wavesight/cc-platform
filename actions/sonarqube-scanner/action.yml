@@ -70,6 +70,7 @@ runs:
 
     - name: Cache SonarQube packages
       uses: actions/cache@v1
+      working-directory: ${{ inputs.working-directory }}
       with:
         path: ~\.sonar\cache
         key: ${{ runner.os }}-sonar
@@ -78,6 +79,7 @@ runs:
     - name: Cache SonarQube scanner
       id: cache-sonar-scanner
       uses: actions/cache@v1
+      working-directory: ${{ inputs.working-directory }}
       with:
         path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
@@ -85,6 +87,7 @@ runs:
 
     - name: Install SonarQube scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      working-directory: ${{ inputs.working-directory }}
       shell: pwsh
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
@@ -135,7 +138,7 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
-      #working-directory: ${{ inputs.working-directory }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
         #/d:sonar.scanner.scanAll=false ` - This is to scan only the changed files
@@ -144,7 +147,6 @@ runs:
           /k:${{ inputs.project-key }} `
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url=${{ inputs.sonar-host-url }} `
-          /d:sonar.branch.name=${{ inputs.branch-name }} `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=.\api `
           /d:sonar.scanner.skipJreProvisioning=true
