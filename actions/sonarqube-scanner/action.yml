@@ -41,12 +41,12 @@ runs:
       shell: bash
       run: dotnet --version
 
-    - name: Checkout GitHub Action
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-        fetch-depth: 0
-        token: ${{ inputs.gh-token || ' ' }}
+    # - name: Checkout GitHub Action
+    #   uses: actions/checkout@v3
+    #   with:
+    #     submodules: true
+    #     fetch-depth: 0
+    #     token: ${{ inputs.gh-token || ' ' }}
 
     - name: Set NuGet credentials
       shell: pwsh
@@ -129,16 +129,18 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
-      #working-directory: ${{ inputs.working-directory }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
+        #/d:sonar.scanner.scanAll=false ` - This is to scan only the changed files
+
         .\.sonar\scanner\dotnet-sonarscanner begin `
           /k:${{ inputs.project-key }} `
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url=${{ inputs.sonar-host-url }} `
+          /d:sonar.branch.name=${{ inputs.branch-name }}
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=.\api `
-          /d:sonar.scanner.scanAll=false `
           /d:sonar.scanner.skipJreProvisioning=true
 
         #Build .NET Project 
