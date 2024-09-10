@@ -71,7 +71,7 @@ runs:
     - name: Cache SonarQube packages
       uses: actions/cache@v1
       with:
-        path: ~\.sonar\cache
+        path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
@@ -79,7 +79,7 @@ runs:
       id: cache-sonar-scanner
       uses: actions/cache@v1
       with:
-        path: .\.sonar\scanner
+        path: ./.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
 
@@ -145,8 +145,9 @@ runs:
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url=${{ inputs.sonar-host-url }} `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir=.\api `
-          /d:sonar.scanner.skipJreProvisioning=true
+          /d:sonar.projectBaseDir=${{ inputs.working-directory }} `
+          /d:sonar.scanner.skipJreProvisioning=true `
+          /d:sonar.scanner.scanAll=false
 
         #Build .NET Project 
         dotnet build .\api\${{ inputs.solution-name }} --configuration Release
