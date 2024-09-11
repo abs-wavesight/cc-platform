@@ -60,7 +60,7 @@ runs:
     - name: .NET Restore - Install dependencies
       working-directory: ${{ inputs.working-directory }}
       shell: bash
-      run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
+      run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}/.nuget/packages
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
