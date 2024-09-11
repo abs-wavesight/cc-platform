@@ -147,10 +147,16 @@ runs:
           /d:sonar.projectBaseDir=${{ inputs.working-directory }} `
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false
-
+  
+    - name: .NET Build
+      shell: pwsh
+      run: |
         #Build .NET Project 
         dotnet build .\api\${{ inputs.solution-name }} --configuration Release
 
+    - name: End SonarQube Analysis
+      shell: pwsh
+      run: |
         #End SonarQube Analysis 
         .\.sonar\scanner\dotnet-sonarscanner end `
           /d:sonar.token=${{ inputs.sonar-token }} `
