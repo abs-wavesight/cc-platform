@@ -144,15 +144,14 @@ runs:
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url=${{ inputs.sonar-host-url }} `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir=${{ inputs.working-directory }} `
-          /d:sonar.scanner.skipJreProvisioning=true `
+          /d:sonar.projectBaseDir= .\api\TenantAdapter.AzureFunctionWrapper\ `
           /d:sonar.scanner.scanAll=false
   
     - name: .NET Build
       shell: pwsh
       run: |
         #Build .NET Project 
-        dotnet build .\api\${{ inputs.solution-name }} --configuration Release
+        dotnet build .\api\TenantAdapter.AzureFunctionWrapper\TenantAdapter.AzureFunctionWrapper.csproj --configuration Release
 
     - name: End SonarQube Analysis
       shell: pwsh
