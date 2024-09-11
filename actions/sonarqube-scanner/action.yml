@@ -41,12 +41,12 @@ runs:
       shell: bash
       run: dotnet --version
 
-    # - name: Checkout GitHub Action
-    #   uses: actions/checkout@v3
-    #   with:
-    #     submodules: true
-    #     fetch-depth: 0
-    #     token: ${{ inputs.gh-token || ' ' }}
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+        fetch-depth: 0
+        token: ${{ inputs.gh-token || ' ' }}
 
     - name: Set NuGet credentials
       shell: pwsh
@@ -135,7 +135,6 @@ runs:
 
     - name: Begin SonarQube Analysis
       shell: pwsh
-      #working-directory: ${{ inputs.working-directory }}
       run: |
         #Begin SonarQube Analysis
         #/d:sonar.scanner.scanAll=false ` - This is to scan only the changed files
