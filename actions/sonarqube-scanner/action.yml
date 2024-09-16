@@ -137,7 +137,8 @@ runs:
       shell: bash
       run: |
         # Begin SonarQube Analysis
-        ./sonar/scanner/dotnet-sonarscanner begin \
+        # ./sonar/scanner/dotnet-sonarscanner begin \
+        dotnet-sonarscanner begin \
         /k=${{ inputs.project-key }} \
         /d:sonar.token=${{ inputs.sonar-token }} \
         /d:sonar.host.url=${{ inputs.sonar-host-url }} \
