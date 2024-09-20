@@ -146,7 +146,7 @@ runs:
         /d:sonar.scanner.scanAll=false
         
         # Build .NET Project 
-        dotnet build .api\${{ inputs.solution-name }} --configuration Release
+        dotnet build .\api\${{ inputs.solution-name }} --configuration Release
 
         # End SonarQube Analysis 
         .\.sonar\scanner\dotnet-sonarscanner end `
