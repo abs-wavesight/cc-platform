@@ -134,23 +134,23 @@ runs:
     #********************* DENYS' INITIAL CODE *********************
 
     - name: Begin SonarQube Analysis
-      shell: bash
+      shell: pwsh
       run: |
         # Begin SonarQube Analysis
-        ./.sonar/scanner/dotnet-sonarscanner begin \
-        /key:${{ inputs.project-key }} \
-        /d:sonar.token=${{ inputs.sonar-token }} \
-        /d:sonar.host.url=${{ inputs.sonar-host-url }} \
-        /d:sonar.ws.timeout=500 \
-        /d:sonar.projectBaseDir=/api/TenantAdapter.AzureFunctionWrapper/ \
+        .\.sonar\scanner\dotnet-sonarscanner begin `
+        /k:${{ inputs.project-key }} `
+        /d:sonar.login=${{ inputs.sonar-token }} `
+        /d:sonar.host.url=${{ inputs.sonar-host-url }} `
+        /d:sonar.ws.timeout=500 `
+        /d:sonar.projectBaseDir=.\api `
         /d:sonar.scanner.scanAll=false
-  
-        #Build .NET Project 
-        dotnet build api/TenantAdapter.AzureFunctionWrapper/TenantAdapter.AzureFunctionWrapper.csproj --configuration Release
+        
+        # Build .NET Project 
+        dotnet build .api\${{ inputs.solution-name }} --configuration Release
 
-        #End SonarQube Analysis 
-        ./sonar/scanner/dotnet-sonarscanner end \
-        /d:sonar.token=${{ inputs.sonar-token }}
+        # End SonarQube Analysis 
+        .\.sonar\scanner\dotnet-sonarscanner end `
+        /d:sonar.login=${{ inputs.sonar-token }}
 
     # - name: Build .NET Project
     #   shell: bash
