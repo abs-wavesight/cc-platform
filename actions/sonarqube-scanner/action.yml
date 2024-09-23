@@ -17,7 +17,7 @@ inputs:
     description: "Working directory for dotnet"
     required: false
     default: src
-  solution-name:
+  solution-file:
     description: "Working directory for dotnet"
     required: false
   dotnet-version:
@@ -60,7 +60,7 @@ runs:
     - name: .NET Restore - Install dependencies
       working-directory: ${{ inputs.working-directory }}
       shell: bash
-      run: dotnet restore ${{ inputs.solution-name }} --packages ${{ github.workspace }}\.nuget\packages
+      run: dotnet restore ${{ inputs.solution-file }} --packages ${{ github.workspace }}\.nuget\packages
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -125,7 +125,7 @@ runs:
     #   shell: bash
     #   working-directory: ${{ inputs.working-directory }}
     #   run: |
-    #     dotnet build ${{ inputs.solution-name }} --configuration Release
+    #     dotnet build ${{ inputs.solution-file }} --configuration Release
 
     # - name: SonarQube End Analysis      
     #   shell: bash
@@ -146,7 +146,7 @@ runs:
         -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/
         
         # Build .NET Project 
-        dotnet build ./api/${{ inputs.solution-name }} --configuration Release
+        dotnet build ${{ inputs.solution-file }} --configuration Release
 
         # End SonarQube Analysis 
         ./.sonar/scanner/dotnet-sonarscanner end \
@@ -156,7 +156,7 @@ runs:
     #   shell: bash
     #   run: |
     #     #Build .NET Project 
-    #     dotnet build ./${{ inputs.working-directory }}/${{ inputs.solution-name }} --configuration Release
+    #     dotnet build ./${{ inputs.working-directory }}/${{ inputs.solution-file }} --configuration Release
 
     # - name: End SonarQube Analysis
     #   shell: pwsh
@@ -181,7 +181,7 @@ runs:
     #       /d:sonar.scanner.skipJreProvisioning=true
           
     #     # Build the .net Project
-    #     dotnet build ${{ inputs.solution-name }} --configuration Release --output ./bin/output/
+    #     dotnet build ${{ inputs.solution-file }} --configuration Release --output ./bin/output/
 
     #     # End SonarQube Analysis
     #     for i in {1..3}; do
