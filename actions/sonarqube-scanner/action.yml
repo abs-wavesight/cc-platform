@@ -143,7 +143,7 @@ runs:
         -d:sonar.host.url=${{ inputs.sonar-host-url }} \
         -d:sonar.branch.name=${{ inputs.branch-name }} \
         -d:sonar.ws.timeout=500 \
-        -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/
+        -d:sonar.projectBaseDir=${{ inputs.working-directory }}
         
         # Build .NET Project 
         dotnet build ${{ inputs.solution-file }} --configuration Release
