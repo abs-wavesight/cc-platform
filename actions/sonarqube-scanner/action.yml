@@ -138,7 +138,7 @@ runs:
       run: |
         # Begin SonarQube Analysis
         ./.sonar/scanner/dotnet-sonarscanner begin \
-        /k:${{ inputs.project-key }} \
+        /key:${{ inputs.project-key }} \
         /d:sonar.login=${{ inputs.sonar-token }} \
         /d:sonar.host.url=${{ inputs.sonar-host-url }} \
         /d:sonar.branch.name=${{ inputs.branch-name }} \
