@@ -134,23 +134,22 @@ runs:
     #********************* DENYS' INITIAL CODE *********************
 
     - name: Begin SonarQube Analysis
-      shell: pwsh
+      shell: bash
       run: |
         # Begin SonarQube Analysis
-        .\.sonar\scanner\dotnet-sonarscanner begin `
-        /k:${{ inputs.project-key }} `
-        /d:sonar.login=${{ inputs.sonar-token }} `
-        /d:sonar.host.url=${{ inputs.sonar-host-url }} `
-        /d:sonar.branch.name=${{ inputs.branch-name }} `
-        /d:sonar.ws.timeout=500 `
-        /d:sonar.projectBaseDir=D:\a\cc-cloud-tenant-adapters\cc-cloud-tenant-adapters\ `
-        /d:sonar.scanner.scanAll=false
+        ./.sonar/scanner/dotnet-sonarscanner begin \
+        /k:${{ inputs.project-key }} \
+        /d:sonar.login=${{ inputs.sonar-token }} \
+        /d:sonar.host.url=${{ inputs.sonar-host-url }} \
+        /d:sonar.branch.name=${{ inputs.branch-name }} \
+        /d:sonar.ws.timeout=500 \
+        /d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/
         
         # Build .NET Project 
-        dotnet build .\api\${{ inputs.solution-name }} --configuration Release
+        dotnet build ./api/${{ inputs.solution-name }} --configuration Release
 
         # End SonarQube Analysis 
-        .\.sonar\scanner\dotnet-sonarscanner end `
+        ./.sonar/scanner/dotnet-sonarscanner end \
         /d:sonar.login=${{ inputs.sonar-token }}
 
     # - name: Build .NET Project
