@@ -100,6 +100,8 @@ runs:
         if ${{ inputs.sonarscan-enabled == 'true' }}; then
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        else
+          echo "SonarQube scanner is NOT ENABLED"
         fi
 
     - name: Check SonareQube URL Access
