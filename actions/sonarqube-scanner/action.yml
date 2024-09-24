@@ -97,8 +97,10 @@ runs:
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        mkdir -p ./.sonar/scanner
-        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        if ${{ inputs.sonarscan-enabled == 'true' }}; then
+          mkdir -p ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        fi
 
     - name: Check SonareQube URL Access
       if: ${{ inputs.sonarscan-enabled == 'true' }}
