@@ -101,7 +101,7 @@ runs:
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
         else
-          echo "SonarQube scanner is NOT ENABLED"
+          echo "SonarQube Scanner is NOT ENABLED"
         fi
 
     - name: Check SonareQube URL Access
