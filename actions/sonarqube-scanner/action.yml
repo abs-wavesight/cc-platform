@@ -146,7 +146,12 @@ runs:
           -d:sonar.host.url=${{ inputs.sonar-host-url }} \
           -d:sonar.branch.name=${{ inputs.branch-name }} \
           -d:sonar.ws.timeout=500 \
-          -d:sonar.projectBaseDir=${{ inputs.working-directory }} 
+          -d:sonar.projectBaseDir=${{ inputs.working-directory }} \
+          -d:sonar.qualitygate.wait=true \
+          -d:sonar.qualitygate.timeout=2000 \
+          -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+          -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }} 
 
         # Build .NET Project 
         dotnet build ${{ inputs.solution-file }} --configuration Release
@@ -154,11 +159,11 @@ runs:
         # End SonarQube Analysis
         ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ inputs.sonar-token }} | tee logs.txt
 
-    - name: Export Sonar Report File
-      if: ${{ inputs.sonarscan-enabled == 'true' }}
-      shell: bash
-      run: |
-        LINE=$(grep "you can find the results at:" logs.txt)
-        URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
-        echo "url=$URL" >> $GITHUB_OUTPUT
-        echo "sonar_output_url=$URL"
+    # - name: Export Sonar Report File
+    #   if: ${{ inputs.sonarscan-enabled == 'true' }}
+    #   shell: bash
+    #   run: |
+    #     LINE=$(grep "you can find the results at:" logs.txt)
+    #     URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
+    #     echo "url=$URL" >> $GITHUB_OUTPUT
+    #     echo "sonar_output_url=$URL"
