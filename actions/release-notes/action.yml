@@ -65,7 +65,7 @@ runs:
         RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Authorization: Basic $(echo -n :$AuthToken | base64)" "$WIKI_URL")
 
         if [ "$RESPONSE_CODE" -ne 200 ]; then
-          echo "Environment page '${ENVIRONMENT}' does not exist. Creating it."
+          echo "Environment page '${ENVIRONMENT}' does not exist. Creating it. Code: $RESPONSE_CODE"
           # Create a new environment page with a default table
           NEW_PAGE_CONTENT="<table><tr style=\"background-color: #99A3A4;\"><td>Function Name</td><td>Solution Name</td><td>Version</td><td>Updated Time</td></tr></table>"
           JSON_CONTENT=$(jq -n --arg content "$NEW_PAGE_CONTENT" '{content: $content}')
