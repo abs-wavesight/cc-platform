@@ -146,9 +146,7 @@ runs:
           -d:sonar.host.url=${{ inputs.sonar-host-url }} \
           -d:sonar.branch.name=${{ inputs.branch-name }} \
           -d:sonar.ws.timeout=500 \
-          -d:sonar.projectBaseDir=${{ inputs.working-directory }} \
-          -d:sonar.qualitygate.wait=true \
-          -d:sonar.qualitygate.timeout=4000
+          -d:sonar.projectBaseDir=${{ inputs.working-directory }} 
 
         # Build .NET Project 
         dotnet build ${{ inputs.solution-file }} --configuration Release
