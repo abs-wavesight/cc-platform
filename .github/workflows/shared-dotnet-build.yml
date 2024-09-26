@@ -56,7 +56,7 @@ on:
         default: '7.0.x'
         description: .NET SDK Version
 
-      # SonarQube Scanner Input Parameters
+      # SonarQube Input Parameters
       sonarscan-enabled:
         description: "Boolean to run sonarqube (true) or not (false)"
         type: boolean
@@ -208,7 +208,7 @@ jobs:
             -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=${{ inputs.solution-directory }}
 
-      # ----------------------------------------------------------- #
+      # ---------------------------------------------------------- #
 
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
@@ -233,7 +233,7 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "sonar_output_url=$URL"
 
-      # ----------------------------------------------------------- #
+      # -------------------------------------------------------- #
 
       - name: Check code formatting
         if: inputs.check-code-formatting == true
