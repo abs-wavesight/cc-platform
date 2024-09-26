@@ -144,14 +144,15 @@ runs:
           -k:${{ inputs.project-key }} \
           -d:sonar.token=${{ inputs.sonar-token }} \
           -d:sonar.host.url=${{ inputs.sonar-host-url }} \
-          -d:sonar.branch.name=${{ inputs.branch-name }} \
           -d:sonar.ws.timeout=500 \
           -d:sonar.projectBaseDir=${{ inputs.working-directory }} \
           -d:sonar.qualitygate.wait=true \
           -d:sonar.qualitygate.timeout=2000 \
           -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
           -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-          -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }} 
+          -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+
+        #-d:sonar.branch.name=${{ inputs.branch-name }} \ 
 
         # Build .NET Project 
         dotnet build ${{ inputs.solution-file }} --configuration Release
