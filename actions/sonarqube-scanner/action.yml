@@ -148,7 +148,7 @@ runs:
           -d:sonar.ws.timeout=500 \
           -d:sonar.projectBaseDir=${{ inputs.working-directory }} \
           -d:sonar.qualitygate.wait=true \
-          -d:sonar.qualitygate.timeout=2000
+          -d:sonar.qualitygate.timeout=4000
 
         # Build .NET Project 
         dotnet build ${{ inputs.solution-file }} --configuration Release
