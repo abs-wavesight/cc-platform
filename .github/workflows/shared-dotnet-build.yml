@@ -65,10 +65,10 @@ on:
         required: true
         description: "Root of repository for build analysis"
         type: string
-      sonar-token:
-        required: true
-        description: "SonarQube Token"
-        type: string
+      # sonar-token:
+      #   required: true
+      #   description: "SonarQube Token"
+      #   type: string
       run-sonar-scan:
         description: "Boolean to run sonarqube (true) or not (false)"
         type: boolean
@@ -209,7 +209,7 @@ jobs:
           # Begin SonarQube Analysis
           ./.sonar/scanner/dotnet-sonarscanner begin \
             -k:${{ inputs.project-key }} \
-            -d:sonar.token= ${{ inputs.sonar-token }} \
+            -d:sonar.token= ${{ secrets.SONAR_TOKEN }} \
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
             -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=${{ inputs.sonar-project-base-directory }} \
