@@ -57,7 +57,7 @@ on:
         description: .NET SDK Version
 
       # SonarQube Input Parameters
-      project-key:
+      sonar-project-key:
         required: true
         description: "Reposiroty ID in SonarQube"
         type: string
@@ -208,7 +208,7 @@ jobs:
         run: |
           # Begin SonarQube Analysis
           ./.sonar/scanner/dotnet-sonarscanner begin \
-            -k:${{ inputs.project-key }} \
+            -k:${{ inputs.sonar-project-key }} \
             -d:sonar.token= ${{ secrets.SONAR_TOKEN }} \
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
             -d:sonar.ws.timeout=500 \
