@@ -214,7 +214,7 @@ jobs:
           # Begin SonarQube Analysis
           ./.sonar/scanner/dotnet-sonarscanner begin \
             -k:${{ inputs.sonar-project-key }} \
-            -d:sonar.token= ${{ secrets.SONAR_TOKEN }} \
+            -d:sonar.token=${{ secrets.SONAR_TOKEN }} \
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
             -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=${{ inputs.sonar-project-base-directory }} \
