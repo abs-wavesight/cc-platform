@@ -238,7 +238,7 @@ jobs:
         shell: bash
         run: |
           # End SonarQube Analysis
-          ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ inputs.sonar-token }} | tee logs.txt
+          ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt
 
       - name: Export Sonar Report File
         if: inputs.run-sonar-scan == true
