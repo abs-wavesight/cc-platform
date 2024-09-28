@@ -70,6 +70,7 @@ on:
       #   description: "SonarQube Token"
       #   type: string
       run-sonar-scan:
+        required: true
         description: "Boolean to run sonarqube (true) or not (false)"
         type: boolean
         default: false
@@ -151,16 +152,18 @@ jobs:
         run: dotnet restore ${{ inputs.solution-name }} --packages ${{ env.NUGET_PACKAGE_PATH }}
 
       # ------------------- CONFIGURE SONARQUBE ------------------- #
+
+      - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
       
       - name: Set up JDK 17
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         uses: actions/setup-java@v4
         with:
           distribution: "adopt"
           java-version: 17
 
       - name: Cache SonarQube packages
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
@@ -168,7 +171,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache SonarQube scanner
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         id: cache-sonar-scanner
         uses: actions/cache@v1
         with:
@@ -176,11 +179,11 @@ jobs:
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
-      - name: Install SonarQube scanner
+      - name: Install SonarQube scanner - inputs.run-sonar-scan: ${{ inputs.run-sonar-scan }}
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          if ${{ inputs.run-sonar-scan == 'true' }}; then
+          if inputs.run-sonar-scan == true; then
             mkdir -p ./.sonar/scanner
             dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
           else
@@ -188,7 +191,7 @@ jobs:
           fi
 
       - name: Check SonareQube URL Access
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         shell: bash
         run: |
           URL="https://sonarqube.absns.cloud"
@@ -203,7 +206,7 @@ jobs:
       # -------------- BEGIN SONARQUBE ANALYSIS ------------------ #
 
       - name: Begin SonarQube Analysis
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         shell: bash
         run: |
           # Begin SonarQube Analysis
@@ -229,14 +232,14 @@ jobs:
       # -------------- END SONARQUBE ANALYSIS ------------------ #
 
       - name: End SonarQube Analysis
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         shell: bash
         run: |
           # End SonarQube Analysis
           ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ inputs.sonar-token }} | tee logs.txt
 
       - name: Export Sonar Report File
-        if: ${{ inputs.run-sonar-scan == 'true' }}
+        if: inputs.run-sonar-scan == true
         shell: bash
         run: |
           LINE=$(grep "you can find the results at:" logs.txt)
