@@ -154,6 +154,8 @@ jobs:
       # ------------------- CONFIGURE SONARQUBE ------------------- #
 
       - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
+        if: inputs.run-sonar-scan == true
+        run: echo "SETTING UP SONARQUBE SCAN"
       
       - name: Set up JDK 17
         if: inputs.run-sonar-scan == true
