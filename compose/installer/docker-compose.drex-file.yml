@@ -1,6 +1,4 @@
 ---
-version: '3.9'
-
 services:
   cc.drex-file-service:
     container_name: drex-file-service
