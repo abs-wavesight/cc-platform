@@ -168,7 +168,7 @@ jobs:
         if: inputs.run-sonar-scan == true
         uses: actions/cache@v1
         with:
-          path: ~/.sonar/cache
+          path: ${{ inputs.solution-directory }}/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
@@ -177,12 +177,13 @@ jobs:
         id: cache-sonar-scanner
         uses: actions/cache@v1
         with:
-          path: ./.sonar/scanner
+          path: ${{ inputs.solution-directory }}/.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
           if inputs.run-sonar-scan == true; then
@@ -209,6 +210,7 @@ jobs:
 
       - name: Begin SonarQube Analysis
         if: inputs.run-sonar-scan == true
+        working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
           # Begin SonarQube Analysis
@@ -224,6 +226,11 @@ jobs:
             -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
             -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
 
+          # dotnet build ${{ inputs.solution-directory }}/${{ inputs.solution-name }} -c Release --no-restore
+
+          # # End SonarQube Analysis
+          # ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt          
+
       # ---------------------------------------------------------- #
 
       - name: Build
@@ -235,6 +242,7 @@ jobs:
 
       - name: End SonarQube Analysis
         if: inputs.run-sonar-scan == true
+        working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
           # End SonarQube Analysis
@@ -242,6 +250,7 @@ jobs:
 
       - name: Export Sonar Report File
         if: inputs.run-sonar-scan == true
+        working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
           LINE=$(grep "you can find the results at:" logs.txt)
