@@ -13,7 +13,6 @@ services:
     ports:
       - "12446:5000"
     depends_on:
-      - cc.vector
       - cc.rabbitmq
       - cc.disco
     logging:	
