@@ -209,7 +209,7 @@ jobs:
 
       # ------  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
 
-      - name: SonarQube Analysis & Build Solution
+      - name: Build Solution w/ SonarQube Analysis
         if: inputs.run-sonar-scan == true
         working-directory: ${{ inputs.solution-directory }}
         shell: bash
@@ -246,7 +246,7 @@ jobs:
       # ---------------------------------------------------------- #
 
 
-      - name: Build Solution Only
+      - name: Build Solution
         if: inputs.run-sonar-scan == false
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
