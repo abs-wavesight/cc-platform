@@ -253,7 +253,7 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
-          LINE=$(grep "you can find the results at:" logs.txt)
+          LINE=$(grep "View details on:" logs.txt)
           URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "sonar_output_url=$URL"
