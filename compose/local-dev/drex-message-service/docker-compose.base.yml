@@ -1,12 +1,9 @@
 ---
-version: '3.9'
-
 services:
 
   cc.drex-message-service:
     container_name: drex-message-service
     depends_on:
-      - cc.vector-site
       - cc.rabbitmq-local
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}

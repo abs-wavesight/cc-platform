@@ -181,6 +181,7 @@ public class ComponentInstaller : ActionBase
             .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
             .Where(location => VerifyFileExists(location) == false)
+            .Select(Path.GetFullPath)
             .ToArray();
 
         if (missingFiles.Any())
@@ -621,9 +622,16 @@ public class ComponentInstaller : ActionBase
         var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
         var installLocation = new DirectoryInfo(_registryConfig.Location);
 
-        _logger.LogInformation("Unchunking release files");
-        var chunker = new DataChunker(_loggerFactory);
-        await chunker.UnchunkFileAsync(new DirectoryInfo(current), releaseZip, false);
+        if (!releaseZip.Exists)
+        {
+            _logger.LogInformation("Unchunking release files");
+            var chunker = new DataChunker(_loggerFactory);
+            await chunker.UnchunkFileAsync(new DirectoryInfo(current), releaseZip, false);
+        }
+        else
+        {
+            _logger.LogInformation("Skip unchunking release files");
+        }
 
         _logger.LogInformation("Uncompressing release file");
         var compressor = new DataCompressor(_loggerFactory);

@@ -41,7 +41,7 @@ public static class CertificateImporter
 
     public static void ImportCertificate(string path, string? password, ILogger logger)
     {
-        var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
+        using var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
         store.Open(OpenFlags.ReadWrite);
         var certificate = string.IsNullOrWhiteSpace(password)
             ? new X509Certificate2(path)
