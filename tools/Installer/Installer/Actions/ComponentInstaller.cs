@@ -15,7 +15,6 @@ using Abs.CommonCore.RabbitMQ.Shared.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Google.Protobuf;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;

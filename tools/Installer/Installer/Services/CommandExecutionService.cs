@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services;
 

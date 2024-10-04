@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+﻿using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Abs.CommonCore.Installer;
 
