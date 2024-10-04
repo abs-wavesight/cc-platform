@@ -187,10 +187,15 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt)
-                               => await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(Handle, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
+
+        Task Handle(FileInfo registryConfig, FileInfo installerConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt)
+        {
+            return ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly,
+                noPrompt, args);
+        }
     }
 
     private static Command SetupChunkCommand(string[] args)
@@ -234,9 +239,13 @@ internal class Program
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, size, removeSource, config) => await ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args), sourceParam, destParam, sizeParam, removeSourceParam, configParam);
-
+        command.SetHandler(Handle, sourceParam, destParam, sizeParam, removeSourceParam, configParam);
         return command;
+
+        Task Handle(FileInfo source, DirectoryInfo dest, int size, bool removeSource, FileInfo config)
+        {
+            return ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args);
+        }
     }
 
     private static Command SetupUnchunkCommand(string[] args)
@@ -864,8 +873,6 @@ internal class Program
                 var logger = loggerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "Error executing command");
             }
-
-            throw new Exception("Unable to execute command", ex);
         }
     }
 
@@ -963,13 +970,11 @@ internal class Program
     {
         builder.ClearProviders();
 
-        builder.AddSimpleConsole(options =>
+        builder.AddConsole(options =>
         {
-            options.IncludeScopes = true;
-            options.SingleLine = true;
-            options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
-            options.ColorBehavior = LoggerColorBehavior.Enabled;
+            options.FormatterName = nameof(CustomConsoleFormatter);
         });
+        builder.Services.AddSingleton<ConsoleFormatter, CustomConsoleFormatter>();
 
         if (string.IsNullOrWhiteSpace(filePath) == false)
         {

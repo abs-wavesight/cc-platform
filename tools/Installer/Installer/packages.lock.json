@@ -4,9 +4,9 @@
     "net7.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.495, )",
-        "resolved": "1.0.495",
-        "contentHash": "jEj+AzDS5IAaTMvw0MpApEvHuoPJjzbFzhm6OHosQKTaq76spqPtH9A+G+jIm/FTLLO4HtLFdaib1Bq97fhEow==",
+        "requested": "[1.0.497, )",
+        "resolved": "1.0.497",
+        "contentHash": "MYxw5O8BDyl5vteoefzTPQYfbCwdKrUJfUgZ3NCnDUPHVKiRk3O36+wtObTdcf+fggX2+tqzcsy6IxB9XHw1Tg==",
         "dependencies": {
           "Google.Protobuf": "3.26.1",
           "Grpc.AspNetCore": "2.62.0",
@@ -162,6 +162,15 @@
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.35.0",
           "System.Diagnostics.DiagnosticSource": "6.0.1"
+        }
+      },
+      "Newtonsoft.Json.Schema": {
+        "type": "Direct",
+        "requested": "[4.0.1, )",
+        "resolved": "4.0.1",
+        "contentHash": "rbHUKp5WTIbqmLEeJ21nTTDGcfR0LA7bVMzm0bYc3yx6NFKiCIHzzvYbwA4Sqgs7+wNldc5nBlkbithWj8IZig==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Octokit": {
@@ -664,8 +673,8 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
       },
       "Polly": {
         "type": "Transitive",
