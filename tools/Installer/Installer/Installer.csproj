@@ -34,7 +34,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
 		<PackageReference Include="Octokit" Version="7.1.0" />
 		<PackageReference Include="Octokit.Extensions" Version="1.0.7" />
-		<PackageReference Include="EasyNetQ.Management.Client" Version="2.0.0" />
+		<PackageReference Include="EasyNetQ.Management.Client" Version="3.0.0" />
 		<PackageReference Include="PasswordGenerator" Version="2.1.0" />
 		<PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
 		<PackageReference Include="System.Management" Version="7.0.2" />

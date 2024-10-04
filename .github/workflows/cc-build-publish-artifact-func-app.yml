@@ -78,7 +78,7 @@ jobs:
         run: dotnet build ${{ inputs.solutionName }} --configuration Release --no-restore
 
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifactConfigName }}
           path: downloaded-artifacts/      

@@ -10,6 +10,7 @@ using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 using Microsoft.Extensions.Logging;
 using PasswordGenerator;
+using Polly;
 using AccountType = Abs.CommonCore.Installer.Actions.Models.AccountType;
 using User = EasyNetQ.Management.Client.Model.User;
 
@@ -131,7 +132,14 @@ public partial class RabbitConfigurer : ActionBase
 
     private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, AccountType accountType, bool isSilent)
     {
-        var existingUser = await GetUserAsync(client, username);
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
+        var existingUser = await waitAndRetry.ExecuteAsync(async () => await GetUserAsync(client, username));
 
         if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase) && !isSilent)
         {
@@ -146,10 +154,10 @@ public partial class RabbitConfigurer : ActionBase
             }
         }
 
-        var user = UserInfo.ByPassword(username, password)
+        var user = UserInfo.ByPassword(password)
             .AddTag(UserTags.Management);
 
-        await client.CreateUserAsync(user);
+        await client.CreateUserAsync(username, user);
         await UpdateUserPermissionsAsync(client, username, accountType);
 
         var userRecord = await client.GetUserAsync(username);
@@ -167,7 +175,7 @@ public partial class RabbitConfigurer : ActionBase
         var configurePermissions = BuildConfigurePermissions(accountType, permissionRegex);
 
         var vHost = await client.GetVhostAsync(SystemVhost);
-        await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
+        await client.CreatePermissionAsync(vHost, username, new PermissionInfo(configurePermissions, permissionRegex, permissionRegex));
     }
 
     private static string BuildConfigurePermissions(AccountType accountType, string permissionsRegex)

@@ -22,8 +22,7 @@ function GenerateKeyAndCert() {
   if ((Test-Path "${KeysDir}\${FileNamePrefix}.key") -and (Test-Path "${CertsDir}\${FileNamePrefix}.pem")) {
     Write-Output "Found existing key & certificate"
 
-  }
-  else {
+  } else {
     Write-Output "Generating RSA private key & X.509 certificate in ${dir}"
     openssl req -newkey rsa:2048 -nodes -keyout ${KeysDir}\${FileNamePrefix}.key -x509 -days 36500 -outform PEM -out ${CertsDir}\${FileNamePrefix}.pem -text -config $ConfigFilePath -extensions v3_req
 

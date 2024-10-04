@@ -56,7 +56,16 @@ public partial class CommandExecutionService : ICommandExecutionService
                 && AnsiEscapeCodesRegex().IsMatch(args.Data);
             if (!isAnsiCommand && !string.IsNullOrWhiteSpace(args.Data))
             {
-                _logger.LogInformation(args.Data.Trim());
+                var message = args.Data.Trim();
+                if (message.Contains("error", StringComparison.CurrentCultureIgnoreCase)
+                    || message.Contains("failed", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _logger.LogWarning(message);
+                }
+                else
+                {
+                    _logger.LogInformation(message);
+                }
             }
         };
         process.Start();

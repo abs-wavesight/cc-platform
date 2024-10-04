@@ -72,13 +72,9 @@
       },
       "EasyNetQ.Management.Client": {
         "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "hurgV4fHNKewdKR+E+sTkYnzf6PbiO8x0hfUWjluRm68rIrE0kUUFh9MhD6zC6qKMdsL0PQ/ZxZqfZWFqsBGzg==",
-        "dependencies": {
-          "System.Net.Http.Json": "6.0.0",
-          "System.Text.Json": "6.0.0"
-        }
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "FXWQN32X/eCmdWl4nJoDbeweJH8rrXMGbWx7cUnKoyaU1PG2h9a5nynqok8xgxHN/M9SIMdzY7uUcLsIlz7FJQ=="
       },
       "Macross.Json.Extensions": {
         "type": "Direct",
@@ -1172,14 +1168,6 @@
           "runtime.native.System": "4.3.0",
           "runtime.native.System.Net.Http": "4.3.0",
           "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
-        }
-      },
-      "System.Net.Http.Json": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "GbIV4y344kGOKjshAKCIDCMUTTW/hyUC42wV0Y5SXEdIbaKBIHBUxZ2MOe4/ZiV2svUAGfQ0c8LGtUExpOI8tg==",
-        "dependencies": {
-          "System.Text.Json": "6.0.0"
         }
       },
       "System.Net.Primitives": {

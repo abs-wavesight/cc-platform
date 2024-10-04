@@ -1,7 +1,7 @@
 ﻿{
   "components": [
-    "Certificates-Central",
     "Docker",
+    "Certificates-Central",
     "RabbitMq",
     "Vector-Central",
     "Sftp-Service",
