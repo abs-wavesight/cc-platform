@@ -602,13 +602,13 @@
       "files": [
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/cloudParameters.json",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/cloudParameters.json",
           "destination": "cloudParameters.json"
         }
       ],
       "actions": [
         {
-          "source": "New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15672 -Protocol TCP -Action allow",
+          "source": "powershell -Command \"New-NetFirewallRule -DisplayName \"open rmq port\" -Direction Inbound -LocalPort 15672 -Protocol TCP -Action allow\"",
           "action": "executeImmediate"
         },
         {
