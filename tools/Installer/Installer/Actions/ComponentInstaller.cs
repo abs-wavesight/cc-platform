@@ -417,17 +417,17 @@ public class ComponentInstaller : ActionBase
             RmqPassword = _generatedGuestPassword,
             RmqVirtualHost = vHostName,
         };
-        
+
         var vhostServices = new RmqVhostService(localRmqConfiguration, new HttpClient(), _logger, "http");
         var vhosts = await vhostServices.GetVhostAsync().Result.ToListAsync();
         if (!vhosts.Any(vh => vh.Name == vHostName))
         {
             await vhostServices.CreateVhostAsync("voyagemgr", "Dedicated to create resources for communication with cloud services", "cloud");
         }
-        
+
         var username = "clouduser";
         var password = RabbitConfigurer.GeneratePassword();
-        
+
         var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "http");
         var users = await userServices.GetUsersAsync();
         var userList = await users.ToListAsync();
@@ -435,7 +435,7 @@ public class ComponentInstaller : ActionBase
         {
             await userServices.CreateUserAsync(username, password, "");
         }
-        
+
         var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "http");
         var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "http");
         var bindingServices = new RmqBindingService(localRmqConfiguration, new HttpClient(), _logger, "http");
@@ -451,10 +451,10 @@ public class ComponentInstaller : ActionBase
             QueueName = incomingQueueName,
             ExchangeType = ExchangeType.Headers,
         };
-        
+
         var resourcesAreCreated = await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, outgoingModel, _logger);
         resourcesAreCreated = resourcesAreCreated && await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, incomingModel, _logger);
-        
+
         if (resourcesAreCreated)
         {
             _logger.LogInformation("Queue and exchange are created successfully.");
@@ -464,9 +464,9 @@ public class ComponentInstaller : ActionBase
             _logger.LogError("Queue and exchange creation failed.");
             return;
         }
-        
+
         var configText = await File.ReadAllTextAsync(action.Source);
-        
+
         var newText = configText
             .RequireReplace("\"user\": \"guest\",", $"\"user\": \"{username}\",");
         newText = newText
@@ -489,7 +489,7 @@ public class ComponentInstaller : ActionBase
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaTypes.Protobuf));
         client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
         client.DefaultRequestHeaders.Add(Constants.Headers.Client, parameters.CloudClientId);
-        
+
         var requestBody = new RegistrationRequest
         {
             Username = username,
@@ -514,7 +514,7 @@ public class ComponentInstaller : ActionBase
         requestContent.Headers.Add(Constants.Headers.ContentType, Constants.MediaTypes.Protobuf);
 
         var httpResponse = await client.PostAsync(requestUrl, requestContent);
-        
+
         if (httpResponse.IsSuccessStatusCode)
         {
             _logger.LogInformation("Shovel is created successfully.");
