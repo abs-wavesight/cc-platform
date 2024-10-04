@@ -70,7 +70,7 @@ public sealed class CustomConsoleFormatter : ConsoleFormatter
 
         static void WriteReplacing(TextWriter writer, string oldValue, string newValue, string message)
         {
-            string newMessage = message.Replace(oldValue, newValue);
+            var newMessage = message.Replace(oldValue, newValue);
             writer.Write(newMessage);
         }
     }
