@@ -569,6 +569,11 @@
           "source": "..\\AdditionalFiles\\ssh_host_rsa_key",
           "destination": "$ABS_PATH\\ssh-keys\\ssh_host_rsa_key",
           "action": "copy"
+        },
+        {
+          "source": "config.json",
+          "schema": "config.schema.json",
+          "action": "validateJson"
         }
       ]
     },

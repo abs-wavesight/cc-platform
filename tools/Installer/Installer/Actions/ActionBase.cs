@@ -1,5 +1,4 @@
 ﻿using Abs.CommonCore.Contracts.Json.Installer;
-using Microsoft.Extensions.Logging;
 
 #pragma warning disable CA1416
 

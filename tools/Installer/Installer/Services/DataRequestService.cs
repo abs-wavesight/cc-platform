@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using Abs.CommonCore.Installer.Extensions;
-using Microsoft.Extensions.Logging;
 using Octokit;
 
 namespace Abs.CommonCore.Installer.Services;

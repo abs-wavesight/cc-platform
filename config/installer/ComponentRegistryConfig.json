@@ -204,6 +204,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.sftp-service.yml",
           "destination": "docker-compose.sftp-service.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/services/SftpService/config/config.schema.json",
+          "destination": "config.schema.json"
         }
       ],
       "actions": [

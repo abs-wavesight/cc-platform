@@ -8,7 +8,6 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
-using Microsoft.Extensions.Logging;
 using PasswordGenerator;
 using Polly;
 using AccountType = Abs.CommonCore.Installer.Actions.Models.AccountType;

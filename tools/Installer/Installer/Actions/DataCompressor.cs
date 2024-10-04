@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions;
 

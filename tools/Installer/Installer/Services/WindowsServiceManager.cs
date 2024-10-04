@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.ServiceProcess;
-using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Services;
 

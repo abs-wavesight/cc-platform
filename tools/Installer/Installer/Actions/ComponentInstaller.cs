@@ -1,14 +1,9 @@
-﻿using System;
-using System.Management;
-using System.Net;
+﻿using System.Management;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Contracts.Proto.Cloud.VoyageManager;
-using Abs.CommonCore.Contracts.Proto.Reference;
-using Abs.CommonCore.Contracts.Proto.Tenant;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
@@ -16,16 +11,13 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Abs.CommonCore.RabbitMQ.Shared.Models;
 using Abs.CommonCore.RabbitMQ.Shared.Models.Exchange;
-using Abs.CommonCore.RabbitMQ.Shared.Models.User;
-using Abs.CommonCore.RabbitMQ.Shared.Models.Vhost;
 using Abs.CommonCore.RabbitMQ.Shared.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using EasyNetQ.Management.Client.Model;
 using Google.Protobuf;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
-using Octokit;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 #pragma warning disable CA1416
 namespace Abs.CommonCore.Installer.Actions;
@@ -122,6 +114,7 @@ public class ComponentInstaller : ActionBase
                 Action = y
             }))
             .OrderByDescending(x => x.Action.Action == ComponentActionAction.Copy)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.ValidateJson)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
@@ -194,17 +187,23 @@ public class ComponentInstaller : ActionBase
 
     private void VerifySourcesPresent(Component[] components)
     {
-        var missingFiles = components
+        _logger.LogInformation("Verifying source files are present");
+        var requiredFiles = components
             .SelectMany(component => component.Actions, (component, action) => new { component, action })
             .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
-            .Where(location => VerifyFileExists(location) == false)
             .Select(Path.GetFullPath)
+            .ToArray();
+        _logger.LogInformation($"Required installation files: {requiredFiles.StringJoin("; ")}");
+
+        var missingFiles = requiredFiles
+            .Where(location => VerifyFileExists(location) == false)
             .ToArray();
 
         if (missingFiles.Any())
         {
-            throw new Exception($"Required installation files are missing: {missingFiles.StringJoin(", ")}");
+            throw new Exception($@"Required installation files are missing: 
+{missingFiles.StringJoin("; " + Environment.NewLine)}");
         }
     }
 
@@ -248,6 +247,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostKdiInstall => RunPostKdiInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
                 ComponentActionAction.CreateShovel => RunShovelCreationCommandAsync(component, action),
+                ComponentActionAction.ValidateJson => RunValidateJsonCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -624,6 +624,35 @@ public class ComponentInstaller : ActionBase
         await _commandExecutionService.ExecuteCommandAsync(parts[0], parts.Skip(1).StringJoin(" "), rootLocation);
     }
 
+    private async Task RunValidateJsonCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Validating JSON for '{action.Source}'");
+
+        try
+        {
+            var schemaFilePath = action.AdditionalProperties["schema"].ToString();
+            var jsonData = await File.ReadAllTextAsync(action.Source);
+            var jsonSchemaData = await File.ReadAllTextAsync(schemaFilePath);
+
+            var json = JToken.Parse(jsonData);
+            var schema = JSchema.Parse(jsonSchemaData);
+
+            var isValid = json.IsValid(schema, out IList<string> errorMessages);
+            if (!isValid)
+            {
+                var errorMessage = $"'{action.Source}' validation failed: " +
+                                   string.Join(Environment.NewLine, errorMessages);
+                _logger.LogError(errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"'{action.Source}' validation failed: {ex.Message}");
+            throw;
+        }
+    }
+
     private async Task WaitForDockerContainersHealthyAsync(int totalContainers, TimeSpan totalTime, TimeSpan checkInterval)
     {
         _logger.LogInformation($"Waiting for {totalContainers} containers to be healthy");
@@ -759,6 +788,7 @@ public class ComponentInstaller : ActionBase
 
         if (files.Length == 0)
         {
+            _logger.LogInformation("No release files found");
             return;
         }
 

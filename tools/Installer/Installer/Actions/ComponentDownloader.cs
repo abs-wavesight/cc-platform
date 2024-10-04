@@ -4,7 +4,6 @@ using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
-using Microsoft.Extensions.Logging;
 using Octokit;
 
 namespace Abs.CommonCore.Installer.Actions;
