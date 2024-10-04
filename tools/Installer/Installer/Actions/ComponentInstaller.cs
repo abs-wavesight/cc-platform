@@ -1,15 +1,31 @@
-﻿using System.Management;
+﻿using System;
+using System.Management;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Contracts.Proto.Cloud.VoyageManager;
+using Abs.CommonCore.Contracts.Proto.Reference;
+using Abs.CommonCore.Contracts.Proto.Tenant;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
+using Abs.CommonCore.RabbitMQ.Shared.Models;
+using Abs.CommonCore.RabbitMQ.Shared.Models.Exchange;
+using Abs.CommonCore.RabbitMQ.Shared.Models.User;
+using Abs.CommonCore.RabbitMQ.Shared.Models.Vhost;
+using Abs.CommonCore.RabbitMQ.Shared.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using EasyNetQ.Management.Client.Model;
+using Google.Protobuf;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
+using Octokit;
 
 #pragma warning disable CA1416
 namespace Abs.CommonCore.Installer.Actions;
@@ -47,6 +63,7 @@ public class ComponentInstaller : ActionBase
     private readonly InstallerComponentInstallerConfig? _installerConfig;
     private readonly InstallerComponentRegistryConfig _registryConfig;
     private readonly Dictionary<string, string> _allParameters;
+    private string _generatedGuestPassword = "guest";
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
@@ -125,6 +142,7 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostKdiInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.CreateShovel)
             .ToArray();
 
         foreach (var action in actions)
@@ -229,6 +247,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostSiemensInstall => RunPostSiemensInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostKdiInstall => RunPostKdiInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
+                ComponentActionAction.CreateShovel => RunShovelCreationCommandAsync(component, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -351,7 +370,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, DrexSiteUsername, null,
-                                  AccountType.LocalDrex, true);
+                                  Models.AccountType.LocalDrex, true);
 
         const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
         const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
@@ -378,8 +397,136 @@ public class ComponentInstaller : ActionBase
         var newText = configText
             .RequireReplace("\"password\": \"guest\",", $"\"password\": \"{password}\",");
 
+        _generatedGuestPassword = password;
         _logger.LogInformation("Altering guest account");
         await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunShovelCreationCommandAsync(Component component, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running shovel creation.");
+        var vHostName = "voyagemgr";
+        var outcomingExchangeName = "eh.cccp.central.outgoing";
+        var outcomingQueueName = "q.cccp.central.outgoing";
+        var incomingExchangeName = "eh.cccp.central.incoming";
+        var incomingQueueName = "q.cccp.central.incoming";
+        var localRmqConfiguration = new RmqConfiguration
+        {
+            RmqHost = _localRabbitLocation.Authority,
+            RmqUserName = "guest",
+            RmqPassword = _generatedGuestPassword,
+            RmqVirtualHost = vHostName,
+        };
+
+        var vhostServices = new RmqVhostService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var vhosts = await vhostServices.GetVhostAsync().Result.ToListAsync();
+        if (!vhosts.Any(vh => vh.Name == vHostName))
+        {
+            await vhostServices.CreateVhostAsync("voyagemgr", "Dedicated to create resources for communication with cloud services", "cloud");
+        }
+
+        var username = "clouduser";
+        var password = RabbitConfigurer.GeneratePassword();
+
+        var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var users = await userServices.GetUsersAsync();
+        var userList = await users.ToListAsync();
+        if (!userList.Any(vh => vh.Name == username))
+        {
+            await userServices.CreateUserAsync(username, password, "");
+        }
+
+        var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var bindingServices = new RmqBindingService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var outgoingModel = new QueueExchangeBindingModel
+        {
+            ExchangeName = outcomingExchangeName,
+            QueueName = outcomingQueueName,
+            ExchangeType = ExchangeType.Headers,
+        };
+        var incomingModel = new QueueExchangeBindingModel
+        {
+            ExchangeName = incomingExchangeName,
+            QueueName = incomingQueueName,
+            ExchangeType = ExchangeType.Headers,
+        };
+
+        var resourcesAreCreated = await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, outgoingModel, _logger);
+        resourcesAreCreated = resourcesAreCreated && await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, incomingModel, _logger);
+
+        if (resourcesAreCreated)
+        {
+            _logger.LogInformation("Queue and exchange are created successfully.");
+        }
+        else
+        {
+            _logger.LogError("Queue and exchange creation failed.");
+            return;
+        }
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+
+        var newText = configText
+            .RequireReplace("\"user\": \"guest\",", $"\"user\": \"{username}\",");
+        newText = newText
+            .RequireReplace("\"password\": \"guest\"", $"\"password\": \"{password}\"");
+
+        var parameters = JsonSerializer.Deserialize<CloudParameters>(newText);
+
+        var apimAppScope = $"https://graph.microsoft.com/.default";
+        var confidentialClientApplication = ConfidentialClientApplicationBuilder
+        .Create(parameters.CloudClientId)
+            .WithClientSecret(parameters.CloudClientSecret)
+            .WithAuthority(new Uri($"https://login.microsoftonline.com/{parameters.CloudTenantId}"))
+            .Build();
+
+        var builder = confidentialClientApplication.AcquireTokenForClient(new[] { apimAppScope });
+        var result = await builder.ExecuteAsync();
+        var requestUrl = $"{parameters.ApimServiceUrl}/vmprovisionadapters/CentralRegistry";
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(requestUrl);
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaTypes.Protobuf));
+        client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
+        client.DefaultRequestHeaders.Add(Constants.Headers.Client, parameters.CloudClientId);
+
+        var requestBody = new RegistrationRequest
+        {
+            Username = username,
+            Password = password,
+            RmqHostname = parameters.CentralHostName,
+            RmqVirtualHost = vHostName,
+            RmqPort = 15672,
+            CcTenantId = parameters.CcTenantId,
+            IncomingExchangeName = incomingExchangeName,
+            OutgoingExchangeName = outcomingExchangeName,
+            IncomingQueueName = incomingQueueName,
+            OutgoingQueueName = outcomingQueueName,
+        };
+
+        var body = new MemoryStream();
+        body.Write(requestBody.ToByteArray());
+        body.Position = 0;
+
+        var httpRequest = new HttpRequestMessage();
+
+        var requestContent = new StreamContent(body);
+        requestContent.Headers.Add(Constants.Headers.ContentType, Constants.MediaTypes.Protobuf);
+
+        var httpResponse = await client.PostAsync(requestUrl, requestContent);
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("Shovel is created successfully.");
+        }
+        else
+        {
+            await exchangeServices.DeleteExchangeAsync(outcomingExchangeName);
+            await exchangeServices.DeleteExchangeAsync(incomingExchangeName);
+            await queueServices.DeleteQueueAsync(outcomingQueueName);
+            await queueServices.DeleteQueueAsync(incomingQueueName);
+            await userServices.DeleteUserAsync(username);
+        }
     }
 
     private async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -389,7 +536,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, DiscoSiteUsername, null,
-                                  AccountType.Disco, true);
+                                  Models.AccountType.Disco, true);
 
         const string usernameVar = "DISCO_RABBIT_USERNAME";
         const string passwordVar = "DISCO_RABBIT_PASSWORD";
@@ -412,7 +559,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, SiemensSiteUsername, null,
-                                  AccountType.Siemens, true);
+                                  Models.AccountType.Siemens, true);
 
         const string usernameVar = "SIEMENS_RABBIT_USERNAME";
         const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
@@ -435,7 +582,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, KdiSiteUsername, null,
-                                  AccountType.Kdi, true);
+                                  Models.AccountType.Kdi, true);
 
         const string usernameVar = "KDI_RABBIT_USERNAME";
         const string passwordVar = "KDI_RABBIT_PASSWORD";
@@ -458,7 +605,7 @@ public class ComponentInstaller : ActionBase
         var account = await RabbitConfigurer
             .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                   LocalRabbitPassword, VectorUsername, null,
-                                  AccountType.Vector, true);
+                                  Models.AccountType.Vector, true);
 
         var config = await File.ReadAllTextAsync(action.Source);
 
@@ -503,8 +650,8 @@ public class ComponentInstaller : ActionBase
                 }
 
                 var logLevel = isHealthy
-                    ? LogLevel.Information
-                    : LogLevel.Warning;
+                    ? Microsoft.Extensions.Logging.LogLevel.Information
+                    : Microsoft.Extensions.Logging.LogLevel.Warning;
 
                 _logger.Log(logLevel, $"Container '{container.Name.Trim('/')}': {(isHealthy ? "Healthy" : "Unhealthy")}");
             }

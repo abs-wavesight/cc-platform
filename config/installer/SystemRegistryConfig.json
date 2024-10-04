@@ -137,7 +137,7 @@
         {
           "source": "wmic service | findstr /I /R \"dockerd.exe.*Running\" && net stop dockerd",
           "action": "postInstall"
-        },	
+        },
         {
           "source": "$ABS_PATH\\config",
           "action": "systemRestore"
@@ -252,10 +252,10 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",          
+          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",
           "action": "postRabbitMqInstall"
-        },		
-        {          
+        },
+        {
           "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\remote\\remote.definitions.json",
           "action": "postRabbitMqInstall"
         }
@@ -298,10 +298,10 @@
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\vector\\vector.toml",
           "action": "postVectorInstall"
-        }			
+        }
       ]
     },
     {
@@ -341,10 +341,10 @@
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\vector\\vector.toml",
           "action": "postVectorInstall"
-        }		
+        }
       ]
     },
     {
@@ -380,7 +380,7 @@
           "source": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
           "action": "replaceParameters"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postDrexInstall"
         }
@@ -443,7 +443,7 @@
           "source": "$ABS_PATH\\config\\docker-compose.disco.yml",
           "action": "replaceParameters"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postDiscoInstall"
         },
@@ -485,7 +485,7 @@
           "source": "$ABS_PATH\\config\\docker-compose.siemens.yml",
           "action": "replaceParameters"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postSiemensInstall"
         }
@@ -523,7 +523,7 @@
           "source": "$ABS_PATH\\config\\docker-compose.kdi.yml",
           "action": "replaceParameters"
         },
-        {          
+        {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postKdiInstall"
         }
@@ -560,7 +560,7 @@
         {
           "source": "$ABS_PATH\\config\\sftp-service\\config.json",
           "action": "replaceParameters"
-        },       
+        },
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_PATH')",
           "action": "execute"
@@ -572,7 +572,7 @@
         }
       ]
     },
-	{
+    {
       "name": "Observability-Service",
       "files": [
         {
@@ -594,6 +594,30 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.observability-service.yml",
           "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Cloud-Shovel",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/cloudParameters.json",
+          "destination": "cloudParameters.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15672 -Protocol TCP -Action allow",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "cloudParameters.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "cloudParameters.json",
+          "action": "createShovel"
         }
       ]
     }

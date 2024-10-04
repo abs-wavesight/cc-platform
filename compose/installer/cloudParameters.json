@@ -1,0 +1,10 @@
+{
+    "cloudTenantId": "$CLOUD_TENANT_ID",
+    "ccTenantId": "$CC_TENANT_ID",
+    "apimServiceUrl": "$APIM_SERVICE_URL",
+    "cloudClientId": "$CLOUD_CLIENT_ID",
+    "cloudClientSecret": "$CLOUD_CLIENT_SECRET",
+    "user": "guest",
+    "password": "guest",
+    "centralHostName": "$CENTRAL_HOST_NAME"
+}

@@ -296,6 +296,30 @@
           "action": "replaceParameters"
         }
       ]
+    },
+    {
+      "name": "Cloud-Shovel",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/cloudParameters.json",
+          "destination": "cloudParameters.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15672 -Protocol TCP -Action allow",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "cloudParameters.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "cloudParameters.json",
+          "action": "createShovel"
+        }
+      ]
     }
   ]
 }
