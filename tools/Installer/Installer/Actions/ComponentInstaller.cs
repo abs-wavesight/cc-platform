@@ -418,7 +418,7 @@ public class ComponentInstaller : ActionBase
             RmqVirtualHost = vHostName,
         };
 
-        var vhostServices = new RmqVhostService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var vhostServices = new RmqVhostService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var vhosts = await vhostServices.GetVhostAsync().Result.ToListAsync();
         if (!vhosts.Any(vh => vh.Name == vHostName))
         {
@@ -428,7 +428,7 @@ public class ComponentInstaller : ActionBase
         var username = "clouduser";
         var password = RabbitConfigurer.GeneratePassword();
 
-        var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var users = await userServices.GetUsersAsync();
         var userList = await users.ToListAsync();
         if (!userList.Any(vh => vh.Name == username))
@@ -436,9 +436,9 @@ public class ComponentInstaller : ActionBase
             await userServices.CreateUserAsync(username, password, "");
         }
 
-        var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "http");
-        var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "http");
-        var bindingServices = new RmqBindingService(localRmqConfiguration, new HttpClient(), _logger, "http");
+        var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "https");
+        var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "https");
+        var bindingServices = new RmqBindingService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var outgoingModel = new QueueExchangeBindingModel
         {
             ExchangeName = outcomingExchangeName,
