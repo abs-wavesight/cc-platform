@@ -1,4 +1,4 @@
-﻿{
+{
   "location": "$ABS_PATH\\installer",
   "components": [
     {
@@ -613,15 +613,15 @@
       ],
       "actions": [
         {
-          "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15672 -Protocol TCP -Action allow\"",
+          "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15671 -Protocol TCP -Action allow\"",
           "action": "executeImmediate"
         },
         {
-          "source": "cloudParameters.json",
+          "source": "$ABS_PATH\\installer\\Cloud-Shovel\\cloudParameters.json",
           "action": "replaceParameters"
         },
         {
-          "source": "cloudParameters.json",
+          "source": "$ABS_PATH\\installer\\Cloud-Shovel\\cloudParameters.json",
           "action": "createShovel"
         }
       ]

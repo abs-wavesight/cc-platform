@@ -497,7 +497,7 @@ public class ComponentInstaller : ActionBase
             Password = password,
             RmqHostname = parameters.CentralHostName,
             RmqVirtualHost = vHostName,
-            RmqPort = 15672,
+            RmqPort = 15671,
             CcTenantId = parameters.CcTenantId,
             IncomingExchangeName = incomingExchangeName,
             OutgoingExchangeName = outcomingExchangeName,
