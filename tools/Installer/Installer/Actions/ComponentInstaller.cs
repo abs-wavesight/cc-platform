@@ -475,6 +475,8 @@ public class ComponentInstaller : ActionBase
         newText = newText
             .RequireReplace("\"password\": \"guest\"", $"\"password\": \"{password}\"");
 
+        await File.WriteAllTextAsync(action.Source, newText);
+
         var parameters = JsonSerializer.Deserialize<CloudParameters>(newText);
 
         var apimAppScope = $"https://graph.microsoft.com/.default";
