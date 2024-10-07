@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Abs.CommonCore.Platform.Tests;
 
-public class UnitTest1
+public class ConfigParserTests
 {
     [Fact]
     public void ValidConfig_FileParsed()

@@ -4,6 +4,8 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Exceptions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema.Generation;
 
 namespace Installer.Tests.Actions;
 
@@ -166,6 +168,54 @@ public class ComponentInstallerTests
         Assert.True(File.Exists(destinationPath));
     }
 
+    [Fact]
+    public async Task ValidConfig_ValidateJsonAction()
+    {
+        // Arrange
+        var directory = Directory.CreateTempSubdirectory();
+
+        TestJson sourceValue = new()
+        {
+            Property = "TestValue"
+        };
+        var generator = new JSchemaGenerator();
+        var schema = generator.Generate(typeof(TestJson));
+        var configPath = Path.Combine(directory.FullName, "params.json");
+        var schemaPath = Path.Combine(directory.FullName, "params.schema.json");
+        var json = JsonConvert.SerializeObject(sourceValue);
+        await File.WriteAllTextAsync(configPath, json);
+        await File.WriteAllTextAsync(schemaPath, schema.ToString());
+
+        var parameters = new Dictionary<string, string> { { "$PATH", directory.FullName.Replace('\\', '/') } };
+
+        // Act
+        var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json", parameters: parameters);
+        await initializer.Installer.ExecuteAsync(new[] { "ValidateJsonTest" });
+        // Assert no exception
+    }
+
+    [Fact]
+    public async Task InvalidConfig_ValidateJsonAction()
+    {
+        // Arrange
+        var directory = Directory.CreateTempSubdirectory();
+        var generator = new JSchemaGenerator();
+        var schema = generator.Generate(typeof(TestJson));
+        var configPath = Path.Combine(directory.FullName, "params.json");
+        var schemaPath = Path.Combine(directory.FullName, "params.schema.json");
+        var json = "{\"errorProp\":\"some data\"}";
+        await File.WriteAllTextAsync(configPath, json);
+        await File.WriteAllTextAsync(schemaPath, schema.ToString());
+
+        var parameters = new Dictionary<string, string> { { "$PATH", directory.FullName.Replace('\\', '/') } };
+
+        // Act
+        var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json", parameters: parameters);
+
+        // Assert
+        await Assert.ThrowsAsync<Exception>(() => initializer.Installer.ExecuteAsync(new[] { "ValidateJsonTest" }));
+    }
+
     private static (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
     {
         var commandExecute = new Mock<ICommandExecutionService>();
@@ -179,5 +229,10 @@ public class ComponentInstallerTests
         parameters ??= new Dictionary<string, string>();
         var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, serviceManager.Object, registryFileInfo, installerFileInfo, parameters, false);
         return (commandExecute, downloader);
+    }
+
+    private class TestJson
+    {
+        public string Property { get; set; }
     }
 }

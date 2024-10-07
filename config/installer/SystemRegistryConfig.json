@@ -1,4 +1,4 @@
-﻿{
+{
   "location": "$ABS_PATH\\installer",
   "components": [
     {
@@ -572,7 +572,7 @@
         },
         {
           "source": "config.json",
-          "schema": "config.schema.json",
+          "schema": "$ABS_PATH\\installer\\sftp-service\\config.schema.json",
           "action": "validateJson"
         }
       ]
