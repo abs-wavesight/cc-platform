@@ -219,7 +219,7 @@ jobs:
             -k:${{ inputs.sonar-project-key }} \
             -d:sonar.token=${{ secrets.SONAR_TOKEN }} \
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
-            -d:sonar.ws.timeout=1000 \
+            -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=${{ inputs.sonar-project-base-directory }} \
             -d:sonar.qualitygate.wait=true \
             -d:sonar.qualitygate.timeout=2000 \
