@@ -571,7 +571,7 @@
           "action": "copy"
         },
         {
-          "source": "config.json",
+          "source": "$ABS_PATH\\config\\sftp-service\\config.json",
           "schema": "$ABS_PATH\\installer\\sftp-service\\config.schema.json",
           "action": "validateJson"
         }
