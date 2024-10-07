@@ -432,10 +432,12 @@ public class ComponentInstaller : ActionBase
         var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var users = await userServices.GetUsersAsync();
         var userList = await users.ToListAsync();
-        if (!userList.Any(vh => vh.Name == username))
+        if (!userList.Any(u => u.Name == username))
         {
             await userServices.CreateUserAsync(username, password, "");
         }
+
+        await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*");
 
         var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "https");
