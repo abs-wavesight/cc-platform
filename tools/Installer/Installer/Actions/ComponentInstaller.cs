@@ -18,6 +18,7 @@ using Google.Protobuf;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using JsonParser = Abs.CommonCore.Installer.Services.JsonParser;
 
 #pragma warning disable CA1416
 namespace Abs.CommonCore.Installer.Actions;
@@ -80,7 +81,7 @@ public class ComponentInstaller : ActionBase
         }
 
         _allParameters = mergedParameters;
-        _registryConfig = ConfigParser.LoadConfig<InstallerComponentRegistryConfig>(registryConfig.FullName,
+        _registryConfig = JsonParser.Instance.Load<InstallerComponentRegistryConfig>(registryConfig.FullName,
             (c, t) => t.ReplaceConfigParameters(mergedParameters));
     }
 
