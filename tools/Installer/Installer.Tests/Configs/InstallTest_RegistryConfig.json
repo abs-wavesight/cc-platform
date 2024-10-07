@@ -86,6 +86,17 @@
           "action": "runDockerCompose"
         }
       ]
+    },
+    {
+        "name": "ValidateJsonTest",
+        "files": [],
+        "actions": [
+            {
+            "source": "$PATH\\params.json",
+            "schema": "$PATH\\params.schema.json",
+            "action": "validateJson"
+            }
+        ]
     }
   ]
 }
