@@ -21,8 +21,11 @@ on:
         type: string
 
 jobs:
-  release:
+  publish-release:
     runs-on: ubuntu-latest
+    outputs:
+      release_url: ${{ steps.publish-release.outputs.html_url }}
+      release_name: ${{ steps.get-release-name.outputs.name }}
     env: 
       GH_TOKEN: ${{ github.token }}
 
@@ -48,18 +51,32 @@ jobs:
         body: ${{ inputs.release_description }}
         name: ${{ inputs.external_release_name }}
         tag: ${{ inputs.external_tag }}
+        repo: ${{ vars.RELEASE_REPOSITORY }}
         artifacts: "./${{ github.event.inputs.internal_release_tag }}/*"
+        token: ${{ secrets.GH_PAT }}
 
-    - name: Push to Release Repository
+  push-release:
+    needs: [publish-release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ vars.RELEASE_REPOSITORY }}
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Release changes
       run: |
-        git clone https://github.com/abs-wavesight/cc-platform-external-releases.git
-        cd cc-platform-external-releases
-        base_dir="${{ steps.get-release-name.name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
+        base_dir="${{ needs.publish-release.outputs.release_name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
         mkdir -p "$base_dir/Installer" "$base_dir/Docs" "$base_dir/Configs"
 
         echo "# Release Information" > "$base_dir/Installer/Readme.md"
-        echo "Release URL: ${{ steps.publish-release.outputs.html_url }}" >> "$base_dir/Installer/Readme.md"
+        echo "Release URL: ${{ needs.publish-release.outputs.release_url }}" >> "$base_dir/Installer/Readme.md"
 
-        git add .
-        git commit -m "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
-        git push
+    - name: Commit & Push changes
+      uses: actions-js/push@v1.5
+      with:
+        github_token: ${{ secrets.GH_PAT }}
+        message: "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
+        repository: ${{ vars.RELEASE_REPOSITORY }}
