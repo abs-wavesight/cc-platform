@@ -1,0 +1,63 @@
+name: External Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      internal_release_tag:
+        description: 'Internal Release Tag'
+        required: true
+        type: string
+      external_release_name:
+        description: 'External Release Name'
+        required: true
+        type: string
+      external_tag:
+        description: 'External Tag'
+        required: true
+        type: string
+      release_description:
+        description: 'Release Description'
+        required: false
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Copy Release Files
+      run: |
+        gh release download ${{ github.event.inputs.internal_release_tag }} --dir ./${{ github.event.inputs.internal_release_tag }}
+        
+    - name: Get Release Name
+      id: get-release-name
+      run: |
+        release_name=$(gh release view v99918-central-system --json "name" -q ".name")
+        actual_name=$(echo "$release_name" | sed -E 's/^v[0-9]+ //')
+        echo "name=$actual_name" >> $GITHUB_OUTPUT
+
+    - name: Publish release
+      id: publish-release
+      uses: ncipollo/release-action@v1
+      with:
+        body: ${{ inputs.release_description }}
+        name: ${{ inputs.external_release_name }}
+        tag: ${{ inputs.external_tag }}
+        artifacts: "./${{ github.event.inputs.internal_release_tag }}/*"
+
+    - name: Push to Release Repository
+      run: |
+        git clone https://github.com/abs-wavesight/cc-platform-external-releases.git
+        cd cc-platform-external-releases
+        base_dir="${{ steps.get-release-name.name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
+        mkdir -p "$base_dir/Installer" "$base_dir/Docs" "$base_dir/Configs"
+
+        echo "# Release Information" > "$base_dir/Installer/Readme.md"
+        echo "Release URL: ${{ steps.publish-release.outputs.html_url }}" >> "$base_dir/Installer/Readme.md"
+
+        git add .
+        git commit -m "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
+        git push
