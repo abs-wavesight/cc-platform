@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: ${{ vars.RELEASE_REPOSITORY }}
         fetch-depth: 0
@@ -39,10 +39,11 @@ jobs:
       release_name: ${{ steps.get-release-name.outputs.name }}
     env: 
       GH_TOKEN: ${{ secrets.GH_PAT }}
+      GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
         persist-credentials: false
@@ -85,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: ${{ vars.RELEASE_REPOSITORY }}
         fetch-depth: 0
