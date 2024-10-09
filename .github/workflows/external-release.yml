@@ -73,7 +73,7 @@ jobs:
       run: |
         cd ${{ github.event.inputs.internal_release_tag }}
         ls
-        gh release create "${{ inputs.external_tag }}" "*"\
+        gh release create "${{ inputs.external_tag }}" ".\" \
             --repo="${{ vars.RELEASE_REPOSITORY }}" \
             --title="${{ inputs.external_release_name }}" \
             --notes="${{ inputs.release_description }}" \
