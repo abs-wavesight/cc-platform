@@ -21,8 +21,19 @@ on:
         type: string
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ vars.RELEASE_REPOSITORY }}
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
   publish-release:
     runs-on: ubuntu-latest
+    needs: [test]
     outputs:
       release_url: ${{ steps.publish-release.outputs.html_url }}
       release_name: ${{ steps.get-release-name.outputs.name }}
