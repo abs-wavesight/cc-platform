@@ -57,9 +57,9 @@ jobs:
 
     - name: Copy Release Files
       run: |
-        gh release download ${{ github.event.inputs.internal_release_tag }} \ 
+        gh release download ${{ github.event.inputs.internal_release_tag }} \
             --repo="${{ github.repository }}" \
-            --dir ./${{ github.event.inputs.internal_release_tag }}
+            --dir="./${{ github.event.inputs.internal_release_tag }}""
         
     - name: Get Release Name
       id: get-release-name
