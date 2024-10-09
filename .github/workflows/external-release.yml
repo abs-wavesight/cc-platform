@@ -60,7 +60,7 @@ jobs:
 
     - name: Publish release
       id: publish-release
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@v1.14.0
       with:
         body: ${{ inputs.release_description }}
         name: ${{ inputs.external_release_name }}
