@@ -64,7 +64,7 @@ jobs:
     - name: Get Release Name
       id: get-release-name
       run: |
-        release_name=$(gh release view ${{ github.event.inputs.internal_release_tag }} --json "name" -q ".name")
+        release_name=$(gh release view ${{ github.event.inputs.internal_release_tag }} --repo="${{ github.repository }}" --json "name" -q ".name")
         actual_name=$(echo "$release_name" | sed -E 's/^v[0-9]+ //')
         echo "name=$actual_name" >> $GITHUB_OUTPUT
 
