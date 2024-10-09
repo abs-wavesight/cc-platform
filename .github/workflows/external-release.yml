@@ -31,14 +31,13 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
 
-    - name: Publish release
-      uses: ncipollo/release-action@v1.14.0
-      with:
-        body: ${{ inputs.release_description }}
-        name: ${{ inputs.external_release_name }}
-        tag: ${{ inputs.external_tag }}
-        repo: ${{ vars.RELEASE_REPOSITORY }}
-        token: ${{ secrets.GH_PAT }}
+    - name: Create release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        gh release create "${{ inputs.external_tag }}" \
+            --repo="${{ vars.RELEASE_REPOSITORY }}" \
+            --title="${{ inputs.external_release_name }}"
 
   publish-release:
     runs-on: ubuntu-latest
