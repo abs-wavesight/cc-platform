@@ -78,7 +78,7 @@ jobs:
             --title="${{ inputs.external_release_name }}" \
             --notes="${{ inputs.release_description }}"
 
-        release_url=$(gh release view ${{ github.event.inputs.external_tag }} --json "url" -q ".url")
+        release_url=$(gh release view ${{ github.event.inputs.external_tag }} --repo="${{ vars.RELEASE_REPOSITORY }}" --json "url" -q ".url")
         echo "html_url=$release_url" >> $GITHUB_OUTPUT
 
   push-release:
