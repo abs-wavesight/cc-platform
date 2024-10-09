@@ -27,7 +27,7 @@ jobs:
       release_url: ${{ steps.publish-release.outputs.html_url }}
       release_name: ${{ steps.get-release-name.outputs.name }}
     env: 
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.GH_PAT }}
 
     steps:
     - name: Checkout Repository
