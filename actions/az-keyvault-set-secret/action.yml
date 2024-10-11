@@ -20,6 +20,14 @@ inputs:
     required: true
     type: string
 
+secrets:
+  AZURE_CLIENT_ID:
+      required: true
+  AZURE_AD_CLIENT_SECRET:
+      required: true
+  AZURE_TENANT_ID:
+      required: true    
+
 runs:
   using: "composite"
   steps:
