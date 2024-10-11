@@ -25,7 +25,7 @@ runs:
   steps:
     - name: Log in to Azure using Service Principal
       shell: bash
-      run: az login --service-principal -u ${{ env.ARM_CLIENT_ID }} -p ${{ env.ARM_CLIENT_SECRET }} --tenant ${{ env.ARM_TENANT_ID }}
+      run: az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
 
     - name: Set AZ Subscription
       shell: bash
