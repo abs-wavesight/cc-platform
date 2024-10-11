@@ -407,10 +407,10 @@ public class ComponentInstaller : ActionBase
     {
         _logger.LogInformation($"{component.Name}: Running shovel creation.");
         var vHostName = "voyagemgr";
-        var outcomingExchangeName = "eh.cccp.central.outgoing";
-        var outcomingQueueName = "q.cccp.central.outgoing";
-        var incomingExchangeName = "eh.cccp.central.incoming";
-        var incomingQueueName = "q.cccp.central.incoming";
+        var outcomingExchangeName = "eh.cccp.drex.cloud.dispatch";
+        var outcomingQueueName = "q.cccp.drex.cloud.dispatch";
+        var incomingExchangeName = "eh.cccp.drex.portal";
+        var incomingQueueName = "q.cccp.drex.portal.provisioning";
         var localRmqConfiguration = new RmqConfiguration
         {
             RmqHost = _localRabbitLocation.Authority,
@@ -434,7 +434,7 @@ public class ComponentInstaller : ActionBase
         var userList = await users.ToListAsync();
         if (!userList.Any(u => u.Name == username))
         {
-            await userServices.CreateUserAsync(username, password, "");
+            await userServices.CreateUserAsync(username, password, "management");
         }
 
         await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*");
@@ -501,12 +501,13 @@ public class ComponentInstaller : ActionBase
             Password = password,
             RmqHostname = parameters.CentralHostName,
             RmqVirtualHost = vHostName,
-            RmqPort = 15671,
+            RmqPort = 5672,
             CcTenantId = parameters.CcTenantId,
             IncomingExchangeName = incomingExchangeName,
             OutgoingExchangeName = outcomingExchangeName,
             IncomingQueueName = incomingQueueName,
             OutgoingQueueName = outcomingQueueName,
+            IsAmqpsProtocol = false,
         };
 
         var body = new MemoryStream();

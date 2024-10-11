@@ -1,4 +1,4 @@
-{
+﻿{
   "location": "$ABS_PATH\\installer",
   "components": [
     {
@@ -614,6 +614,14 @@
       "actions": [
         {
           "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15671 -Protocol TCP -Action allow\"",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 5671 -Protocol TCP -Action allow\"",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 5672 -Protocol TCP -Action allow\"",
           "action": "executeImmediate"
         },
         {
