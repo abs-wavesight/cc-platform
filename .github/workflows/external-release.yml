@@ -21,43 +21,66 @@ on:
         type: string
 
 jobs:
-  release:
+
+  publish-release:
     runs-on: ubuntu-latest
+    outputs:
+      release_url: ${{ steps.publish-release.outputs.html_url }}
+      release_name: ${{ steps.get-release-name.outputs.name }}
+    env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
     - name: Copy Release Files
       run: |
-        gh release download ${{ github.event.inputs.internal_release_tag }} --dir ./${{ github.event.inputs.internal_release_tag }}
+        gh release download ${{ github.event.inputs.internal_release_tag }} \
+            --repo="${{ github.repository }}" \
+            --dir="./${{ github.event.inputs.internal_release_tag }}"
         
     - name: Get Release Name
       id: get-release-name
       run: |
-        release_name=$(gh release view ${{ github.event.inputs.internal_release_tag }} --json "name" -q ".name")
+        release_name=$(gh release view ${{ github.event.inputs.internal_release_tag }} --repo="${{ github.repository }}" --json "name" -q ".name")
         actual_name=$(echo "$release_name" | sed -E 's/^v[0-9]+ //')
         echo "name=$actual_name" >> $GITHUB_OUTPUT
 
-    - name: Publish release
+    - name: Create release
       id: publish-release
-      uses: ncipollo/release-action@v1
-      with:
-        body: ${{ inputs.release_description }}
-        name: ${{ inputs.external_release_name }}
-        tag: ${{ inputs.external_tag }}
-        artifacts: "./${{ github.event.inputs.internal_release_tag }}/*"
-
-    - name: Push to Release Repository
       run: |
-        git clone https://github.com/abs-wavesight/cc-platform-external-releases.git
-        cd cc-platform-external-releases
-        base_dir="${{ steps.get-release-name.name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
+        cd ${{ github.event.inputs.internal_release_tag }}
+        ls
+        gh release create "${{ inputs.external_tag }}" ./* \
+            --repo="${{ vars.RELEASE_REPOSITORY }}" \
+            --title="${{ inputs.external_release_name }}" \
+            --notes="${{ inputs.release_description }}"
+
+        release_url=$(gh release view ${{ github.event.inputs.external_tag }} --repo="${{ vars.RELEASE_REPOSITORY }}" --json "url" -q ".url")
+        echo "html_url=$release_url" >> $GITHUB_OUTPUT
+
+  push-release:
+    needs: [publish-release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.RELEASE_REPOSITORY }}
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Release changes
+      run: |
+        base_dir="${{ needs.publish-release.outputs.release_name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
         mkdir -p "$base_dir/Installer" "$base_dir/Docs" "$base_dir/Configs"
 
-        echo "# Release Information" > "$base_dir/Installer/Readme.md"
-        echo "Release URL: ${{ steps.publish-release.outputs.html_url }}" >> "$base_dir/Installer/Readme.md"
+        readme_file="$base_dir/Installer/Readme.md"
+        echo "# Release Information  " >> "$readme_file"
+        echo "Release URL: ${{ needs.publish-release.outputs.release_url }}  " >> "$readme_file"
+        echo "Release Tag: ${{ github.event.inputs.external_tag }}  " >> "$readme_file"
 
-        git add .
-        git commit -m "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
-        git push
+    - name: Commit & Push changes
+      uses: actions-js/push@v1.5
+      with:
+        github_token: ${{ secrets.GH_PAT }}
+        message: "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
+        repository: ${{ vars.RELEASE_REPOSITORY }}
