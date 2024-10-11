@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.497" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.512" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.311" />
 		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.249" />
 		<PackageReference Include="Abs.CommonCore.RabbitMQ.Shared" Version="1.0.30" />
