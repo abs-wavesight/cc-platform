@@ -98,9 +98,9 @@ jobs:
         mkdir -p "$base_dir/Installer" "$base_dir/Docs" "$base_dir/Configs"
 
         readme_file="$base_dir/Installer/Readme.md"
-        echo "# Release Information" >> "$readme_file"
-        echo "Release URL: ${{ needs.publish-release.outputs.release_url }}" >> "$readme_file"
-        echo "Release Tag: ${{ github.event.inputs.external_tag }}" >> "$readme_file"
+        echo "# Release Information  " >> "$readme_file"
+        echo "Release URL: ${{ needs.publish-release.outputs.release_url }}  " >> "$readme_file"
+        echo "Release Tag: ${{ github.event.inputs.external_tag }}  " >> "$readme_file"
 
     - name: Commit & Push changes
       uses: actions-js/push@v1.5
