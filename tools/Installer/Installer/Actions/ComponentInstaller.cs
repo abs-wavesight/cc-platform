@@ -407,10 +407,10 @@ public class ComponentInstaller : ActionBase
     {
         _logger.LogInformation($"{component.Name}: Running shovel creation.");
         var vHostName = "voyagemgr";
-        var outcomingExchangeName = "eh.cccp.central.outgoing";
-        var outcomingQueueName = "q.cccp.central.outgoing";
-        var incomingExchangeName = "eh.cccp.central.incoming";
-        var incomingQueueName = "q.cccp.central.incoming";
+        var outcomingExchangeName = "eh.cccp.drex.cloud.dispatch";
+        var outcomingQueueName = "q.cccp.drex.cloud.dispatch";
+        var incomingExchangeName = "eh.cccp.drex.portal";
+        var incomingQueueName = "q.cccp.drex.portal.provisioning";
         var localRmqConfiguration = new RmqConfiguration
         {
             RmqHost = _localRabbitLocation.Authority,
