@@ -434,7 +434,7 @@ public class ComponentInstaller : ActionBase
         var userList = await users.ToListAsync();
         if (!userList.Any(u => u.Name == username))
         {
-            await userServices.CreateUserAsync(username, password, "");
+            await userServices.CreateUserAsync(username, password, "management");
         }
 
         await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*");
@@ -501,12 +501,13 @@ public class ComponentInstaller : ActionBase
             Password = password,
             RmqHostname = parameters.CentralHostName,
             RmqVirtualHost = vHostName,
-            RmqPort = 15671,
+            RmqPort = 5672,
             CcTenantId = parameters.CcTenantId,
             IncomingExchangeName = incomingExchangeName,
             OutgoingExchangeName = outcomingExchangeName,
             IncomingQueueName = incomingQueueName,
             OutgoingQueueName = outcomingQueueName,
+            IsAmqpsProtocol = false,
         };
 
         var body = new MemoryStream();
