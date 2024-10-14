@@ -423,7 +423,14 @@ public class ComponentInstaller : ActionBase
         var vhosts = await vhostServices.GetVhostAsync().Result.ToListAsync();
         if (!vhosts.Any(vh => vh.Name == vHostName))
         {
-            await vhostServices.CreateVhostAsync("voyagemgr", "Dedicated to create resources for communication with cloud services", "cloud");
+            if (await vhostServices.CreateVhostAsync("voyagemgr", "Dedicated to create resources for communication with cloud services", "cloud"))
+            {
+                _logger.LogInformation("Virtual host is created successfully.");
+            }
+            else
+            {
+                _logger.LogError("Virtual host creation failed.");
+            }
         }
 
         var username = "clouduser";
@@ -434,10 +441,24 @@ public class ComponentInstaller : ActionBase
         var userList = await users.ToListAsync();
         if (!userList.Any(u => u.Name == username))
         {
-            await userServices.CreateUserAsync(username, password, "management");
+            if (await userServices.CreateUserAsync(username, password, "management"))
+            {
+                _logger.LogInformation("User is created successfully.");
+            }
+            else
+            {
+                _logger.LogError("User creation failed.");
+            }
         }
 
-        await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*");
+        if (await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*"))
+        {
+            _logger.LogInformation("User permission is set successfully.");
+        }
+        else
+        {
+            _logger.LogError("User permission setting failed.");
+        }
 
         var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "https");
         var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "https");
@@ -476,6 +497,7 @@ public class ComponentInstaller : ActionBase
             .RequireReplace("\"password\": \"guest\"", $"\"password\": \"{password}\"");
 
         await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation("Credentials are updated");
 
         var parameters = JsonSerializer.Deserialize<CloudParameters>(newText);
 
@@ -520,6 +542,7 @@ public class ComponentInstaller : ActionBase
         requestContent.Headers.Add(Constants.Headers.ContentType, Constants.MediaTypes.Protobuf);
 
         var httpResponse = await client.PostAsync(requestUrl, requestContent);
+        _logger.LogInformation($"Shovel craetion response. Code: {httpResponse.StatusCode}. Content: {await httpResponse.Content.ReadAsStringAsync()}");
 
         if (httpResponse.IsSuccessStatusCode)
         {
