@@ -3,10 +3,6 @@ name: Create Azure Key Vault Secret
 # on:
 #   workflow_call:
 inputs:
-  subscription_id:
-    description: "Specifies the suncsription id to use for Azure Key Vault"
-    required: true
-    type: string
   keyvault_name:
     description: "Specifies the Azure Key Vault to add a secret to"
     required: true
@@ -26,11 +22,11 @@ runs:
     - name: Login via Azure CLI
       uses: azure/login@v2
       with:
-        creds: '{"clientId":"${{ env.ARM_CLIENT_ID }}","clientSecret":"${{ env.ARM_CLIENT_SECRET }}","subscriptionId":"${{ env.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ env.ARM_TENANT_ID }}"}'
+        creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_AD_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TF_APIM_TENANT }}"}'
 
     - name: Set AZ Subscription
       shell: bash
-      run: az account set --subscription ${{ inputs.subscription_id }}
+      run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Secret to Key Vault
       shell: bash
