@@ -468,12 +468,20 @@ public class ComponentInstaller : ActionBase
             ExchangeName = outcomingExchangeName,
             QueueName = outcomingQueueName,
             ExchangeType = ExchangeType.Headers,
+            IsExchangeDurable = true,
+            IsQueueDurable = true,
+            IsExchangeAutoDelete = false,
+            IsQueueAutoDelete = false,
         };
         var incomingModel = new QueueExchangeBindingModel
         {
             ExchangeName = incomingExchangeName,
             QueueName = incomingQueueName,
             ExchangeType = ExchangeType.Headers,
+            IsExchangeDurable = true,
+            IsQueueDurable = true,
+            IsExchangeAutoDelete = false,
+            IsQueueAutoDelete = false,
         };
 
         var resourcesAreCreated = await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, outgoingModel, _logger);
