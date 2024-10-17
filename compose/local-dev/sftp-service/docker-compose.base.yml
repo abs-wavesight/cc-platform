@@ -1,5 +1,4 @@
 ---
-version: '3.9'
 services:
   cc.sftp-service:
     container_name: sftp-service
