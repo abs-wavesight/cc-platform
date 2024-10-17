@@ -1,5 +1,4 @@
 ---
-version: '3.9'
 services:
   cc.observability-service:
     container_name: observability-service

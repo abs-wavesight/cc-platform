@@ -34,6 +34,7 @@ public class RunCommandTests
     [InlineData("run -m r --disco-service i", new[] { "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --siemens-adapter i", new[] { "cc.siemens-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
     [InlineData("run -m r --kdi-adapter i", new[] { "cc.kdi-adapter", "cc.disco-service", "cc.rabbitmq-local", "cc.vector-site" })]
+    [InlineData("run -m r --voyage-manager-adapter i", new[] { "cc.voyage-manager-adapter", "cc.rabbitmq-remote" })]
     public async Task RunCommand_GivenValidInput_ShouldExecuteDockerCompose(string command, string[] expectedServices, string[]? specificExpectedComposeFiles = null)
     {
         // Arrange

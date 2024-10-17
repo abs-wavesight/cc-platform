@@ -1,10 +1,9 @@
----
 services:
 
-  cc.drex-message-service:
+  cc.voyage-manager-adapter:
     build:
-      context: ${PATH_TO_CC_DREX_REPO}
-      dockerfile: service/DrexMessage.Dockerfile
+      context: ${PATH_TO_CC_VOYAGE_MANAGER_ADAPTER_REPO}
+      dockerfile: src\VoyageManagerAdapter.Central.Dockerfile
       args:
         ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
         ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD

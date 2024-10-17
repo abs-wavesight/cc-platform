@@ -1,6 +1,4 @@
 ﻿---
-version: '3.9'
-
 services:
   cc.openssl-generate-certs:
     image: ghcr.io/abs-wavesight/openssl:windows-${WINDOWS_VERSION}

@@ -1,6 +1,4 @@
 ---
-version: '3.9'
-
 services:
   cc.grafana:
     image: ghcr.io/abs-wavesight/grafana:windows-${WINDOWS_VERSION}

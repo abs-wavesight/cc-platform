@@ -90,6 +90,10 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(nameof(DiscoService))]
     public ComposeComponentMode? KdiAdapter { get; set; }
 
+    [ComposeComponent(composePath: "voyage-manager-adapter", imageName: "cc-voyage-manager-adapter")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    public ComposeComponentMode? VoyageManagerAdapter { get; set; }
+
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
         .Where(i => i.PropertyType == typeof(ComposeComponentMode?) || i.PropertyType == typeof(ComposeComponentMode))
