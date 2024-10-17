@@ -2,6 +2,7 @@
 
 public class AppConfig
 {
+    public string? VoyageManagerRepositoryPath { get; set; }
     public string? CommonCorePlatformRepositoryPath { get; set; }
     public string? CommonCoreDrexRepositoryPath { get; set; }
     public string? CommonCoreDiscoRepositoryPath { get; set; }

@@ -201,7 +201,7 @@ jobs:
           addTimestamp: true
           platform: windows/amd64
 
-      - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
+      - uses: SmartsquareGmbH/delete-old-packages@v0.8.1
         env:
           BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
           BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
