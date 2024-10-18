@@ -55,6 +55,17 @@ public class DataRequestService : IDataRequestService
         var uri = new Uri(asset.Url, UriKind.Absolute);
         var response = await client.Connection.Get<Stream>(uri, new Dictionary<string, string>(), "application/octet-stream");
 
+        if (!response.HttpResponse.IsSuccessStatusCode())
+        {
+            var message = $"Response status code does not indicate success: {response.HttpResponse.StatusCode}.";
+            throw new HttpRequestException(message);
+        }
+
+        if (response.Body is null)
+        {
+            return Stream.Null;
+        }
+
         MemoryStream ms = new();
         await response.Body.CopyToAsync(ms);
         return ms;
