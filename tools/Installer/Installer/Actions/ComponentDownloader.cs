@@ -5,6 +5,7 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Octokit;
+using FileMode = System.IO.FileMode;
 
 namespace Abs.CommonCore.Installer.Actions;
 
@@ -143,7 +144,9 @@ public class ComponentDownloader : ActionBase
         var data = await _dataRequestService.RequestByteArrayAsync(source);
 
         _logger.LogInformation($"Saving file '{source}' to '{destination}'");
-        await File.WriteAllBytesAsync(outputPath, data);
+
+        await using FileStream fileStream = new(outputPath, FileMode.Create, FileAccess.Write);
+        await data.CopyToAsync(fileStream);
     }
 
     private async Task ProcessReleaseFileAsync(Component component, string source, string destination)

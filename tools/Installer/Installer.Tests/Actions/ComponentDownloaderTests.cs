@@ -143,6 +143,7 @@ public class ComponentDownloaderTests
     private static (Mock<IDataRequestService> DataRequest, Mock<ICommandExecutionService> CommandExecute, ComponentDownloader Downloader) Initialize(string registryFile, string? downloaderFile = null, Dictionary<string, string>? parameters = null)
     {
         var dataRequest = new Mock<IDataRequestService>();
+        dataRequest.Setup(x => x.RequestByteArrayAsync(It.IsAny<string>())).ReturnsAsync(Stream.Null);
         var commandExecute = new Mock<ICommandExecutionService>();
 
         var registryFileInfo = new FileInfo(registryFile);
