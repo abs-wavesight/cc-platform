@@ -34,6 +34,7 @@ public class ComponentInstaller : ActionBase
     private const string DiscoSiteUsername = "disco";
     private const string SiemensSiteUsername = "siemens-adapter";
     private const string KdiSiteUsername = "kdi-adapter";
+    private const string VMReportUsername = "vm-report-adapter";
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
@@ -242,6 +243,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.PostDrexInstall => RunPostDrexInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostVectorInstall => RunPostVectorInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostVMReportInstall => RunPostVoyageManagerInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostInstall => RunPostInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostDiscoInstall => RunPostDiscoInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostSiemensInstall => RunPostSiemensInstallCommandAsync(component, rootLocation, action),
@@ -651,6 +653,29 @@ public class ComponentInstaller : ActionBase
                       .RequireReplace($"{LocalRabbitUsername}:{LocalRabbitPassword}", $"{account!.Username}:{HttpUtility.UrlEncode(account.Password)}");
 
         _logger.LogInformation("Updating vector account");
+        await File.WriteAllTextAsync(action.Source, newText);
+    }
+
+    private async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running Voyage Report Manager post install for '{action.Source}'");
+
+        var account = await RabbitConfigurer
+            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                LocalRabbitPassword, VMReportUsername, null,
+                Models.AccountType.VMReport, true);
+
+        const string usernameVar = "VOYAGE_MANAGER_RABBIT_USERNAME";
+        const string passwordVar = "VOYAGE_MANAGER_RABBIT_PASSWORD";
+
+        var configText = await File.ReadAllTextAsync(action.Source);
+
+        // Replace the default password with a new one
+        var newText = configText
+            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
+
+        _logger.LogInformation("Altering default account");
         await File.WriteAllTextAsync(action.Source, newText);
     }
 

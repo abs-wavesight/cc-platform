@@ -13,7 +13,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ${PATH_TO_CC_VOYAGE_MANAGER_ADAPTER_REPO}/config/
+        source: ${PATH_TO_CC_VOYAGE_MANAGER_ADAPTER_REPO}/config/VoyageManagerAdapter.Central
         target: C:/app/config
         read_only: false
       - type: bind

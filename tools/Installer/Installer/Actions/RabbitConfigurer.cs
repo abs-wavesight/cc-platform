@@ -202,6 +202,7 @@ public partial class RabbitConfigurer : ActionBase
                 throw new Exception($"Unknown account type: {accountType}");
             case AccountType.LocalDrex:
             case AccountType.Disco:
+            case AccountType.VMReport:
                 return ".*";
             case AccountType.Vector:
                 const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;

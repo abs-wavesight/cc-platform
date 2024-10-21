@@ -325,6 +325,32 @@
           "action": "createShovel"
         }
       ]
+    },
+    {
+      "name": "Voyage-Manager-Report-Adapter",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-main-$VOYAGE_MANAGER_REPORT_ADAPTER_COMMIT_SHA",
+          "destination": "voyage-manager-report-adapter.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.voyage-manager-report-adapter.yml",
+          "destination": "docker-compose.voyage-manager-report-adapter.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/voyage-manager-adapter/appsettings.json",
+          "destination": "appsettings.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.voyage-manager-report-adapter.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }

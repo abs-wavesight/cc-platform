@@ -1,5 +1,4 @@
-﻿using Abs.CommonCore.Drex.Shared;
-using Abs.CommonCore.Installer;
+﻿using Abs.CommonCore.Installer;
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
 using Moq;

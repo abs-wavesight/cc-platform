@@ -8,7 +8,7 @@
     "OpenSsl",
     "Installer",
     "Disco",
-	"Observability-Service"	
+    "Observability-Service"	
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
