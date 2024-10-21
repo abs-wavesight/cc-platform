@@ -6,7 +6,8 @@
     "Vector-Central",
     "Sftp-Service",
     "Installer",
-    "Cloud-Shovel"
+    "Cloud-Shovel",
+    "Voyage-Manager-Report-Adapter"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
