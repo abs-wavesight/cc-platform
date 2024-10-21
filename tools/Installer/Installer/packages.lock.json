@@ -15,12 +15,12 @@
       },
       "Abs.CommonCore.Drex.Shared": {
         "type": "Direct",
-        "requested": "[1.0.251, )",
-        "resolved": "1.0.251",
-        "contentHash": "Oy/pwEyEQkCRlP81sELHovvHphMlpQwYHSIf7cFVCZct/Z5Ya2kf4v0ad0ZDPTuVotabla6rSKLvHITBu0hoEA==",
+        "requested": "[1.0.256, )",
+        "resolved": "1.0.256",
+        "contentHash": "pZViF7gfxH7+v/Xm6bO1+nZZFVc/dlYvuRUrrIGIEAGoNs1qDOADFrYVPwmZMuQph/eH1ApAl9SiExlYlZcLnQ==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.348",
-          "Abs.CommonCore.Platform": "1.0.279",
+          "Abs.CommonCore.Contracts": "1.0.515",
+          "Abs.CommonCore.Platform": "1.0.313",
           "Microsoft.Extensions.Configuration": "8.0.0",
           "Microsoft.Extensions.Configuration.Binder": "8.0.2",
           "Microsoft.Extensions.Configuration.Json": "8.0.1",

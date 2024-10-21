@@ -8,6 +8,6 @@ public enum AccountType
     Client,
     Disco,
     Siemens,
-    Kdi
-
+    Kdi,
+    VMReport
 }

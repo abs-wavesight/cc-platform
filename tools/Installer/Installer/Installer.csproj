@@ -20,7 +20,7 @@
 	<ItemGroup>
 		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.515" />
 		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.313" />
-		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.251" />
+		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.256" />
 		<PackageReference Include="Abs.CommonCore.RabbitMQ.Shared" Version="1.0.30" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.65.0" />
