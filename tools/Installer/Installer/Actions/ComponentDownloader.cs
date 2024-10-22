@@ -141,7 +141,7 @@ public class ComponentDownloader : ActionBase
         Directory.CreateDirectory(directory);
 
         _logger.LogInformation($"Downloading file '{source}'");
-        var data = await _dataRequestService.RequestByteArrayAsync(source);
+        await using var data = await _dataRequestService.RequestByteArrayAsync(source);
 
         _logger.LogInformation($"Saving file '{source}' to '{destination}'");
 

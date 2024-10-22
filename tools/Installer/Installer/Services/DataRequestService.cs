@@ -68,6 +68,7 @@ public class DataRequestService : IDataRequestService
 
         MemoryStream ms = new();
         await response.Body.CopyToAsync(ms);
+        ms.Position = 0;
         return ms;
     }
 
@@ -101,6 +102,7 @@ public class DataRequestService : IDataRequestService
 
         MemoryStream ms = new();
         await response.Content.CopyToAsync(ms);
+        ms.Position = 0;
         return ms;
     }
 }
