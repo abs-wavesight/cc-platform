@@ -812,7 +812,7 @@ internal class Program
         var (_, loggerFactory) = Initialize(args);
         var configParameters = BuildConfigParameters(parameters);
 
-        return await ExecuteCommandAsync(loggerFactory, 
+        return await ExecuteCommandAsync(loggerFactory,
             async () => await ReleaseBodyBuilder.BuildReleaseBodyAsync(config, configParameters, output));
     }
 
@@ -848,7 +848,7 @@ internal class Program
                 {
                     await RabbitConfigurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex, "Error updating drex site config");
                     return Constants.ExitCodes.GENERIC_ERROR;
@@ -861,7 +861,7 @@ internal class Program
                 {
                     await RabbitConfigurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex, "Error updating credentials file");
                     return Constants.ExitCodes.GENERIC_ERROR;
@@ -927,7 +927,7 @@ internal class Program
         }, true);
     }
 
-    private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory, 
+    private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory,
         Func<Task> action, bool logError = false)
     {
         try
