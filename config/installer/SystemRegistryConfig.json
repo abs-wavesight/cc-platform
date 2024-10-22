@@ -633,6 +633,44 @@
           "action": "createShovel"
         }
       ]
+    },
+    {
+      "name": "Voyage-Manager-Report-Adapter",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-cloud-voyage-manager-adapter/releases/download/$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Voyage-Manager-Report-Adapter/"
+        }
+      ],
+      "actions":[
+        {
+          "source": "voyage-manager-report-adapter.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.voyage-manager-report-adapter.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.voyage-manager-report-adapter.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.voyage-manager-report-adapter.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "appsettings.json",
+          "destination": "$ABS_PATH\\config\\voyage-manager-report-adapter\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\voyage-manager-report-adapter\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postVMReportInstall"
+        }
+      ]
     }
   ]
 }
