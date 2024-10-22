@@ -8,6 +8,8 @@ services:
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
+      - ConnectionSettings__Username=${VOYAGE_MANAGER_RABBIT_USERNAME}
+      - ConnectionSettings__Password=${VOYAGE_MANAGER_RABBIT_PASSWORD}
     ports:	
       - "12345:5000"	
     restart: always	

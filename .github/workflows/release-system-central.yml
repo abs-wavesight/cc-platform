@@ -23,6 +23,10 @@ on:
         required: false
         type: string
         description: Version to use for Sftp Service release # v100
+      vm-report-version:
+        required: false
+        type: string
+        description: Version to use for Voyage Manager Report Adapter release # v100
 
 concurrency:
   group: central-system-release-${{ github.head_ref }}
@@ -65,12 +69,22 @@ jobs:
       name: "Sftp Service Release"
     secrets: inherit
 
+  get-default-vm-report-adapter-version:
+    name: Get Default Voyage Manager Report Adapter Version
+    if: ${{ inputs.vm-report-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-cloud-voyage-manager-adapter"
+      name: "Voyage Manager Report Adapter Release"
+    secrets: inherit
+
   release-component:
     name: Central System Release
     needs: 
       - get-default-rabbitmq-version
       - get-default-vector-central-version
       - get-default-sftp-service-version
+      - get-default-vm-report-adapter-version
       - get-next-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
@@ -86,6 +100,7 @@ jobs:
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq
         -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
         -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
+        -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}-voyage-manager-report-adapter
       release-name-prefix: Central System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

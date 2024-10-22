@@ -134,7 +134,8 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostVectorInstall or
                     ComponentActionAction.PostDiscoInstall or
                     ComponentActionAction.PostSiemensInstall or
-                    ComponentActionAction.PostKdiInstall)
+                    ComponentActionAction.PostKdiInstall or
+                    ComponentActionAction.PostVMReportInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.CreateShovel)
