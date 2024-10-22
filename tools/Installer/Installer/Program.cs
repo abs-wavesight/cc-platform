@@ -136,7 +136,6 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-
         command.SetHandler(Handle, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
