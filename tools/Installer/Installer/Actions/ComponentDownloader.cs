@@ -174,10 +174,11 @@ public class ComponentDownloader : ActionBase
         await files
             .ForEachAsync(async file =>
             {
-                var response = await client.Connection.Get<byte[]>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
+                var response = await client.Connection.Get<Stream>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
                 var outputLocation = Path.Combine(outputPath, file.Filename);
 
-                await File.WriteAllBytesAsync(outputLocation, response.Body);
+                await using FileStream fileStream = new(outputLocation, FileMode.Create, FileAccess.Write);
+                await response.Body.CopyToAsync(fileStream);
             });
     }
 }

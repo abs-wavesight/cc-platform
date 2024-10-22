@@ -1,8 +1,8 @@
 {
   "profiles": {
     "Installer": {
-      "commandName": "Project",
-      "commandLineArgs": "install"
+        "commandName": "Project",
+        "commandLineArgs": "download -np -r SystemRegistryConfig.json -dc SystemConfig.json -p $WINDOWS_VERSION:2022 -p $RABBIT_RELEASE_TAG:v99906-rabbitmq -p $VECTOR_CENTRAL_RELEASE_TAG:v99904-vector-central -p $SFTP_SERVICE_RELEASE_TAG:v99908-sftp-service -p $VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:v00004-voyage-manager-report-adapter"
     }
   }
 }
