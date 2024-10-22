@@ -108,8 +108,8 @@ jobs:
 
       - name: Bundle installer
         run: |
-          xcopy Installer.exe c:\abs\installer\Installer
-          xcopy Uninstall.cmd c:\abs\installer\Installer
+          xcopy Installer.exe c:\abs\installer\Installer\
+          xcopy Uninstall.cmd c:\abs\installer\Installer\
 
       - name: Remove logs
         run: |
