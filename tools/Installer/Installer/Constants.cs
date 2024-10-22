@@ -29,4 +29,10 @@ public static class Constants
         public const string AnyJson = "*/json";
         public const string Json = "application/json";
     }
+
+    public static class ExitCodes
+    {
+        public const int SUCCESS = 0;
+        public const int GENERIC_ERROR = 1;
+    }
 }
