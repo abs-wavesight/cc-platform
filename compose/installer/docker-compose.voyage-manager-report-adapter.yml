@@ -6,7 +6,7 @@ services:
     depends_on:
       - cc.rabbitmq
     environment:
-      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
       - ConnectionSettings__Username=${VOYAGE_MANAGER_RABBIT_USERNAME}
       - ConnectionSettings__Password=${VOYAGE_MANAGER_RABBIT_PASSWORD}
@@ -19,6 +19,6 @@ services:
         target: C:/app/config	
         read_only: false
       - type: bind
-        source: $ABS_PATH/certificates/remote-certs
-        target: C:/rabbitmq-remote-certs
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/rabbitmq-certs
         read_only: true
