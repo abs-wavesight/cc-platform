@@ -405,12 +405,8 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunShovelCreationCommandAsync(Component component, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running shovel creation.");
-        var vHostName = "voyagemgr";
-        var outcomingExchangeName = "eh.cccp.drex.cloud.dispatch";
-        var outcomingQueueName = "q.cccp.drex.cloud.dispatch";
-        var incomingExchangeName = "eh.cccp.drex.portal";
-        var incomingQueueName = "q.cccp.drex.portal.provisioning";
+        _logger.LogInformation($"{component.Name}: Running vhost creation.");
+        var vHostName = "drexhost";
         var localRmqConfiguration = new RmqConfiguration
         {
             RmqHost = _localRabbitLocation.Authority,
@@ -423,7 +419,7 @@ public class ComponentInstaller : ActionBase
         var vhosts = await vhostServices.GetVhostAsync().Result.ToListAsync();
         if (!vhosts.Any(vh => vh.Name == vHostName))
         {
-            if (await vhostServices.CreateVhostAsync("voyagemgr", "Dedicated to create resources for communication with cloud services", "cloud"))
+            if (await vhostServices.CreateVhostAsync(vHostName, "Dedicated to create resources for communication with cloud services", "cloud"))
             {
                 _logger.LogInformation("Virtual host is created successfully.");
             }
@@ -431,138 +427,6 @@ public class ComponentInstaller : ActionBase
             {
                 _logger.LogError("Virtual host creation failed.");
             }
-        }
-
-        var username = "clouduser";
-        var password = RabbitConfigurer.GeneratePassword();
-
-        var userServices = new RmqUserService(localRmqConfiguration, new HttpClient(), _logger, "https");
-        var users = await userServices.GetUsersAsync();
-        var userList = await users.ToListAsync();
-        if (!userList.Any(u => u.Name == username))
-        {
-            if (await userServices.CreateUserAsync(username, password, "management"))
-            {
-                _logger.LogInformation("User is created successfully.");
-            }
-            else
-            {
-                _logger.LogError("User creation failed.");
-            }
-        }
-
-        if (await userServices.SetUserPermissionAsync(username, vHostName, ".*", ".*", ".*"))
-        {
-            _logger.LogInformation("User permission is set successfully.");
-        }
-        else
-        {
-            _logger.LogError("User permission setting failed.");
-        }
-
-        var queueServices = new RmqQueueService(localRmqConfiguration, new HttpClient(), _logger, "https");
-        var exchangeServices = new RmqExchangeService(localRmqConfiguration, new HttpClient(), _logger, "https");
-        var bindingServices = new RmqBindingService(localRmqConfiguration, new HttpClient(), _logger, "https");
-        var outgoingModel = new QueueExchangeBindingModel
-        {
-            ExchangeName = outcomingExchangeName,
-            QueueName = outcomingQueueName,
-            ExchangeType = ExchangeType.Headers,
-            IsExchangeDurable = true,
-            IsQueueDurable = true,
-            IsExchangeAutoDelete = false,
-            IsQueueAutoDelete = false,
-        };
-        var incomingModel = new QueueExchangeBindingModel
-        {
-            ExchangeName = incomingExchangeName,
-            QueueName = incomingQueueName,
-            ExchangeType = ExchangeType.Headers,
-            IsExchangeDurable = true,
-            IsQueueDurable = true,
-            IsExchangeAutoDelete = false,
-            IsQueueAutoDelete = false,
-        };
-
-        var resourcesAreCreated = await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, outgoingModel, _logger);
-        resourcesAreCreated = resourcesAreCreated && await UtilityServices.CreateBindedQueueAndExchangeAsync(queueServices, bindingServices, exchangeServices, incomingModel, _logger);
-
-        if (resourcesAreCreated)
-        {
-            _logger.LogInformation("Queue and exchange are created successfully.");
-        }
-        else
-        {
-            _logger.LogError("Queue and exchange creation failed.");
-            return;
-        }
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        var newText = configText
-            .RequireReplace("\"user\": \"guest\",", $"\"user\": \"{username}\",");
-        newText = newText
-            .RequireReplace("\"password\": \"guest\"", $"\"password\": \"{password}\"");
-
-        await File.WriteAllTextAsync(action.Source, newText);
-        _logger.LogInformation("Credentials are updated");
-
-        var parameters = JsonSerializer.Deserialize<CloudParameters>(newText);
-
-        var apimAppScope = $"https://graph.microsoft.com/.default";
-        var confidentialClientApplication = ConfidentialClientApplicationBuilder
-        .Create(parameters.CloudClientId)
-            .WithClientSecret(parameters.CloudClientSecret)
-            .WithAuthority(new Uri($"https://login.microsoftonline.com/{parameters.CloudTenantId}"))
-            .Build();
-
-        var builder = confidentialClientApplication.AcquireTokenForClient(new[] { apimAppScope });
-        var result = await builder.ExecuteAsync();
-        var requestUrl = $"{parameters.ApimServiceUrl}/vmprovisionadapters/CentralRegistry";
-        var client = new HttpClient();
-        client.BaseAddress = new Uri(requestUrl);
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaTypes.Protobuf));
-        client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
-        client.DefaultRequestHeaders.Add(Constants.Headers.Client, parameters.CloudClientId);
-
-        var requestBody = new RegistrationRequest
-        {
-            Username = username,
-            Password = password,
-            RmqHostname = parameters.CentralHostName,
-            RmqVirtualHost = vHostName,
-            RmqPort = 5672,
-            CcTenantId = parameters.CcTenantId,
-            IncomingExchangeName = incomingExchangeName,
-            OutgoingExchangeName = outcomingExchangeName,
-            IncomingQueueName = incomingQueueName,
-            OutgoingQueueName = outcomingQueueName,
-            IsAmqpsProtocol = false,
-        };
-
-        var body = new MemoryStream();
-        body.Write(requestBody.ToByteArray());
-        body.Position = 0;
-
-        var httpRequest = new HttpRequestMessage();
-
-        var requestContent = new StreamContent(body);
-        requestContent.Headers.Add(Constants.Headers.ContentType, Constants.MediaTypes.Protobuf);
-
-        var httpResponse = await client.PostAsync(requestUrl, requestContent);
-        _logger.LogInformation($"Shovel craetion response. Code: {httpResponse.StatusCode}. Content: {await httpResponse.Content.ReadAsStringAsync()}");
-
-        if (httpResponse.IsSuccessStatusCode)
-        {
-            _logger.LogInformation("Shovel is created successfully.");
-        }
-        else
-        {
-            await exchangeServices.DeleteExchangeAsync(outcomingExchangeName);
-            await exchangeServices.DeleteExchangeAsync(incomingExchangeName);
-            await queueServices.DeleteQueueAsync(outcomingQueueName);
-            await queueServices.DeleteQueueAsync(incomingQueueName);
-            await userServices.DeleteUserAsync(username);
         }
     }
 

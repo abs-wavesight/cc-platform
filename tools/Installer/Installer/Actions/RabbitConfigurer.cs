@@ -8,6 +8,7 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
+using Octokit;
 using PasswordGenerator;
 using Polly;
 using AccountType = Abs.CommonCore.Installer.Actions.Models.AccountType;
@@ -29,7 +30,7 @@ public partial class RabbitConfigurer : ActionBase
     [GeneratedRegex(@"^cc\.(drex\.site\.drex-file|drex-file\.site\.).*\.q$", RegexOptions.Compiled)]
     private static partial Regex SiteFileShippingRegex();
 
-    private const string SystemVhost = "/";
+    private const string SystemVhost = "commoncore";
     private const string UsernamePlaceholder = "$USERNAME";
     private const string PasswordPlaceholder = "$PASSWORD";
 
@@ -105,6 +106,12 @@ public partial class RabbitConfigurer : ActionBase
 
     private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType, bool isSilent)
     {
+        if (!(await client.GetVhostsAsync()).Any(vh => vh.Name == SystemVhost))
+        {
+            await client.CreateVhostAsync(SystemVhost);
+            client.CreateExchangeAsync(new ExchangeName("cc.drex.site", SystemVhost), new ExchangeInfo("headers"));
+        }
+
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
             ? GeneratePassword()
