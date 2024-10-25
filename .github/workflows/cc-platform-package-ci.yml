@@ -37,6 +37,7 @@ jobs:
       check-code-formatting: true
       run-integration-tests: true
       run-coverage: false
+      dotnet-version: '8.0.x'
     secrets: inherit
 
   publish-nuget-package:
@@ -48,4 +49,5 @@ jobs:
       nuget-working-directory: libraries/Platform/CommonCore.Platform
       nuget-package-name: Abs.CommonCore.Platform
       project-file: CommonCore.Platform/CommonCore.Platform.csproj
+      dotnet-version: '8.0.x'
     secrets: inherit
