@@ -1,8 +1,8 @@
-﻿using Moq;
-using Abs.CommonCore.Platform.Extensions.Hosting;
+﻿using Abs.CommonCore.Platform.Extensions.Hosting;
 using FluentAssertions;
-using Xunit;
 using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
 namespace Abs.CommonCore.Platform.Tests.Extensions.Hosting;
 
