@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Abs.CommonCore.Platform.Extensions.Hosting;
 
 public class TcpHealthProbeService(
-    ILogger logger,
+    ILogger<TcpHealthProbeService> logger,
     HealthCheckService healthCheckService,
     HealthChecksConfig healthChecksConfig)
     : BackgroundService
