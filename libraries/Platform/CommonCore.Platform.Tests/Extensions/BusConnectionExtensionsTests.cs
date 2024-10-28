@@ -1,16 +1,16 @@
 ﻿using Abs.CommonCore.Contracts.Json.Drex;
-using Abs.CommonCore.Platform.Config;
+using Abs.CommonCore.Platform.Extensions;
 using Xunit;
 
-namespace Abs.CommonCore.Platform.Tests.Config;
+namespace Abs.CommonCore.Platform.Tests.Extensions;
 
-public class BusConnectionConfigTests
+public class BusConnectionExtensionsTests
 {
     [Fact]
     public void ToConnectionString_ValidConfig_ReturnsCorrectConnectionString()
     {
         // Arrange
-        var config = new BusConnectionConfig
+        var config = new BusConnection
         {
             Host = "localhost",
             Port = 5672,
@@ -30,7 +30,7 @@ public class BusConnectionConfigTests
     public void ToConnectionString_UnknownProtocol_ThrowsInvalidOperationException()
     {
         // Arrange
-        var config = new BusConnectionConfig
+        var config = new BusConnection
         {
             Host = "localhost",
             Port = 5672,
@@ -50,7 +50,7 @@ public class BusConnectionConfigTests
         var connectionString = "amqp://user:password@localhost:5672/";
 
         // Act
-        var config = BusConnectionConfig.FromConnectionString(connectionString);
+        var config = connectionString.FromConnectionString();
 
         // Assert
         Assert.Equal("localhost", config.Host);
@@ -64,7 +64,7 @@ public class BusConnectionConfigTests
     public void FromConnectionString_NullOrEmptyConnectionString_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => BusConnectionConfig.FromConnectionString(null));
-        Assert.Throws<ArgumentNullException>(() => BusConnectionConfig.FromConnectionString(string.Empty));
+        Assert.Throws<ArgumentNullException>(((string)null).FromConnectionString);
+        Assert.Throws<ArgumentNullException>("".FromConnectionString);
     }
 }

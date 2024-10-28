@@ -1,34 +1,24 @@
 ﻿using Abs.CommonCore.Contracts.Json.Drex;
 
-namespace Abs.CommonCore.Platform.Config;
+namespace Abs.CommonCore.Platform.Extensions;
 
-public class BusConnectionConfig
+public static class BusConnectionExtensions
 {
-    public string Host { get; set; } = null!;
-
-    public int Port { get; set; }
-
-    public BusConnectionProtocol Protocol { get; set; }
-
-    public string Username { get; set; } = null!;
-
-    public string Password { get; set; } = null!;
-
-    public string ToConnectionString()
+    public static string ToConnectionString(this BusConnection connection)
     {
-        return Protocol == BusConnectionProtocol.Unknown
+        return connection.Protocol == BusConnectionProtocol.Unknown
             ? throw new InvalidOperationException("Unable to build connection string for unknown protocol")
             : new UriBuilder
             {
-                Host = Host,
-                Port = Port,
-                Scheme = Protocol.ToString().ToLower(),
-                UserName = Username,
-                Password = Password,
+                Host = connection.Host,
+                Port = connection.Port,
+                Scheme = connection.Protocol.ToString().ToLower(),
+                UserName = connection.Username,
+                Password = connection.Password,
             }.ToString();
     }
 
-    public static BusConnectionConfig FromConnectionString(string connectionString)
+    public static BusConnection FromConnectionString(this string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -36,7 +26,7 @@ public class BusConnectionConfig
         }
 
         var uri = new UriBuilder(connectionString);
-        return new BusConnectionConfig
+        return new BusConnection
         {
             Host = uri.Host,
             Port = uri.Port,
