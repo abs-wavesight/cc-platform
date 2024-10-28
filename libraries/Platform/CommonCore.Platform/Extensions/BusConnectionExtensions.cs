@@ -15,6 +15,7 @@ public static class BusConnectionExtensions
                 Scheme = connection.Protocol.ToString().ToLower(),
                 UserName = connection.Username,
                 Password = connection.Password,
+                Path = connection.VHost
             }.ToString();
     }
 
@@ -33,6 +34,7 @@ public static class BusConnectionExtensions
             Protocol = Enum.Parse<BusConnectionProtocol>(uri.Scheme, true),
             Username = uri.UserName,
             Password = uri.Password,
+            VHost = uri.Path.Trim('/')
         };
     }
 }
