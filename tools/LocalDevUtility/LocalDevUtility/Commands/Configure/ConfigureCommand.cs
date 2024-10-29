@@ -63,6 +63,13 @@ public static class ConfigureCommand
             voyageManagerRepositoryPath = readAppConfig?.VoyageManagerRepositoryPath;
         }
 
+        Console.Write($"\"cc-scheduler\" repository lacal path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreSchedulerRepositoryPath})" : "")}: ");
+        var ccSchedulerRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccSchedulerRepositoryPath))
+        {
+            ccSchedulerRepositoryPath = readAppConfig?.CommonCoreSchedulerRepositoryPath;
+        }
+
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
         var containerWindowsVersion = Console.ReadLine() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(containerWindowsVersion))
@@ -119,6 +126,7 @@ public static class ConfigureCommand
 
         var appConfig = new AppConfig
         {
+            CommonCoreSchedulerRepositoryPath = ccSchedulerRepositoryPath,
             VoyageManagerRepositoryPath = voyageManagerRepositoryPath,
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
             CommonCoreDrexRepositoryPath = ccDrexRepositoryLocalPath,
@@ -235,6 +243,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.VoyageManagerRepositoryPath) || !new DirectoryInfo(appConfig.VoyageManagerRepositoryPath).Exists)
         {
             errors.Add($"\"cc-voyage-manager-adapter\" repository path ({appConfig.VoyageManagerRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSchedulerRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSchedulerRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-scheduler\" repository path ({appConfig.CommonCoreSchedulerRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")

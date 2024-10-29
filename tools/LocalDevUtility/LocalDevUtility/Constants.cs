@@ -31,6 +31,7 @@ public static class Constants
         public const string PathToCommonCoreSiemensAdapterRepository = "PATH_TO_CC_SIEMENS_ADAPTER_REPO";
         public const string PathToCommonCoreKdiAdapterRepository = "PATH_TO_CC_KDI_ADAPTER_REPO";
         public const string PathToCommonCoreVoyageManagerAdapterRepository = "PATH_TO_CC_VOYAGE_MANAGER_ADAPTER_REPO";
+        public const string PathToCommonCoreSchedulerRepository = "PATH_TO_CC_SCHEDULER_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
         public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;

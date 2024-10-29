@@ -13,4 +13,5 @@ public class AppConfig
     public string? SftpRootPath { get; set; }
     public string? FdzRootPath { get; set; }
     public string? SshKeysPath { get; set; }
+    public string? CommonCoreSchedulerRepositoryPath { get; set; }
 }
