@@ -55,7 +55,7 @@ public abstract class ComposeOptions
 
     [ComposeComponent(composePath: "drex-central-message-service", imageName: "cc-drex-central-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
-    [ComposeComponentDependency(nameof(VectorSite))]
+    [ComposeComponentDependency(nameof(VectorCentral))]
     public ComposeComponentMode? DrexCentralMessageService { get; set; }
 
     [ComposeComponent(composePath: "grafana", imageName: "grafana")]
