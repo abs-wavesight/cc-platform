@@ -603,15 +603,19 @@
       ]
     },
     {
-      "name": "Cloud-Shovel",
+      "name": "Drex-Central-Message",
       "files": [
         {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/compose/installer/cloudParameters.json",
-          "destination": "cloudParameters.json"
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$DREX_CENTRAL_MESSAGE_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-Central-Message/"
         }
       ],
       "actions": [
+        {
+          "source": "drex-central-message.tar",
+          "action": "install"
+        },
         {
           "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15671 -Protocol TCP -Action allow\"",
           "action": "executeImmediate"
@@ -625,12 +629,17 @@
           "action": "executeImmediate"
         },
         {
-          "source": "$ABS_PATH\\installer\\Cloud-Shovel\\cloudParameters.json",
+          "source": "docker-compose.drex-central.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-central.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.drex-central.yml",
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\installer\\Cloud-Shovel\\cloudParameters.json",
-          "action": "createShovel"
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postDrexCentralInstall"
         }
       ]
     },
@@ -643,7 +652,7 @@
           "destination": "c:/abs/temp/Voyage-Manager-Report-Adapter/"
         }
       ],
-      "actions":[
+      "actions": [
         {
           "source": "voyage-manager-report-adapter.tar",
           "action": "install"
