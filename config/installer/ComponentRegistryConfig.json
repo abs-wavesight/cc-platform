@@ -351,6 +351,27 @@
           "action": "replaceParameters"
         }
       ]
+    },
+    {
+      "name": "Message-Scheduler",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-main-$MESSAGE_SCHEDULER_COMMIT_SHA",
+          "destination": "message-scheduler.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.message-scheduler.yml",
+          "destination": "docker-compose.message-scheduler.yml"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.message-scheduler.yml",
+          "action": "replaceParameters"
+        }
+      ]
     }
   ]
 }

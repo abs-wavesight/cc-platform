@@ -86,6 +86,9 @@ public class LocalDevUtilityFixture
         var dummyVoyageManagerAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-voyage-manager-adapter-repo");
         Directory.CreateDirectory(dummyVoyageManagerAdapterPath);
 
+        var dummySchedulerPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-scheduler-repo");
+        Directory.CreateDirectory(dummySchedulerPath);
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
@@ -94,6 +97,7 @@ public class LocalDevUtilityFixture
             CommonCoreSiemensAdapterRepositoryPath = dummySiemensAdapterPath,
             CommonCoreKdiAdapterRepositoryPath = dummyKdiAdapterPath,
             VoyageManagerRepositoryPath = dummyVoyageManagerAdapterPath,
+            CommonCoreSchedulerRepositoryPath = dummySchedulerPath,
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,

@@ -94,6 +94,10 @@ public abstract class ComposeOptions
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
     public ComposeComponentMode? VoyageManagerAdapter { get; set; }
 
+    [ComposeComponent(composePath: "message-scheduler", imageName: "cc-message-scheduler")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    public ComposeComponentMode? MessageScheduler { get; set; }
+
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()
         .Where(i => i.PropertyType == typeof(ComposeComponentMode?) || i.PropertyType == typeof(ComposeComponentMode))

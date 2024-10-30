@@ -1,0 +1,20 @@
+---
+services:
+
+  cc.message-scheduler:
+    container_name: message-scheduler
+    depends_on:
+      - cc.rabbitmq-remote
+    environment:
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_MESSAGE_SCHEDULER}/config/VoyageManagerAdapter.Central
+        target: C:/app/config
+        read_only: false
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
