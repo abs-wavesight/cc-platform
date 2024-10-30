@@ -308,7 +308,7 @@
         {
           "type": "container",
           "source": "ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
-          "destination": "cc-drex-central-message-service.tar"
+          "destination": "drex-central-message.tar"
         },
         {
           "type": "file",

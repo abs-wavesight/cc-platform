@@ -2,7 +2,7 @@
 services:
 
   cc.drex-central-message-service:
-    container_name: cc-drex-central-message-service
+    container_name: drex-central-message
     depends_on:
       - cc.rabbitmq-remote
     environment:
