@@ -27,6 +27,10 @@ on:
         required: false
         type: string
         description: Version to use for Voyage Manager Report Adapter release # v100
+      drex-central-version:
+        required: false
+        type: string
+        description: Version to use for DREX Central release # v100
 
 concurrency:
   group: central-system-release-${{ github.head_ref }}
@@ -78,6 +82,15 @@ jobs:
       name: "Voyage Manager Report Adapter Release"
     secrets: inherit
 
+  get-default-drex-central-version:
+    name: Get Default DREX Central Version
+    if: ${{ inputs.drex-central-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex Central Message Release"
+    secrets: inherit
+
   release-component:
     name: Central System Release
     needs: 
@@ -86,6 +99,7 @@ jobs:
       - get-default-sftp-service-version
       - get-default-vm-report-adapter-version
       - get-next-version
+      - get-default-drex-central-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -101,6 +115,7 @@ jobs:
         -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
         -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
         -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}-voyage-manager-report-adapter
+        -p `$DREX_CENTRAL_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-central-version || inputs.drex-central-version }}-drex-central-message
       release-name-prefix: Central System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

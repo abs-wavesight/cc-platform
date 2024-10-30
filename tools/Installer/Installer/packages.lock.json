@@ -4,9 +4,9 @@
     "net8.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.517, )",
-        "resolved": "1.0.517",
-        "contentHash": "M8l8qoUKS2qLziQhJd6YpR4r3lNf03rFFcvQ30ZiIttkRm3Eq2ROhCms8dvNYG5s9VzIF/28Fy/VYo4vV4nJyA==",
+        "requested": "[1.0.523, )",
+        "resolved": "1.0.523",
+        "contentHash": "Pn31fPDXfW1SCU8e20pO7bzMxKnkVBOoJF0MYvnCAYIzIMEodav0auMHvqel4pcd2JbYx7YJ+wC8NJXGE1CdIQ==",
         "dependencies": {
           "Google.Protobuf": "3.26.1",
           "Grpc.AspNetCore": "2.62.0",
@@ -15,9 +15,9 @@
       },
       "Abs.CommonCore.Drex.Shared": {
         "type": "Direct",
-        "requested": "[1.0.256, )",
-        "resolved": "1.0.256",
-        "contentHash": "pZViF7gfxH7+v/Xm6bO1+nZZFVc/dlYvuRUrrIGIEAGoNs1qDOADFrYVPwmZMuQph/eH1ApAl9SiExlYlZcLnQ==",
+        "requested": "[1.0.259, )",
+        "resolved": "1.0.259",
+        "contentHash": "XxdZcOTDxyuSD2OWP2moWeI9BO1TjeWX0jPa786Xo2JtJ2/1XoDN/MRT0ScF8KJDdeDxWwYdPz7tVIFX+MlFDQ==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.515",
           "Abs.CommonCore.Platform": "1.0.313",
@@ -31,17 +31,18 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.313, )",
-        "resolved": "1.0.313",
-        "contentHash": "wUw+8MxT5JnwcjSrL3xvcVk+pdHYr06uEBJUxISBjvaZNCnOzGjQ5DJTmZlRcdlQYCzQDPJI4E6/ZhFApb571A==",
+        "requested": "[1.0.323, )",
+        "resolved": "1.0.323",
+        "contentHash": "Abhi1uiBlbhsHcBr7mymTaQFio8gWxmxu/Nvr0WlgqDMhBNLZR9hQInonYpSKoQbLLrTKZaP+3GtL6kHD7J87w==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.348",
-          "EasyNetQ.Management.Client": "2.0.0",
+          "Abs.CommonCore.Contracts": "1.0.521",
+          "EasyNetQ.Management.Client": "3.0.0",
           "JsonSchema.Net": "4.1.1",
-          "Microsoft.Extensions.Configuration": "7.0.0",
-          "Microsoft.Extensions.Configuration.Binder": "7.0.4",
-          "Microsoft.Extensions.Configuration.Json": "7.0.0",
-          "Microsoft.Extensions.Diagnostics.HealthChecks": "7.0.5"
+          "Microsoft.Extensions.Configuration": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.Configuration.Json": "8.0.1",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.10",
+          "Polly": "8.4.2"
         }
       },
       "Abs.CommonCore.RabbitMQ.Shared": {

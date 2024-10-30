@@ -1,0 +1,34 @@
+---
+services:
+
+  cc.drex-central-message-service:
+    container_name: drex-central-message-service
+    depends_on:
+      - cc.rabbitmq-remote
+    environment:
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
+      - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
+      - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
+      - LocalMessageBus__Port=${DREX_CENTRAL_PORT}
+      - LocalMessageBus__HttpPort=${DREX_CENTRAL_HTTP_PORT}
+      - CloudParameters__CcTenantId=${CC_TENANT_ID}
+      - CloudParameters__CcTenantName=${CC_TENANT_NAME}
+      - CloudParameters__CloudTenantId=${CLOUD_TENANT_ID}
+      - CloudParameters__ApimServiceUrl=${APIM_SERVICE_URL}
+      - CloudParameters__CloudClientId=${CLOUD_CLIENT_ID}
+      - CloudParameters__CloudClientSecret=${CLOUD_CLIENT_SECRET}
+      - CloudParameters__CentralHostName=${CENTRAL_HOST_NAME}
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12345:5000"
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_DREX_REPO}/config/drex
+        target: C:/app/config
+        read_only: false
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
