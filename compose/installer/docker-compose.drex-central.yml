@@ -1,7 +1,7 @@
 ---
 services:
   cc.drex-central-message-service:
-    container_name: drex-central-message-service
+    container_name: cc-drex-central-message-service
     image: ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA
     depends_on:
       - cc.rabbitmq
