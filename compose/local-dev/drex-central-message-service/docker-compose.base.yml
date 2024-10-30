@@ -2,11 +2,10 @@
 services:
 
   cc.drex-central-message-service:
-    container_name: drex-message-service
+    container_name: drex-central-message-service
     depends_on:
-      - cc.rabbitmq-local
+      - cc.rabbitmq-remote
     environment:
-      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
@@ -19,7 +18,6 @@ services:
       - CloudParameters__CloudClientId=${CLOUD_CLIENT_ID}
       - CloudParameters__CloudClientSecret=${CLOUD_CLIENT_SECRET}
       - CloudParameters__CentralHostName=${CENTRAL_HOST_NAME}
-      - ABS_CC_FDZ_PATH=c:/fdz
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
@@ -31,18 +29,6 @@ services:
         target: C:/app/config
         read_only: false
       - type: bind
-        source: ${PATH_TO_CERTS}/local-certs
-        target: C:/rabbitmq-local-certs
-        read_only: true
-      - type: bind
         source: ${PATH_TO_CERTS}/remote-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
-      - type: bind
-        source: ${ABS_CC_FDZ_PATH}
-        target: c:/fdz
-        read_only: false
-      - type: bind
-        source: ${ABS_CC_SSH_KEYS_PATH}
-        target: c:/ssh-keys
-        read_only: false 

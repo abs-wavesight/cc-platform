@@ -84,7 +84,7 @@ jobs:
 
   get-default-drex-central-version:
     name: Get Default DREX Central Version
-    if: ${{ inputs.vm-report-version == '' }}
+    if: ${{ inputs.drex-central-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-drex"
