@@ -98,8 +98,8 @@ jobs:
       - get-default-vector-central-version
       - get-default-sftp-service-version
       - get-default-vm-report-adapter-version
-      - get-next-version
       - get-default-drex-central-version
+      - get-next-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
