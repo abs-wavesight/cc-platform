@@ -680,6 +680,23 @@
           "action": "postVMReportInstall"
         }
       ]
+    },
+    {
+      "name": "Message-Scheduler",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-scheduler/releases/download/$MESSAGE_SCHEDULER_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Message-Scheduler/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.message-scheduler.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.message-scheduler.yml",
+          "action": "copy"
+        }
+      ]
     }
   ]
 }
