@@ -607,7 +607,7 @@
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$DREX_CENTRAL_MESSAGE_RELEASE_TAG/",
+          "source": "https://github.com/abs-wavesight/cc-drex/releases/download/$DREX_CENTRAL_MESSAGE_RELEASE_TAG/",
           "destination": "c:/abs/temp/Drex-Central-Message/"
         }
       ],
