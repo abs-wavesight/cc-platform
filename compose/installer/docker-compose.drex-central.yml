@@ -29,6 +29,6 @@ services:
         target: C:/app/config	
         read_only: false
       - type: bind
-        source: $ABS_PATH/certificates/remote-certs
+        source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
