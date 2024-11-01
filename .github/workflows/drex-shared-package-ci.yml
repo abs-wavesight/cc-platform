@@ -38,6 +38,7 @@ jobs:
     needs: [build]
     uses: ./.github/workflows/shared-publish-nuget-package.yml
     with:
+      solution-name: Drex.Shared.sln
       solution-directory: libraries/Drex.Shared
       nuget-working-directory: libraries/Drex.Shared/Shared
       nuget-package-name: Abs.CommonCore.Drex.Shared

@@ -34,7 +34,7 @@ jobs:
           dotnet-version: 8.0.x
                    
       - name: Restore dependencies        
-        run: dotnet restore tools/Installer/Installer/Installer.csproj --packages ${{ env.NUGET_PACKAGE_PATH }}
+        run: dotnet restore tools/Installer/Installer/Installer.csproj --packages ${{ env.NUGET_PACKAGE_PATH }} --locked-mode
 
       - name: Publish
         run: dotnet publish tools/Installer/Installer/Installer.csproj --sc -c Release -f net8.0 -r win-x64 -p:PublishSingleFile=true -o ./

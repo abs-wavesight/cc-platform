@@ -125,7 +125,7 @@ jobs:
 
       - name: Restore dependencies
         working-directory: ${{ inputs.solution-directory }}
-        run: dotnet restore ${{ inputs.solution-name }} --packages ${{ env.NUGET_PACKAGE_PATH }}
+        run: dotnet restore ${{ inputs.solution-name }} --packages ${{ env.NUGET_PACKAGE_PATH }} --locked-mode
 
       - name: Build
         working-directory: ${{ inputs.solution-directory }}
