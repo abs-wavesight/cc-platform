@@ -19,6 +19,10 @@
     "$APIM_SERVICE_URL": "https://apim-abs-cc-scus-dev.azure-api.net/vmprovisionadapters",
     "$CLOUD_CLIENT_ID": "00000000-0000-0000-0000-000000000000",
     "$CLOUD_CLIENT_SECRET": "top_secret",
-    "$CENTRAL_HOST_NAME": "central.com"
+    "$CENTRAL_HOST_NAME": "central.com",
+    "$CC_TENANT_NAME": "tenantName",
+    "$RMQ_CENTRAL_PORT": 5671,
+    "$RMQ_CENTRAL_HTTP_PORT": 15671,
+    "$RMQ_CENTRAL_PROTOCOL": "amqps"
   }
 }

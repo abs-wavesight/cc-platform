@@ -692,9 +692,17 @@
       ],
       "actions": [
         {
+          "source": "message-scheduler.tar",
+          "action": "install"
+        },
+        {
           "source": "docker-compose.message-scheduler.yml",
           "destination": "$ABS_PATH\\config\\docker-compose.message-scheduler.yml",
           "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.message-scheduler.yml",
+          "action": "replaceParameters"
         }
       ]
     }

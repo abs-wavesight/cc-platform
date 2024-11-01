@@ -9,8 +9,9 @@ services:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
-      - LocalMessageBus__Port=$DREX_CENTRAL_PORT
-      - LocalMessageBus__HttpPort=$DREX_CENTRAL_HTTP_PORT
+      - LocalMessageBus__Port=$RMQ_CENTRAL_PORT
+      - LocalMessageBus__HttpPort=$RMQ_CENTRAL_HTTP_PORT
+      - LocalMessageBus__Protocol=$RMQ_CENTRAL_PROTOCOL
       - CloudParameters__CcTenantId=$CC_TENANT_ID
       - CloudParameters__CcTenantName=$CC_TENANT_NAME
       - CloudParameters__CloudTenantId=$CLOUD_TENANT_ID
