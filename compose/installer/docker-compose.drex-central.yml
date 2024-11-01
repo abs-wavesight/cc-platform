@@ -23,11 +23,7 @@ services:
     ports:	
       - "12345:5000"	
     restart: always	
-    volumes:	
-      - type: bind	
-        source: $ABS_PATH/config/drex-shared
-        target: C:/app/config	
-        read_only: false
+    volumes:
       - type: bind
         source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-remote-certs
