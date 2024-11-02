@@ -21,7 +21,7 @@ services:
       - CloudParameters__CentralHostName=$CENTRAL_HOST_NAME
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:	
-      - "12345:5000"	
+      - "12346:5000"	
     restart: always	
     volumes:
       - type: bind
