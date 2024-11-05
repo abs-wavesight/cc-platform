@@ -11,7 +11,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ${PATH_TO_CC_MESSAGE_SCHEDULER}/config/MessageScheduler
+        source: ${PATH_TO_CC_SCHEDULER_REPO}/config/MessageScheduler
         target: C:/app/config
         read_only: false
       - type: bind
