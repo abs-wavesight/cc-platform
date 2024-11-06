@@ -703,6 +703,19 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.message-scheduler.yml",
           "action": "replaceParameters"
+        },
+        {
+          "source": "appsettings.json",
+          "destination": "$ABS_PATH\\config\\message-scheduler\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\message-scheduler\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\environment.env",
+          "action": "postMessageSchedulerInstall"
         }
       ]
     }
