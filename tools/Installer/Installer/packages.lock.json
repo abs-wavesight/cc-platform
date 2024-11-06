@@ -4,9 +4,9 @@
     "net8.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.523, )",
-        "resolved": "1.0.523",
-        "contentHash": "Pn31fPDXfW1SCU8e20pO7bzMxKnkVBOoJF0MYvnCAYIzIMEodav0auMHvqel4pcd2JbYx7YJ+wC8NJXGE1CdIQ==",
+        "requested": "[1.0.540, )",
+        "resolved": "1.0.540",
+        "contentHash": "JOMNiC/F2fFl8WxdgPW8vZt+G9Et4UPJJRZoQoUdf/u0uUC474M73grXiZp4krGKmMuNh/iW0TimEt/7IEoHBw==",
         "dependencies": {
           "Google.Protobuf": "3.26.1",
           "Grpc.AspNetCore": "2.62.0",
@@ -31,9 +31,9 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.323, )",
-        "resolved": "1.0.323",
-        "contentHash": "Abhi1uiBlbhsHcBr7mymTaQFio8gWxmxu/Nvr0WlgqDMhBNLZR9hQInonYpSKoQbLLrTKZaP+3GtL6kHD7J87w==",
+        "requested": "[1.0.329, )",
+        "resolved": "1.0.329",
+        "contentHash": "NJbYaUQ0hn3tfBP5LPtx8kCGM6Mq755AUDVOXyN+99fVazQc7iRhVvmTdRf5B+YeLdlUeiVSxpV3gakr9y80Dw==",
         "dependencies": {
           "Abs.CommonCore.Contracts": "1.0.521",
           "EasyNetQ.Management.Client": "3.0.0",
@@ -152,9 +152,9 @@
       },
       "Microsoft.Identity.Client": {
         "type": "Direct",
-        "requested": "[4.65.0, )",
-        "resolved": "4.65.0",
-        "contentHash": "RV35ZcJ5/P7n+Zu6J3wmtiDdK6MW5h6EpZ0ojjB9sMwNhGHEJCv829cb3kZ4PZ664llYFv8sbUITWWGvBTqv0Q==",
+        "requested": "[4.66.1, )",
+        "resolved": "4.66.1",
+        "contentHash": "mE+m3pZ7zSKocSubKXxwZcUrCzLflC86IdLxrVjS8tialy0b1L+aECBqRBC/ykcPlB4y7skg49TaTiA+O2UfDw==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.35.0",
           "System.Diagnostics.DiagnosticSource": "6.0.1"

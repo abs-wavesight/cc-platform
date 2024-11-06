@@ -18,12 +18,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.523" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.323" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.540" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.329" />
 		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.259" />
 		<PackageReference Include="Abs.CommonCore.RabbitMQ.Shared" Version="1.0.30" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
-		<PackageReference Include="Microsoft.Identity.Client" Version="4.65.0" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.66.1" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />

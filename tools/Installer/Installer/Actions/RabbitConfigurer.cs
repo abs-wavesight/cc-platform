@@ -42,7 +42,14 @@ public partial class RabbitConfigurer : ActionBase
         _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
     }
 
-    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, AccountType accountType, bool isSilent)
+    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(
+        Uri rabbit,
+        string rabbitUsername,
+        string rabbitPassword,
+        string username,
+        string? password,
+        AccountType accountType,
+        bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
         var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
