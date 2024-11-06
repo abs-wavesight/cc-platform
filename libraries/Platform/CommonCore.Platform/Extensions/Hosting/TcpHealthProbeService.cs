@@ -20,15 +20,21 @@ public class TcpHealthProbeService(
     {
         await Task.Yield();
 
-        _listener.Start();
-
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            await UpdateHeartbeatAsync(stoppingToken);
-            await Task.Delay(TimeSpan.FromSeconds(healthChecksConfig.HealthCheckProbePollFrequencySeconds), stoppingToken);
-        }
+            _listener.Start();
 
-        _listener.Stop();
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await UpdateHeartbeatAsync(stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(healthChecksConfig.HealthCheckProbePollFrequencySeconds),
+                    stoppingToken);
+            }
+        }
+        finally
+        {
+            _listener.Stop();
+        }
     }
 
     private async Task UpdateHeartbeatAsync(CancellationToken stoppingToken)
