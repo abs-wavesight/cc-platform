@@ -1,23 +1,16 @@
 ﻿using System.Management;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
-using Abs.CommonCore.Contracts.Proto.Cloud.VoyageManager;
-using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
-using Abs.CommonCore.RabbitMQ.Shared.Models;
-using Abs.CommonCore.RabbitMQ.Shared.Models.Exchange;
-using Abs.CommonCore.RabbitMQ.Shared.Services;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Google.Protobuf;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using Polly;
 using JsonParser = Abs.CommonCore.Installer.Services.JsonParser;
 
 #pragma warning disable CA1416
@@ -137,7 +130,8 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostSiemensInstall or
                     ComponentActionAction.PostKdiInstall or
                     ComponentActionAction.PostVMReportInstall or
-                    ComponentActionAction.PostDrexCentralInstall)
+                    ComponentActionAction.PostDrexCentralInstall or
+                    ComponentActionAction.PostMessageSchedulerInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
             .ToArray();
@@ -624,6 +618,7 @@ public class ComponentInstaller : ActionBase
             await Task.Delay(checkInterval);
         }
 
+        _logger.LogError("Not all containers are healthy");
         throw new Exception("Not all containers are healthy");
     }
 
@@ -635,11 +630,15 @@ public class ComponentInstaller : ActionBase
                 All = true
             });
 
-        var containerInfo = await containers
-            .SelectAsync(async c => await client.Containers.InspectContainerAsync(c.ID));
+        var waitAndRetry = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)));
 
-        return containerInfo
-            .ToArray();
+        var containerInfo =
+            await containers.SelectAsync(async c =>
+                await waitAndRetry.ExecuteAsync(async () => await client.Containers.InspectContainerAsync(c.ID)));
+
+        return containerInfo.ToArray();
     }
 
     private static bool CheckContainerHealthy(ContainerInspectResponse container, TimeSpan containerHealthyTime)
