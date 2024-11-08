@@ -4,7 +4,10 @@ runs:
   using: "composite"
   steps:
     - name: Check out the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:         
+         token: ${{ secrets.GH_PAT || ' ' }}
+
 
     - name: Fetch all tags
       run: git fetch --tags
