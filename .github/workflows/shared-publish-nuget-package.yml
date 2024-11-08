@@ -81,12 +81,12 @@ jobs:
       - name: Construct version number
         working-directory: ${{ env.SOLUTION_DIRECTORY }}
         run: |
-          if (input.version) {
+          if (${{ inputs.version }}) {
             $Version = "${{ inputs.version }}"
           } else {
             $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
           }
-            
+
           Write-Output "Version: ${Version}"
           echo "NUGET_PACKAGE_VERSION=$Version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           $ProjFile = "${{ inputs.project-file }}"
