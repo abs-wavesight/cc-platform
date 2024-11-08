@@ -1,0 +1,83 @@
+name: Define Vesrion
+
+on:
+  workflow_call:
+    inputs:
+        release_branch:
+          description: 'The release branch'
+          required: true
+          type: string          
+        develop_branch:
+            description: 'The develop branch'
+            required: true
+            type: string            
+        major:
+            description: 'The major version'
+            required: true
+            type: number
+            default: 1
+        minor:
+            description: 'The minor version'
+            required: true
+            type: number
+            default: 0
+    outputs:
+      version: 
+        value: ${{ jobs.define-version.outputs.version }}
+
+jobs:  
+  get-release-counter:
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-branch-counter.yml@feature/ADO-131748-NuGet
+    with:
+      branch: ${{ inputs.release_branch }}
+      increment: false
+  get-current-counter:
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-branch-counter.yml@feature/ADO-131748-NuGet   
+    with:
+      increment: true 
+
+  define-version:
+    needs: [get-release-counter, get-current-counter]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
+    env:
+      current_counter: ${{needs.get-current-counter.outputs.branchCounter}}
+      release_counter: ${{needs.get-release-counter.outputs.branchCounter}}   
+    steps:
+      - name: Set Version
+        id: set_version
+        run: |         
+         
+          branch_name="${{ github.ref_name }}"
+
+          if ["${{ github.event_name }}" == "push"]; then
+            if[ -n "${{ github.head_ref }}" ]; then
+              branch_name="${{ github.head_ref }}"           
+            fi             
+          fi
+
+          echo "Branch name: $branch_name"
+
+          branch_name=${branch_name,,}
+          echo "Branch name lowecase: $branch_name"
+          
+          branch_name_clean=${branch_name//\//-} 
+          echo "Branch name prepared: $branch_name_clean"   
+          
+          
+          if [ "$branch_name" = "${{ inputs.release_branch }}" ]; then
+            version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.current_counter }}"
+          elif [ "$branch_name" = "${{ inputs.develop_branch }}" ]; then
+            version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.release_counter }}.${{ env.current_counter }}-beta"
+          else
+            version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.release_counter }}.${{ env.current_counter }}-${branch_name_clean}"
+          fi
+
+          # Output the version
+          echo "version=$version" >> $GITHUB_OUTPUT
+  
+      
+      - name: Display_Version
+        run: |
+          echo "Version: ${{ steps.set_version.outputs.version }}" 
