@@ -61,6 +61,7 @@ jobs:
     env:
       BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
       BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+      PROVIDED_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v3
         name: Checkout branch
@@ -81,7 +82,7 @@ jobs:
       - name: Construct version number
         working-directory: ${{ env.SOLUTION_DIRECTORY }}
         run: |
-          if (${{ inputs.version }}) {
+          if ("${{ env.PROVIDED_VERSION }}" -ne "") {
             $Version = "${{ inputs.version }}"
           } else {
             $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
