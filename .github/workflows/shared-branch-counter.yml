@@ -2,6 +2,15 @@ name: Branch Counter Workflow
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        type: string
+        description: "The branch for which to retrieve or increment the counter (defaults to current branch)"        
+        default: ${{ github.ref_name }}
+      skip_increment:
+        type: boolean
+        description: "Skip incrementing the counter (default: true)"        
+        default: true
     outputs:
       branchCounter:
         value: ${{ jobs.branch_counter.outputs.branchCounter }}
@@ -10,7 +19,7 @@ jobs:
   branch_counter:
     runs-on: ubuntu-latest
     outputs:
-      branchCounter: ${{ steps.increment_counter.outputs.branchCounter }}
+      branchCounter: ${{ steps.counter.outputs.branchCounter }}
 
     steps:
       - name: Check out the repository
@@ -21,30 +30,35 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
-      - name: Determine and Increment Counter
-        id: increment_counter
+      - name: Determine Counter
+        id: counter
         shell: bash
-        run: |
-          BRANCH_NAME="${GITHUB_REF_NAME}"
+        run: |          
+          BRANCH_NAME="${{ inputs.branch }}"          
+         
           TAGS=$(git tag -l "counter-${BRANCH_NAME}-*")
 
-          if [ -z "$TAGS" ]; then          
-            COUNTER=1
-          else          
+          if [ -z "$TAGS" ]; then            
+            COUNTER=0
+          else           
             LAST_TAG=$(echo "$TAGS" | sort -V | tail -n 1)
             COUNTER=$(echo "$LAST_TAG" | awk -F '-' '{print $NF}')
+          fi
+          
+          if [ "${{ inputs.skip_increment }}" = "false" ]; then
             COUNTER=$((COUNTER + 1))
+            NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"
+            echo "Incrementing counter. New tag: $NEW_TAG"
+           
+            git tag "$NEW_TAG"
+            git push origin "$NEW_TAG"
+           
+            echo "branchCounter=${NEW_TAG}" >> $GITHUB_OUTPUT
+          else            
+            echo "branchCounter=counter-${BRANCH_NAME}-${COUNTER}" >> $GITHUB_OUTPUT
           fi
 
-          NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"    
-          echo "Branch-specific tag is $NEW_TAG"
-
-          git tag "$NEW_TAG"
-          git push origin "$NEW_TAG"   
-         
-          echo "branchCounter=${COUNTER}" >> $GITHUB_OUTPUT
-
       - name: Display Counter
-        run: echo "Branch-specific counter is ${{ steps.increment_counter.outputs.branchCounter }}"
+        run: echo "Branch-specific counter is ${{ steps.counter.outputs.branchCounter }}"
 
 
