@@ -3,8 +3,8 @@ name: Branch Counter Workflow
 on:
   workflow_call:
     outputs:
-        branchCounter: 
-            value: ${{ jobs.branch_counter.outputs.branchCounter }}
+      branchCounter:
+        value: ${{ jobs.branch_counter.outputs.branchCounter }}
 
 jobs:
   branch_counter:
@@ -36,13 +36,13 @@ jobs:
             COUNTER=$((COUNTER + 1))
           fi
 
-          NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"     
-          echo "Branch-specific tag is $NEW_TAG"   
+          NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"    
+          echo "Branch-specific tag is $NEW_TAG"
 
           git tag "$NEW_TAG"
-          git push origin "$NEW_TAG"        
-
-          echo "branchCounter=${COUNTER}" >> $Env:GITHUB_OUTPUT
+          git push origin "$NEW_TAG"   
+         
+          echo "branchCounter=${COUNTER}" >> $GITHUB_OUTPUT
 
       - name: Display Counter
         run: echo "Branch-specific counter is ${{ steps.increment_counter.outputs.branchCounter }}"
