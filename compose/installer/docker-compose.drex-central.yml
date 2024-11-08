@@ -19,11 +19,26 @@ services:
       - CloudParameters__CloudClientId=$CLOUD_CLIENT_ID
       - CloudParameters__CloudClientSecret=$CLOUD_CLIENT_SECRET
       - CloudParameters__CentralHostName=$CENTRAL_HOST_NAME
+      - AdaptersFolderPath=C:/app/config/adapters
+      - VesselsFolderPath=C:/app/config/vessels
+      - HistoryFolderPath=C:/app/config/history
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:	
       - "12346:5000"	
     restart: always	
     volumes:
+      - type: bind	
+        source: $ABS_PATH/config/drex-central/adapters
+        target: C:/app/config/adapters
+        read_only: false
+      - type: bind	
+        source: $ABS_PATH/config/drex-central/vessels
+        target: C:/app/config/vessels
+        read_only: false
+      - type: bind	
+        source: $ABS_PATH/config/drex-central/history
+        target: C:/app/config/history
+        read_only: false
       - type: bind
         source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-remote-certs
