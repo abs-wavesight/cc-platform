@@ -183,16 +183,20 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube scanner
+        if: inputs.run-sonar-scan == true
         # if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
-          if inputs.run-sonar-scan == true; then
-            mkdir -p ./.sonar/scanner
-            dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-          else
-            echo "SonarQube Scanner is NOT ENABLED"
-          fi
+          mkdir -p ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        # run: |
+        #   if inputs.run-sonar-scan == true; then
+        #     mkdir -p ./.sonar/scanner
+        #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        #   else
+        #     echo "SonarQube Scanner is NOT ENABLED"
+        #   fi
 
       - name: Check SonareQube URL Access
         if: inputs.run-sonar-scan == true
