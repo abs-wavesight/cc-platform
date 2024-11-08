@@ -183,7 +183,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        # if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         working-directory: ${{ inputs.solution-directory }}
         shell: bash
         run: |
