@@ -1,0 +1,36 @@
+name: Branch Counter Workflow
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out the repository
+        uses: actions/checkout@v2
+
+    - name: Fetch all tags
+      run: git fetch --tags
+
+    - name: Determine and Increment Counter
+      id: increment_counter
+      shell: bash
+      run: |
+        BRANCH_NAME="${GITHUB_REF_NAME}"
+        TAGS=$(git tag -l "counter-${BRANCH_NAME}-*")
+        
+        if [ -z "$TAGS" ]; then          
+          COUNTER=1
+        else          
+          LAST_TAG=$(echo "$TAGS" | sort -V | tail -n 1)
+          COUNTER=$(echo "$LAST_TAG" | awk -F '-' '{print $NF}')
+          COUNTER=$((COUNTER + 1))
+        fi 
+       
+        NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"        
+        
+        git tag "$NEW_TAG"
+        git push origin "$NEW_TAG"        
+        
+        echo "counter=$NEW_TAG" >> $GITHUB_OUTPUT
+
+    - name: Display Counter
+      run: echo "Branch-specific counter is ${{ steps.increment_counter.outputs.counter }}"
+
