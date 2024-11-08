@@ -1,13 +1,18 @@
 name: Branch Counter Workflow
 
+inputs:
+  token:
+    description: 'The GitHub Personal Access Token (PAT) for authorization'
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
     - name: Check out the repository
         uses: actions/checkout@v3
         with:         
-         token: ${{ secrets.GH_PAT || ' ' }}
-
+         token: ${{ inputs.token }}
 
     - name: Fetch all tags
       run: git fetch --tags
