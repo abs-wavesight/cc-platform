@@ -23,7 +23,11 @@ on:
         required: false
         type: string
         default: '7.0.x'
-        description: .NET SDK Version      
+        description: .NET SDK Version     
+      version:
+        required: false
+        type: string
+        description: The version number to use for the package 
 
     outputs:
       nuget-version: 
@@ -77,7 +81,12 @@ jobs:
       - name: Construct version number
         working-directory: ${{ env.SOLUTION_DIRECTORY }}
         run: |
-          $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
+          if (input.version) {
+            $Version = "${{ inputs.version }}"
+          } else {
+            $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
+          }
+            
           Write-Output "Version: ${Version}"
           echo "NUGET_PACKAGE_VERSION=$Version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           $ProjFile = "${{ inputs.project-file }}"
