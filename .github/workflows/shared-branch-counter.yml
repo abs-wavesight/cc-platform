@@ -42,7 +42,7 @@ jobs:
           git tag "$NEW_TAG"
           git push origin "$NEW_TAG"        
 
-          echo "branchCounter=$COUNTER" >> $Env:GITHUB_OUTPUT
+          echo "branchCounter=${COUNTER}" >> $Env:GITHUB_OUTPUT
 
       - name: Display Counter
         run: echo "Branch-specific counter is ${{ steps.increment_counter.outputs.branchCounter }}"
