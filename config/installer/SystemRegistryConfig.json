@@ -617,6 +617,18 @@
           "action": "install"
         },
         {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-central/adapters')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-central/vessels')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-central/history')",
+          "action": "executeImmediate"
+        },
+        {
           "source": "powershell -Command \"New-NetFirewallRule -DisplayName 'open rmq port' -Direction Inbound -LocalPort 15671 -Protocol TCP -Action allow\"",
           "action": "executeImmediate"
         },
