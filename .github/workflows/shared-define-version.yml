@@ -27,12 +27,12 @@ on:
 
 jobs:  
   get-release-counter:
-    uses: abs-wavesight/cc-platform/.github/workflows/shared-branch-counter.yml@feature/ADO-131748-NuGet
+    uses:  ./.github/workflows/shared-branch-counter.yml
     with:
       branch: ${{ inputs.release_branch }}
       increment: false
   get-current-counter:
-    uses: abs-wavesight/cc-platform/.github/workflows/shared-branch-counter.yml@feature/ADO-131748-NuGet   
+    uses:  ./.github/workflows/shared-branch-counter.yml 
     with:
       increment: true 
 
