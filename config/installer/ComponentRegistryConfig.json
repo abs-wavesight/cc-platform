@@ -340,6 +340,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/voyage-manager-adapter/appsettings.json",
           "destination": "appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/voyage-manager-adapter/adapter.drex.config.json",
+          "destination": "voyage-manager.adapter.drex.config.json"
         }
       ],
       "actions": [
@@ -366,6 +371,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/message-scheduler/appsettings.json",
           "destination": "appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/message-scheduler/adapter.drex.config.json",
+          "destination": "message-scheduler.adapter.drex.config.json"
         }
       ],
       "actions": [

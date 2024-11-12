@@ -684,6 +684,11 @@
           "action": "copy"
         },
         {
+          "source": "voyage-manager.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-central\\adapters\\voyage-manager.adapter.drex.config.json",
+          "action": "copy"
+        },
+        {
           "source": "$ABS_PATH\\config\\voyage-manager-report-adapter\\appsettings.json",
           "action": "replaceParameters"
         },
@@ -719,6 +724,11 @@
         {
           "source": "appsettings.json",
           "destination": "$ABS_PATH\\config\\message-scheduler\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "message-scheduler.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-central\\adapters\\message-scheduler.adapter.drex.config.json",
           "action": "copy"
         },
         {
