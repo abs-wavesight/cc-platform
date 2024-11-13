@@ -10,7 +10,11 @@ on:
         develop_branch:
             description: 'The develop branch'
             required: true
-            type: string            
+            type: string 
+        project_marker:
+            type: string
+            description: "Use this marker if you have multiple projects within a single repository that each require individual counters."
+            default: ""
         major:
             description: 'The major version'
             required: true
@@ -30,12 +34,14 @@ jobs:
     uses:  ./.github/workflows/shared-branch-counter.yml
     with:
       branch: ${{ inputs.release_branch }}
+      project_marker: ${{ inputs.project_marker }}
       increment: false
+      
   get-current-counter:
     uses:  ./.github/workflows/shared-branch-counter.yml 
-    with:
-      increment: true 
-
+    with:       
+      project_marker: ${{ inputs.project_marker }}
+      increment: true
   define-version:
     needs: [get-release-counter, get-current-counter]
     runs-on: ubuntu-latest
