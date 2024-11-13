@@ -56,12 +56,10 @@ jobs:
         run: |         
          
           branch_name="${{ github.ref_name }}"
-
-          if ["${{ github.event_name }}" == "push"]; then
-            if [ -n "${{ github.head_ref }}" ]; then
-              branch_name="${{ github.head_ref }}"           
-            fi             
-          fi
+          
+          if [ -n "${{ github.head_ref }}" ]; then
+            branch_name="${{ github.head_ref }}"           
+          fi  
 
           echo "Branch name: $branch_name"
 
