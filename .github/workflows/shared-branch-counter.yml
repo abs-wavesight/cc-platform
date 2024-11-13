@@ -9,7 +9,7 @@ on:
         default: ${{ github.ref_name }}
       project_marker:
         type: string
-        description: "Use this marker if you have in one repo multiply projects that needs a separate counters"
+        description: "Use this marker if you have multiple projects within a single repository that each require individual counters."
         default: ""
       increment:
         type: boolean
