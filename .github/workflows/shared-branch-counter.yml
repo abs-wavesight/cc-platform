@@ -7,10 +7,14 @@ on:
         type: string
         description: "The branch for which to retrieve or increment the counter (defaults to current branch)"        
         default: ${{ github.ref_name }}
+      project_marker:
+        type: string
+        description: "Use this marker if you have in one repo multiply projects that needs a separate counters"
+        default: ""
       increment:
         type: boolean
         description: "Incrementing the counter (default: false)"        
-        default: false
+        default: false      
     outputs:
       branchCounter:
         value: ${{ jobs.branch_counter.outputs.branchCounter }}
@@ -36,7 +40,7 @@ jobs:
         run: |          
           BRANCH_NAME="${{ inputs.branch }}"          
          
-          TAGS=$(git tag -l "counter-${BRANCH_NAME}-*")
+          TAGS=$(git tag -l "counter-${{ inputs.project_marker }}-${BRANCH_NAME}-*")
 
           if [ -z "$TAGS" ]; then            
             COUNTER=1
@@ -47,7 +51,7 @@ jobs:
           
           if [ "${{ inputs.increment}}" = "true" ]; then
             COUNTER=$((COUNTER + 1))
-            NEW_TAG="counter-${BRANCH_NAME}-${COUNTER}"
+            NEW_TAG="counter-${{ inputs.project_marker }}-${BRANCH_NAME}-${COUNTER}"
             echo "Incrementing counter. New tag: $NEW_TAG"
            
             git tag "$NEW_TAG"
