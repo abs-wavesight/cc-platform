@@ -43,7 +43,7 @@ jobs:
           TAGS=$(git tag -l "counter-${{ inputs.project_marker }}-${BRANCH_NAME}-*")
 
           if [ -z "$TAGS" ]; then            
-            COUNTER=1
+            COUNTER=0
           else           
             LAST_TAG=$(echo "$TAGS" | sort -V | tail -n 1)
             COUNTER=$(echo "$LAST_TAG" | awk -F '-' '{print $NF}')
