@@ -7,25 +7,21 @@ services:
       - cc.rabbitmq-remote
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
-      - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
-      - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
-      - LocalMessageBus__Port=${DREX_CENTRAL_PORT}
-      - LocalMessageBus__HttpPort=${DREX_CENTRAL_HTTP_PORT}
-      - CloudParameters__CcTenantId=${CC_TENANT_ID}
-      - CloudParameters__CcTenantName=${CC_TENANT_NAME}
-      - CloudParameters__CloudTenantId=${CLOUD_TENANT_ID}
-      - CloudParameters__ApimServiceUrl=${APIM_SERVICE_URL}
-      - CloudParameters__CloudClientId=${CLOUD_CLIENT_ID}
-      - CloudParameters__CloudClientSecret=${CLOUD_CLIENT_SECRET}
-      - CloudParameters__CentralHostName=${CENTRAL_HOST_NAME}
-      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - LocalMessageBus__Username=guest
+      - LocalMessageBus__Password=guest
+      - LocalMessageBus__Port=5682
+      - LocalMessageBus__HttpPort=15682
+      - LocalMessageBus__Protocol=amqp
+      - AdaptersFolderPath=C:/app/config/adapters
+      - VesselsFolderPath=C:/app/config/vessels
+      - HistoryFolderPath=C:/app/config/history
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
-      - "12345:5000"
+      - "12346:5000"
     restart: always
     volumes:
-      - type: bind
-        source: ${PATH_TO_CC_DREX_REPO}/config/drex
+      - type: bind	
+        source: ${PATH_TO_CC_DREX_REPO}/config/drexcentral
         target: C:/app/config
         read_only: false
       - type: bind

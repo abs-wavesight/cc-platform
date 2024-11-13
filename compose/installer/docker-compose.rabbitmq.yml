@@ -15,7 +15,9 @@ services:
         ";",
         "cmd",
         "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
+        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat",
+        "c:\\rabbitmq\\sbin\\rabbitmq-plugins enable rabbitmq_shovel",
+        "c:\\rabbitmq\\sbin\\rabbitmq-plugins enable rabbitmq_shovel_management"
       ]
     healthcheck:
       test:
