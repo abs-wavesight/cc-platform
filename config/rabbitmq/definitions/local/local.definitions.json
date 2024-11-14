@@ -2,6 +2,9 @@
   "vhosts": [
     {
       "name": "/"
+    },
+    {
+      "name": "commoncore"
     }
   ],
   "users": [
@@ -17,6 +20,13 @@
     {
       "user": "guest",
       "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "commoncore",
       "configure": ".*",
       "read": ".*",
       "write": ".*"
