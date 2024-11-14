@@ -15,6 +15,10 @@ on:
         type: boolean
         description: "Incrementing the counter (default: false)"        
         default: false      
+      version-sub-tag:
+        type: string
+        description: "it helps to reset counter on dev branch after release"        
+        default: ""
     outputs:
       branchCounter:
         value: ${{ jobs.branch_counter.outputs.branchCounter }}
@@ -38,9 +42,11 @@ jobs:
         id: counter
         shell: bash
         run: |          
-          BRANCH_NAME="${{ inputs.branch }}"          
+          BRANCH_NAME="${{ inputs.branch }}"      
+          
+          COUNTER_BASE_TAG="counter-${{ inputs.version-sub-tag }}-${{ inputs.project_marker }}-${BRANCH_NAME}"
          
-          TAGS=$(git tag -l "counter-${{ inputs.project_marker }}-${BRANCH_NAME}-*")
+          TAGS=$(git tag -l "${COUNTER_BASE_TAG}-*")
 
           if [ -z "$TAGS" ]; then            
             COUNTER=0
@@ -51,7 +57,7 @@ jobs:
           
           if [ "${{ inputs.increment}}" = "true" ]; then
             COUNTER=$((COUNTER + 1))
-            NEW_TAG="counter-${{ inputs.project_marker }}-${BRANCH_NAME}-${COUNTER}"
+            NEW_TAG="${COUNTER_BASE_TAG}-${COUNTER}"
             echo "Incrementing counter. New tag: $NEW_TAG"
            
             git tag "$NEW_TAG"

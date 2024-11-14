@@ -41,6 +41,7 @@ jobs:
     uses:  ./.github/workflows/shared-branch-counter.yml 
     with:       
       project_marker: ${{ inputs.project_marker }}
+      version-sub-tag: "${{ inputs.major }}-${{ inputs.minor }}"
       increment: true
   define-version:
     needs: [get-release-counter, get-current-counter]
