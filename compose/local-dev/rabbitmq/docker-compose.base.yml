@@ -14,11 +14,24 @@ services:
         "-FilePath",
         "C:\\certs\\rabbitmq.cer",
         ";",
+
         "cmd",
         "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins enable rabbitmq_shovel",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins enable rabbitmq_shovel_management"
+        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
+        "enable", 
+        "rabbitmq_shovel", 
+        ";",
+
+        "cmd",
+        "/C",
+        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
+        "enable", 
+        "rabbitmq_shovel_management",
+        ";",
+                
+        "cmd",
+        "/C",
+        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
       ]
     healthcheck:
       test:
