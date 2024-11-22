@@ -24,7 +24,7 @@ services:
     restart: always	
     volumes:
       - type: bind	
-        source: $ABS_PATH/config/drexcentral
+        source: $ABS_PATH/config/drex-central
         target: C:/app/config
         read_only: false
       - type: bind
