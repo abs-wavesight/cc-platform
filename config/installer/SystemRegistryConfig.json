@@ -200,7 +200,7 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"docker-compose -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\" 2>&1",
+          "source": "powershell -Command \"c:\\docker\\docker-compose.exe -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\" 2>&1",
           "action": "execute"
         },
         {
@@ -390,6 +390,10 @@
         {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "postDrexInstall"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
+          "action": "execute"
         }
       ]
     },
