@@ -2,13 +2,11 @@
   "components": [
     "Docker",
     "RabbitMq",
-    "Vector-Site",
-    "Drex-Message",
-    "Drex-File",
     "OpenSsl",
     "Installer",
+    "Drex-Message",
     "Disco",
-    "Observability-Service"	
+    "Observability-Service"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",

@@ -162,6 +162,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-message.yml",
           "destination": "docker-compose.drex-message.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex/appsettings.json",
+          "destination": "appsettings.json"
         }
       ],
       "actions": [
@@ -314,6 +319,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-central.yml",
           "destination": "docker-compose.drex-central.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-central/appsettings.json",
+          "destination": "appsettings.json"
         }
       ],
       "actions": [

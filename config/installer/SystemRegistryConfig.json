@@ -362,14 +362,12 @@
           "action": "install"
         },
         {
-          "source": "..\\AdditionalFiles\\site-config.json",
-          "destination": "$ABS_PATH\\config\\drex-shared\\site-config.json",
-          "action": "copy"
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/adapters')",
+          "action": "executeImmediate"
         },
         {
-          "source": "..\\AdditionalFiles\\*.client-app-config.json",
-          "destination": "$ABS_PATH\\config\\drex-shared\\",
-          "action": "copy"
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/history')",
+          "action": "executeImmediate"
         },
         {
           "source": "docker-compose.drex-message.yml",
@@ -378,6 +376,15 @@
         },
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "appsettings.json",
+          "destination": "$ABS_PATH\\config\\drex\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\drex\\appsettings.json",
           "action": "replaceParameters"
         },
         {
@@ -647,6 +654,15 @@
         },
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-central.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "appsettings.json",
+          "destination": "$ABS_PATH\\config\\drex-central\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\drex-central\\appsettings.json",
           "action": "replaceParameters"
         },
         {

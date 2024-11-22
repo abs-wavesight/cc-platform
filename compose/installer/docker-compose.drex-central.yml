@@ -28,16 +28,8 @@ services:
     restart: always	
     volumes:
       - type: bind	
-        source: $ABS_PATH/config/drex-central/adapters
-        target: C:/app/config/adapters
-        read_only: false
-      - type: bind	
-        source: $ABS_PATH/config/drex-central/vessels
-        target: C:/app/config/vessels
-        read_only: false
-      - type: bind	
-        source: $ABS_PATH/config/drex-central/history
-        target: C:/app/config/history
+        source: $ABS_PATH/config/drexcentral
+        target: C:/app/config
         read_only: false
       - type: bind
         source: $ABS_PATH/certificates/local-certs
