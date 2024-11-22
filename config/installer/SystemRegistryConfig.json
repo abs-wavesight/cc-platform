@@ -653,10 +653,6 @@
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.drex-central.yml",
-          "action": "replaceParameters"
-        },
-        {
           "source": "appsettings.json",
           "destination": "$ABS_PATH\\config\\drex-central\\appsettings.json",
           "action": "copy"

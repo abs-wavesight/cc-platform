@@ -11,6 +11,17 @@
   "parameters": {
     "$ABS_PATH": "c:/abs",
     "$RABBIT_LOCATION": "local",
-    "$FDZ_ROOT_PATH": "c:/abs/fdz"
+    "$FDZ_ROOT_PATH": "c:/abs/fdz",
+    "$RMQ_LOCAL_PORT": "5672",
+    "$RMQ_LOCAL_HTTP_PORT": "15672",
+    "$RMQ_LOCAL_PROTOCOL": "amqp",
+    "$DREX_SHARED_CENTRAL_USERNAME": "drex",
+    "$DREX_SHARED_CENTRAL_PASSWORD": "guest",
+    "$RMQ_CENTRAL_HOST": "central.com",
+    "$RMQ_CENTRAL_PORT": "5671",
+    "$RMQ_CENTRAL_HTTP_PORT": "15671",
+    "$RMQ_CENTRAL_PROTOCOL": "amqps",
+    "$RMQ_CENTRAL_VHOST": "commoncore",
+    "$VESSEL_IMO": "123456"
   }
 }
