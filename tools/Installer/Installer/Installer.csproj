@@ -18,9 +18,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.540" />
-		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.329" />
-		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.259" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.1" />
+		<PackageReference Include="Abs.CommonCore.Platform" Version="1.0.335" />
+		<PackageReference Include="Abs.CommonCore.Drex.Shared" Version="1.0.261" />
 		<PackageReference Include="Abs.CommonCore.RabbitMQ.Shared" Version="1.0.30" />
 		<PackageReference Include="Docker.DotNet" Version="3.125.15" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.66.1" />
