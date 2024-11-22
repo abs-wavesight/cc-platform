@@ -4,9 +4,9 @@
     "net8.0": {
       "Abs.CommonCore.Contracts": {
         "type": "Direct",
-        "requested": "[1.0.540, )",
-        "resolved": "1.0.540",
-        "contentHash": "JOMNiC/F2fFl8WxdgPW8vZt+G9Et4UPJJRZoQoUdf/u0uUC474M73grXiZp4krGKmMuNh/iW0TimEt/7IEoHBw==",
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "63avjRnX+Fur2Fu0BbVAFbLnz1HALU+y+iDsF6INdQ2zPEGeZI5kjV6D5pUltYFaUb3luhf+Xna5Cd5/GolmGw==",
         "dependencies": {
           "Google.Protobuf": "3.26.1",
           "Grpc.AspNetCore": "2.62.0",
@@ -15,12 +15,12 @@
       },
       "Abs.CommonCore.Drex.Shared": {
         "type": "Direct",
-        "requested": "[1.0.259, )",
-        "resolved": "1.0.259",
-        "contentHash": "XxdZcOTDxyuSD2OWP2moWeI9BO1TjeWX0jPa786Xo2JtJ2/1XoDN/MRT0ScF8KJDdeDxWwYdPz7tVIFX+MlFDQ==",
+        "requested": "[1.0.261, )",
+        "resolved": "1.0.261",
+        "contentHash": "ej6vuQhr/ugq4JP3ibDMSRRiiZoDc77XzJM6OSrMNtiAXuB0h7S6soBmjotQGAC6j7NMi65wLB53+Z7A2+a/Lg==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.515",
-          "Abs.CommonCore.Platform": "1.0.313",
+          "Abs.CommonCore.Contracts": "1.0.1",
+          "Abs.CommonCore.Platform": "1.0.335",
           "Microsoft.Extensions.Configuration": "8.0.0",
           "Microsoft.Extensions.Configuration.Binder": "8.0.2",
           "Microsoft.Extensions.Configuration.Json": "8.0.1",
@@ -31,11 +31,11 @@
       },
       "Abs.CommonCore.Platform": {
         "type": "Direct",
-        "requested": "[1.0.329, )",
-        "resolved": "1.0.329",
-        "contentHash": "NJbYaUQ0hn3tfBP5LPtx8kCGM6Mq755AUDVOXyN+99fVazQc7iRhVvmTdRf5B+YeLdlUeiVSxpV3gakr9y80Dw==",
+        "requested": "[1.0.335, )",
+        "resolved": "1.0.335",
+        "contentHash": "Rm2FI4sQmqMdLkHN2ruY+BcF9crBFSu+lNpcSCniXAhqUwo4iOWXtq3778WCDRVMD5Wytcb+JaHQqrGhyZo2kQ==",
         "dependencies": {
-          "Abs.CommonCore.Contracts": "1.0.521",
+          "Abs.CommonCore.Contracts": "1.0.1",
           "EasyNetQ.Management.Client": "3.0.0",
           "JsonSchema.Net": "4.1.1",
           "Microsoft.Extensions.Configuration": "8.0.0",
