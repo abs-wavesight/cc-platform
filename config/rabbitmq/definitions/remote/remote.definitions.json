@@ -35,7 +35,7 @@
   "queues": [
     {
       "name": "cc.drex.central.snk-log.q",
-      "vhost": "/",
+      "vhost": "commoncore",
       "durable": true,
       "auto_delete": false,
       "arguments": {
