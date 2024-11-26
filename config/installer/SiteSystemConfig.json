@@ -4,8 +4,7 @@
     "RabbitMq",
     "OpenSsl",
     "Installer",
-    "Drex-Message",
-    "Observability-Service"
+    "Drex-Message"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
