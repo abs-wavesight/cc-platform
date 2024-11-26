@@ -1,6 +1,6 @@
 [sources.rabbitmq]
 type = "amqp"
-connection_string = "amqps://guest:guest@rabbitmq-remote:5671"
+connection_string = "amqps://guest:guest@rabbitmq-remote:5671/commoncore"
 tls.ca_file = "C:\\certs\\rabbitmq.cer"
 decoding.codec = "bytes"
 consumer = "vector"
