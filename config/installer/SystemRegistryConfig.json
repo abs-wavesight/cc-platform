@@ -214,7 +214,7 @@
       ]
     },
     {
-      "name": "RabbitMq",
+      "name": "RabbitMqVessel",
       "files": [
         {
           "type": "release",
@@ -238,13 +238,8 @@
           "action": "copy"
         },
         {
-          "source": "local.definitions.json",
-          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",
-          "action": "copy"
-        },
-        {
-          "source": "remote.definitions.json",
-          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\remote\\remote.definitions.json",
+          "source": "vessel.definitions.json",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\vessel\\vessel.definitions.json",
           "action": "copy"
         },
         {
@@ -252,11 +247,46 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\local\\local.definitions.json",
+          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\vessel\\vessel.definitions.json",
           "action": "postRabbitMqInstall"
+        }
+      ]
+    },
+    {
+      "name": "RabbitMqCentral",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
+          "destination": "c:/abs/temp/RabbitMq/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "rabbitmq.tar",
+          "action": "install"
         },
         {
-          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\remote\\remote.definitions.json",
+          "source": "cc-rabbitmq.conf",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\cc-rabbitmq.conf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.rabbitmq.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
+          "action": "copy"
+        },
+        {
+          "source": "central.definitions.json",
+          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\central\\central.definitions.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\central\\central.definitions.json",
           "action": "postRabbitMqInstall"
         }
       ]

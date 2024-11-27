@@ -1,14 +1,14 @@
 ﻿{
   "components": [
     "Docker",
-    "RabbitMq",
+    "RabbitMqVessel",
     "OpenSsl",
     "Installer",
     "Drex-Message"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
-    "$RABBIT_LOCATION": "local",
+    "$RABBIT_LOCATION": "vessel",
     "$FDZ_ROOT_PATH": "c:/abs/fdz",
     "$DREX_SHARED_CENTRAL_USERNAME": "drex",
     "$DREX_SHARED_CENTRAL_PASSWORD": "guest",

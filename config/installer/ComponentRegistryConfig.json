@@ -33,7 +33,7 @@
       ]
     },
     {
-      "name": "RabbitMq",
+      "name": "RabbitMqCentral",
       "files": [
         {
           "type": "container",
@@ -52,13 +52,43 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/local/local.definitions.json",
-          "destination": "local.definitions.json"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/central/central.definitions.json",
+          "destination": "central.definitions.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.rabbitmq.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "cc-rabbitmq.conf",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "RabbitMqVessel",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "destination": "rabbitmq.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/remote/remote.definitions.json",
-          "destination": "remote.definitions.json"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
+          "destination": "docker-compose.rabbitmq.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
+          "destination": "cc-rabbitmq.conf"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/vessel/vessel.definitions.json",
+          "destination": "vessel.definitions.json"
         }
       ],
       "actions": [

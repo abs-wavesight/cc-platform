@@ -365,25 +365,33 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'");
+        try
+        {
+            _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'");
 
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, DrexSiteUsername, null,
-                                  Models.AccountType.LocalDrex, true);
+            var account = await RabbitConfigurer
+                .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
+                                      LocalRabbitPassword, DrexSiteUsername, null,
+                                      Models.AccountType.LocalDrex, true);
 
-        const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
-        const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
+            const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
+            const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
 
-        var envFile = await File.ReadAllTextAsync(action.Source);
+            var envFile = await File.ReadAllTextAsync(action.Source);
 
-        // Replace the drex local account credentials
-        var newText = envFile
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
+            // Replace the drex local account credentials
+            var newText = envFile
+                .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
+                .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
 
-        _logger.LogInformation("Updating local drex account");
-        await File.WriteAllTextAsync(action.Source, newText);
+            _logger.LogInformation("Updating local drex account");
+            await File.WriteAllTextAsync(action.Source, newText);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating Drex account");
+            throw;
+        }
     }
 
     private async Task RunPostRabbitMqInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
