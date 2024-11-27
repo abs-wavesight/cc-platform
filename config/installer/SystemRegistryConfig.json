@@ -219,7 +219,7 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
-          "destination": "c:/abs/temp/RabbitMq/"
+          "destination": "c:/abs/temp/RabbitMqVessel/"
         }
       ],
       "actions": [
@@ -258,7 +258,7 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
-          "destination": "c:/abs/temp/RabbitMq/"
+          "destination": "c:/abs/temp/RabbitMqCentral/"
         }
       ],
       "actions": [
