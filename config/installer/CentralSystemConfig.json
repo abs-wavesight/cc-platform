@@ -2,7 +2,7 @@
   "components": [
     "Docker",
     "Certificates-Central",
-    "RabbitMqCentral",
+    "RabbitMq",
     "Vector-Central",
     "Sftp-Service",
     "Installer",

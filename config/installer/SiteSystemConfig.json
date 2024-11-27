@@ -1,7 +1,7 @@
 ﻿{
   "components": [
     "Docker",
-    "RabbitMqVessel",
+    "RabbitMq",
     "OpenSsl",
     "Installer",
     "Drex-Message"
