@@ -371,7 +371,7 @@ public class ComponentInstaller : ActionBase
 
             var account = await RabbitConfigurer
                 .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                      LocalRabbitPassword, DrexSiteUsername, null,
+                                      _generatedGuestPassword, DrexSiteUsername, null,
                                       Models.AccountType.LocalDrex, true);
 
             const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
