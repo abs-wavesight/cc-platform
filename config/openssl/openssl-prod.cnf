@@ -12,7 +12,7 @@ C                      = US
 ST                     = TX
 L                      = Spring
 O                      = American Bureau of Shipping
-CN                     = rabbitmq-local
+CN                     = rabbitmq-vessel
 
 [ req_attributes ]
 challengePassword              = A challenge password
@@ -23,4 +23,4 @@ extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = localhost
-DNS.2 = rabbitmq-local
+DNS.2 = rabbitmq-vessel
