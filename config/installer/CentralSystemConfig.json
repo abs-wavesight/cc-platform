@@ -16,7 +16,7 @@
     "$SFTP_SERVICE_PATH": "c:/abs/sftp",
     "$CLOUD_TENANT_ID": "00000000-0000-0000-0000-000000000000",
     "$CC_TENANT_ID": "00000000-0000-0000-0000-000000000000",
-    "$APIM_SERVICE_URL": "https://apim-abs-cc-scus-dev.azure-api.net/vmprovisionadapters",
+    "$APIM_SERVICE_URL": "https://apim-abs-cc-scus-dev.azure-api.net/vmprovisionadapters/CentralRegistry",
     "$CLOUD_CLIENT_ID": "00000000-0000-0000-0000-000000000000",
     "$CLOUD_CLIENT_SECRET": "top_secret",
     "$CENTRAL_HOST_NAME": "central.com",
