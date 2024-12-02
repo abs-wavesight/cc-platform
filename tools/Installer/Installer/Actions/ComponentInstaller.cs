@@ -236,7 +236,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.Compress => RunCompressCommandAsync(component, rootLocation, action),
                 ComponentActionAction.Uncompress => RunUncompressCommandAsync(component, rootLocation, action),
                 ComponentActionAction.RunDockerCompose => RunDockerComposeCommandAsync(component, rootLocation, action),
-                ComponentActionAction.PostDrexInstall => RunPostDrexInstallCommandAsync(component, rootLocation, action),
+                ComponentActionAction.PostDrexInstall => RunPostDrexInstallCommandAsync(component, rootLocation, action, Models.AccountType.LocalDrex),
                 ComponentActionAction.PostVectorInstall => RunPostVectorInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostRabbitMqInstall => RunPostRabbitMqInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostVMReportInstall => RunPostVoyageManagerInstallCommandAsync(component, rootLocation, action),
@@ -363,7 +363,7 @@ public class ComponentInstaller : ActionBase
         await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
-    private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action, Models.AccountType accountType)
     {
         try
         {
@@ -372,7 +372,7 @@ public class ComponentInstaller : ActionBase
             var account = await RabbitConfigurer
                 .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
                                       _generatedGuestPassword, DrexSiteUsername, null,
-                                      Models.AccountType.LocalDrex, true);
+                                      accountType, true);
 
             const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
             const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
@@ -412,7 +412,7 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunPostDrexCentralInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        await RunPostDrexInstallCommandAsync(component, rootLocation, action);
+        await RunPostDrexInstallCommandAsync(component, rootLocation, action, Models.AccountType.RemoteDrex);
     }
 
     private async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action)

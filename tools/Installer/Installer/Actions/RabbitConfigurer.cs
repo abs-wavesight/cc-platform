@@ -167,8 +167,16 @@ public partial class RabbitConfigurer : ActionBase
             }
         }
 
-        var user = UserInfo.ByPassword(password)
-            .AddTag(UserTags.Management);
+
+        var user = UserInfo.ByPassword(password);
+        if (accountType == AccountType.LocalDrex)
+        {
+            user.AddTag(UserTags.Administrator);
+        }
+        else
+        { 
+            user.AddTag(UserTags.Management);
+        }
 
         await client.CreateUserAsync(username, user);
         await UpdateUserPermissionsAsync(client, username, accountType);
