@@ -29,7 +29,7 @@ path = "C:\\cc-logs\\{{container_name}}-%Y-%m-%d_%H.log" # Remember to change fi
 [sinks.rabbitmq]
 type = "amqp"
 inputs = ["filter-container-logs-on-level"]
-connection_string = "amqps://guest:guest@rabbitmq-local:5671/commoncore"
+connection_string = "amqps://guest:guest@rabbitmq-vessel:5671/commoncore"
 tls.ca_file = "C:\\certs\\rabbitmq.cer"
 encoding.codec = "json"
 exchange = "cc.drex.ed"
