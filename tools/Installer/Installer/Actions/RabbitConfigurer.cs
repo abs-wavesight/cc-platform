@@ -170,11 +170,11 @@ public partial class RabbitConfigurer : ActionBase
         var user = UserInfo.ByPassword(password);
         if (accountType == AccountType.LocalDrex)
         {
-            user.AddTag(UserTags.Administrator);
+            user = user.AddTag(UserTags.Administrator);
         }
         else
         {
-            user.AddTag(UserTags.Management);
+            user = user.AddTag(UserTags.Management);
         }
 
         await client.CreateUserAsync(username, user);
