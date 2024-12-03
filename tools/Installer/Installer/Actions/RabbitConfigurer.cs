@@ -52,7 +52,7 @@ public partial class RabbitConfigurer : ActionBase
         bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
-        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
+        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword, TimeSpan.FromMinutes(1));
 
         return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
     }
@@ -177,8 +177,8 @@ public partial class RabbitConfigurer : ActionBase
             user = user.AddTag(UserTags.Management);
         }
 
-        await client.CreateUserAsync(username, user);
-        await UpdateUserPermissionsAsync(client, username, accountType);
+        await waitAndRetry.ExecuteAsync(async () => await client.CreateUserAsync(username, user));
+        await waitAndRetry.ExecuteAsync(async () => await UpdateUserPermissionsAsync(client, username, accountType));
 
         var userRecord = await client.GetUserAsync(username);
         return userRecord != null
