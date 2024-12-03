@@ -51,7 +51,6 @@ public class ComponentInstaller : ActionBase
     private readonly InstallerComponentInstallerConfig? _installerConfig;
     private readonly InstallerComponentRegistryConfig _registryConfig;
     private readonly Dictionary<string, string> _allParameters;
-    private string _generatedGuestPassword = "guest";
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
@@ -124,7 +123,6 @@ public class ComponentInstaller : ActionBase
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
             .ThenByDescending(x =>
                 x.Action.Action is ComponentActionAction.PostDrexInstall or
-                    ComponentActionAction.PostRabbitMqInstall or
                     ComponentActionAction.PostVectorInstall or
                     ComponentActionAction.PostDiscoInstall or
                     ComponentActionAction.PostSiemensInstall or
@@ -132,6 +130,7 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostVMReportInstall or
                     ComponentActionAction.PostDrexCentralInstall or
                     ComponentActionAction.PostMessageSchedulerInstall)
+            .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostRabbitMqInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
             .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
             .ToArray();
@@ -371,7 +370,7 @@ public class ComponentInstaller : ActionBase
 
             var account = await RabbitConfigurer
                 .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                      _generatedGuestPassword, DrexSiteUsername, null,
+                                      LocalRabbitPassword, DrexSiteUsername, null,
                                       accountType, true);
 
             const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
@@ -405,7 +404,6 @@ public class ComponentInstaller : ActionBase
         var newText = configText
             .RequireReplace("\"password\": \"guest\",", $"\"password\": \"{password}\",");
 
-        _generatedGuestPassword = password;
         _logger.LogInformation("Altering guest account");
         await File.WriteAllTextAsync(action.Source, newText);
     }
