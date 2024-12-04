@@ -8,6 +8,7 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Polly;
@@ -367,6 +368,10 @@ public class ComponentInstaller : ActionBase
         try
         {
             _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'. Account {accountType}");
+            _logger.LogInformation(_localRabbitLocation.AbsolutePath);
+            _logger.LogInformation(LocalRabbitUsername);
+            _logger.LogInformation(LocalRabbitPassword);
+            _logger.LogInformation(DrexSiteUsername);
 
             var account = await RabbitConfigurer
                 .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
