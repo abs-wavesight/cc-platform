@@ -366,7 +366,7 @@ public class ComponentInstaller : ActionBase
     {
         try
         {
-            _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'");
+            _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'. Account {accountType}");
 
             var account = await RabbitConfigurer
                 .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,

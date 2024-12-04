@@ -177,7 +177,10 @@ public partial class RabbitConfigurer : ActionBase
             user = user.AddTag(UserTags.Management);
         }
 
+        Console.WriteLine($"Creating user '{username}'");
         await waitAndRetry.ExecuteAsync(async () => await client.CreateUserAsync(username, user));
+        Console.WriteLine($"User '{username}' created");
+
         await waitAndRetry.ExecuteAsync(async () => await UpdateUserPermissionsAsync(client, username, accountType));
 
         var userRecord = await client.GetUserAsync(username);
