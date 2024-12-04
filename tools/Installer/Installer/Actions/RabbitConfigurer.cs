@@ -152,6 +152,7 @@ public partial class RabbitConfigurer : ActionBase
                 <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
                 _ => TimeSpan.FromMinutes(1)
             });
+        Console.WriteLine($"Checking if user '{username}' exists");
         var existingUser = await waitAndRetry.ExecuteAsync(async () => await GetUserAsync(client, username));
 
         if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase) && !isSilent)
@@ -167,6 +168,7 @@ public partial class RabbitConfigurer : ActionBase
             }
         }
 
+        Console.WriteLine($"Creating user '{username}'");
         var user = UserInfo.ByPassword(password);
         if (accountType == AccountType.LocalDrex)
         {
@@ -177,7 +179,7 @@ public partial class RabbitConfigurer : ActionBase
             user = user.AddTag(UserTags.Management);
         }
 
-        Console.WriteLine($"Creating user '{username}'");
+        Console.WriteLine($"Sending request to create user '{username}'");
         await waitAndRetry.ExecuteAsync(async () => await client.CreateUserAsync(username, user));
         Console.WriteLine($"User '{username}' created");
 
@@ -259,7 +261,13 @@ public partial class RabbitConfigurer : ActionBase
         }
         catch (UnexpectedHttpStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
+            Console.WriteLine($"User '{username}' does not exist");
             return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting user '{username}': {ex.Message}");
+            throw;
         }
     }
 

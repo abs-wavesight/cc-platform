@@ -368,9 +368,7 @@ public class ComponentInstaller : ActionBase
         try
         {
             _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'. Account {accountType}");
-            _logger.LogInformation(_localRabbitLocation.AbsolutePath);
-            _logger.LogInformation(LocalRabbitUsername);
-            _logger.LogInformation(LocalRabbitPassword);
+            _logger.LogInformation(_localRabbitLocation.ToString());
             _logger.LogInformation(DrexSiteUsername);
 
             var account = await RabbitConfigurer
