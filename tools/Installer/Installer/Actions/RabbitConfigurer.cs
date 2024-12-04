@@ -52,8 +52,17 @@ public partial class RabbitConfigurer : ActionBase
         bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
-        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
 
+        var client = await waitAndRetry.ExecuteAsync(async () => new ManagementClient(rabbit, rabbitUsername, rabbitPassword));
+
+        Console.WriteLine($"Connected to RabbitMQ at '{rabbit}'");
         return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
     }
 
@@ -112,7 +121,16 @@ public partial class RabbitConfigurer : ActionBase
 
     private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType, bool isSilent)
     {
-        var existingVHosts = await client.GetVhostsAsync();
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
+
+        Console.WriteLine($"Checking if vhost '{SystemVhost}' exists");
+        var existingVHosts = await waitAndRetry.ExecuteAsync(async () => await client.GetVhostsAsync());
         if (!existingVHosts.Any(v => string.Equals(v.Name, SystemVhost, StringComparison.OrdinalIgnoreCase)))
         {
             Console.WriteLine($"Creating vhost '{SystemVhost}'");
@@ -124,6 +142,7 @@ public partial class RabbitConfigurer : ActionBase
             ? GeneratePassword()
             : password;
 
+        Console.WriteLine($"Creating {accountType} account");
         var isAdded = await AddUserAccountAsync(client, username, password, accountType, isSilent);
 
         if (isAdded == false)
