@@ -52,7 +52,7 @@ public partial class RabbitConfigurer : ActionBase
         bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
-        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword, TimeSpan.FromMinutes(1));
+        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
 
         return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
     }
