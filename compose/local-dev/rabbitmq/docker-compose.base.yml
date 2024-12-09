@@ -60,12 +60,12 @@ services:
 
   cc.rabbitmq-local:
     <<: *rabbitmq
-    container_name: rabbitmq-local
+    container_name: rabbitmq-vessel
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
-      RABBITMQ_LOCATION: local
-    hostname: rabbitmq-local
+      RABBITMQ_LOCATION: vessel
+    hostname: rabbitmq-vessel
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -75,7 +75,7 @@ services:
     volumes:
       - *config_volume
       - type: volume
-        source: rabbitmq-local-storage
+        source: rabbitmq-vessel-storage
         target: C:/data/rabbitmq
       - type: bind
         source: ${PATH_TO_CERTS}/local-keys
@@ -88,12 +88,12 @@ services:
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
-    container_name: rabbitmq-remote
+    container_name: rabbitmq-central
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
-      RABBITMQ_LOCATION: remote
-    hostname: rabbitmq-remote
+      RABBITMQ_LOCATION: central
+    hostname: rabbitmq-central
     ports:
       - "5682:5672"
       - "15682:15672"
@@ -103,7 +103,7 @@ services:
     volumes:
       - *config_volume
       - type: volume
-        source: rabbitmq-remote-storage
+        source: rabbitmq-central-storage
         target: C:/data/rabbitmq
       - type: bind
         source: ${PATH_TO_CERTS}/remote-keys
@@ -115,5 +115,5 @@ services:
         read_only: true
 
 volumes:
-  rabbitmq-local-storage:
-  rabbitmq-remote-storage:
+  rabbitmq-vessel-storage:
+  rabbitmq-central-storage:
