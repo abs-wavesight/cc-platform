@@ -228,6 +228,7 @@ public partial class RabbitConfigurer : ActionBase
         {
             AccountType.Unknown => throw new Exception($"Unknown account type: {accountType}"),
             AccountType.LocalDrex => ".*",
+            AccountType.RemoteDrex => ".*",
             AccountType.Disco => ".*",
             _ => permissionsRegex
         };
@@ -246,6 +247,7 @@ public partial class RabbitConfigurer : ActionBase
             case AccountType.Unknown:
                 throw new Exception($"Unknown account type: {accountType}");
             case AccountType.LocalDrex:
+            case AccountType.RemoteDrex:
             case AccountType.Disco:
             case AccountType.VMReport:
                 return ".*";
