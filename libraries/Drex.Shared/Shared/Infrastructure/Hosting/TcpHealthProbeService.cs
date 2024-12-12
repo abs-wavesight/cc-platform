@@ -89,4 +89,11 @@ public class TcpHealthProbeService : BackgroundService
             _logger.LogCritical(ErrorCodes.TcpHealthProbeFailed, ex, "An error occurred while checking heartbeat");
         }
     }
+
+    public override void Dispose()
+    {
+        _listener.Stop();
+        _listener.Dispose();
+        base.Dispose();
+    }
 }
