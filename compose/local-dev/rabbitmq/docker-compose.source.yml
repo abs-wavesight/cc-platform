@@ -2,7 +2,7 @@ services:
 
   cc.rabbitmq-template:
     # This is never used, but must be here in order to be a valid compose file
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-2019
+    image: abs-cc-cc.rabbitmq-local:latest
 
   cc.rabbitmq-local:
     build:

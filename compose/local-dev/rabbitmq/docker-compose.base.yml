@@ -5,30 +5,11 @@ services:
       driver: local
     profiles: [ 'templates' ]
     restart: always
-    entrypoint: [ "powershell", "-c" ]
+    entrypoint: [ cmd, "-c" ]
     command:
       [
-        "Import-Certificate",
-        "-CertStoreLocation",
-        "Cert:\\LocalMachine\\root",
-        "-FilePath",
-        "C:\\certs\\rabbitmq.cer",
-        ";",
-
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel", 
-        ";",
-
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel_management",
-        ";",
-                
+        "certoc.exe -addstore root c:\\certs\\rabbitmq.cer",
+        ";",                
         "cmd",
         "/C",
         "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
@@ -36,14 +17,10 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "powershell",
-          "-Command",
-          "Invoke-WebRequest",
-          "-UseBasicParsing",
-          "-Method",
-          "HEAD",
-          "-Uri",
+          "CMD", 
+          "curl",
+          "-k",
+          "--head", 
           "https://localhost:15671"
         ]
       interval: 10s
@@ -76,7 +53,7 @@ services:
       - *config_volume
       - type: volume
         source: rabbitmq-vessel-storage
-        target: C:/data/rabbitmq
+        target: C:/data
       - type: bind
         source: ${PATH_TO_CERTS}/local-keys
         target: C:/keys
@@ -85,6 +62,9 @@ services:
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
+      - type: bind	
+        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/site
+        target: C:/data
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
@@ -104,7 +84,7 @@ services:
       - *config_volume
       - type: volume
         source: rabbitmq-central-storage
-        target: C:/data/rabbitmq
+        target: C:/data
       - type: bind
         source: ${PATH_TO_CERTS}/remote-keys
         target: C:/keys
@@ -113,6 +93,9 @@ services:
         source: ${PATH_TO_CERTS}/remote-certs
         target: C:/certs
         read_only: true
+      - type: bind	
+        source: ${PATH_TO_CC_PLATFORM_REPO}/logs/central
+        target: C:/data
 
 volumes:
   rabbitmq-vessel-storage:
