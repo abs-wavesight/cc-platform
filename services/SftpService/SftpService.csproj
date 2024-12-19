@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Abs.CommonCore.SftpService</RootNamespace>
@@ -11,6 +11,8 @@
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>embedded</DebugType>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,17 +20,17 @@
 	</ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Abs.CommonCore.Contracts" Version="1.0.158" />
-	  <PackageReference Include="abs.commoncore.platform" Version="1.0.206" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+	  <PackageReference Include="Abs.CommonCore.Contracts" Version="1.1.0.6-beta" />
+	  <PackageReference Include="abs.commoncore.platform" Version="1.0.335" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
 	  <PackageReference Include="Rebex.FileServer" Version="7.0.8657" />
 	  <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-	  <PackageReference Include="xunit.assert" Version="2.4.2" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
+	  <PackageReference Include="xunit.assert" Version="2.9.2" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
   </ItemGroup>
 
   <ItemGroup>
