@@ -4,7 +4,7 @@ ARG POWERSHELL_NANOSERVER_TAG=lts-7.2-nanoserver-1809
 # Value for windows server 2022: 8.0-nanoserver-ltsc2022
 ARG DOTNET_TAG=8.0-nanoserver-1809
 
-# Value for windows server 2022: 7.0-windowsservercore-ltsc2022
+# Value for windows server 2022: 8.0-windowsservercore-ltsc2022
 ARG ASPNET_FULLSERVER_TAG=8.0-windowsservercore-ltsc2019
 
 FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS unzip
