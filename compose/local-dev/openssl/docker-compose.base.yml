@@ -13,16 +13,16 @@ services:
       - type: bind
         source: ${PATH_TO_CERTS}/local-keys
         target: C:/local-keys
-        read_only: true
+        read_only: false
       - type: bind
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/local-certs
-        read_only: true
+        read_only: false
       - type: bind
         source: ${PATH_TO_CERTS}/remote-keys
         target: C:/remote-keys
-        read_only: true
+        read_only: false
       - type: bind
         source: ${PATH_TO_CERTS}/remote-certs
         target: C:/remote-certs
-        read_only: true
+        read_only: false
