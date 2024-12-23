@@ -188,6 +188,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-file.yml",
           "destination": "docker-compose.drex-file.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/appsettings.json",
+          "destination": "appsettings.json"
         }
       ],
       "actions": [

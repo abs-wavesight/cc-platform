@@ -4,7 +4,8 @@
     "RabbitMq",
     "OpenSsl",
     "Installer",
-    "Drex-Message"
+    "Drex-Message",
+    "Drex-File"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
@@ -13,6 +14,9 @@
     "$DREX_SHARED_CENTRAL_USERNAME": "drex",
     "$DREX_SHARED_CENTRAL_PASSWORD": "guest",
     "$RMQ_CENTRAL_HOST": "central.com",
-    "$VESSEL_IMO": "123456"
+    "$SFTP_CENTRAL_HOST": "central.com",
+    "$VESSEL_IMO": "123456",
+    "$SFTP_CENTRAL_USERNAME": "drex",
+    "$SFTP_CENTRAL_PASSWORD": "P@ssword"
   }
 }
