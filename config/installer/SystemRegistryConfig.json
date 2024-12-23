@@ -412,6 +412,19 @@
           "action": "copy"
         },
         {
+          "source": "$ABS_PATH\\config\\drex-f\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "appsettings.json",
+          "destination": "$ABS_PATH\\config\\drex-f\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex/adapters')",
+          "action": "executeImmediate"
+        },
+        {
           "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
           "action": "replaceParameters"
         },
