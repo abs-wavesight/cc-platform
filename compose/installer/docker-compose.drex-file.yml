@@ -14,7 +14,6 @@ services:
       - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
       - SftpSettings__username=${SFTP_CENTRAL_USERNAME}
       - SftpSettings__password=${SFTP_CENTRAL_PASSWORD}
-      - SftpSettings__host=${SFTP_CENTRAL_HOST}
       - ABS_CC_FDZ_PATH=${FDZ_ROOT_PATH}
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
       - FLAT_LOGS=${FLAT_LOGS:-False}
