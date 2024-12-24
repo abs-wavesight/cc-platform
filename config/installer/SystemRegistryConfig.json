@@ -353,7 +353,7 @@
           "action": "install"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex/adapters')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/adapters')",
           "action": "executeImmediate"
         },
         {
@@ -421,8 +421,13 @@
           "action": "copy"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex/adapters')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/adapters')",
           "action": "executeImmediate"
+        },
+        {
+          "source": "drex-f.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-f.adapter.drex.config.json",
+          "action": "copy"
         },
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
