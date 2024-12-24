@@ -193,6 +193,11 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/appsettings.json",
           "destination": "appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/adapter.drex.config.json",
+          "destination": "drex-f.adapter.drex.config.json"
         }
       ],
       "actions": [

@@ -16,14 +16,19 @@ services:
       - SftpSettings__password=$SFTP_CENTRAL_PASSWORD
       - ABS_CC_FDZ_PATH=c:/fdz
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - AdaptersFolderPath=C:/app/adapters
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:	
       - "12346:5002"	
     restart: always	
     volumes:	
       - type: bind	
-        source: $ABS_PATH/config/drex-shared
+        source: $ABS_PATH/config/drex-f
         target: C:/app/config
+        read_only: true
+      - type: bind	
+        source: $ABS_PATH/config/drex-shared/adapters
+        target: C:/app/adapters	
         read_only: true
       - type: bind
         source: $ABS_PATH/certificates/local-certs
