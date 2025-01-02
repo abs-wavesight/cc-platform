@@ -4,6 +4,7 @@ Start-Process -Wait -FilePath ".\erlang_install.exe" -ArgumentList /S, /D=".\con
 Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.15/rabbitmq-server-windows-3.8.15.zip" -OutFile ".\rabbitmq.zip"
 Expand-Archive -Path ".\rabbitmq.zip" -DestinationPath ".\containers\rabbitmqnano"
 Remove-Item -Force -Path ".\rabbitmq.zip"
-Rename-Item -Path ".\containers\rabbitmqnano\rabbitmq_server-3.8.15" -NewName ".\containers\rabbitmqnano\rabbitmq"
 cd ".\containers\rabbitmqnano"
+dir
+Rename-Item -Path ".\containers\rabbitmqnano\rabbitmq_server-3.8.15" -NewName ".\containers\rabbitmqnano\rabbitmq"
 dir
