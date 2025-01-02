@@ -5,3 +5,4 @@ Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/dow
 Expand-Archive -Path ".\rabbitmq.zip" -DestinationPath ".\"
 Remove-Item -Force -Path ".\rabbitmq.zip"
 Rename-Item -Path ".\rabbitmq_server-3.8.15" -NewName ".\rabbitmq"
+dir
