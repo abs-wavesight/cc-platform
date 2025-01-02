@@ -95,7 +95,7 @@ jobs:
         if: matrix.container == 'rabbitmqcore'
         working-directory: ./
         shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
-        run: ./containers/rabbitmq/prep-handle-utility.ps1
+        run: ./containers/rabbitmqcore/prep-handle-utility.ps1
 
       - name: Construct tag-friendly shortened git SHA
         run: |
