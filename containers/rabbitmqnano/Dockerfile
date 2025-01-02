@@ -1,6 +1,6 @@
 # escape=`
-
-FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
+ARG SERVER_VERSION='ltsc2019'
+FROM mcr.microsoft.com/windows/nanoserver:${SERVER_VERSION}
 
 # Copy erlang and rabbit
 ADD erlang c:\\erlang
