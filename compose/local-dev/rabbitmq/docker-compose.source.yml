@@ -6,7 +6,7 @@ services:
 
   cc.rabbitmq-local:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmqcore
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"
@@ -14,7 +14,7 @@ services:
 
   cc.rabbitmq-remote:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmqcore
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"

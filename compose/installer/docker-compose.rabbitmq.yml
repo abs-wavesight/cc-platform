@@ -16,20 +16,6 @@ services:
 
         "cmd",
         "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel", 
-        ";",
-
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel_management",
-        ";",
-                
-        "cmd",
-        "/C",
         "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
       ]
     healthcheck:

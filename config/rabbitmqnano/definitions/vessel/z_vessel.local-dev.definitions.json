@@ -1,0 +1,129 @@
+{
+  "rabbit_version": "3.8.15",
+  "rabbitmq_version": "3.8.15",
+  "product_name": "RabbitMQ",
+  "product_version": "3.8.15",
+  "vhosts": [
+    {
+      "name": "/"
+    },
+    {
+      "name": "commoncore"
+    }
+  ],
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "name": "drex",
+      "password": "drex",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "name": "disco",
+      "password": "disco",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "name": "drex-test-client",
+      "password": "drex-test-client",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "name": "disco-test-client",
+      "password": "disco-test-client",
+      "tags": [
+        "user"
+      ]
+    },
+    {
+      "name": "siemens-adapter",
+      "password": "siemens-adapter",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "name": "kdi-adapter",
+      "password": "kdi-adapter",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "commoncore",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "drex",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "disco",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "drex-test-client",
+      "vhost": "/",
+      "configure": "",
+      "read": "drex-test-client",
+      "write": "drex-test-client"
+    },
+    {
+      "user": "disco-test-client",
+      "vhost": "/",
+      "configure": ".*",
+      "read": "^(cc\\.disco\\.ed|cc\\.disco\\.et|.*disco-test-client.*)$",
+      "write": "^(error|cc\\.disco\\.data\\.request\\.q|cc\\.disco\\.ed|cc\\.disco\\.et|.*-schedules?\\.request\\.q|.*disco-test-client.*)$"
+    },
+    {
+      "user": "siemens-adapter",
+      "vhost": "/",
+      "configure": ".*",
+      "read": "^(cc\\.disco\\.data\\.request\\.siemens\\.q|cc\\.disco\\.ed|cc\\.disco\\.et)$",
+      "write": "^(?=.*siemens\\.q|error|cc\\.disco\\.ed|cc\\.disco\\.et|cc\\.disco\\.data\\.response\\..*\\.q).*$"
+    },
+    {
+      "user": "kdi-adapter",
+      "vhost": "/",
+      "configure": ".*",
+      "read": "^(cc\\.disco\\.data\\.request\\.kdi\\.q|cc\\.disco\\.ed|cc\\.disco\\.et)$",
+      "write": "^(?=.*kdi\\.q|error|cc\\.disco\\.ed|cc\\.disco\\.et|cc\\.disco\\.data\\.response\\..*\\.q).*$"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "policies": [],
+  "queues": [],
+  "exchanges": [],
+  "bindings": []
+}

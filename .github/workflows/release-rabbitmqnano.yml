@@ -1,0 +1,59 @@
+﻿name: RabbitMqNano Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        type: string
+        description: Unique version for the release
+      description:
+        required: false
+        type: string
+        description: Description of the release
+      platform-commit-sha: # 6ac7551
+        required: false
+        type: string
+        description: 7 character short SHA for the commit in cc-platform 
+
+concurrency:
+  group: rabbitmqnano-release-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  get-default-platform-commit-sha:
+    name: Get Default Platform Commit SHA
+    if: ${{ inputs.platform-commit-sha == '' }}
+    uses: ./.github/workflows/shared-get-latest-container-version.yml
+    with: 
+      name: "rabbitmqnano"
+    secrets: inherit
+
+  get-next-version:
+    name: Get Next RabbitMQNano Version
+    if: ${{ inputs.version == '' }}
+    uses: ./.github/workflows/shared-get-next-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "RabbitMQNano Release"
+    secrets: inherit
+
+  release-component:
+    name: RabbitMQNano Release
+    needs: 
+      - get-default-platform-commit-sha
+      - get-next-version
+    uses: ./.github/workflows/release-shared-component.yml
+    strategy:
+      matrix:
+        windows-version: [ "2019", "2022" ]
+    with:
+      name: ${{ inputs.version || needs.get-next-version.outputs.version }} RabbitMQNano Release
+      component_name: RabbitMqNano
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmqnano
+      description: ${{ inputs.description || 'RabbitMQNano' }}
+      component-params: >        
+        -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
+      windows-version: ${{ matrix.windows-version }}
+    secrets: inherit
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

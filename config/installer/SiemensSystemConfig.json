@@ -1,7 +1,7 @@
 {
   "components": [
     "Docker",
-    "RabbitMq",
+    "RabbitMqNano",
     "Vector-Site",
     "Drex-Message",
     "Drex-File",

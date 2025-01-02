@@ -50,7 +50,7 @@ jobs:
     with:
       name: ${{ inputs.version || needs.get-next-version.outputs.version }} RabbitMQ Release
       component_name: RabbitMq
-      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmq
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmqcore
       description: ${{ inputs.description || 'RabbitMQ' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
