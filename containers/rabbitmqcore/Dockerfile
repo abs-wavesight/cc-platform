@@ -24,7 +24,8 @@ RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -O
     Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-server/releases/download/v$env:RABBITMQ_VERSION/rabbitmq-server-windows-$env:RABBITMQ_VERSION.zip" -OutFile "c:\\rabbitmq.zip" ; \
     Expand-Archive -Path "c:\\rabbitmq.zip" -DestinationPath "c:\\" ; \
     Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
-    Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
+    Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq" ; \
+    Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/3.8.9/rabbitmq_delayed_message_exchange-3.8.9-0199d11c.ez" -OutFile "c:\\rabbitmq\plugins\rabbitmq_delayed_message_exchange-3.8.9.ez"
 
 # Copy handle.exe utility and add to PATH
 RUN mkdir "C:\\rabbitmq\\utilities"
