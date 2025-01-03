@@ -3,7 +3,7 @@ ARG SERVER_VERSION='ltsc2019'
 FROM mcr.microsoft.com/windows/nanoserver:${SERVER_VERSION}
 
 # Copy erlang and rabbit
-ADD erlang c:\\erlang
+#ADD erlang c:\\erlang
 ADD rabbitmq c:\\rabbitmq
 ADD erlang_install.exe c:\\
 COPY utilities\\certoc.exe c:\\windows\\system32\\
