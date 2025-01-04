@@ -97,12 +97,6 @@ jobs:
         shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
         run: ./containers/rabbitmqcore/prep-handle-utility.ps1
 
-      - name: download
-        if: matrix.container == 'rabbitmqnano'
-        working-directory: ./
-        shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
-        run: ./containers/rabbitmqnano/download-rmq-and-erlang.ps1
-
       - name: Construct tag-friendly shortened git SHA
         run: |
           $tagFriendlySha=$Env:GITHUB_SHA
