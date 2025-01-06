@@ -126,7 +126,7 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqcore
         -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
         -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
         -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}-voyage-manager-report-adapter

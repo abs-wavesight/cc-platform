@@ -139,7 +139,7 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: KdiSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq 
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqcore
         -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
