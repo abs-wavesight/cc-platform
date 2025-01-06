@@ -38,7 +38,7 @@ on:
         
 
 concurrency:
-  group: central-system-release-${{ github.head_ref }}
+  group: central-system-nano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Central System Release"
+      name: "Central System Nano Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
@@ -122,7 +122,7 @@ jobs:
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
       description: ${{ inputs.description || 'Central System Nano Release' }}
-      tag-prefix: central-system
+      tag-prefix: central-system-nano
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemNanoConfig.json
       component-params: >

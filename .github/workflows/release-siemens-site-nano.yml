@@ -41,7 +41,7 @@ on:
         description: Version to use for siemens release # v100
 
 concurrency:
-  group: siemens-system-release-${{ github.head_ref }}
+  group: siemens-system-nano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Siemens System Release"
+      name: "Siemens System Nano Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
@@ -135,7 +135,7 @@ jobs:
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
       description: ${{ inputs.description || 'Siemens System Nano Release' }}
-      tag-prefix: siemens-system
+      tag-prefix: siemens-system-nano
       windows-version: ${{ matrix.windows-version }}
       system-config: SiemensSystemNanoConfig.json
       component-params: >

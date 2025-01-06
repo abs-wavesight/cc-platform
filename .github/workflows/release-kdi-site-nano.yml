@@ -41,7 +41,7 @@ on:
         description: Version to use for kdi release # v100
 
 concurrency:
-  group: kdi-system-release-${{ github.head_ref }}
+  group: kdi-system-nano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Kdi System Release"
+      name: "Kdi System Nano Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
@@ -135,7 +135,7 @@ jobs:
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
       description: ${{ inputs.description || 'Kdi System Nano Release' }}
-      tag-prefix: kdi-system
+      tag-prefix: kdi-system-nano
       windows-version: ${{ matrix.windows-version }}
       system-config: KdiSystemNanoConfig.json
       component-params: >

@@ -41,7 +41,7 @@ on:
         description: Version to use for Observability Service release # v100        
 
 concurrency:
-  group: site-system-release-${{ github.head_ref }}
+  group: site-system-nano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Site System Release"
+      name: "Site System Nano Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
@@ -135,7 +135,7 @@ jobs:
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
       description: ${{ inputs.description || 'Site System Nano Release' }}
-      tag-prefix: site-system
+      tag-prefix: site-system-nano
       windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemNanoConfig.json
       component-params: >
