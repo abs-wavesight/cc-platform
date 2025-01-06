@@ -82,7 +82,7 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmqnano.yml",
           "destination": "docker-compose.rabbitmqnano.yml"
         },
         {
