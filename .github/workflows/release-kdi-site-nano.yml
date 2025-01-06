@@ -1,4 +1,4 @@
-name: Siemens System Release
+name: Kdi System Nano Release
 
 on:
   workflow_dispatch:
@@ -35,13 +35,13 @@ on:
         required: false
         type: string
         description: Version to use for disco release # v100
-      siemens-version:
+      kdi-version:
         required: false
         type: string
-        description: Version to use for siemens release # v100
+        description: Version to use for kdi release # v100
 
 concurrency:
-  group: siemens-system-release-${{ github.head_ref }}
+  group: kdi-system-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Siemens System Release"
+      name: "Kdi System Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
@@ -108,17 +108,17 @@ jobs:
       name: "Disco Release"
     secrets: inherit
 
-  get-default-siemens-version:
-    name: Get Default Siemens Version
-    if: ${{ inputs.siemens-version == '' }}
+  get-default-kdi-version:
+    name: Get Default Kdi Version
+    if: ${{ inputs.kdi-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
-      repo: "cc-adapters-siemens"
-      name: "Siemens Release"
+      repo: "cc-adapters-kdi"
+      name: "Kdi Release"
     secrets: inherit
 
   release-component:
-    name: Siemens System Release
+    name: Kdi System Release
     needs: 
       - get-default-rabbitmq-version
       - get-default-vector-site-version
@@ -127,25 +127,25 @@ jobs:
       - get-default-openssl-version
       - get-next-version
       - get-default-disco-version
-      - get-default-siemens-version
+      - get-default-kdi-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
-      description: ${{ inputs.description || 'Siemens System Release' }}
-      tag-prefix: siemens-system
+      description: ${{ inputs.description || 'Kdi System Nano Release' }}
+      tag-prefix: kdi-system
       windows-version: ${{ matrix.windows-version }}
-      system-config: SiemensSystemConfig.json
+      system-config: KdiSystemNanoConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqnano 
         -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
-        -p `$SIEMENS_RELEASE_TAG:${{ needs.get-default-siemens-version.outputs.version || inputs.siemens-version }}-siemens
-      release-name-prefix: Siemens System Release
+        -p `$KDI_RELEASE_TAG:${{ needs.get-default-kdi-version.outputs.version || inputs.kdi-version }}-kdi
+      release-name-prefix: Kdi System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

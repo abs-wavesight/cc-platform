@@ -1,4 +1,4 @@
-name: Siemens System Release
+name: Siemens System Nano Release
 
 on:
   workflow_dispatch:
@@ -55,12 +55,12 @@ jobs:
     secrets: inherit
 
   get-default-rabbitmq-version:
-    name: Get Default RabbitMQ Version
+    name: Get Default RabbitMQNano Version
     if: ${{ inputs.rabbitmq-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "RabbitMQ Release"
+      name: "RabbitMQNano Release"
     secrets: inherit
 
   get-default-vector-site-version:
@@ -134,18 +134,18 @@ jobs:
         windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
-      description: ${{ inputs.description || 'Siemens System Release' }}
+      description: ${{ inputs.description || 'Siemens System Nano Release' }}
       tag-prefix: siemens-system
       windows-version: ${{ matrix.windows-version }}
-      system-config: SiemensSystemConfig.json
+      system-config: SiemensSystemNanoConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqnano 
         -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
         -p `$SIEMENS_RELEASE_TAG:${{ needs.get-default-siemens-version.outputs.version || inputs.siemens-version }}-siemens
-      release-name-prefix: Siemens System Release
+      release-name-prefix: Siemens System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

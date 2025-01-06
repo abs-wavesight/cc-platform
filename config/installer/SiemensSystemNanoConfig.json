@@ -1,14 +1,14 @@
 {
   "components": [
     "Docker",
-    "RabbitMq",
+    "RabbitMqNano",
     "Vector-Site",
     "Drex-Message",
     "Drex-File",
     "OpenSsl",
     "Installer",
     "Disco",
-    "Kdi"
+    "Siemens"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
