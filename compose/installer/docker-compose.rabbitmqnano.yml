@@ -25,16 +25,19 @@ services:
       - "15671:15671"
       - "15672:15672"
     volumes:
+      - type: volume
+        source: rabbitmq-storage
+        target: C:/data/rabbitmq
       - type: bind
-        source: C:/rabbitmq/config
+        source: $ABS_PATH/config/rabbitmq
         target: C:/rabbitmq/config
         read_only: true
       - type: bind
-        source: C:/rabbitmq/certificates/local-keys
+        source: $ABS_PATH/certificates/local-keys
         target: C:/keys
         read_only: true
       - type: bind
-        source: C:/rabbitmq/certificates/local-certs
+        source: $ABS_PATH/certificates/local-certs
         target: C:/certs
         read_only: true
 
