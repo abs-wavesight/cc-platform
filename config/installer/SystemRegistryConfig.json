@@ -273,7 +273,7 @@
         },
         {
           "source": "docker-compose.rabbitmqnano.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmqnano.yml",
           "action": "copy"
         },
         {
