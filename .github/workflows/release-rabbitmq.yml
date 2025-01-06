@@ -26,7 +26,7 @@ jobs:
     if: ${{ inputs.platform-commit-sha == '' }}
     uses: ./.github/workflows/shared-get-latest-container-version.yml
     with: 
-      name: "rabbitmq"
+      name: "rabbitmqcore"
     secrets: inherit
 
   get-next-version:
