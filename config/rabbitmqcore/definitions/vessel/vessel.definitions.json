@@ -1,4 +1,8 @@
 {
+  "rabbit_version": "3.8.15",
+  "rabbitmq_version": "3.8.15",
+  "product_name": "RabbitMQ",
+  "product_version": "3.8.15",
   "vhosts": [
     {
       "name": "/"
@@ -31,5 +35,11 @@
       "read": ".*",
       "write": ".*"
     }
-  ]
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "policies": [],
+  "queues": [],
+  "exchanges": [],
+  "bindings": []
 }

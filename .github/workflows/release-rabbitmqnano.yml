@@ -1,4 +1,4 @@
-﻿name: RabbitMq Release
+﻿name: RabbitMqNano Release
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ on:
         description: 7 character short SHA for the commit in cc-platform 
 
 concurrency:
-  group: rabbitmq-release-${{ github.head_ref }}
+  group: rabbitmqnano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,20 +26,20 @@ jobs:
     if: ${{ inputs.platform-commit-sha == '' }}
     uses: ./.github/workflows/shared-get-latest-container-version.yml
     with: 
-      name: "rabbitmq"
+      name: "rabbitmqnano"
     secrets: inherit
 
   get-next-version:
-    name: Get Next RabbitMQ Version
+    name: Get Next RabbitMQNano Version
     if: ${{ inputs.version == '' }}
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "RabbitMQ Release"
+      name: "RabbitMQNano Release"
     secrets: inherit
 
   release-component:
-    name: RabbitMQ Release
+    name: RabbitMQNano Release
     needs: 
       - get-default-platform-commit-sha
       - get-next-version
@@ -48,10 +48,10 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-next-version.outputs.version }} RabbitMQ Release
-      component_name: RabbitMq
-      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmqcore
-      description: ${{ inputs.description || 'RabbitMQ' }}
+      name: ${{ inputs.version || needs.get-next-version.outputs.version }} RabbitMQNano Release
+      component_name: RabbitMqNano
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmqnano
+      description: ${{ inputs.description || 'RabbitMQNano' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
       windows-version: ${{ matrix.windows-version }}

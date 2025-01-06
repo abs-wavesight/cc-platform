@@ -1,0 +1,42 @@
+---
+services:
+  cc.rabbitmq:
+    container_name: rabbitmq
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
+    hostname: rabbitmq-vessel
+    entrypoint: [ cmd, "-c" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
+    environment:
+      RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
+      RABBITMQ_CONFIG_FILES: C:/rabbitmq/config
+      RABBITMQ_LOCATION: vessel
+    logging:
+      driver: local
+    restart: always
+    ports:
+      - "5671:5671"
+      - "5672:5672"
+      - "15671:15671"
+      - "15672:15672"
+    volumes:
+      - type: bind
+        source: C:/rabbitmq/config
+        target: C:/rabbitmq/config
+        read_only: true
+      - type: bind
+        source: C:/rabbitmq/certificates/local-keys
+        target: C:/keys
+        read_only: true
+      - type: bind
+        source: C:/rabbitmq/certificates/local-certs
+        target: C:/certs
+        read_only: true
+
+volumes:
+  rabbitmq-storage:

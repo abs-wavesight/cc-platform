@@ -44,11 +44,16 @@ jobs:
         id: path-filter
         with:
           filters: |
-            rabbitmq: 
+            rabbitmqcore: 
               - .github/workflows/docker-build-publish.yml
-              - containers/rabbitmq/**
-              - config/rabbitmq/**
+              - containers/rabbitmqcore/**
+              - config/rabbitmqcore/**
               - compose/installer/docker-compose.rabbitmq.yml
+            rabbitmqnano: 
+              - .github/workflows/docker-build-publish.yml
+              - containers/rabbitmqnano/**
+              - config/rabbitmqnano/**
+              - compose/installer/docker-compose.rabbitmqnano.yml
             vector: 
               - .github/workflows/docker-build-publish.yml
               - containers/vector/**
@@ -87,10 +92,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Prepare handle.exe utility for RabbitMQ
-        if: matrix.container == 'rabbitmq'
+        if: matrix.container == 'rabbitmqcore'
         working-directory: ./
         shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
-        run: ./containers/rabbitmq/prep-handle-utility.ps1
+        run: ./containers/rabbitmqcore/prep-handle-utility.ps1
 
       - name: Construct tag-friendly shortened git SHA
         run: |
