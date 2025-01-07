@@ -15,9 +15,8 @@
     {
       "name": "guest",
       "password": "guest",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     }
   ],
   "permissions": [

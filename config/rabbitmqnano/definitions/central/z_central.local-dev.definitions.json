@@ -15,51 +15,44 @@
     {
       "name": "guest",
       "password": "guest",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "drex",
       "password": "drex",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "disco",
       "password": "disco",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "drex-test-client",
       "password": "drex-test-client",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "disco-test-client",
       "password": "disco-test-client",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "siemens-adapter",
       "password": "siemens-adapter",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     },
     {
       "name": "kdi-adapter",
       "password": "kdi-adapter",
-      "tags": [
-        "administrator"
-      ]
+      "tags": "administrator",
+      "limits": {}
     }
   ],
   "permissions": [
