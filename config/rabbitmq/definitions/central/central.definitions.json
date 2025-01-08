@@ -1,8 +1,4 @@
 {
-  "rabbit_version": "3.8.15",
-  "rabbitmq_version": "3.8.15",
-  "product_name": "RabbitMQ",
-  "product_version": "3.8.15",
   "vhosts": [
     {
       "name": "/"
@@ -15,8 +11,9 @@
     {
       "name": "guest",
       "password": "guest",
-      "tags": "administrator",
-      "limits": {}
+      "tags": [
+        "administrator"
+      ]
     }
   ],
   "permissions": [
@@ -45,10 +42,5 @@
         "x-queue-type": "classic"
       }
     }
-  ],
-  "topic_permissions": [],
-  "parameters": [],
-  "policies": [],
-  "exchanges": [],
-  "bindings": []
+  ]
 }

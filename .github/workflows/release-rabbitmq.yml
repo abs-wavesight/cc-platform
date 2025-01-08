@@ -26,7 +26,7 @@ jobs:
     if: ${{ inputs.platform-commit-sha == '' }}
     uses: ./.github/workflows/shared-get-latest-container-version.yml
     with: 
-      name: "rabbitmqcore"
+      name: "rabbitmq"
     secrets: inherit
 
   get-next-version:
@@ -50,7 +50,7 @@ jobs:
     with:
       name: ${{ inputs.version || needs.get-next-version.outputs.version }} RabbitMQ Release
       component_name: RabbitMq
-      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmqcore
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-rabbitmq
       description: ${{ inputs.description || 'RabbitMQ' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 

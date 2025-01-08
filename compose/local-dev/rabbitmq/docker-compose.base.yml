@@ -54,7 +54,7 @@ services:
     volumes:
       - &config_volume
         type: bind
-        source: ${PATH_TO_CC_PLATFORM_REPO}/config/rabbitmqcore/
+        source: ${PATH_TO_CC_PLATFORM_REPO}/config/rabbitmq/
         target: C:/rabbitmq/config
         read_only: true
 

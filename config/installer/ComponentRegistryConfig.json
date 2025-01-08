@@ -37,8 +37,8 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmqcore:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "rabbitmqcore.tar"
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "destination": "rabbitmq.tar"
         },
         {
           "type": "file",
@@ -47,63 +47,23 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqcore/cc-rabbitmq.conf",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
           "destination": "cc-rabbitmq.conf"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqcore/definitions/central/central.definitions.json",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/central/central.definitions.json",
           "destination": "central.definitions.json"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqcore/definitions/vessel/vessel.definitions.json",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/vessel/vessel.definitions.json",
           "destination": "vessel.definitions.json"
         }
       ],
       "actions": [
         {
           "source": "docker-compose.rabbitmq.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "cc-rabbitmq.conf",
-          "action": "replaceParameters"
-        }
-      ]
-    },
-    {
-      "name": "RabbitMqNano",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "rabbitmqnano.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmqnano.yml",
-          "destination": "docker-compose.rabbitmqnano.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqnano/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqnano/definitions/central/central.definitions.json",
-          "destination": "central.definitions.json"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmqnano/definitions/vessel/vessel.definitions.json",
-          "destination": "vessel.definitions.json"
-        }
-      ],
-      "actions": [
-        {
-          "source": "docker-compose.rabbitmqnano.yml",
           "action": "replaceParameters"
         },
         {
