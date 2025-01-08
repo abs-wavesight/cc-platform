@@ -189,7 +189,7 @@ public partial class RabbitConfigurer : ActionBase
 
         Console.WriteLine($"Creating user '{username}'");
         var user = UserInfo.ByPassword(password);
-        if (accountType == AccountType.LocalDrex)
+        if (accountType == AccountType.LocalDrex || accountType == AccountType.RemoteDrex)
         {
             user = user.AddTag(UserTags.Administrator);
         }
