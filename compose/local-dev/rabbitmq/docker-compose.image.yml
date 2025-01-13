@@ -2,10 +2,10 @@ services:
 
   cc.rabbitmq-template:
     # This is never used, but must be here in order to be a valid compose file
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-${WINDOWS_VERSION}
 
   cc.rabbitmq-local:
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-${WINDOWS_VERSION}
 
   cc.rabbitmq-remote:
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-${WINDOWS_VERSION}
