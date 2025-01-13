@@ -28,7 +28,7 @@ services:
         source: rabbitmq-storage
         target: C:/data/rabbitmq
       - type: bind
-        source: $ABS_PATH/config/rabbitmqnano
+        source: $ABS_PATH/config/rabbitmq
         target: C:/rabbitmq/config
         read_only: true
       - type: bind

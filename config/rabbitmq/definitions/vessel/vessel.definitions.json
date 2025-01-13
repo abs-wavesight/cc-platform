@@ -11,8 +11,9 @@
     {
       "name": "guest",
       "password": "guest",
-      "tags": "administrator",
-      "limits": {}
+      "tags": [
+        "administrator"
+      ]
     }
   ],
   "permissions": [
@@ -29,17 +30,6 @@
       "configure": ".*",
       "read": ".*",
       "write": ".*"
-    }
-  ],
-  "queues": [
-    {
-      "name": "cc.drex.central.snk-log.q",
-      "vhost": "commoncore",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {
-        "x-queue-type": "classic"
-      }
     }
   ]
 }

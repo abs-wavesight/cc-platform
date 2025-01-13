@@ -47,12 +47,12 @@ jobs:
             rabbitmqcore: 
               - .github/workflows/docker-build-publish.yml
               - containers/rabbitmqcore/**
-              - config/rabbitmqcore/**
+              - config/rabbitmq/**
               - compose/installer/docker-compose.rabbitmq.yml
             rabbitmqnano: 
               - .github/workflows/docker-build-publish.yml
               - containers/rabbitmqnano/**
-              - config/rabbitmqnano/**
+              - config/rabbitmq/**
               - compose/installer/docker-compose.rabbitmqnano.yml
             vector: 
               - .github/workflows/docker-build-publish.yml
@@ -96,6 +96,12 @@ jobs:
         working-directory: ./
         shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
         run: ./containers/rabbitmqcore/prep-handle-utility.ps1
+
+      - name: Prepare handle.exe utility for RabbitMQ Nano
+        if: matrix.container == 'rabbitmqnano'
+        working-directory: ./
+        shell: powershell # Windows Powershell, NOT Powershell Core (https://github.com/MScholtes/PS2EXE/issues/82)
+        run: ./containers/rabbitmqnano/prep-handle-utility.ps1
 
       - name: Construct tag-friendly shortened git SHA
         run: |
