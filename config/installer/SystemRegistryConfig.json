@@ -253,6 +253,45 @@
       ]
     },
     {
+      "name": "RabbitMqNano",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
+          "destination": "c:/abs/temp/RabbitMqNano/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "rabbitmqnano.tar",
+          "action": "install"
+        },
+        {
+          "source": "cc-rabbitmq.conf",
+          "destination": "$ABS_PATH\\config\\rabbitmqnano\\cc-rabbitmq.conf",
+          "action": "copy"
+        },
+        {
+          "source": "docker-compose.rabbitmqnano.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmqnano.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.rabbitmqnano.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "action": "postRabbitMqInstall"
+        }
+      ]
+    },
+    {
       "name": "Vector-Site",
       "files": [
         {

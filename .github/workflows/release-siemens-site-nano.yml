@@ -1,4 +1,4 @@
-﻿name: Site System Release
+name: Siemens System Nano Release
 
 on:
   workflow_dispatch:
@@ -35,13 +35,13 @@ on:
         required: false
         type: string
         description: Version to use for disco release # v100
-      observability-service-version:
+      siemens-version:
         required: false
         type: string
-        description: Version to use for Observability Service release # v100        
+        description: Version to use for siemens release # v100
 
 concurrency:
-  group: site-system-release-${{ github.head_ref }}
+  group: siemens-system-nano-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,16 +51,16 @@ jobs:
     uses: ./.github/workflows/shared-get-next-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Site System Release"
+      name: "Siemens System Nano Release"
     secrets: inherit
 
   get-default-rabbitmq-version:
-    name: Get Default RabbitMQ Version
+    name: Get Default RabbitMQNano Version
     if: ${{ inputs.rabbitmq-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "RabbitMQ Release"
+      name: "RabbitMQNano Release"
     secrets: inherit
 
   get-default-vector-site-version:
@@ -108,17 +108,17 @@ jobs:
       name: "Disco Release"
     secrets: inherit
 
-  get-default-observability-service-version:
-    name: Get Default Observability Service Version
-    if: ${{ inputs.observability-service-version == '' }}
+  get-default-siemens-version:
+    name: Get Default Siemens Version
+    if: ${{ inputs.siemens-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
-      repo: "cc-platform"
-      name: "Observability Service Release"
+      repo: "cc-adapters-siemens"
+      name: "Siemens Release"
     secrets: inherit
 
   release-component:
-    name: Site System Release
+    name: Siemens System Release
     needs: 
       - get-default-rabbitmq-version
       - get-default-vector-site-version
@@ -127,25 +127,25 @@ jobs:
       - get-default-openssl-version
       - get-next-version
       - get-default-disco-version
-      - get-default-observability-service-version
+      - get-default-siemens-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
-      description: ${{ inputs.description || 'Site System Release' }}
-      tag-prefix: site-system
+      description: ${{ inputs.description || 'Siemens System Nano Release' }}
+      tag-prefix: siemens-system-nano
       windows-version: ${{ matrix.windows-version }}
-      system-config: SiteSystemConfig.json
+      system-config: SiemensSystemNanoConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqcore 
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqnano 
         -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
-        -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}-observability-service
-      release-name-prefix: Site System Release
+        -p `$SIEMENS_RELEASE_TAG:${{ needs.get-default-siemens-version.outputs.version || inputs.siemens-version }}-siemens
+      release-name-prefix: Siemens System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

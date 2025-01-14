@@ -2,7 +2,7 @@
 services:
   cc.rabbitmq:
     container_name: rabbitmq
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
+    image: ghcr.io/abs-wavesight/rabbitmqcore:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
     hostname: rabbitmq-$RABBIT_LOCATION
     entrypoint: [ "powershell", "-c" ]
     command:
@@ -14,20 +14,6 @@ services:
         "C:\\certs\\rabbitmq.cer",
         ";",
 
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel", 
-        ";",
-
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-plugins.bat", 
-        "enable", 
-        "rabbitmq_shovel_management",
-        ";",
-                
         "cmd",
         "/C",
         "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"

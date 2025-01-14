@@ -2,11 +2,11 @@ services:
 
   cc.rabbitmq-template:
     # This is never used, but must be here in order to be a valid compose file
-    image: ghcr.io/abs-wavesight/rabbitmq:windows-2019
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-2019
 
   cc.rabbitmq-local:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmqnano
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"
@@ -14,7 +14,7 @@ services:
 
   cc.rabbitmq-remote:
     build:
-      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmq
+      context: ${PATH_TO_CC_PLATFORM_REPO}/containers/rabbitmqnano
       dockerfile: Dockerfile
       labels:
         org.eagle.wavesight.built_from: "source"
