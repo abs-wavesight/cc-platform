@@ -39,6 +39,14 @@ services:
         source: $ABS_PATH/certificates/local-certs
         target: C:/certs
         read_only: true
+      - type: bind
+        source: $ABS_PATH/certificates/central-keys
+        target: C:/centralkeys
+        read_only: true
+      - type: bind
+        source: $ABS_PATH/certificates/central-certs
+        target: C:/centralcerts
+        read_only: true
 
 volumes:
   rabbitmq-storage:

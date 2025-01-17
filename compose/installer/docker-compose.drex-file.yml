@@ -18,24 +18,24 @@ services:
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
       - AdaptersFolderPath=C:/app/adapters
       - FLAT_LOGS=${FLAT_LOGS:-False}
-    ports:	
-      - "12346:5002"	
-    restart: always	
-    volumes:	
-      - type: bind	
+    ports:
+      - "12346:5002"
+    restart: always
+    volumes:
+      - type: bind
         source: $ABS_PATH/config/drex-f
         target: C:/app/config
         read_only: true
-      - type: bind	
+      - type: bind
         source: $ABS_PATH/config/drex-shared/adapters
-        target: C:/app/adapters	
+        target: C:/app/adapters
         read_only: true
       - type: bind
         source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-local-certs
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/remote-certs
+        source: $ABS_PATH/certificates/central-certs
         target: C:/rabbitmq-remote-certs
         read_only: true
       - type: bind
@@ -45,4 +45,4 @@ services:
       - type: bind
         source: $ABS_PATH/ssh-keys
         target: c:/ssh-keys
-        read_only: false 
+        read_only: false
