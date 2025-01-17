@@ -37,6 +37,21 @@
           "action": "copy"
         },
         {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
+          "destination": "$ABS_PATH\\certificates\\central-keys\\rabbitmq.key",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.pem",
+          "action": "copy"
+        },
+        {
           "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
           "action": "execute"
         }
@@ -186,17 +201,26 @@
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/remote-certs')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-keys')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-certs')",
           "action": "executeImmediate"
         },
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
-          "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer",
           "action": "copy"
         },
         {
           "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
-          "destination": "$ABS_PATH\\certificates\\remote-certs\\rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.pem",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
+          "destination": "$ABS_PATH\\certificates\\central-keys\\rabbitmq.key",
           "action": "copy"
         },
         {
@@ -208,7 +232,7 @@
           "action": "execute"
         },
         {
-          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\remote-certs\\rabbitmq.cer\"",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer\"",
           "action": "execute"
         }
       ]
