@@ -4,6 +4,10 @@ services:
     logging:
       driver: local
     profiles: [ 'templates' ]
+    deploy:
+      resources:
+        limits:
+          memory: 8G
     restart: always
     entrypoint: [ cmd, "-c" ]
     command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
