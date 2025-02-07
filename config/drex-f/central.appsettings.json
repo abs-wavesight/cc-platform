@@ -1,48 +1,47 @@
-﻿{
+{
   "Logging": {
     "LogLevel": {
       "Default": "Information",
+      "Abs.CommonCore.Drex": "Debug",
       "System": "Information",
       "Microsoft": "Information",
       "Microsoft.AspNetCore": "Warning",
       "Microsoft.Extensions.Diagnostics.HealthChecks": "Warning"
     }
   },
-  "ConfigFileMaxSizeInMB": 1,
   "AllowedHosts": "*",
-  "LocalMessageBus": {
+  "ConfigFileMaxSizeInMb": 1,
+  "ConnectionSettings": {
     "Key": "local",
     "Host": "rabbitmq-vessel",
     "Port": 5671,
     "HttpPort": 15671,
     "Protocol": "amqps",
-    "vHost": "commoncore"
+    "vHost": "commoncore",
+    "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
   },
-  "CentralMessageBus": {
-    "Key": "central",
-    "Host": "$RMQ_CENTRAL_HOST",
-    "Port": 5671,
-    "HttpPort": 15671,
-    "Protocol": "amqps",
-    "vHost": "commoncore"
-  },
-  "PrefetchCountIncoming": 5,
-  "PrefetchCountOutcoming": 5,
   "VesselImo": "$VESSEL_IMO",
+  "TempFolderPath": "C:/data/temp",
   "SftpSettings": {
+    "Key": "central",
     "MaxRetryAttempts": 5,
     "RetryAttemptBackoffSecondsFactor": 3,
     "ConnectivityRetrySeconds": 30,
-    "ConnectivityLossLogFrequencySeconds": 60
+    "ConnectivityLossLogFrequencySeconds": 60,
+    "host": "$SFTP_CENTRAL_HOST",
+    "port": 1022,
+    "protocol": "sftp"
   },
   "RemoteConnectionRetryDelaySeconds": 5,
   "HealthChecks": {
     "HealthCheckProbePollFrequencySeconds": 15,
-    "HealthCheckProbeTcpPort": 5000
+    "HealthCheckProbeTcpPort": 5002
   },
   "ConcurrencySettings": {
     "NumberOfWorkers": 2,
     "MaxParallelism": 10
   },
-  "SkipCertificateImport": false
+  "SkipCertificateImport": false,
+  "TransportMethod": "cc",
+  "MaxChunkSizeInMb": 125
 }

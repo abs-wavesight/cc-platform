@@ -10,13 +10,13 @@ services:
       - FLAT_LOGS=${FLAT_LOGS:-False}
       - ConnectionSettings__Username=${VOYAGE_MANAGER_RABBIT_USERNAME}
       - ConnectionSettings__Password=${VOYAGE_MANAGER_RABBIT_PASSWORD}
-    ports:	
-      - "12345:5000"	
-    restart: always	
-    volumes:	
-      - type: bind	
+    ports:
+      - "12348:5000"
+    restart: always
+    volumes:
+      - type: bind
         source: $ABS_PATH/config/voyage-manager-report-adapter
-        target: C:/app/config	
+        target: C:/app/config
         read_only: false
       - type: bind
         source: $ABS_PATH/certificates/local-certs

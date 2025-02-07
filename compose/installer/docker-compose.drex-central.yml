@@ -1,6 +1,6 @@
 ---
 services:
-  cc.drex-central-message-service:
+  cc.drex-message-service:
     container_name: drex-central-message
     image: ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA
     depends_on:
@@ -15,18 +15,22 @@ services:
       - CloudParameters__ApimServiceUrl=$APIM_SERVICE_URL
       - CloudParameters__CloudClientId=$CLOUD_CLIENT_ID
       - CloudParameters__CloudClientSecret=$CLOUD_CLIENT_SECRET
-      - AdaptersFolderPath=C:/app/config/adapters
+      - AdaptersFolderPath=C:/app/adapters
       - VesselsFolderPath=C:/app/config/vessels
       - HistoryFolderPath=C:/app/config/history
       - FLAT_LOGS=${FLAT_LOGS:-False}
-    ports:	
-      - "12346:5000"	
-    restart: always	
+    ports:
+      - "12345:5000"
+    restart: always
     volumes:
-      - type: bind	
+      - type: bind
         source: $ABS_PATH/config/drex-central
         target: C:/app/config
         read_only: false
+      - type: bind
+        source: $ABS_PATH/config/drex-shared/adapters
+        target: C:/app/adapters
+        read_only: true
       - type: bind
         source: $ABS_PATH/certificates/local-certs
         target: C:/rabbitmq-remote-certs
