@@ -20,7 +20,7 @@ services:
       - HistoryFolderPath=C:/app/config/history
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
-      - "12346:5000"
+      - "12345:5000"
     restart: always
     volumes:
       - type: bind
