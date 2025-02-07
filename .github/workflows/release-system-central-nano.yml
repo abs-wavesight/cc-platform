@@ -31,6 +31,10 @@ on:
         required: false
         type: string
         description: Version to use for DREX Central release # v100
+      drex-file-version:
+        required: false
+        type: string
+        description: Version to use for Drex File release # v100
       message-scheduler-version:
         required: false
         type: string
@@ -96,6 +100,15 @@ jobs:
       name: "Drex Central Message Release"
     secrets: inherit
 
+  get-default-drex-file-version:
+    name: Get Default Drex File Version
+    if: ${{ inputs.drex-file-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex File Release"
+    secrets: inherit
+
   get-default-message-scheduler-version:
     name: Get Default Message Scheduler Version
     if: ${{ inputs.message-scheduler-version == '' }}
@@ -113,6 +126,7 @@ jobs:
       - get-default-sftp-service-version
       - get-default-vm-report-adapter-version
       - get-default-drex-central-version
+      - get-default-drex-file-version
       - get-default-message-scheduler-version
       - get-next-version
     uses: ./.github/workflows/release-shared-system.yml
@@ -129,6 +143,7 @@ jobs:
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqnano
         -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
         -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
+        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
         -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}-voyage-manager-report-adapter
         -p `$DREX_CENTRAL_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-central-version.outputs.version || inputs.drex-central-version }}-drex-central-message
         -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}-message-scheduler-adapter
