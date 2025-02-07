@@ -21,6 +21,9 @@
     "$CLOUD_CLIENT_ID": "00000000-0000-0000-0000-000000000000",
     "$CLOUD_CLIENT_SECRET": "top_secret",
     "$CENTRAL_HOST_NAME": "central.com",
-    "$CC_TENANT_NAME": "tenantName"
+    "$CC_TENANT_NAME": "tenantName",
+    "$FDZ_ROOT_PATH": "c:/abs/fdz",
+    "$SFTP_CENTRAL_USERNAME": "drex",
+    "$SFTP_CENTRAL_PASSWORD": "P@ssword"
   }
 }
