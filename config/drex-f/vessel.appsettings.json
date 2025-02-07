@@ -20,7 +20,7 @@
     "vHost": "commoncore",
     "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
   },
-  "TempFolderPath": "Temp",
+  "TempFolderPath": "C:/data/temp",
   "SftpSettings": {
     "Key": "central",
     "MaxRetryAttempts": 5,
@@ -34,7 +34,7 @@
   "RemoteConnectionRetryDelaySeconds": 5,
   "HealthChecks": {
     "HealthCheckProbePollFrequencySeconds": 15,
-    "HealthCheckProbeTcpPort": 5001
+    "HealthCheckProbeTcpPort": 5002
   },
   "ConcurrencySettings": {
     "NumberOfWorkers": 2,
