@@ -1,0 +1,46 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Abs.CommonCore.Drex": "Debug",
+      "System": "Information",
+      "Microsoft": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.Extensions.Diagnostics.HealthChecks": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConfigFileMaxSizeInMb": 1,
+  "ConnectionSettings": {
+    "Key": "local",
+    "Host": "rabbitmq-central",
+    "Port": 5671,
+    "HttpPort": 15671,
+    "Protocol": "amqps",
+    "vHost": "commoncore",
+    "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
+  },
+  "TempFolderPath": "Temp",
+  "SftpSettings": {
+    "Key": "central",
+    "MaxRetryAttempts": 5,
+    "RetryAttemptBackoffSecondsFactor": 3,
+    "ConnectivityRetrySeconds": 30,
+    "ConnectivityLossLogFrequencySeconds": 60,
+    "host": "$SFTP_CENTRAL_HOST",
+    "port": 1022,
+    "protocol": "sftp"
+  },
+  "RemoteConnectionRetryDelaySeconds": 5,
+  "HealthChecks": {
+    "HealthCheckProbePollFrequencySeconds": 15,
+    "HealthCheckProbeTcpPort": 5001
+  },
+  "ConcurrencySettings": {
+    "NumberOfWorkers": 2,
+    "MaxParallelism": 10
+  },
+  "SkipCertificateImport": false,
+  "TransportMethod": "cc",
+  "MaxChunkSizeInMb": 125
+}

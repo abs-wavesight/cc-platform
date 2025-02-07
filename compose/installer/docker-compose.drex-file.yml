@@ -10,8 +10,8 @@ services:
       - SiteConfigFileName=C:/app/config/site-config.json
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
-      - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
-      - LocalMessageBus__Password=${DREX_SHARED_LOCAL_PASSWORD}
+      - ConnectionSettings__Username=${DREX_SHARED_LOCAL_USERNAME}
+      - ConnectionSettings__Password=${DREX_SHARED_LOCAL_PASSWORD}
       - SftpSettings__username=$SFTP_CENTRAL_USERNAME
       - SftpSettings__password=$SFTP_CENTRAL_PASSWORD
       - ABS_CC_FDZ_PATH=c:/fdz
@@ -46,3 +46,9 @@ services:
         source: $ABS_PATH/ssh-keys
         target: c:/ssh-keys
         read_only: false
+      - type: volume
+        source: drex-f-storage
+        target: C:/data/temp
+
+volumes:
+  drex-f-storage:

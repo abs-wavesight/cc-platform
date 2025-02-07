@@ -2,6 +2,7 @@
   "Logging": {
     "LogLevel": {
       "Default": "Information",
+      "Abs.CommonCore.Drex": "Debug",
       "System": "Information",
       "Microsoft": "Information",
       "Microsoft.AspNetCore": "Warning",
@@ -20,6 +21,7 @@
     "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
   },
   "VesselImo": "$VESSEL_IMO",
+  "TempFolderPath": "Temp",
   "SftpSettings": {
     "Key": "central",
     "MaxRetryAttempts": 5,
@@ -39,5 +41,7 @@
     "NumberOfWorkers": 2,
     "MaxParallelism": 10
   },
-  "SkipCertificateImport": false
+  "SkipCertificateImport": false,
+  "TransportMethod": "cc",
+  "MaxChunkSizeInMb": 125
 }
