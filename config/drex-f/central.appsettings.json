@@ -12,7 +12,7 @@
   "AllowedHosts": "*",
   "ConfigFileMaxSizeInMb": 1,
   "ConnectionSettings": {
-    "Host": "rabbitmq-vessel",
+    "Host": "rabbitmq-central",
     "Port": 5671,
     "HttpPort": 15671,
     "Protocol": "amqps",
