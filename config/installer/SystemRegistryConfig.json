@@ -475,13 +475,13 @@
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\drex-f\\appsettings.json",
-          "action": "replaceParameters"
-        },
-        {
           "source": "$RABBIT_LOCATION.appsettings.json",
           "destination": "$ABS_PATH\\config\\drex-f\\appsettings.json",
           "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\drex-f\\appsettings.json",
+          "action": "replaceParameters"
         },
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/adapters')",
