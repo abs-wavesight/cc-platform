@@ -75,46 +75,53 @@ public class DataChunker : ActionBase
 
     public async Task UnchunkFileAsync(DirectoryInfo source, FileInfo destination, bool removeSource)
     {
-        _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
-
-        if (Directory.Exists(source.FullName) == false)
+        try
         {
-            _logger.LogWarning($"Source location '{source.FullName}' does not exist");
-            return;
-        }
+            _logger.LogInformation($"Unchunking folder '{source.FullName}' to file '{destination.FullName}'");
 
-        var files = Directory.GetFiles(source.FullName, $"*.{ChunkName}?")
-            .OrderBy(x =>
+            if (Directory.Exists(source.FullName) == false)
             {
-                var extension = Path.GetExtension(x).Replace($".{ChunkName}", "");
-                return int.Parse(extension);
-            })
-            .ToArray();
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
 
-        if (files.Length == 0)
-        {
-            return;
-        }
+            var files = Directory.GetFiles(source.FullName, $"*.{ChunkName}?")
+                .OrderBy(x =>
+                {
+                    var extension = Path.GetExtension(x).Replace($".{ChunkName}", "");
+                    return int.Parse(extension);
+                })
+                .ToArray();
 
-        destination.Delete();
-        using (var destinationStream = destination.OpenWrite())
-        {
-            foreach (var file in files)
+            if (files.Length == 0)
             {
-                _logger.LogInformation($"Appending file: {file}");
-                using var fileStream = File.OpenRead(file);
-                await fileStream.CopyToAsync(destinationStream);
+                return;
+            }
+
+            destination.Delete();
+            using (var destinationStream = destination.OpenWrite())
+            {
+                foreach (var file in files)
+                {
+                    _logger.LogInformation($"Appending file: {file}");
+                    using var fileStream = File.OpenRead(file);
+                    await fileStream.CopyToAsync(destinationStream);
+                }
+            }
+
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source files: '{files.StringJoin(", ")}'");
+
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                }
             }
         }
-
-        if (removeSource)
+        catch (Exception ex)
         {
-            _logger.LogInformation($"Removing source files: '{files.StringJoin(", ")}'");
-
-            foreach (var file in files)
-            {
-                File.Delete(file);
-            }
+            _logger.LogError(ex, "Error unchunking file");
         }
     }
 }
