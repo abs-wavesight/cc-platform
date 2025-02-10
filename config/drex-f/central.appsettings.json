@@ -12,7 +12,6 @@
   "AllowedHosts": "*",
   "ConfigFileMaxSizeInMb": 1,
   "ConnectionSettings": {
-    "Key": "local",
     "Host": "rabbitmq-vessel",
     "Port": 5671,
     "HttpPort": 15671,
@@ -20,7 +19,7 @@
     "vHost": "commoncore",
     "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
   },
-  "VesselImo": "$VESSEL_IMO",
+  "VesselImo": "central",
   "TempFolderPath": "C:/data/temp",
   "SftpSettings": {
     "Key": "central",
