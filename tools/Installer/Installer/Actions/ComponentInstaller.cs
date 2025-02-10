@@ -8,7 +8,6 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Polly;
