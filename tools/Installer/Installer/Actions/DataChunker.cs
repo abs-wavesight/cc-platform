@@ -93,11 +93,6 @@ public class DataChunker : ActionBase
 
         if (files.Length == 0)
         {
-            files = Directory.GetFiles(source.FullName, $"*.zip");
-        }
-
-        if (files.Length == 0)
-        {
             return;
         }
 

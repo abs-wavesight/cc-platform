@@ -741,6 +741,15 @@ public class ComponentInstaller : ActionBase
             _logger.LogInformation("Unchunking release files");
             var chunker = new DataChunker(_loggerFactory);
             await chunker.UnchunkFileAsync(new DirectoryInfo(current), releaseZip, false);
+            if (!releaseZip.Exists)
+            {
+                var release = Directory.GetFiles(current, "*.zip", SearchOption.TopDirectoryOnly);
+                if (release.Length == 1)
+                {
+                    releaseZip = new FileInfo(release[0]);
+                    File.Copy(releaseZip.FullName, Path.Combine(current, ReleaseZipName));
+                }
+            }
         }
         else
         {
