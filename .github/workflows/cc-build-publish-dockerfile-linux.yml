@@ -1,0 +1,129 @@
+name: Build & Publish Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      tagVersion:
+        required: true
+        type: string
+        description: 'Version tag'
+      image-name: # cc-drex-message-service
+        required: true
+        type: string
+      label-description: # ABS Common Core Data Remote EXchange Service (D-REX)
+        required: true
+        type: string
+      docker-context-directory: # service
+        required: true
+        type: string
+        description: Relative to the repository root (e.g., "service")
+      solution-directory: # service
+        required: true
+        type: string
+        description: Relative to the repository root (e.g., "service")
+      solution-name: # Drex.sln
+        required: true
+        type: string
+        description: Should be found with the `solution-directory` (e.g., "Drex.sln")
+      dockerfile-name: # DrexMessage.Dockerfile
+        required: true
+        type: string
+        description: Should be found with the `solution-directory` (e.g., "DrexMessage.Dockerfile")      
+      use-submodules:
+        required: false
+        type: boolean
+        default: false
+        description: If true, will it will restore Submodules
+      dotnet-version:        
+        required: false
+        type: string
+        default: '7.0.x'
+        description: .NET SDK Version
+      docker-platform:
+        required: false
+        type: string
+        default: 'linux/amd64'
+    secrets:
+      GH_PAT:
+        required: false
+    
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ inputs.image-name }}  
+  LABEL_PREFIX: org.eagle.wavesight
+  IMAGE_DESCRIPTION: ${{ inputs.label-description }} 
+  TAG: ${{ inputs.tagVersion}} 
+  PLATFORM: ${{ inputs.docker-platform }}
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  get_clean_branch_names:
+    name: Get Clean Branch Names
+    uses: ./.github/workflows/shared-get-clean-branch-names.yml
+
+  build_and_publish:
+    name: Build & Publish Container Image       
+    needs: [ get_clean_branch_names ]
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
+        if: inputs.use-submodules == true
+        uses: actions/checkout@v3        
+        with:
+          submodules: true
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || ' ' }}
+          
+      - name: Checkout branch 
+        if: inputs.use-submodules == false
+        uses: actions/checkout@v3
+        with:
+          submodules: false      
+
+      - name: Nuget - Copy config
+        working-directory: ./
+        run: Copy-Item ./nuget.config ${{ inputs.solution-directory }}
+
+      - name: Nuget - Set Nuget credentials
+        working-directory: ./
+        run: |
+          $AbsNugetUsername = "USERNAME"
+          echo "ABS_NUGET_USERNAME=$AbsNugetUsername" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+          $AbsNugetPassword = "${{  secrets.GH_PAT || github.TOKEN }}"
+          echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+     
+      - name: Build and push Docker image .NET 8
+        id: build-and-push-container-dotnet8
+        if: inputs.dotnet-version == '8.0.x'
+        uses: mr-smithers-excellent/docker-build-push@v6
+        env:
+          BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
+          BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}          
+        with:
+          buildArgs: >-          
+            ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",
+            ABS_NUGET_PASSWORD="${{ env.ABS_NUGET_PASSWORD }}"
+          image: ${{ env.IMAGE_NAME }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.ACTOR }}
+          password: ${{ secrets.GH_PAT }}
+          directory: ${{ inputs.docker-context-directory }}
+          dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
+          pushImage: true
+          tags: ${{ env.TAG }}, latest
+          labels: >-
+            org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",           
+            ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
+            ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
+            ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.version=${{ env.TAG }}
+          addTimestamp: true          
+          multiPlatform: true
+          platform: ${{ env.PLATFORM }}
+   
