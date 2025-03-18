@@ -83,11 +83,7 @@ jobs:
         if: inputs.use-submodules == false
         uses: actions/checkout@v3
         with:
-          submodules: false      
-
-      - name: Nuget - Copy config
-        working-directory: ./
-        run: Copy-Item ./nuget.config ${{ inputs.solution-directory }}
+          submodules: false           
 
       - name: Nuget - Set Nuget credentials
         working-directory: ./
