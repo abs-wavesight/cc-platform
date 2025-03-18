@@ -108,8 +108,43 @@ jobs:
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
-               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"            
+               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"      
+               
+               # ==========================================
+               # Docker wrap logic
+               # ==========================================
+               if ($null -ne $config.wrap) {
+                 Write-Host "Docker wrap configuration detected for $($config.Name). Proceeding with Docker build and push..."
+               
+                 $dockerfile = $config.wrap.dockerfile
+                 $image = $config.wrap.image
+                 $registry = $config.wrap.registry
+                 $username = $config.wrap.username
+                 $password = $config.wrap.password
+               
+                 $version = "${{ inputs.tagVersion }}"
+                 $imageName = "$registry/$image"
+               
+                 Write-Host "Building Docker image: $imageFull using Dockerfile: $dockerfile"
+               
+                 # Docker login
+                 echo "$password" | docker login $registry -u $username --password-stdin
+                                
+                 docker build `
+                   -t $imageName:$version `
+                   -t $imageName:latest `
+                   -f $dockerfile `
+                   --build-arg FUNCTION_ZIP="$zipFilePath" `   
+                
+                 docker push "$imageName:$version"
+                 docker push "$imageName:latest"
+               
+                 Write-Host "Docker image $imageName built and pushed successfully!"
+               } else {
+                 Write-Host "No Docker wrap configuration found for $($config.Name). Skipping Docker build."
+               }            
           }
+
           $zipFileName = "${{ inputs.artifactOutput }}.zip"
           $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
           Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
