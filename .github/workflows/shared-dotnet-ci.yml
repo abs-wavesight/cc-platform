@@ -25,6 +25,10 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "DrexMessage.Dockerfile")
+      dockerfile-version:
+        required: false
+        type: string
+        description: Should be found with the repository (e.g., "1.0.1")
       test-project-filter-part: # & FullyQualifiedName!~FileShipper
         required: false
         type: string
@@ -163,6 +167,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
             ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.dockerfile-version }}
           addTimestamp: true
           platform: windows/amd64
 
