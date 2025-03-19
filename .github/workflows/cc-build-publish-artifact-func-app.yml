@@ -59,7 +59,7 @@ jobs:
 
       - name: Clear NuGet cache
         shell: pwsh
-        run: dotnet nuget locals all -clear
+        run: dotnet nuget locals all --clear
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
