@@ -131,8 +131,8 @@ jobs:
                  echo "$password" | docker login $registry -u $username --password-stdin
                                 
                  docker build `
-                   -t $imageName:$version `
-                   -t $imageName:latest `
+                   -t "$imageName:$version" `
+                   -t "$imageName:latest" `
                    -f $dockerfile `
                    --build-arg FUNCTION_ZIP="$zipFilePath" `   
                 
