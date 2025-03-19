@@ -116,7 +116,7 @@ jobs:
                if ($null -ne $config.wrap) {
                  Write-Host "Docker wrap configuration detected for $($config.Name). Proceeding with Docker build and push..."
                
-                 $dockerfile = "$config.FUNCTION_PROJECT_PATH/$config.wrap.dockerfile"
+                 $dockerfile =  Join-Path $config.FUNCTION_PROJECT_PATH $config.wrap.dockerfile
                  $image = $config.wrap.image
                  $registry = $config.wrap.registry
                  $username = $config.wrap.username
