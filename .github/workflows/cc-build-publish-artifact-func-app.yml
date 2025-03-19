@@ -116,11 +116,13 @@ jobs:
                  $dockerfile =  Join-Path $config.FUNCTION_PROJECT_PATH $config.wrap.dockerfile
                  $image = $config.wrap.image
                  $registry = $config.wrap.registry
+                 $namespace = $config.wrap.namespace
                  $username = $config.wrap.username
                  $password = $config.wrap.password
+                 
                
                  $version = "${{ inputs.tagVersion }}"
-                 $imageName = "$registry/$image"
+                 $imageName = "$registry/$namespace/$image"
                  $imageCurrent = "${imageName}:${version}"
                  $imageLatest = "${imageName}:latest"
                
@@ -133,6 +135,7 @@ jobs:
                 
                  docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" --build-arg FUNCTION_ZIP="$($config.Name).zip" .
                 
+                 Write-Host "Building Docker finished. Pushing Docker image to registry..."
                  docker push "${imageCurrent}"
                  docker push "${imageLatest}"
                
