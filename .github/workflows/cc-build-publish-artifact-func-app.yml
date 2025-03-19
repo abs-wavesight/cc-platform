@@ -128,8 +128,10 @@ jobs:
                
                  # Docker login
                  echo "$password" | docker login $registry -u $username --password-stdin
+
+                 cp $zipFilePath ./"$($config.Name).zip"
                 
-                 docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" --build-arg FUNCTION_ZIP="$zipFilePath" .
+                 docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" --build-arg FUNCTION_ZIP="$($config.Name).zip" .
                 
                  docker push "${imageCurrent}"
                  docker push "${imageLatest}"
