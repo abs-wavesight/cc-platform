@@ -127,7 +127,7 @@ jobs:
                  $imageCurrent = "${imageName}:${version}"
                  $imageLatest = "${imageName}:latest"
                
-                 Write-Host "Building Docker image: $imageFull using Dockerfile: $dockerfile"
+                 Write-Host "Building Docker image: $imageName using Dockerfile: $dockerfile"
                
                  # Docker login
                  echo "$password" | docker login $registry -u $username --password-stdin
@@ -136,7 +136,8 @@ jobs:
                    -t "${imageCurrent}" `
                    -t "${imageLatest}" `
                    -f $dockerfile `
-                   --build-arg FUNCTION_ZIP="$zipFilePath" `   
+                   --build-arg FUNCTION_ZIP="$zipFilePath" ` 
+                   .  
                 
                  docker push "${imageCurrent}"
                  docker push "${imageLatest}"
