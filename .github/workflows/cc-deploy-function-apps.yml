@@ -180,7 +180,7 @@ jobs:
                 
                 echo "Pushing Docker image: $fullDockerImageName"                  
 
-                az functionapp config container set --name $functionName --resource-group ${{ inputs.resource_group_name }} --docker-custom-image-name $fullDockerImageName --docker-registry-server-url $registry --docker-registry-server-user ${{ github.ACTOR }} --docker-registry-server-password ${{ secrets.GH_PAT }} --enable-app-service-storage
+                az functionapp config container set --name $functionName --resource-group ${{ inputs.resource_group_name }} --docker-custom-image-name $fullDockerImageName --docker-registry-server-url $registry --docker-registry-server-user ${{ github.ACTOR }} --docker-registry-server-password ${{ secrets.GH_PAT }}
 
               else  
                 echo "Deploy Code to $functionName"
