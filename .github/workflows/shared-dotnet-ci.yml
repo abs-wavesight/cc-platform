@@ -28,7 +28,8 @@ on:
       dockerfile-version:
         required: false
         type: string
-        description: Should be found with the repository (e.g., "1.0.1")
+        default: '0.0.0.0'
+        description: Should be found with the repository (e.g., "1.0.1.1")
       test-project-filter-part: # & FullyQualifiedName!~FileShipper
         required: false
         type: string
