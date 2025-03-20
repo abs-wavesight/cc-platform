@@ -25,7 +25,7 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "DrexMessage.Dockerfile")
-      dockerfile-version:
+      container-version:
         required: false
         type: string
         default: '0.0.0.0'
@@ -161,14 +161,14 @@ jobs:
           directory: ${{ inputs.docker-context-directory }}
           dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
           pushImage: true
-          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }},${{ matrix.os }}-${{ inputs.container-version }}
           labels: >-
             org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
             ${{ env.LABEL_PREFIX }}.container_type=application
-            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.dockerfile-version }}
+            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
 
@@ -197,13 +197,14 @@ jobs:
           directory: ${{ inputs.docker-context-directory }}
           dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
           pushImage: true
-          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }},${{ matrix.os }}-${{ inputs.container-version }}
           labels: >-
             org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
             ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
 
