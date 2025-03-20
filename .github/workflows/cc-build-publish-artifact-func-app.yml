@@ -116,10 +116,7 @@ jobs:
                  $dockerfile =  Join-Path $config.FUNCTION_PROJECT_PATH $config.wrap.dockerfile
                  $image = $config.wrap.image
                  $registry = $config.wrap.registry
-                 $namespace = $config.wrap.namespace
-                 $username = $config.wrap.username
-                 $password = $config.wrap.password
-                 
+                 $namespace = $config.wrap.namespace     
                
                  $version = "${{ inputs.tagVersion }}"
                  $imageName = "$registry/$namespace/$image"
@@ -129,7 +126,7 @@ jobs:
                  Write-Host "Building Docker image: $imageName using Dockerfile: $dockerfile"
                
                  # Docker login
-                 echo "$password" | docker login $registry -u $username --password-stdin
+                 echo "${{ secrets.GH_PAT }}" | docker login $registry -u "${{ github.ACTOR }}" --password-stdin
 
                  cp $zipFilePath ./"$($config.Name).zip"
                 
