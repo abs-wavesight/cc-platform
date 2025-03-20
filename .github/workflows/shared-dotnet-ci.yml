@@ -167,7 +167,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_type=application,
             ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
@@ -203,7 +203,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_type=application,
             ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
