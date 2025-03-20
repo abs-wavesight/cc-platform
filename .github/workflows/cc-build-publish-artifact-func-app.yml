@@ -94,6 +94,7 @@ jobs:
           
           foreach ($config in $functionConfigs) {            
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
+               $functionProjectPath = $config.FUNCTION_PROJECT_PATH
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
                
                Write-Host "Setup version: ${{ inputs.tagVersion }}"
@@ -128,9 +129,10 @@ jobs:
                  # Docker login
                  echo "${{ secrets.GH_PAT }}" | docker login $registry -u "${{ github.ACTOR }}" --password-stdin
 
-                 cp $zipFilePath ./"$($config.Name).zip"
+                 # cp $zipFilePath ./"$($config.Name).zip"
+                 # docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" --build-arg FUNCTION_ZIP="$($config.Name).zip" .
                 
-                 docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" --build-arg FUNCTION_ZIP="$($config.Name).zip" .
+                 docker build -t "${imageCurrent}" -t "${imageLatest}" -f "$dockerfile" $functionProjectPath
                 
                  Write-Host "Building Docker finished. Pushing Docker image to registry..."
                  docker push "${imageCurrent}"
