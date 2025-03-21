@@ -168,6 +168,10 @@ jobs:
               matrix_json=$(echo "$matrix_json" | jq --argjson entry "$matrix_entry" '. + [$entry]')
 
               wrapExists=$(echo "$config" | jq -r 'has("wrap")')
+
+              # ==========================================
+              # Deploy Docker
+              # ==========================================
               
               if [ "$wrapExists" = "true" ]; then
 
