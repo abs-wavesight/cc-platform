@@ -157,7 +157,7 @@ jobs:
               
               if [ -n "${{ inputs.function_name_suffix }}" ]; then
                 functionName="${functionName}-${function_name_suffix}"                
-              fi
+              fi      
 
               matrix_entry=$(jq -n \
                 --arg functionName "$functionName" \
@@ -166,12 +166,36 @@ jobs:
                 '{functionName: $functionName, version: $version, solutionName: $solutionName}')
               
               matrix_json=$(echo "$matrix_json" | jq --argjson entry "$matrix_entry" '. + [$entry]')
-                         
-              artifactName=$(echo $config | jq -r '.Name')
-              zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
-              echo "Deploy ${artifactName} to ${functionName}"
-              echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
-              az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath
+
+              wrapExists=$(echo "$config" | jq -r 'has("wrap")')
+
+              # ==========================================
+              # Deploy Docker
+              # ==========================================
+              
+              if [ "$wrapExists" = "true" ]; then
+
+                echo "Deploy Docker to $functionName."
+                
+                registry=$(echo "$config" | jq -r '.wrap.registry')
+                namespace=$(echo "$config" | jq -r '.wrap.namespace')
+                image=$(echo "$config" | jq -r '.wrap.image')              
+                fullDockerImageName="${registry}/${namespace}/${image}:${version}"
+                
+                echo "Pushing Docker image: $fullDockerImageName"                  
+
+                az functionapp config container set --name $functionName --resource-group ${{ inputs.resource_group_name }} --image $fullDockerImageName --registry-server $registry --registry-username ${{ github.ACTOR }} --registry-password ${{ secrets.GH_PAT }}
+
+              else  
+                echo "Deploy Code to $functionName"
+
+                artifactName=$(echo $config | jq -r '.Name')
+                zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"
+                echo "Deploy ${artifactName} to ${functionName}"
+                echo "Run ${{ inputs.resource_group_name }} ${functionName}  ${zipFilePath}"
+                az functionapp deployment source config-zip -g ${{ inputs.resource_group_name }} -n $functionName --src $zipFilePath            
+              fi                        
+              
             fi
           done  
           echo "::set-output name=matrix::$(echo $matrix_json | jq -c .)"     
