@@ -2,7 +2,7 @@
 services:
   cc.message-scheduler:
     container_name: message-scheduler
-    image: ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-main-$MESSAGE_SCHEDULER_COMMIT_SHA
+    image: ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION
     depends_on:
       - cc.rabbitmq
     environment:
@@ -10,11 +10,11 @@ services:
       - FLAT_LOGS=${FLAT_LOGS:-False}
       - ConnectionSettings__Username=${MESSAGE_SCHEDULER_USERNAME}
       - ConnectionSettings__Password=${MESSAGE_SCHEDULER_PASSWORD}
-    restart: always	
-    volumes:	
-      - type: bind	
+    restart: always
+    volumes:
+      - type: bind
         source: $ABS_PATH/config/message-scheduler
-        target: C:/app/config	
+        target: C:/app/config
         read_only: false
       - type: bind
         source: $ABS_PATH/certificates/local-certs
