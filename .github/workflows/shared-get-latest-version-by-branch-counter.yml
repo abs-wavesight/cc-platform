@@ -1,0 +1,95 @@
+name: Get Latest Released Version
+
+on:
+  workflow_call:
+    inputs:
+      release_branch:
+        description: 'The release branch'
+        required: true
+        type: string
+        default: "releases/1_0_1"         
+      develop_branch:
+        description: 'The develop branch'
+        required: true
+        type: string
+      use-release-branch:
+        type: boolean
+        description: "Use release version (default: false. Main branch will be used)"
+        default: false    
+      major:
+        description: 'The major version'
+        required: true
+        type: number
+        default: 1
+      minor:
+        description: 'The minor version'
+        required: true
+        type: number
+        default: 0
+    outputs:
+      version: 
+        value: ${{ jobs.version-definition.outputs.version }}
+        
+concurrency:
+  group: scheduler-release-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  get-release-counter:
+    uses:  ./.github/workflows/shared-branch-counter.yml
+    with:
+      branch: ${{ inputs.release_branch }}
+      increment: false
+      
+  get-current-counter:
+    uses:  ./.github/workflows/shared-branch-counter.yml 
+    with:       
+      version-sub-tag: "${{ inputs.major }}-${{ inputs.minor }}"
+      increment: false
+  
+  version-definition:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    env:
+      current_counter: ${{needs.get-current-counter.outputs.branchCounter}}
+      release_counter: ${{needs.get-release-counter.outputs.branchCounter}}   
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+        with:        
+          submodules: false
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Determine latest version
+        id: version
+        shell: bash
+        run: |          
+          branch_name="${{ github.ref_name }}"
+          
+          if [ -n "${{ github.head_ref }}" ]; then
+            branch_name="${{ github.head_ref }}"           
+          fi 
+          
+          echo "Branch name: $branch_name"
+
+          branch_name=${branch_name,,}
+          echo "Branch name lowecase: $branch_name"
+          
+          branch_name_clean=${branch_name//\//-} 
+          echo "Branch name prepared: $branch_name_clean"
+          
+          if [ "${{ inputs.use-release-branch }}" = "true" ]; then
+            version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.current_counter }}"
+          else
+            if [ "$branch_name" = "${{ inputs.develop_branch }}" ]; then
+              version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.release_counter }}.${{ env.current_counter }}-beta"
+            else
+              version="${{ inputs.major }}.${{ inputs.minor }}.${{ env.release_counter }}.${{ env.current_counter }}-${branch_name_clean}"
+          fi
+
+          # Output the version
+          echo "version=$version" >> $GITHUB_OUTPUT
+          
