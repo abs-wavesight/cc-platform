@@ -8,23 +8,27 @@ on:
           required: true
           type: string          
         develop_branch:
-            description: 'The develop branch'
-            required: true
-            type: string 
+          description: 'The develop branch'
+          required: true
+          type: string 
         project_marker:
-            type: string
-            description: "Use this marker if you have multiple projects within a single repository that each require individual counters."
-            default: ""
+          type: string
+          description: "Use this marker if you have multiple projects within a single repository that each require individual counters."
+          default: ""
         major:
-            description: 'The major version'
-            required: true
-            type: number
-            default: 1
+          description: 'The major version'
+          required: true
+          type: number
+          default: 1
         minor:
-            description: 'The minor version'
-            required: true
-            type: number
-            default: 0
+          description: 'The minor version'
+          required: true
+          type: number
+          default: 0
+        increment:
+          type: boolean
+          description: "Incrementing the counter (default: true)"        
+          default: true       
     outputs:
       version: 
         value: ${{ jobs.define-version.outputs.version }}
@@ -42,7 +46,8 @@ jobs:
     with:       
       project_marker: ${{ inputs.project_marker }}
       version-sub-tag: "${{ inputs.major }}-${{ inputs.minor }}"
-      increment: true
+      increment: ${{ inputs.increment }}
+
   define-version:
     needs: [get-release-counter, get-current-counter]
     runs-on: ubuntu-latest
