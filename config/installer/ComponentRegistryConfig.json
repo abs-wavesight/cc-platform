@@ -424,7 +424,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-main-$MESSAGE_SCHEDULER_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION",
           "destination": "message-scheduler.tar"
         },
         {
