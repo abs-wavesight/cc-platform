@@ -2,7 +2,7 @@
 services:
   cc.drex-file-service:
     container_name: drex-file-service
-    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA
+    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION
     depends_on:
       - cc.rabbitmq
       - cc.drex-message-service

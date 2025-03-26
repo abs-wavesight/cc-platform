@@ -195,7 +195,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-$WINDOWS_VERSION-$DREX_VESSEL_VERSION",
           "destination": "drex-message.tar"
         },
         {
@@ -221,7 +221,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION",
           "destination": "drex-file.tar"
         },
         {
@@ -367,7 +367,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION",
           "destination": "drex-central-message.tar"
         },
         {
@@ -393,7 +393,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-main-$VOYAGE_MANAGER_REPORT_ADAPTER_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION",
           "destination": "voyage-manager-report-adapter.tar"
         },
         {
