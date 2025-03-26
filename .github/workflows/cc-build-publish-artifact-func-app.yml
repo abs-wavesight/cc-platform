@@ -41,7 +41,7 @@ jobs:
   build_and_publish_windows:
     runs-on: windows-2019
     outputs:
-      should_wrap: ${{ steps.publish.should_wrap }}
+      should_wrap: ${{ steps.publish.outputs.should_wrap }}
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v3
@@ -95,7 +95,7 @@ jobs:
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
                
-               Write-Host "Setup version: ${{ inputs.tagVersion }}"
+               Write-Host "ℹ️ Setup version: ${{ inputs.tagVersion }}"
 
                $hostJsonPath = Join-Path -Path $functionPack -ChildPath "host.json"
                $hostJson = Get-Content $hostJsonPath | ConvertFrom-Json
@@ -104,11 +104,11 @@ jobs:
                
                $zipFilePath = Join-Path $artifactOutputDir "$($config.Name).zip" 
                Compress-Archive -Path "$($functionPack)\*" -DestinationPath $zipFilePath
-               Write-Host "Zipped $($config.Name) function app to: $zipFilePath"   
+               Write-Host "📦 Zipped $($config.Name) function app to: $zipFilePath"   
                
                 if ($null -ne $config.wrap) {
                   $hasWrap = $true
-                  Write-Host "Docker wrap configuration detected for $($config.Name)"
+                  Write-Host "✅ Docker wrap configuration detected for $($config.Name)"
                 }
           }
 
@@ -117,7 +117,7 @@ jobs:
           $zipFileName = "${{ inputs.artifactOutput }}.zip"
           $zipFilePath = Join-Path -Path "${{ github.workspace }}" -ChildPath $zipFileName
           Compress-Archive -Path "$artifactOutputDir\*" -DestinationPath $zipFilePath
-          Write-Host "Created zip: $zipFilePath"     
+          Write-Host "📦 Created zip: $zipFilePath"     
          
 
       - name: Publish to GitHub Release
@@ -194,9 +194,22 @@ jobs:
           $artifactOutputDir = "${{ github.workspace }}/artifacts"
           New-Item -ItemType Directory -Force -Path $artifactOutputDir
           
-          foreach ($config in $functionConfigs) {            
+          foreach ($config in $functionConfigs) {   
                $functionPack  = Join-Path $config.FUNCTION_PROJECT_PATH "publish" 
                $functionProjectPath = $config.FUNCTION_PROJECT_PATH
+ 
+               Write-Host "📂 Listing all files before cleanup:"
+               Get-ChildItem -Path $functionProjectPath -Recurse -File | ForEach-Object {
+                   Write-Host $_.FullName
+               }
+
+               if (Test-Path $functionPack) {
+                  Write-Host "🧹 Removing existing 'publish' folder: $functionPack"
+                  Remove-Item -Path $functionPack -Recurse -Force
+               } else {
+                  Write-Host "✅ $functionPack folder does not exist. Nothing to remove."
+               }
+               
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
                
                Write-Host "Setup version: ${{ inputs.tagVersion }}"
@@ -210,7 +223,7 @@ jobs:
                # Docker wrap logic
                # ==========================================
                if ($null -ne $config.wrap) {
-                 Write-Host "Docker wrap configuration detected for $($config.Name). Proceeding with Docker build and push..."
+                 Write-Host "👀 Docker wrap configuration detected for $($config.Name). Proceeding with Docker build and push..."
                
                  $dockerfile =  Join-Path $config.FUNCTION_PROJECT_PATH $config.wrap.dockerfile
                  $image = $config.wrap.image
@@ -222,7 +235,7 @@ jobs:
                  $imageCurrent = "${imageName}:${version}"
                  $imageLatest = "${imageName}:latest"
                
-                 Write-Host "Building Docker image: $imageName using Dockerfile: $dockerfile"
+                 Write-Host "🚀 Building Docker image: $imageName using Dockerfile: $dockerfile"
                
                  # Docker login
                  echo "${{ secrets.GH_PAT }}" | docker login $registry -u "${{ github.ACTOR }}" --password-stdin
@@ -233,8 +246,8 @@ jobs:
                  docker push "${imageCurrent}"
                  docker push "${imageLatest}"
                
-                 Write-Host "Docker image $imageName built and pushed successfully!"
+                 Write-Host "✅ Docker image $imageName built and pushed successfully!"
                } else {
-                 Write-Host "No Docker wrap configuration found for $($config.Name). Skipping Docker build."
+                 Write-Host "❌ No Docker wrap configuration found for $($config.Name). Skipping Docker build."
                }            
           }
