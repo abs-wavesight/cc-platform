@@ -1,50 +1,39 @@
 ---
 services:
-  cc.vector:	
-    container_name: vector	
-    hostname: "vector"	
-    image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
+  cc.vector:
+    container_name: vector
+    hostname: "vector"
+    image: ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-$VECTOR_CENTRAL_VERSION
     environment:
-      - VECTOR_CONFIG=C:/config/vector.toml    
+      - VECTOR_CONFIG=C:/config/vector.toml
       - VECTOR_LOG_FORMAT=json
       - VECTOR_COLOR=never
       - LOG_RETENTION_PERIOD=7d
     healthcheck:
-      test:
-        [
-          "CMD",
-          "pwsh",
-          "-Command",
-          "Invoke-WebRequest",
-          "-UseBasicParsing",
-          "-Method",
-          "HEAD",
-          "-Uri",
-          "http://localhost:8686/health"
-        ]
+      test: [ "CMD", "pwsh", "-Command", "Invoke-WebRequest", "-UseBasicParsing", "-Method", "HEAD", "-Uri", "http://localhost:8686/health" ]
       interval: 10s
       timeout: 15s
       start_period: 120s
       retries: 1
-    logging:	
-      driver: local	
-    ports:	
-      - "8686:8686"	
-    restart: always	    
-    depends_on:	
-      cc.rabbitmq:	
-        condition: service_healthy	
-    volumes:	
-      - type: npipe	
-        source: \\.\pipe\docker_engine	
-        target: \\.\pipe\docker_engine	
-      - type: bind	
-        source: $ABS_PATH/config/vector	
-        target: C:/config	
-        read_only: true	
-      - type: bind	
+    logging:
+      driver: local
+    ports:
+      - "8686:8686"
+    restart: always
+    depends_on:
+      cc.rabbitmq:
+        condition: service_healthy
+    volumes:
+      - type: npipe
+        source: \\.\pipe\docker_engine
+        target: \\.\pipe\docker_engine
+      - type: bind
+        source: $ABS_PATH/config/vector
+        target: C:/config
+        read_only: true
+      - type: bind
         source: $ABS_PATH/logs/
-        target: C:/cc-logs	
+        target: C:/cc-logs
         read_only: false # need to write logs to disk
       - type: bind
         source: $ABS_PATH/certificates/local-certs

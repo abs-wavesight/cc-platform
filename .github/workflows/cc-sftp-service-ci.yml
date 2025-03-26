@@ -28,6 +28,16 @@ defaults:
     shell: pwsh
 
 jobs:
+  get-next-version:
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
+    with:
+      major: 1
+      minor: 0
+      project_marker: "sftp"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
+
   build-test-publish:
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
@@ -38,6 +48,7 @@ jobs:
       solution-directory: services/SftpService
       solution-name: SftpService.sln
       dockerfile-name: SftpService.Dockerfile
+      container-version: ${{ needs.get-next-version.outputs.version }}
       check-code-formatting: true
       dotnet-version: 8.0.x
     secrets: inherit
