@@ -6,7 +6,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-$OPEN_SSL_VERSION",
           "destination": "openssl.tar"
         },
         {
@@ -77,7 +77,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION",
           "destination": "rabbitmqnano.tar"
         },
         {
@@ -117,7 +117,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-$VECTOR_SITE_VERSION",
           "destination": "vector.tar"
         },
         {
@@ -156,7 +156,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-$VECTOR_CENTRAL_VERSION",
           "destination": "vector.tar"
         },
         {
@@ -257,7 +257,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION",
           "destination": "sftp-service.tar"
         },
         {
@@ -283,7 +283,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-$OBSERVABILITY_VERSION",
           "destination": "observability-service.tar"
         },
         {
