@@ -50,4 +50,5 @@ jobs:
       dockerfile-name: ObservabilityService.Dockerfile
       container-version: ${{ needs.get-next-version.outputs.version }}
       check-code-formatting: true
+      dotnet-version: '8.0.x'
     secrets: inherit
