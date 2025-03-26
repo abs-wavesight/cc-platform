@@ -73,7 +73,7 @@ jobs:
               - containers/openssl/**
               - config/openssl/**
               - compose/installer/docker-compose.openssl.yml
-
+  
   build-containers:
     needs: [ filter-containers, get_clean_branch_names ]
     if: fromJSON(needs.filter-containers.outputs.containers)[0] != null
@@ -110,6 +110,17 @@ jobs:
           echo "Tag-friendly git SHA: $tagFriendlySha"
           echo "SHORT_SHA=$tagFriendlySha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Get Next Version
+        id: get-next-version
+        uses: shared-define-version.yml
+        with:
+          major: 1
+          minor: 0
+          project_marker: "${{ matrix.container }}"
+          release_branch: "releases/1_0_1"
+          develop_branch: "main"
+          increment: true
+      
       - name: Build and push Docker image
         id: build-and-push-container
         uses: mr-smithers-excellent/docker-build-push@v6
@@ -128,13 +139,14 @@ jobs:
           directory: containers/${{ matrix.container }}
           dockerfile: containers/${{ matrix.container }}/Dockerfile
           pushImage: true
-          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ needs.get-next-version.outputs.version }}
           labels: >-
             org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}: ${{ matrix.container }}",
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=infrastructure
+            ${{ env.LABEL_PREFIX }}.container_type=infrastructure,
+            ${{ env.LABEL_PREFIX }}.container_version=${{ needs.get-next-version.outputs.version }}
           addTimestamp: true
           platform: windows/amd64
 
