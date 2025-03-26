@@ -2,7 +2,7 @@
 services:
   cc.voyage-manager-report-adapter:
     container_name: voyage-manager-report-adapter
-    image: ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-main-$VOYAGE_MANAGER_REPORT_ADAPTER_COMMIT_SHA
+    image: ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION
     depends_on:
       - cc.rabbitmq
     environment:
