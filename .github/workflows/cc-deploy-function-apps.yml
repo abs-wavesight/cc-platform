@@ -175,7 +175,7 @@ jobs:
               
               if [ "$wrapExists" = "true" ]; then
 
-                echo "Deploy Docker to $functionName."
+                echo "🚀🎲Deploy Docker to $functionName."
                 
                 registry=$(echo "$config" | jq -r '.wrap.registry')
                 namespace=$(echo "$config" | jq -r '.wrap.namespace')
@@ -187,7 +187,7 @@ jobs:
                 az functionapp config container set --name $functionName --resource-group ${{ inputs.resource_group_name }} --image $fullDockerImageName --registry-server $registry --registry-username ${{ github.ACTOR }} --registry-password ${{ secrets.GH_PAT }}
 
               else  
-                echo "Deploy Code to $functionName"
+                echo "🚀 Deploy Code to $functionName"
 
                 artifactName=$(echo $config | jq -r '.Name')
                 zipFilePath="${{ github.workspace }}/downloaded-artifacts-func-${{ steps.unique-path.outputs.uniquePathSuffix }}/functions/${artifactName}.zip"

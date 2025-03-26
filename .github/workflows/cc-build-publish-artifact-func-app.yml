@@ -207,7 +207,7 @@ jobs:
                   Write-Host "🧹 Removing existing 'publish' folder: $functionPack"
                   Remove-Item -Path $functionPack -Recurse -Force
                } else {
-                  Write-Host "✅ 'publish' folder does not exist. Nothing to remove."
+                  Write-Host "✅ $functionPack folder does not exist. Nothing to remove."
                }
                
                dotnet publish $config.FUNCTION_PROJECT_PATH --configuration Release --no-build --output $functionPack  
