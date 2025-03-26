@@ -112,7 +112,7 @@ jobs:
 
       - name: Get Next Version
         id: get-next-version
-        uses: shared-define-version.yml
+        uses: ./.github/workflows/shared-define-version.yml
         with:
           major: 1
           minor: 0
