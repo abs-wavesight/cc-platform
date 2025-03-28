@@ -37,8 +37,16 @@ jobs:
       release_branch: "releases/1_0_1"
       develop_branch: "main"
       increment: true
+  
+  display-version:
+    needs: get-next-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display
+        run: echo "Version is ${{ needs.get-next-version.outputs.version }}"
 
   build-test-publish:
+    needs: get-next-version
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
     with:
