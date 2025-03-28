@@ -29,7 +29,6 @@ RUN Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -Out
 RUN Start-Process -Wait -FilePath "c:\\VC_redist.x64.exe" -ArgumentList /S
 
 # Generate handle.exe utility
-RUN mkdir "C:\\rabbitmq
 COPY handle-mimic.ps1 "C:\\rabbitmq"
 COPY prep-handle-utility.ps1 "C:\\rabbitmq"
 RUN powershell -File "C:\\rabbitmq\\prep-handle-utility.ps1"
