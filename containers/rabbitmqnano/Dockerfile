@@ -11,6 +11,7 @@ ENV ERLANG_HOME="c:\\erlang" \
     RABBITMQ_VERSION="3.13.7" \
     RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
 
+USER ContainerAdministrator
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -29,8 +30,10 @@ RUN Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -Out
 RUN Start-Process -Wait -FilePath "c:\\VC_redist.x64.exe" -ArgumentList /S
 
 # Generate handle.exe utility
-COPY handle-mimic.ps1 "C:\\rabbitmq"
-COPY prep-handle-utility.ps1 "C:\\rabbitmq"
+RUN Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
+RUN mkdir "C:\\rabbitmq\\utilities"
+COPY handle-mimic.ps1 "C:\\rabbitmq\\"
+COPY prep-handle-utility.ps1 "C:\\rabbitmq\\"
 RUN powershell -File "C:\\rabbitmq\\prep-handle-utility.ps1"
 RUN Remove-Item -Force -Path "C:\\rabbitmq\\prep-handle-utility.ps1"
 RUN Remove-Item -Force -Path "C:\\rabbitmq\\handle-mimic.ps1"
