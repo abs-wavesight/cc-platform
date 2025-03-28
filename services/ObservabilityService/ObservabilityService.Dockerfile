@@ -1,11 +1,11 @@
 # powershell image tag; needed for zip extraction.
-ARG POWERSHELL_NANOSERVER_TAG=lts-7.2-nanoserver-1809
+ARG POWERSHELL_NANOSERVER_TAG=lts-8.2-nanoserver-1809
 # nanoserver image tag (contains dotnet).
 # Value for windows server 2022: 7.0-nanoserver-ltsc2022
-ARG DOTNET_TAG=7.0-nanoserver-1809
+ARG DOTNET_TAG=8.0-nanoserver-1809
 
 # Value for windows server 2022: 7.0-windowsservercore-ltsc2022
-ARG ASPNET_FULLSERVER_TAG=7.0-windowsservercore-ltsc2019
+ARG ASPNET_FULLSERVER_TAG=8.0-windowsservercore-ltsc2019
 
 FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_TAG AS build
 ARG ABS_NUGET_USERNAME

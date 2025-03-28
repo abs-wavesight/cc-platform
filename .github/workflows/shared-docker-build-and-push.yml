@@ -1,4 +1,4 @@
-name: Shared - Dotnet CI
+name: Shared - Docker Build And Push
 
 on:
   workflow_call:
@@ -17,10 +17,6 @@ on:
         required: true
         type: string
         description: Relative to the repository root (e.g., "service")
-      solution-name: # Drex.sln
-        required: true
-        type: string
-        description: Should be found with the `solution-directory` (e.g., "Drex.sln")
       dockerfile-name: # DrexMessage.Dockerfile
         required: true
         type: string
@@ -30,22 +26,6 @@ on:
         type: string
         default: '0.0.0.0'
         description: Should be found with the repository (e.g., "1.0.1.1")
-      test-project-filter-part: # & FullyQualifiedName!~FileShipper
-        required: false
-        type: string
-        description: Partial filter statement to be used with dotnet test (e.g., "& FullyQualifiedName!~FileShipper")
-      run-integration-tests:
-        required: false
-        type: boolean
-        description: Flag allows run or skip integration tests
-      run-e2e-tests:
-        required: false
-        type: boolean
-        description: Flag allows run or skip e2e tests
-      check-code-formatting:
-        required: false
-        type: boolean
-        description: If true, will fail build if formatting changes are detected (using dotnet format)
       use-submodules:
         required: false
         type: boolean
@@ -56,6 +36,11 @@ on:
         type: string
         default: '7.0.x'
         description: .NET SDK Version
+      container-type:
+        required: false
+        type: string
+        default: 'application'
+        description: The application type
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -70,7 +55,6 @@ env:
   POWERSHELL_IMAGE_TAG_WIN2022: nanoserver-ltsc2022
   LABEL_PREFIX: org.eagle.wavesight
   IMAGE_DESCRIPTION: ${{ inputs.label-description }}
-  COVERAGE_OUTPUT_LOCATION: service/{0}/TestResults/*/coverage.cobertura.xml
 
 defaults:
   run:
@@ -81,23 +65,9 @@ jobs:
     name: Get Clean Branch Names
     uses: ./.github/workflows/shared-get-clean-branch-names.yml
 
-  build:
-    name: Build & Run Tests
-    uses: ./.github/workflows/shared-dotnet-build.yml
-    with:
-      solution-directory: ${{ inputs.solution-directory }}
-      solution-name: ${{ inputs.solution-name }}
-      test-project-filter-part: ${{ inputs.test-project-filter-part }}
-      run-integration-tests: ${{ inputs.run-integration-tests }}
-      run-e2e-tests: ${{ inputs.run-e2e-tests }}
-      check-code-formatting: ${{ inputs.check-code-formatting }}
-      use-submodules: ${{ inputs.use-submodules }}
-      dotnet-version: ${{ inputs.dotnet-version }}
-    secrets: inherit
-
   push-image:
     name: Push Container Image
-    needs: [ get_clean_branch_names, build ]
+    needs: [ get_clean_branch_names ]
     strategy:
       matrix:
         os: [ windows-2019, windows-2022 ]
@@ -152,6 +122,7 @@ jobs:
             ASPNET_FULLSERVER_TAG=${{ matrix.os == 'windows-2022' && env.ASPNET_FULLSERVER_TAG_WIN2022 || env.ASPNET_FULLSERVER_TAG_WIN2019 }},
             DOTNET_TAG=${{ matrix.os == 'windows-2022' && env.DOTNET_IMAGE_TAG_WIN2022 || env.DOTNET_IMAGE_TAG_WIN2019 }},
             POWERSHELL_NANOSERVER_TAG=${{ matrix.os == 'windows-2022' && env.POWERSHELL_IMAGE_TAG_WIN2022 || env.POWERSHELL_IMAGE_TAG_WIN2019 }},
+            SERVER_VERSION=${{ matrix.os == 'windows-2022' && 'ltsc2022' || 'ltsc2019' }},
             ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",
             ABS_NUGET_PASSWORD="${{ env.ABS_NUGET_PASSWORD }}"
           image: ${{ env.IMAGE_NAME }}
@@ -167,7 +138,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application,
+            ${{ env.LABEL_PREFIX }}.container_type=${{ inputs.container-type }},
             ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
@@ -186,6 +157,7 @@ jobs:
         with:
           buildArgs: >-
             ASPNET_FULLSERVER_TAG=${{ matrix.os == 'windows-2022' && env.ASPNET_FULLSERVER_TAG_WIN2022 || env.ASPNET_FULLSERVER_TAG_WIN2019 }},
+            SERVER_VERSION=${{ matrix.os == 'windows-2022' && 'ltsc2022' || 'ltsc2019' }},
             DOTNET_TAG=${{ matrix.os == 'windows-2022' && env.DOTNET_IMAGE_TAG_WIN2022 || env.DOTNET_IMAGE_TAG_WIN2019 }},
             POWERSHELL_NANOSERVER_TAG=${{ matrix.os == 'windows-2022' && env.POWERSHELL_IMAGE_TAG_WIN2022 || env.POWERSHELL_IMAGE_TAG_WIN2019 }},
             ABS_NUGET_USERNAME="${{ env.ABS_NUGET_USERNAME }}",
@@ -203,7 +175,7 @@ jobs:
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application,
+            ${{ env.LABEL_PREFIX }}.container_type=${{ inputs.container-type }},
             ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64

@@ -26,6 +26,13 @@ RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -O
     Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
     Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
 
+# Generate handle.exe utility
+COPY handle-mimic.ps1 "C:\\rabbitmq"
+COPY prep-handle-utility.ps1 "C:\\rabbitmq"
+RUN powershell -File "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\handle-mimic.ps1"
+
 # Copy handle.exe utility and add to PATH
 RUN mkdir "C:\\rabbitmq\\utilities"
 COPY ./utilities "C:\\rabbitmq\\utilities"
