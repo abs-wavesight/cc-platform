@@ -11,6 +11,7 @@ ENV ERLANG_HOME="c:\\erlang" \
     RABBITMQ_VERSION="3.13.7" \
     RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
 
+USER ContainerAdministrator
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -28,6 +29,15 @@ RUN Invoke-WebRequest -Uri "https://github.com/rabbitmq/rabbitmq-delayed-message
 RUN Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "c:\\VC_redist.x64.exe"
 RUN Start-Process -Wait -FilePath "c:\\VC_redist.x64.exe" -ArgumentList /S
 
+# Generate handle.exe utility
+RUN Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
+RUN mkdir "C:\\rabbitmq\\utilities"
+COPY handle-mimic.ps1 "C:\\rabbitmq\\"
+COPY prep-handle-utility.ps1 "C:\\rabbitmq\\"
+RUN powershell -File "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\handle-mimic.ps1"
+
 FROM mcr.microsoft.com/windows/nanoserver:${SERVER_VERSION}
 
 USER ContainerAdministrator
@@ -38,7 +48,7 @@ COPY --from=unzip C:\\windows\\system32\\msvcp140.dll C:\\windows\\system32
 COPY --from=unzip C:\\windows\\system32\\vcruntime140.dll C:\\windows\\system32
 COPY --from=unzip C:\\windows\\system32\\vcruntime140_1.dll C:\\windows\\system32
 COPY --from=unzip C:\\windows\\system32\\certoc.exe C:\\windows\\system32
-COPY utilities\\handle.exe c:\\windows\\system32
+COPY --from=unzip C:\\rabbitmq\\utilities\\handle.exe c:\\windows\\system32
 RUN mkdir "C:\\rabbitmq\\config"
 RUN ["cmd", "/C", "echo loopback_users = none > c:\\rabbitmq\\config\\rabbitmq.conf"]
 

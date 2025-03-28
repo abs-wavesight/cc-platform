@@ -12,6 +12,7 @@ ENV ERLANG_HOME="c:\\erlang" \
     RABBITMQ_VERSION="3.11.2" \
     RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
 
+USER ContainerAdministrator
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -26,8 +27,16 @@ RUN Invoke-WebRequest -Uri "https://erlang.org/download/otp_win64_25.1.1.exe" -O
     Remove-Item -Force -Path "c:\\rabbitmq.zip" ; \
     Rename-Item -Path "c:\\rabbitmq_server-$env:rabbitmq_version" -NewName "c:\\rabbitmq"
 
-# Copy handle.exe utility and add to PATH
+# Generate handle.exe utility
+RUN Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.201 -Force
 RUN mkdir "C:\\rabbitmq\\utilities"
+COPY handle-mimic.ps1 "C:\\rabbitmq"
+COPY prep-handle-utility.ps1 "C:\\rabbitmq"
+RUN powershell -File "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\prep-handle-utility.ps1"
+RUN Remove-Item -Force -Path "C:\\rabbitmq\\handle-mimic.ps1"
+
+# Copy handle.exe utility and add to PATH
 COPY ./utilities "C:\\rabbitmq\\utilities"
 RUN powershell -File "C:\\rabbitmq\\utilities\\add-handle-to-path.ps1"
 
