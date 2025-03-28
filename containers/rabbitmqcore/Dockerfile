@@ -12,6 +12,7 @@ ENV ERLANG_HOME="c:\\erlang" \
     RABBITMQ_VERSION="3.11.2" \
     RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
 
+USER ContainerAdministrator
 # setup powershell options for RUN commands
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
