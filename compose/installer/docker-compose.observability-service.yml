@@ -1,15 +1,15 @@
 ---
 services:
   cc.observability-service:
-    image: ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA    
+    image: ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-$OBSERVABILITY_VERSION
     container_name: observability-service
     hostname: observability-service
     environment:
-      - FLAT_LOGS=${FLAT_LOGS:-False}    
+      - FLAT_LOGS=${FLAT_LOGS:-False}
     logging:
       driver: local
     ports:
       - 5259:80
-    restart: always	
+    restart: always
     volumes:
       - \\.\pipe\docker_engine:\\.\pipe\docker_engine

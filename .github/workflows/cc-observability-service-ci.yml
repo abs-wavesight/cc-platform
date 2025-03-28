@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cc-observability-service-${{ github.head_ref }}
+  group: cc-observability-service
   cancel-in-progress: true
 
 defaults:
@@ -28,6 +28,16 @@ defaults:
     shell: pwsh
 
 jobs:
+  get-next-version:
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
+    with:
+      major: 1
+      minor: 0
+      project_marker: "observability"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
+  
   build-test-publish:
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
@@ -38,5 +48,7 @@ jobs:
       solution-directory: services/ObservabilityService
       solution-name: ObservabilityService.sln
       dockerfile-name: ObservabilityService.Dockerfile
+      container-version: ${{ needs.get-next-version.outputs.version }}
       check-code-formatting: true
+      dotnet-version: '8.0.x'
     secrets: inherit

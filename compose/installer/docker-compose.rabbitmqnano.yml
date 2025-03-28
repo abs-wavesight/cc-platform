@@ -2,8 +2,12 @@
 services:
   cc.rabbitmq:
     container_name: rabbitmq
-    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA
+    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION
     hostname: rabbitmq-$RABBIT_LOCATION
+    deploy:
+      resources:
+        limits:
+          memory: 8G
     entrypoint: [ cmd, "-c" ]
     command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:

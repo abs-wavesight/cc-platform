@@ -30,13 +30,14 @@ jobs:
     secrets: inherit
 
   get-next-version:
-    name: Get Next Observability Service Version
-    if: ${{ inputs.version == '' }}
-    uses: ./.github/workflows/shared-get-next-release-version.yml
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
     with:
-      repo: "cc-platform"
-      name: "Observability Service Release"
-    secrets: inherit
+      major: 1
+      minor: 0
+      project_marker: "observability"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: false
 
   release-component:
     name: Observability Service Release
@@ -48,12 +49,13 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-next-version.outputs.version }} Observability Service Release
+      name: ${{ inputs.version || needs.get-version.outputs.version }} Observability Service Release
       component_name: Observability-Service
-      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-observability-service
+      tag: ${{ inputs.version || needs.get-version.outputs.version }}-observability-service
       description: ${{ inputs.description || 'Observability Service' }}
       component-params: >         
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
+        -p `$OBSERVABILITY_VERSION:${{ needs.get-version.outputs.version || inputs.version }}
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

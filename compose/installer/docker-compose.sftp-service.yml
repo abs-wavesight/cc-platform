@@ -1,16 +1,16 @@
 ---
 services:
   cc.sftp-service:
-    image: ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA    
+    image: ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION
     container_name: sftp-service
     hostname: sftp-service
     environment:
-      - FLAT_LOGS=${FLAT_LOGS:-False}    
+      - FLAT_LOGS=${FLAT_LOGS:-False}
     logging:
       driver: local
     ports:
       - 1022:1022
-    restart: always	
+    restart: always
     volumes:
       - type: bind
         source: $ABS_PATH/config/sftp-service
