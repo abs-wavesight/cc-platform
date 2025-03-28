@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cc-observability-service-${{ github.head_ref }}
+  group: cc-observability-service
   cancel-in-progress: true
 
 defaults:
