@@ -1,0 +1,54 @@
+name: RabbitMQ nano CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - .github/workflows/docker-build-publish.yml
+      - 'containers/rabbitmqnano/**'
+      - 'config/rabbitmq/**'
+      - 'compose/installer/docker-compose.rabbitmqnano.yml'
+      - '.github/workflows/cc-rabbitmq-nano-ci.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - .github/workflows/docker-build-publish.yml
+      - 'containers/rabbitmqnano/**'
+      - 'config/rabbitmq/**'
+      - 'compose/installer/docker-compose.rabbitmqnano.yml'
+      - '.github/workflows/cc-rabbitmq-nano-ci.yml'
+
+env:
+  REGISTRY: ghcr.io
+  LABEL_PREFIX: org.eagle.wavesight
+
+concurrency:
+  group: cc-rabbitmq-nano-ci
+  cancel-in-progress: true
+
+jobs:
+  get-next-version:
+    name: Get Next Version
+    uses: ./.github/workflows/shared-define-version.yml
+    with:
+      major: 1
+      minor: 0
+      project_marker: "rabbitmqnano"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
+  
+  build-containers:
+    needs: [ get-next-version ]
+    name: Build Container
+    uses: ./.github/workflows/shared-docker-build-and-push.yml
+    with:
+      image-name: rabbitmqnano
+      label-description: ABS Common Core RabbitMQ based on Windows Nano Server Image
+      docker-context-directory: containers/rabbitmqnano
+      solution-directory: containers/rabbitmqnano
+      dockerfile-name: Dockerfile
+      container-version: ${{ needs.get-next-version.outputs.version }}
+      use-submodules: false
+      dotnet-version: '8.0.x'  
+      container-type: infrastructure

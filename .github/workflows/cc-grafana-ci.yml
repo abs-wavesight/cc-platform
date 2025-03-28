@@ -1,0 +1,52 @@
+name: Grafana CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '.github/workflows/shared-docker-build-and-push.yml'
+      - 'containers/grafana/**'
+      - 'config/grafana/**'
+      - '.github/workflows/cc-grafana-ci.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - '.github/workflows/shared-docker-build-and-push.yml'
+      - 'containers/grafana/**'
+      - 'config/grafana/**'
+      - '.github/workflows/cc-grafana-ci.yml'
+
+env:
+  REGISTRY: ghcr.io
+  LABEL_PREFIX: org.eagle.wavesight
+
+concurrency:
+  group: cc-grafana-ci
+  cancel-in-progress: true
+
+jobs:
+  get-next-version:
+    name: Get Next Version
+    uses: ./.github/workflows/shared-define-version.yml
+    with:
+      major: 1
+      minor: 0
+      project_marker: "grafana"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
+  
+  build-containers:
+    needs: [ get-next-version ]
+    name: Build Container
+    uses: ./.github/workflows/shared-docker-build-and-push.yml
+    with:
+      image-name: grafana
+      label-description: ABS Common Core Grafana
+      docker-context-directory: containers/grafana
+      solution-directory: containers/grafana
+      dockerfile-name: Dockerfile
+      container-version: ${{ needs.get-next-version.outputs.version }}
+      use-submodules: false
+      dotnet-version: '8.0.x'  
+      container-type: infrastructure

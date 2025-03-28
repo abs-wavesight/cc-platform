@@ -29,31 +29,33 @@ jobs:
       name: "vector"
     secrets: inherit
 
-  get-next-version:
-    name: Get Next Vector Site Version
-    if: ${{ inputs.version == '' }}
-    uses: ./.github/workflows/shared-get-next-release-version.yml
+  get-version:
+    uses: ./.github/workflows/shared-define-version.yml
     with:
-      repo: "cc-platform"
-      name: "Vector Site Release"
-    secrets: inherit
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      project_marker: "vector"
+      major: 1
+      minor: 0
+      increment: false
 
   release-component:
     name: Vector Site Release
     needs: 
       - get-default-platform-commit-sha
-      - get-next-version
+      - get-version
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-next-version.outputs.version }} Vector Site Release
+      name: ${{ inputs.version || needs.get-version.outputs.version }} Vector Site Release
       component_name: vector-site
-      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}-vector-site
+      tag: ${{ inputs.version || needs.get-version.outputs.version }}-vector-site
       description: ${{ inputs.description || 'Vector Site' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }}
+        -p `$VECTOR_SITE_VERSION:${{ needs.get-version.outputs.version || inputs.version }}
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
