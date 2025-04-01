@@ -31,7 +31,7 @@
     "port": 1022,
     "protocol": "sftp"
   },
-  "RemoteConnectionRetryDelaySeconds": 5,
+  "RemoteConnectionRetryDelaySeconds": 60,
   "HealthChecks": {
     "HealthCheckProbePollFrequencySeconds": 15,
     "HealthCheckProbeTcpPort": 5002
@@ -42,5 +42,5 @@
   },
   "SkipCertificateImport": false,
   "TransportMethod": "cc",
-  "MaxChunkSizeInMb": 125
+  "MaxChunkSizeInKb": 10
 }
