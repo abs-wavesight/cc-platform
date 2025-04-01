@@ -48,11 +48,14 @@ jobs:
   get-next-version:
     name: Get Next Version
     if: ${{ inputs.version == '' }}
-    uses: ./.github/workflows/shared-get-next-release-version.yml
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
     with:
-      repo: "cc-platform"
-      name: "Site System Nano Release"
-    secrets: inherit
+      major: 1
+      minor: 0
+      project_marker: "system-site"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
 
   get-default-rabbitmq-version:
     name: Get Default RabbitMQ Nano Version
