@@ -5,7 +5,7 @@ SHELL [ "pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreferenc
 WORKDIR C:/app
 RUN Invoke-WebRequest -UseBasicParsing -Uri https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-3.4.1.zip -OutFile openssl.zip ; \
     Expand-Archive -LiteralPath openssl.zip -DestinationPath ./temp ; \
-    Copy-Item -Path temp/openssl-3/x64/bin/* -Destination . ; \	
+    Copy-Item -Path temp/x64/bin/* -Destination . ; \	
     Remove-Item "openssl.zip" ; \
 	Remove-Item "temp" -Force -Recurse
 USER containeradministrator
