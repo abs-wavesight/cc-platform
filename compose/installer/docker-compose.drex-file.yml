@@ -19,7 +19,7 @@ services:
       - AdaptersFolderPath=C:/app/adapters
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
-      - "12347:5002"
+      - "12347:5000"
     restart: always
     volumes:
       - type: bind
