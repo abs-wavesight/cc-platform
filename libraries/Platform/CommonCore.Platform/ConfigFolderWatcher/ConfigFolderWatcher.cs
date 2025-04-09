@@ -100,7 +100,7 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
                     }
                 }
 
-                await Task.Delay(5000);
+                await Task.Delay(5000, _cts.Token);
             }
         }, _cts.Token);
     }
