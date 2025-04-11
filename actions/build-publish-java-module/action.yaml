@@ -31,11 +31,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         echo "⚓ Set dynamic version in POM"
-        mvn -B versions:set `
-          -DnewVersion="${{ inputs.version }}" `
-          -pl :${{ inputs.module }} `          
-          -am
-
+        mvn -B versions:set -DnewVersion="${{ inputs.version }}" -pl :${{ inputs.module }} -am
 
     - name: 📦 Build module
       shell: pwsh
@@ -88,6 +84,6 @@ runs:
       run: |
         echo "🚀 Deploying module to GitHub Packages"
         echo "Deploying module ${{ inputs.module }} with version ${{ inputs.version }}"
-        mvn -B deploy -am -s "${{ github.workspace }}/settings.xml"
+        mvn -B deploy -s "${{ github.workspace }}/settings.xml"
       env:
         GITHUB_TOKEN: ${{ github.token }}
