@@ -31,9 +31,21 @@ runs:
     - name: 🚀 Deploy PARENT module to GitHub Packages
       shell: pwsh
       working-directory: ${{ inputs.working-directory }}
+      continue-on-error: true
       run: |
-        echo "🚀 Deploying PARENT module to GitHub Packages"      
-        mvn -B deploy -N -s "${{ github.workspace }}/settings.xml"
+       echo "🚀 Attempting to deploy parent POM..."
+    
+       $output = & mvn -B deploy -N -s "${{ github.workspace }}/settings.xml" 2>&1
+       $output | Out-String | Tee-Object -Variable mvnOutput
+   
+       if ($mvnOutput -match "status code: 409") {
+         echo "⚠️ Parent POM already exists – skipping deployment."
+       } elseif ($LASTEXITCODE -ne 0) {
+         echo "❌ Deployment failed for a different reason."
+         exit $LASTEXITCODE
+       } else {
+         echo "✅ Deployment successful."
+       }
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
