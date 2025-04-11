@@ -1,0 +1,81 @@
+name: "Maven Build Publish Module Action"
+
+inputs:
+  version:
+    description: "The version to set for the module"
+    required: true
+  module:
+    description: "The Maven module artifactId"
+    required: true
+  working-directory:
+    description: "Relative path to the working directory of the module"
+    required: true
+  working-directory-module:
+    description: "Relative path to the working directory of the module"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '8'
+        cache: 'maven'
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    - name: ⚓ Set dynamic version in POM
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        mvn -B versions:set -DnewVersion="${{ inputs.version }}" -pl :${{ inputs.module }} -am
+
+    - name: 📦 Build module
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        mvn -B clean install -pl :${{ inputs.module }} -am
+
+    - name: ℹ️ DEBUG - Print directory structure (tree -L 3)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tree
+          echo "📁 Tree structure of workspace:"
+          tree -L 3
+
+    - name: ℹ️ DEBUG - Show effective POM
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "📄 Generating effective POM for module: ${{ inputs.module }}"
+        
+        $pomPath = "$(pwd)/${{ inputs.working-directory-module }}/effective-pom.xml"
+        mvn -B help:effective-pom -pl :${{ inputs.module }} "-Doutput=$pomPath"
+        
+        if (Test-Path $pomPath) {
+          echo "✅ effective-pom.xml successfully created at: $pomPath"
+        } else {
+          echo "❌ effective-pom.xml was NOT created!"
+          exit 1
+        }
+        echo "🔍 Showing relevant details from effective POM:"
+        Select-String "<groupId>|<artifactId>|<version>|<packaging>" -Path $pomPath | Sort-Object -Unique
+
+    - name: 🔍 Validate Maven module visibility
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "🔍 Running mvn validate on module"
+        mvn -B validate -pl :${{ inputs.module }}
+        echo "✅ Validation complete"
+
+    - name: 🚀 Deploy module to GitHub Packages
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}/${{ inputs.working-directory-module }}
+      run: |
+        echo "Deploying module ${{ inputs.module }} with version ${{ inputs.version }}"
+        mvn -B deploy -s "${{ github.workspace }}/settings.xml"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
