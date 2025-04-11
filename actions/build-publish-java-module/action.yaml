@@ -39,6 +39,8 @@ runs:
       run: |
         echo "📦 Build module"
         mvn -B clean install -pl :${{ inputs.module }} -am -s "${{ github.workspace }}/settings.xml"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: ℹ️ DEBUG - Print directory structure (tree -L 3)
       shell: bash
