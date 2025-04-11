@@ -38,7 +38,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         echo "📦 Build module"
-        mvn -B clean install -pl :${{ inputs.module }} -am
+        mvn -B clean install -pl :${{ inputs.module }} -am -s "${{ github.workspace }}/settings.xml"
 
     - name: ℹ️ DEBUG - Print directory structure (tree -L 3)
       shell: bash
