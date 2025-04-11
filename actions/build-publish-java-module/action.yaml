@@ -26,6 +26,17 @@ runs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
+    # needs deploy just only first time. To avoid this issue with new project we need to deploy parent module first and then deploy child module
+    # parent pom has a static version
+    - name: 🚀 Deploy PARENT module to GitHub Packages
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "🚀 Deploying PARENT module to GitHub Packages"      
+        mvn -B deploy -N -s "${{ github.workspace }}/settings.xml"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: ⚓ Set dynamic version in POM
       shell: pwsh
       working-directory: ${{ inputs.working-directory }}
@@ -87,11 +98,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
     
-    - name: 🚀 Deploy PARENT module to GitHub Packages
-      shell: pwsh
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        echo "🚀 Deploying PARENT module to GitHub Packages"      
-        mvn -B deploy -N -s "${{ github.workspace }}/settings.xml"
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+    
