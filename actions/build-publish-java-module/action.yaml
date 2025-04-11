@@ -31,7 +31,14 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         echo "⚓ Set dynamic version in POM"
-        mvn -B versions:set -DnewVersion="${{ inputs.version }}" -pl :${{ inputs.module }} -am
+        mvn -B versions:set `
+          -DnewVersion="${{ inputs.version }}" `
+          -pl :${{ inputs.module }} `
+          -DprocessParent=false `
+          -DprocessAllModules=true `
+          -DgenerateBackupPoms=false `
+          -am
+
 
     - name: 📦 Build module
       shell: pwsh
