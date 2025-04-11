@@ -39,6 +39,8 @@ runs:
         mvn -B clean install -pl :${{ inputs.module }} -am
 
     - name: ℹ️ DEBUG - Print directory structure (tree -L 3)
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
           sudo apt-get update
           sudo apt-get install -y tree
