@@ -30,8 +30,8 @@ runs:
       shell: pwsh
       working-directory: ${{ inputs.working-directory }}
       run: |
-        echo "⚓ Set dynamic version in POM"
-        mvn -B versions:set -DnewVersion="${{ inputs.version }}" -pl :${{ inputs.module }} -am
+        echo "⚓ Set dynamic version in POM"      
+        mvn -B versions:set -DnewVersion="${{ inputs.version }}" -pl :${{ inputs.module }} -DprocessParent=false -DgenerateBackupPoms=false -am
 
     - name: 📦 Build module
       shell: pwsh
@@ -81,9 +81,17 @@ runs:
     - name: 🚀 Deploy module to GitHub Packages
       shell: pwsh
       working-directory: ${{ inputs.working-directory }}/${{ inputs.working-directory-module }}
-      run: |
-        echo "🚀 Deploying module to GitHub Packages"
-        echo "Deploying module ${{ inputs.module }} with version ${{ inputs.version }}"
+      run: |      
+        echo "🚀 Deploying module ${{ inputs.module }} with version ${{ inputs.version }}"
         mvn -B deploy -s "${{ github.workspace }}/settings.xml"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    
+    - name: 🚀 Deploy PARENT module to GitHub Packages
+      shell: pwsh
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "🚀 Deploying PARENT module to GitHub Packages"      
+        mvn -B deploy -N -s "${{ github.workspace }}/settings.xml"
       env:
         GITHUB_TOKEN: ${{ github.token }}
