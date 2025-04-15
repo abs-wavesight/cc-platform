@@ -1,7 +1,10 @@
-﻿using System.Management;
+﻿using System;
+using System.Linq;
+using System.Management;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
@@ -10,6 +13,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using Octokit;
 using Polly;
 using JsonParser = Abs.CommonCore.Installer.Services.JsonParser;
 
@@ -51,6 +55,7 @@ public class ComponentInstaller : ActionBase
     private readonly InstallerComponentInstallerConfig? _installerConfig;
     private readonly InstallerComponentRegistryConfig _registryConfig;
     private readonly Dictionary<string, string> _allParameters;
+    private const string _imageStorage = "ghcr.io/abs-wavesight/";
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
@@ -94,35 +99,60 @@ public class ComponentInstaller : ActionBase
             return;
         }
 
-        await PrintReadmeFileAsync();
+        var readmeLines = await PrintReadmeFileAsync();
+        var windowsVersion = readmeLines[0].Split(":")[1].Trim();
+        var installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
+        var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
         await ExpandReleaseZipFile();
 
-        var components = DetermineComponents(specificComponents);
+        var imageListTxtPath = Path.Combine(_registryConfig.Location, "Installer", "image_list.txt");
+        if (File.Exists(imageListTxtPath))
+        {
+            File.Delete(imageListTxtPath);
+        }
+
+        await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
+
+        var dockerPath = DockerPath.GetDockerPath();
+
+        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", Path.Combine(_registryConfig.Location, "Installer"));
+
+        var components = await DetermineComponents(specificComponents, installingVesrion_Component);
         VerifySourcesPresent(components);
 
-        var actions = components
-            .Select(x => new { Component = x, x.Actions })
-            .SelectMany(x => x.Actions.Select(y => new
-            {
-                x.Component,
-                RootLocation = Path.Combine(_registryConfig.Location, x.Component.Name),
-                Action = y
-            }))
-            .OrderByDescending(x => x.Action.Action == ComponentActionAction.Copy)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.ValidateJson)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.ReplaceParameters)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.ExecuteImmediate)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.Install)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.Execute)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.UpdatePath)
+        var orderedComponenets = components
+            .OrderByDescending(x => x.Name == "Installer")
+            .ThenByDescending(x => x.Name == "Docker")
+            .ThenByDescending(x => x.Name == "Certificates-Central")
+            .ThenByDescending(x => x.Name == "OpenSsl")
+            .ThenByDescending(x => x.Name == "RabbitMq")
+            .ThenByDescending(x => x.Name == "Vector")
+            .ThenByDescending(x => x.Name == "Sftp-Service")
+            .ThenByDescending(x => x.Name is "Drex-Message" or "Drex-Central-Message")
+            .ThenByDescending(x => x.Name is "Drex-File" or "Voyage-Manager-Report-Adapter" or "Message-Scheduler")
+            .ThenByDescending(x => x.Name == "Disco")
+            .ThenByDescending(x => x.Name is "Siemens" or "Kdi")
+            .ThenByDescending(x => x.Name == "Observability-Service")
+            .ToArray();
+
+        foreach (var component in orderedComponenets)
+        {
+            var orderedActions = component.Actions
+            .OrderByDescending(x => x.Action == ComponentActionAction.Copy)
+            .ThenByDescending(x => x.Action == ComponentActionAction.ValidateJson)
+            .ThenByDescending(x => x.Action == ComponentActionAction.ReplaceParameters)
+            .ThenByDescending(x => x.Action == ComponentActionAction.ExecuteImmediate)
+            .ThenByDescending(x => x.Action == ComponentActionAction.Install)
+            .ThenByDescending(x => x.Action == ComponentActionAction.Execute)
+            .ThenByDescending(x => x.Action == ComponentActionAction.UpdatePath)
             .ThenByDescending(x =>
-                x.Action.Action is ComponentActionAction.Chunk or
+                x.Action is ComponentActionAction.Chunk or
                     ComponentActionAction.Unchunk or
                     ComponentActionAction.Compress or
                     ComponentActionAction.Uncompress)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.RunDockerCompose)
+            .ThenByDescending(x => x.Action == ComponentActionAction.RunDockerCompose)
             .ThenByDescending(x =>
-                x.Action.Action is ComponentActionAction.PostDrexInstall or
+                x.Action is ComponentActionAction.PostDrexInstall or
                     ComponentActionAction.PostVectorInstall or
                     ComponentActionAction.PostDiscoInstall or
                     ComponentActionAction.PostSiemensInstall or
@@ -130,92 +160,19 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostVMReportInstall or
                     ComponentActionAction.PostDrexCentralInstall or
                     ComponentActionAction.PostMessageSchedulerInstall)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostRabbitMqInstall)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.PostInstall)
-            .ThenByDescending(x => x.Action.Action == ComponentActionAction.SystemRestore)
+            .ThenByDescending(x => x.Action == ComponentActionAction.PostRabbitMqInstall)
+            .ThenByDescending(x => x.Action == ComponentActionAction.PostInstall)
+            .ThenByDescending(x => x.Action == ComponentActionAction.SystemRestore)
             .ToArray();
 
-        foreach (var action in actions)
-        {
-            await ProcessExecuteActionAsync(action.Component, action.RootLocation, action.Action);
+            foreach (var action in orderedActions)
+            {
+                await ProcessExecuteActionAsync(component, Path.Combine(_registryConfig.Location, component.Name), action);
+            }
         }
 
+        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", Path.Combine(_registryConfig.Location, "Installer"));
         _logger.LogInformation("Installer complete");
-    }
-
-    public async Task RunSystemRestoreCommandAsync(Component component, string rootLocation, ComponentAction action)
-    {
-        _logger.LogInformation($"{component.Name}: Running system restore for '{action.Source}'");
-        await _serviceManager.StartServiceAsync(DockerServiceName);
-
-        await StopAllContainersAsync();
-        await DockerSystemPruneAsync();
-
-        await ExecuteDockerComposeAsync(rootLocation, action);
-    }
-
-    private Component[] DetermineComponents(string[]? specificComponents)
-    {
-        try
-        {
-            if (specificComponents?.Length > 0)
-            {
-                return specificComponents
-                    .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
-                    .Distinct()
-                    .ToArray();
-            }
-
-            if (_installerConfig?.Components.Count > 0)
-            {
-                return _installerConfig.Components
-                    .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
-                    .Distinct()
-                    .ToArray();
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Unable to determine components to use", ex);
-        }
-
-        throw new Exception("No components found to download");
-    }
-
-    private void VerifySourcesPresent(Component[] components)
-    {
-        _logger.LogInformation("Verifying source files are present");
-        var requiredFiles = components
-            .SelectMany(component => component.Actions, (component, action) => new { component, action })
-            .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
-            .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
-            .Select(Path.GetFullPath)
-            .ToArray();
-        _logger.LogInformation($"Required installation files: {requiredFiles.StringJoin("; ")}");
-
-        var missingFiles = requiredFiles
-            .Where(location => VerifyFileExists(location) == false)
-            .ToArray();
-
-        if (missingFiles.Any())
-        {
-            throw new Exception($@"Required installation files are missing: 
-{missingFiles.StringJoin("; " + Environment.NewLine)}");
-        }
-    }
-
-    private static bool VerifyFileExists(string location)
-    {
-        var directory = Path.GetDirectoryName(location)!;
-        var filename = Path.GetFileName(location);
-
-        if (filename.Contains('*') || filename.Contains('?'))
-        {
-            var files = Directory.GetFiles(directory, filename);
-            return files.Length > 0;
-        }
-
-        return File.Exists(location);
     }
 
     private async Task ProcessExecuteActionAsync(Component component, string rootLocation, ComponentAction action)
@@ -257,6 +214,143 @@ public class ComponentInstaller : ActionBase
         }
     }
 
+    public async Task RunSystemRestoreCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        _logger.LogInformation($"{component.Name}: Running system restore for '{action.Source}'");
+        await _serviceManager.StartServiceAsync(DockerServiceName);
+
+        await StopAllContainersAsync();
+        await DockerSystemPruneAsync();
+
+        await ExecuteDockerComposeAsync(rootLocation, action);
+    }
+
+    private async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component)
+    {
+        try
+        {
+            var installLocation = new DirectoryInfo(_registryConfig.Location);
+            
+            if (specificComponents?.Length > 0)
+            {
+                return specificComponents
+                    .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                    .Distinct()
+                    .ToArray();
+            }
+
+            if (_installerConfig?.Components.Count > 0)
+            {
+                var defaultComponentsToInstall = _installerConfig.Components
+                    .Select(x => _registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
+                    .Distinct()
+                    .ToArray();
+                var command = DockerPath.GetDockerPath();
+                var rawResponse = _commandExecutionService.ExecuteCommandWithResult(command, "ps", "");
+                var currentContainers = DockerService.ParceDockerPsCommand(rawResponse);
+
+                if (!File.Exists(DockerPath.DockerFilePath)
+                    || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
+                    || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMq") && NeedUpdateComponent("RabbitMq", installingVesrion_Component, currentContainers)))
+                {
+                    await _serviceManager.StopServiceAsync("dockerd");
+                    await _serviceManager.StopServiceAsync("docker");
+
+                    return defaultComponentsToInstall;
+                }
+                else
+                {
+                    return SelectUpdatedComponents(installingVesrion_Component, defaultComponentsToInstall, currentContainers).ToArray();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Unable to determine components to use", ex);
+        }
+
+        throw new Exception("No components found to download");
+    }
+
+    private List<Component> SelectUpdatedComponents(string[][] installingVesrion_Component, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)
+    {
+        var componentsToInstall = new List<Component>();
+        foreach (var component in defaultComponentsToInstall)
+        {
+            switch (component.Name)
+            {
+                case "Docker":
+                case "RabbitMq":
+                case "RabbitMqNano":
+                case "Certificates-Central":
+                    break;
+                case "Installer":
+                    componentsToInstall.Add(component);
+                    break;
+                default:
+                    if (NeedUpdateComponent(component.Name, installingVesrion_Component, currentContainers))
+                    {
+                        componentsToInstall.Add(component);
+                    }
+
+                    break;
+            }
+        }
+
+        return componentsToInstall;
+    }
+
+    private bool NeedUpdateComponent(string componentName, string[][] installingVesrion_Component, List<DockerContainerInfoModel> currentContainers)
+    {
+        var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
+        var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage+componentName.ToLower());
+        var currentComponentOs = currentContainer.ImageTag.Substring(0, 13);
+        var currentComponentVersion = currentContainer.ImageTag.Substring(13);
+        var containerToKeep = currentContainer.ImageName + ":" + currentComponentOs + bringingComponentTag;
+
+        if (bringingComponentTag == currentComponentVersion)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void VerifySourcesPresent(Component[] components)
+    {
+        _logger.LogInformation("Verifying source files are present");
+        var requiredFiles = components
+            .SelectMany(component => component.Actions, (component, action) => new { component, action })
+            .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
+            .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
+            .Select(Path.GetFullPath)
+            .ToArray();
+        _logger.LogInformation($"Required installation files: {requiredFiles.StringJoin("; ")}");
+
+        var missingFiles = requiredFiles
+            .Where(location => VerifyFileExists(location) == false)
+            .ToArray();
+
+        if (missingFiles.Any())
+        {
+            throw new Exception($@"Required installation files are missing: {missingFiles.StringJoin("; " + Environment.NewLine)}");
+        }
+    }
+
+    private static bool VerifyFileExists(string location)
+    {
+        var directory = Path.GetDirectoryName(location)!;
+        var filename = Path.GetFileName(location);
+
+        if (filename.Contains('*') || filename.Contains('?'))
+        {
+            var files = Directory.GetFiles(directory, filename);
+            return files.Length > 0;
+        }
+
+        return File.Exists(location);
+    }
+    
     private async Task RunExecuteCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running execution for '{action.Source}'");
@@ -362,31 +456,82 @@ public class ComponentInstaller : ActionBase
         await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
+    private async Task UpdateRabbitCredentials(string usernameEnvVar, 
+        string passwordEnvVar,
+        Models.AccountType accountType, 
+        string envFilePath, 
+        string updatingUserName,
+        string rabbitDefinitionFile)
+    {
+        var adminUser = await GetRabbitAdminUser(rabbitDefinitionFile);
+
+        var account = await RabbitConfigurer
+                .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+                                      adminUser.Password, updatingUserName, null,
+                                      accountType, true);
+
+        var envFile = await File.ReadAllTextAsync(envFilePath);
+        var envLines = envFile.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .ToList();
+
+        var userNameLineFound = false;
+        var userPassLineFound = false;
+        for (var i = 0; i < envLines.Count; i++)
+        {
+            if (envLines[i].Contains(usernameEnvVar))
+            {
+                userNameLineFound = true;
+                envLines[i] = $"{usernameEnvVar}={account!.Username}";
+            }
+
+            if (envLines[i].Contains(passwordEnvVar))
+            {
+                userPassLineFound = true;
+                envLines[i] = $"{passwordEnvVar}={account!.Password}";
+            }
+
+            if (userNameLineFound && userPassLineFound)
+            {
+                break;
+            }
+        }
+
+        if (!userNameLineFound)
+        {
+            envLines.Add($"{usernameEnvVar}={account!.Username}");
+        }
+
+        if (!userPassLineFound)
+        {
+            envLines.Add($"{passwordEnvVar}={account!.Password}");
+        }
+
+        var newText = envLines.StringJoin(Environment.NewLine);
+
+        _logger.LogInformation("Updating local drex account");
+        await File.WriteAllTextAsync(passwordEnvVar, newText);
+    }
+
+    private static async Task<RabbitMqUserModel> GetRabbitAdminUser(string rabbitDefinitionFile)
+    {
+        var configText = await File.ReadAllTextAsync(rabbitDefinitionFile);
+        var definition = JsonSerializer.Deserialize<RabbitDefinitionModel>(configText);
+
+        var adminUser = definition!.Users.FirstOrDefault(x => x.Name == LocalRabbitUsername)
+            ?? throw new Exception($"Unable to find admin user '{LocalRabbitUsername}' in rabbit definition file");
+        return adminUser;
+    }
+
     private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action, Models.AccountType accountType)
     {
         try
         {
-            _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Source}'. Account {accountType}");
+            _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Destination}'. Account {accountType}");
             _logger.LogInformation(_localRabbitLocation.ToString());
             _logger.LogInformation(DrexSiteUsername);
 
-            var account = await RabbitConfigurer
-                .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                      LocalRabbitPassword, DrexSiteUsername, null,
-                                      accountType, true);
-
-            const string usernameVar = "DREX_SHARED_LOCAL_USERNAME";
-            const string passwordVar = "DREX_SHARED_LOCAL_PASSWORD";
-
-            var envFile = await File.ReadAllTextAsync(action.Source);
-
-            // Replace the drex local account credentials
-            var newText = envFile
-                .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-                .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
-
-            _logger.LogInformation("Updating local drex account");
-            await File.WriteAllTextAsync(action.Source, newText);
+            await UpdateRabbitCredentials("DREX_SHARED_LOCAL_USERNAME", "DREX_SHARED_LOCAL_PASSWORD", accountType, action.Destination, DrexSiteUsername, action.Source);
         }
         catch (Exception ex)
         {
@@ -417,80 +562,30 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running DISCO post install for '{action.Source}'");
-
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, DiscoSiteUsername, null,
-                                  Models.AccountType.Disco, true);
-
-        const string usernameVar = "DISCO_RABBIT_USERNAME";
-        const string passwordVar = "DISCO_RABBIT_PASSWORD";
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        // Replace the default password with a new one
-        var newText = configText
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account.Password}");
-
-        _logger.LogInformation("Altering default account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation($"{component.Name}: Running DISCO post install for '{action.Destination}'");
+        await UpdateRabbitCredentials("DISCO_RABBIT_USERNAME", "DISCO_RABBIT_PASSWORD", Models.AccountType.Disco, action.Destination, DiscoSiteUsername, action.Source);
     }
 
     private async Task RunPostSiemensInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Siemens post install for '{action.Source}'");
-
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, SiemensSiteUsername, null,
-                                  Models.AccountType.Siemens, true);
-
-        const string usernameVar = "SIEMENS_RABBIT_USERNAME";
-        const string passwordVar = "SIEMENS_RABBIT_PASSWORD";
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        // Replace the default password with a new one
-        var newText = configText
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
-
-        _logger.LogInformation("Altering default account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation($"{component.Name}: Running Siemens post install for '{action.Destination}'");
+        await UpdateRabbitCredentials("SIEMENS_RABBIT_USERNAME", "SIEMENS_RABBIT_PASSWORD", Models.AccountType.Siemens, action.Destination, SiemensSiteUsername, action.Source);
     }
 
     private async Task RunPostKdiInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Kdi post install for '{action.Source}'");
-
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, KdiSiteUsername, null,
-                                  Models.AccountType.Kdi, true);
-
-        const string usernameVar = "KDI_RABBIT_USERNAME";
-        const string passwordVar = "KDI_RABBIT_PASSWORD";
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        // Replace the default password with a new one
-        var newText = configText
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
-
-        _logger.LogInformation("Altering default account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation($"{component.Name}: Running Kdi post install for '{action.Destination}'");
+        await UpdateRabbitCredentials("KDI_RABBIT_USERNAME", "KDI_RABBIT_PASSWORD", Models.AccountType.Kdi, action.Destination, KdiSiteUsername, action.Source);
     }
 
     private async Task RunPostVectorInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Source}'");
+        _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Destination}'");
+        var adminUser = await GetRabbitAdminUser(action.Source);
 
         var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                                  LocalRabbitPassword, VectorUsername, null,
+            .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+                                  adminUser.Password, VectorUsername, null,
                                   Models.AccountType.Vector, true);
 
         var config = await File.ReadAllTextAsync(action.Source);
@@ -505,48 +600,14 @@ public class ComponentInstaller : ActionBase
 
     private async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Voyage Report Manager post install for '{action.Source}'");
-
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                LocalRabbitPassword, VMReportUsername, null,
-                Models.AccountType.VMReport, true);
-
-        const string usernameVar = "VOYAGE_MANAGER_RABBIT_USERNAME";
-        const string passwordVar = "VOYAGE_MANAGER_RABBIT_PASSWORD";
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        // Replace the default password with a new one
-        var newText = configText
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
-
-        _logger.LogInformation("Altering default account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation($"{component.Name}: Running Voyage Report Manager post install for '{action.Destination}'");
+        await UpdateRabbitCredentials("VOYAGE_MANAGER_RABBIT_USERNAME", "VOYAGE_MANAGER_RABBIT_PASSWORD", Models.AccountType.VMReport, action.Destination, VMReportUsername, action.Source);
     }
 
     private async Task RunPostMessageSchedulerInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
-        _logger.LogInformation($"{component.Name}: Running Message Scheduler post install for '{action.Source}'");
-
-        var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, LocalRabbitUsername,
-                LocalRabbitPassword, MessageSchedulerUsername, null,
-                Models.AccountType.LocalDrex, true);
-
-        const string usernameVar = "MESSAGE_SCHEDULER_USERNAME";
-        const string passwordVar = "MESSAGE_SCHEDULER_PASSWORD";
-
-        var configText = await File.ReadAllTextAsync(action.Source);
-
-        // Replace the default password with a new one
-        var newText = configText
-            .RequireReplace($"{usernameVar}={LocalRabbitUsername}", $"{usernameVar}={account!.Username}")
-            .RequireReplace($"{passwordVar}={LocalRabbitPassword}", $"{passwordVar}={account!.Password}");
-
-        _logger.LogInformation("Altering default account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        _logger.LogInformation($"{component.Name}: Running Message Scheduler post install for '{action.Destination}'");
+        await UpdateRabbitCredentials("MESSAGE_SCHEDULER_USERNAME", "MESSAGE_SCHEDULER_PASSWORD", Models.AccountType.LocalDrex, action.Destination, MessageSchedulerUsername, action.Source);
     }
 
     private async Task RunPostInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -697,7 +758,7 @@ public class ComponentInstaller : ActionBase
         return false;
     }
 
-    private async Task PrintReadmeFileAsync()
+    private async Task<string[]> PrintReadmeFileAsync()
     {
         var current = Directory.GetCurrentDirectory();
         var readmePath = Path.Combine(current, ReadmeName);
@@ -705,7 +766,7 @@ public class ComponentInstaller : ActionBase
 
         if (!readmeExists)
         {
-            return;
+            return new string[0];
         }
 
         var readmeLines = await File.ReadAllLinesAsync(readmePath);
@@ -714,6 +775,7 @@ public class ComponentInstaller : ActionBase
         {
             _logger.LogInformation(line);
         }
+        return readmeLines;
     }
 
     private async Task ExpandReleaseZipFile()
@@ -730,8 +792,8 @@ public class ComponentInstaller : ActionBase
         }
 
         // Must stop docker first. Ours is dockerd, default can be docker
-        await _serviceManager.StopServiceAsync("dockerd");
-        await _serviceManager.StopServiceAsync("docker");
+        //await _serviceManager.StopServiceAsync("dockerd");
+        //await _serviceManager.StopServiceAsync("docker");
 
         var releaseZip = new FileInfo(Path.Combine(current, ReleaseZipName));
         var installLocation = new DirectoryInfo(_registryConfig.Location);
@@ -780,7 +842,10 @@ public class ComponentInstaller : ActionBase
 
     private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
     {
-        var configFiles = Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories);
+        var configFiles = string.IsNullOrWhiteSpace(action.Destination) 
+            ? Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories)
+            : [action.Destination, "docker-compose.root.yml"];
+
         var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
 
         var arguments = configFiles

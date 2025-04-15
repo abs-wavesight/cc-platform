@@ -1,11 +1,8 @@
 ---
 services:
   cc.drex-file-service:
-    container_name: drex-file-service
-    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION
-    depends_on:
-      - cc.rabbitmq
-      - cc.drex-message-service
+    container_name: drex-file
+    image: ghcr.io/abs-wavesight/drex-file:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION
     environment:
       - SiteConfigFileName=C:/app/config/site-config.json
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
