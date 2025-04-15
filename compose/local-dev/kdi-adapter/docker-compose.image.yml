@@ -2,4 +2,4 @@
 services:
 
   cc.kdi-adapter:
-    image: ghcr.io/abs-wavesight/cc-adapters-kdi:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/kdi:windows-${WINDOWS_VERSION}

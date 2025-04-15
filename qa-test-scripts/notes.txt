@@ -19,8 +19,8 @@ docker-compose -f docker-compose.disco.yml up
 
 ------------------Start manually---------------------
 docker run -p 15672:15672 -p 5672:5672 -h rabbitmq-local ghcr.io/abs-wavesight/rabbitmq:windows-2019
-docker run ghcr.io/abs-wavesight/cc-disco:windows-2019
-docker run ghcr.io/abs-wavesight/cc-adapters-siemens:windows-2019
+docker run ghcr.io/abs-wavesight/disco:windows-2019
+docker run ghcr.io/abs-wavesight/siemens:windows-2019
 
 ------------------Copy Configs-----------------------
 cd C:\ABS\cc-disco\client\TestClient\DiscoClientConfig
@@ -70,9 +70,9 @@ docker login -u anna-ustymenko -p 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 ghcr.
 
 
 docker pull ghcr.io/abs-wavesight/rabbitmq:windows-2019
-docker pull ghcr.io/abs-wavesight/cc-disco:windows-2019
+docker pull ghcr.io/abs-wavesight/disco:windows-2019
 docker run -p 15672:15672 -p 5672:5672 -h rabbitmq-local ghcr.io/abs-wavesight/rabbitmq:windows-2019
-docker run ghcr.io/abs-wavesight/cc-disco:windows-2019
+docker run ghcr.io/abs-wavesight/disco:windows-2019
 
 docker cp C:\ABS\cc-disco\client\TestClient\DiscoClientConfig\test-client-config.json c1c76ed5efc8:/app/configclient-configs
 disco-test-client "Examples/TestScenario1", "ConnectionConfig.json", "LogFolder"
