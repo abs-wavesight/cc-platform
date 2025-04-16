@@ -7,9 +7,10 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
 
     private FileSystemWatcher? _fileSystemWatcher;
     (string, DateTime)? _newFileVerificator;
-    readonly Dictionary<string, DateTime> _filesVerificators = new();
+    private readonly Dictionary<string, DateTime> _filesVerificators = new();
     private readonly string[] _filters;
     private readonly NotifyFilters _notifyFilter;
+    private readonly CancellationTokenSource _cts = new();
 
     public event EventHandler<string>? Changed;
     public event EventHandler<string>? Added;
@@ -47,6 +48,9 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
 
             _fileSystemWatcher.Dispose();
         }
+
+        _cts.Cancel();
+        _cts.Dispose();
     }
 
     private FileSystemWatcher CreateFileSystemWatcher(string folderPath)
@@ -77,9 +81,31 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
         _fileSystemWatcher.Deleted += FolderWatcherOnDeleted;
 
         _fileSystemWatcher.Error += FileSystemWathcerOnError;
+
+        // Active file change watcher
+        Task.Run(async () =>
+        {
+            while (!_cts.Token.IsCancellationRequested)
+            {
+                foreach (var filePath in Directory.EnumerateFiles(folderPath))
+                {
+                    FileInfo file = new(filePath);
+                    if (_filesVerificators.TryGetValue(file.Name, out var lastWriteTime))
+                    {
+                        if (lastWriteTime != file.LastWriteTime)
+                        {
+                            FileSystemWatcherOnChanged(null!,
+                                new FileSystemEventArgs(WatcherChangeTypes.Changed, folderPath, file.Name));
+                        }
+                    }
+                }
+
+                await Task.Delay(5000, _cts.Token);
+            }
+        }, _cts.Token);
     }
 
-    private void FileSystemWatcherOnCreated(object sender, FileSystemEventArgs e)
+    private void FileSystemWatcherOnCreated(object _, FileSystemEventArgs e)
     {
         var file = new FileInfo(e.FullPath);
         if (file.Exists)
@@ -90,7 +116,7 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
         }
     }
 
-    private void FileSystemWatcherOnRenamed(object sender, RenamedEventArgs e)
+    private void FileSystemWatcherOnRenamed(object _, RenamedEventArgs e)
     {
         if (!e.FullPath.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase))
         {
@@ -106,7 +132,7 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
         }
     }
 
-    private void FileSystemWatcherOnChanged(object sender, FileSystemEventArgs e)
+    private void FileSystemWatcherOnChanged(object _, FileSystemEventArgs e)
     {
         var file = new FileInfo(e.FullPath);
         var isLastWriteTimeChanged = true;
@@ -151,12 +177,12 @@ public class ConfigFolderWatcher : IConfigFolderWatcher
         }
     }
 
-    private void FileSystemWathcerOnError(object sender, ErrorEventArgs e)
+    private void FileSystemWathcerOnError(object _, ErrorEventArgs e)
     {
         Failed?.Invoke(this, e.GetException());
     }
 
-    private void FolderWatcherOnDeleted(object sender, FileSystemEventArgs e)
+    private void FolderWatcherOnDeleted(object _, FileSystemEventArgs e)
     {
         if (!string.IsNullOrEmpty(e.Name))
         {
