@@ -51,7 +51,7 @@ jobs:
     with:
       name: ${{ inputs.version || needs.get-version.outputs.version }} OpenSSL Release
       component_name: OpenSsl
-      tag: ${{ inputs.version || needs.get-version.outputs.version }}-openssl
+      tag: ${{ inputs.version || needs.get-version.outputs.version }}_openssl
       description: ${{ inputs.description || 'OpenSSL' }}
       component-params: >         
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 

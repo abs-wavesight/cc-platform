@@ -1,4 +1,4 @@
-﻿name: Sftp Service Release
+﻿name: Vector Release
 
 on:
   workflow_dispatch:
@@ -14,10 +14,10 @@ on:
       platform-commit-sha: # 6ac7551
         required: false
         type: string
-        description: 7 character short SHA for the commit in cc-platform 
+        description: 7 character short SHA for the commit in cc-platform
 
 concurrency:
-  group: sftp-service-release-${{ github.head_ref }}
+  group: vector-release-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,21 +26,21 @@ jobs:
     if: ${{ inputs.platform-commit-sha == '' }}
     uses: ./.github/workflows/shared-get-latest-container-version.yml
     with: 
-      name: "cc-sftp-service"
+      name: "vector"
     secrets: inherit
 
   get-version:
-    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
+    uses: ./.github/workflows/shared-define-version.yml
     with:
       release_branch: "releases/1_0_1"
       develop_branch: "main"
-      project_marker: "sftp"
+      project_marker: "vector"
       major: 1
       minor: 0
       increment: false
 
   release-component:
-    name: Sftp Service Release
+    name: Vector Release
     needs: 
       - get-default-platform-commit-sha
       - get-version
@@ -49,13 +49,13 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-version.outputs.version }} Sftp Service Release
-      component_name: Sftp-Service
-      tag: ${{ inputs.version || needs.get-version.outputs.version }}_sftp-service
-      description: ${{ inputs.description || 'Sftp Service' }}
-      component-params: >         
-        -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
-        -p `$SFTP_VERSION:${{ needs.get-version.outputs.version || inputs.version }}
+      name: ${{ inputs.version || needs.get-version.outputs.version }} Vector Release
+      component_name: vector
+      tag: ${{ inputs.version || needs.get-version.outputs.version }}_vector
+      description: ${{ inputs.description || 'Vector' }}
+      component-params: >        
+        -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }}  
+        -p `$VECTOR_VERSION:${{ needs.get-version.outputs.version || inputs.version }}
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

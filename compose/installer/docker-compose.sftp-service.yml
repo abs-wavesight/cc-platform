@@ -1,7 +1,7 @@
 ---
 services:
   cc.sftp-service:
-    image: ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION
+    image: ghcr.io/abs-wavesight/sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION
     container_name: sftp-service
     hostname: sftp-service
     environment:
