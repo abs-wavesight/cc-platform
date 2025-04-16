@@ -150,7 +150,7 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.Unchunk or
                     ComponentActionAction.Compress or
                     ComponentActionAction.Uncompress)
-            .ThenByDescending(x => x.Action == ComponentActionAction.RunDockerCompose)
+            .ThenByDescending(x => x.Action == ComponentActionAction.PostRabbitMqInstall)
             .ThenByDescending(x =>
                 x.Action is ComponentActionAction.PostDrexInstall or
                     ComponentActionAction.PostVectorInstall or
@@ -160,9 +160,9 @@ public class ComponentInstaller : ActionBase
                     ComponentActionAction.PostVMReportInstall or
                     ComponentActionAction.PostDrexCentralInstall or
                     ComponentActionAction.PostMessageSchedulerInstall)
-            .ThenByDescending(x => x.Action == ComponentActionAction.PostRabbitMqInstall)
-            .ThenByDescending(x => x.Action == ComponentActionAction.PostInstall)
-            .ThenByDescending(x => x.Action == ComponentActionAction.SystemRestore)
+            .ThenByDescending(x => x.Action == ComponentActionAction.RunDockerCompose)
+            //.ThenByDescending(x => x.Action == ComponentActionAction.PostInstall)
+            //.ThenByDescending(x => x.Action == ComponentActionAction.SystemRestore)
             .ToArray();
 
             foreach (var action in orderedActions)

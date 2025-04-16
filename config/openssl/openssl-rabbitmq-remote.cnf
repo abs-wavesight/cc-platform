@@ -24,4 +24,3 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = localhost
 DNS.2 = rabbitmq-central
-DNS.3 = mike-central
