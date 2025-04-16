@@ -9,7 +9,7 @@ queue = "cc.drex.central.snk-log.q"
 [transforms.remap-site-logs]
 type = "remap"
 inputs = ["rabbitmq"]
-file = "./config/remap-site-logs.vrl"
+file = "./config/remap-central-logs.vrl"
 
 [sinks.disk]
 type = "file"

@@ -7,7 +7,7 @@ public class DockerComposeStatusItem
      * {
     "ID": "10fa8c0e2ced81dd35ec60378fd5a7c147a4fa18cbdd4ef2c71f468117b96aac",
     "Name": "drex-message-service-i",
-    "Image": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-2019",
+    "Image": "ghcr.io/abs-wavesight/drex-message:windows-2019",
     "Command": "dotnet Abs.CommonCore.Drex.Console.dll",
     "Project": "abs-cc",
     "Service": "cc.drex-message-service",

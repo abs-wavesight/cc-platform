@@ -37,47 +37,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmqcore:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "rabbitmqcore.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
-          "destination": "docker-compose.rabbitmq.yml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/central/central.definitions.json",
-          "destination": "central.definitions.json"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/vessel/vessel.definitions.json",
-          "destination": "vessel.definitions.json"
-        }
-      ],
-      "actions": [
-        {
-          "source": "docker-compose.rabbitmq.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "cc-rabbitmq.conf",
-          "action": "replaceParameters"
-        }
-      ]
-    },
-    {
-      "name": "RabbitMqNano",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION",
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION",
           "destination": "rabbitmqnano.tar"
         },
         {
@@ -87,8 +47,13 @@
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/vessel.cc-rabbitmq.conf",
+          "destination": "vessel.cc-rabbitmq.conf"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/central.cc-rabbitmq.conf",
+          "destination": "central.cc-rabbitmq.conf"
         },
         {
           "type": "file",
@@ -107,7 +72,68 @@
           "action": "replaceParameters"
         },
         {
-          "source": "cc-rabbitmq.conf",
+          "source": "central.cc-rabbitmq.conf",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "vessel.cc-rabbitmq.conf",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Vector",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-$VECTOR_VERSION",
+          "destination": "vector.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.vector.yml",
+          "destination": "docker-compose.vector.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/vector.toml",
+          "destination": "vessel-vector.toml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/vector.toml",
+          "destination": "central-vector.toml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-vessel-logs.vrl",
+          "destination": "remap-vessel-logs.vrl"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-central-logs.vrl",
+          "destination": "remap-central-logs.vrl"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.vector.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "vessel-vector.toml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "remap-vessel-logs.vrl",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "central-vector.toml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "remap-central-logs.vrl",
           "action": "replaceParameters"
         }
       ]
@@ -128,12 +154,12 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/vector.toml",
-          "destination": "vector.toml"
+          "destination": "vessel-vector.toml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-container-logs.vrl",
-          "destination": "remap-container-logs.vrl"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-vessel-logs.vrl",
+          "destination": "remap-vessel-logs.vrl"
         }
       ],
       "actions": [
@@ -142,11 +168,11 @@
           "action": "replaceParameters"
         },
         {
-          "source": "vector.toml",
+          "source": "vessel-vector.toml",
           "action": "replaceParameters"
         },
         {
-          "source": "remap-container-logs.vrl",
+          "source": "remap-vessel-logs.vrl",
           "action": "replaceParameters"
         }
       ]
@@ -167,12 +193,12 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/vector.toml",
-          "destination": "vector.toml"
+          "destination": "central-vector.toml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-site-logs.vrl",
-          "destination": "remap-site-logs.vrl"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-central-logs.vrl",
+          "destination": "remap-central-logs.vrl"
         }
       ],
       "actions": [
@@ -181,11 +207,11 @@
           "action": "replaceParameters"
         },
         {
-          "source": "vector.toml",
+          "source": "central-vector.toml",
           "action": "replaceParameters"
         },
         {
-          "source": "remap-site-logs.vrl",
+          "source": "remap-central-logs.vrl",
           "action": "replaceParameters"
         }
       ]
@@ -195,7 +221,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-$WINDOWS_VERSION-$DREX_VESSEL_VERSION",
+          "source": "ghcr.io/abs-wavesight/drex-message:windows-$WINDOWS_VERSION-$DREX_VESSEL_VERSION",
           "destination": "drex-message.tar"
         },
         {
@@ -221,7 +247,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION",
+          "source": "ghcr.io/abs-wavesight/drex-file:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION",
           "destination": "drex-file.tar"
         },
         {
@@ -257,7 +283,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION",
+          "source": "ghcr.io/abs-wavesight/sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION",
           "destination": "sftp-service.tar"
         },
         {
@@ -283,7 +309,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-$OBSERVABILITY_VERSION",
+          "source": "ghcr.io/abs-wavesight/observability-service:windows-$WINDOWS_VERSION-$OBSERVABILITY_VERSION",
           "destination": "observability-service.tar"
         },
         {
@@ -304,7 +330,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/disco:windows-$WINDOWS_VERSION-$DISCO_VERSION",
           "destination": "disco.tar"
         },
         {
@@ -325,7 +351,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/siemens:windows-$WINDOWS_VERSION-$SIEMENS_VERSION",
           "destination": "siemens.tar"
         },
         {
@@ -346,7 +372,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$KDI_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/kdi:windows-$WINDOWS_VERSION-$KDI_VERSION",
           "destination": "kdi.tar"
         },
         {
@@ -367,7 +393,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION",
+          "source": "ghcr.io/abs-wavesight/drex-central-message:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION",
           "destination": "drex-central-message.tar"
         },
         {
@@ -393,7 +419,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION",
+          "source": "ghcr.io/abs-wavesight/voyage-manager-report-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION",
           "destination": "voyage-manager-report-adapter.tar"
         },
         {
@@ -424,7 +450,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION",
+          "source": "ghcr.io/abs-wavesight/message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION",
           "destination": "message-scheduler.tar"
         },
         {
