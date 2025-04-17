@@ -50,7 +50,7 @@ jobs:
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
     with:
-      image-name: cc-sftp-service
+      image-name: sftp-service
       label-description: ABS Common Core Sftp Service
       docker-context-directory: .
       solution-directory: services/SftpService

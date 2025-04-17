@@ -14,6 +14,11 @@
           "source": "Uninstall.cmd",
           "destination": "$ABS_PATH\\Uninstall.cmd",
           "action": "copy"
+        },
+        {
+          "source": "cleanup.ps1",
+          "destination": "$ABS_PATH\\cleanup.ps1",
+          "action": "copy"
         }
       ]
     },
@@ -112,18 +117,6 @@
           "action": "executeImmediate"
         },
         {
-          "source": "c:\\docker\\docker system prune -f",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "c:\\docker\\docker volume prune -f",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "c:\\docker\\docker network prune -f",
-          "action": "executeImmediate"
-        },
-        {
           "source": "c:\\docker",
           "action": "updatePath"
         },
@@ -144,18 +137,6 @@
         {
           "source": "$ABS_PATH\\config\\environment.env",
           "action": "replaceParameters"
-        },
-        {
-          "source": "$ABS_PATH\\config",
-          "action": "runDockerCompose"
-        },
-        {
-          "source": "wmic service | findstr /I /R \"dockerd.exe.*Running\" && net stop dockerd",
-          "action": "postInstall"
-        },
-        {
-          "source": "$ABS_PATH\\config",
-          "action": "systemRestore"
         }
       ]
     },
@@ -243,45 +224,6 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
-          "destination": "c:/abs/temp/RabbitMq/"
-        }
-      ],
-      "actions": [
-        {
-          "source": "rabbitmq.tar",
-          "action": "install"
-        },
-        {
-          "source": "cc-rabbitmq.conf",
-          "destination": "$ABS_PATH\\config\\rabbitmq\\cc-rabbitmq.conf",
-          "action": "copy"
-        },
-        {
-          "source": "docker-compose.rabbitmq.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
-          "action": "copy"
-        },
-        {
-          "source": "$RABBIT_LOCATION.definitions.json",
-          "destination": "$ABS_PATH\\config\\rabbitmq\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
-          "action": "copy"
-        },
-        {
-          "source": "$ABS_PATH\\config\\docker-compose.rabbitmq.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "$ABS_PATH\\config\\rabbitmq\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
-          "action": "postRabbitMqInstall"
-        }
-      ]
-    },
-    {
-      "name": "RabbitMqNano",
-      "files": [
-        {
-          "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$RABBIT_RELEASE_TAG/",
           "destination": "c:/abs/temp/RabbitMqNano/"
         }
       ],
@@ -291,7 +233,7 @@
           "action": "install"
         },
         {
-          "source": "cc-rabbitmq.conf",
+          "source": "$RABBIT_LOCATION.cc-rabbitmq.conf",
           "destination": "$ABS_PATH\\config\\rabbitmqnano\\cc-rabbitmq.conf",
           "action": "copy"
         },
@@ -312,11 +254,16 @@
         {
           "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
           "action": "postRabbitMqInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.rabbitmqnano.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
     {
-      "name": "Vector-Site",
+      "name": "Vector",
       "files": [
         {
           "type": "release",
@@ -330,56 +277,23 @@
           "action": "install"
         },
         {
-          "source": "vector.toml",
-          "destination": "$ABS_PATH\\config\\vector\\vector.toml",
+          "source": "vessel-vector.toml",
+          "destination": "$ABS_PATH\\config\\vector\\vessel-vector.toml",
           "action": "copy"
         },
         {
-          "source": "remap-container-logs.vrl",
-          "destination": "$ABS_PATH\\config\\vector\\remap-container-logs.vrl",
+          "source": "remap-vessel-logs.vrl",
+          "destination": "$ABS_PATH\\config\\vector\\remap-vessel-logs.vrl",
           "action": "copy"
         },
         {
-          "source": "docker-compose.vector.yml",
-          "destination": "$ABS_PATH\\config\\docker-compose.vector.yml",
+          "source": "central-vector.toml",
+          "destination": "$ABS_PATH\\config\\vector\\central-vector.toml",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\docker-compose.vector.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
-          "action": "execute"
-        },
-        {
-          "source": "$ABS_PATH\\config\\vector\\vector.toml",
-          "action": "postVectorInstall"
-        }
-      ]
-    },
-    {
-      "name": "Vector-Central",
-      "files": [
-        {
-          "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_CENTRAL_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Vector-Central/"
-        }
-      ],
-      "actions": [
-        {
-          "source": "vector.tar",
-          "action": "install"
-        },
-        {
-          "source": "vector.toml",
-          "destination": "$ABS_PATH\\config\\vector\\vector.toml",
-          "action": "copy"
-        },
-        {
-          "source": "remap-site-logs.vrl",
-          "destination": "$ABS_PATH\\config\\vector\\remap-site-logs.vrl",
+          "source": "remap-central-logs.vrl",
+          "destination": "$ABS_PATH\\config\\vector\\remap-central-logs.vrl",
           "action": "copy"
         },
         {
@@ -392,12 +306,26 @@
           "action": "replaceParameters"
         },
         {
+          "source": "$ABS_PATH\\config\\vector\\vessel-vector.toml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config\\vector\\central-vector.toml",
+          "action": "replaceParameters"
+        },
+        {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/logs')",
           "action": "execute"
         },
         {
-          "source": "$ABS_PATH\\config\\vector\\vector.toml",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\vector\\$RABBIT_LOCATION-vector.toml",
           "action": "postVectorInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.vector.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -446,12 +374,18 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postDrexInstall"
         },
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
           "action": "execute"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-message.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -504,6 +438,11 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
           "action": "execute"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -531,7 +470,8 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postDiscoInstall"
         },
         {
@@ -541,6 +481,11 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/client-configs')",
           "action": "execute"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.disco.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -573,8 +518,14 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postSiemensInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.siemens.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -611,8 +562,14 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postKdiInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.kdi.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -661,6 +618,11 @@
           "source": "$ABS_PATH\\config\\sftp-service\\config.json",
           "schema": "$ABS_PATH\\installer\\sftp-service\\config.schema.json",
           "action": "validateJson"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.sftp-service.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -686,6 +648,11 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.observability-service.yml",
           "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.observability-service.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -746,8 +713,14 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postDrexCentralInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-central.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -789,8 +762,14 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postVMReportInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.voyage-manager-report-adapter.yml",
+          "action": "runDockerCompose"
         }
       ]
     },
@@ -832,8 +811,14 @@
           "action": "replaceParameters"
         },
         {
-          "source": "$ABS_PATH\\config\\environment.env",
+          "source": "$ABS_PATH\\config\\rabbitmqnano\\definitions\\$RABBIT_LOCATION\\$RABBIT_LOCATION.definitions.json",
+          "destination": "$ABS_PATH\\config\\environment.env",
           "action": "postMessageSchedulerInstall"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.message-scheduler.yml",
+          "action": "runDockerCompose"
         }
       ]
     }

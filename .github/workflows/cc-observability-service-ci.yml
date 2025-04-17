@@ -42,7 +42,7 @@ jobs:
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
     with:
-      image-name: cc-observability-service
+      image-name: observability-service
       label-description: ABS Common Core Observability Service
       docker-context-directory: .
       solution-directory: services/ObservabilityService
