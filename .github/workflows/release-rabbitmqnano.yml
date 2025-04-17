@@ -51,7 +51,7 @@ jobs:
     with:
       name: ${{ inputs.version || needs.get-version.outputs.version }} RabbitMQNano Release
       component_name: RabbitMqNano
-      tag: ${{ inputs.version || needs.get-version.outputs.version }}-rabbitmqnano
+      tag: ${{ inputs.version || needs.get-version.outputs.version }}_rabbitmq
       description: ${{ inputs.description || 'RabbitMQNano' }}
       component-params: >        
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 

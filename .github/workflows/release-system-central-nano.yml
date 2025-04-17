@@ -143,13 +143,13 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralSystemNanoConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmqnano
-        -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}-vector-central
-        -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}-sftp-service
-        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
-        -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}-voyage-manager-report-adapter
-        -p `$DREX_CENTRAL_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-central-version.outputs.version || inputs.drex-central-version }}-drex-central-message
-        -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}-message-scheduler-adapter
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
+        -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}_vector-central
+        -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}_sftp-service
+        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
+        -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}_voyage-manager-report-adapter
+        -p `$DREX_CENTRAL_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-central-version.outputs.version || inputs.drex-central-version }}_drex-central-message
+        -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
       release-name-prefix: Central System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

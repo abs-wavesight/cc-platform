@@ -2,4 +2,4 @@
 services:
 
   cc.disco-service:
-    image: ghcr.io/abs-wavesight/cc-disco:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/disco:windows-${WINDOWS_VERSION}
