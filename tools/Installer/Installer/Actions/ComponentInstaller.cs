@@ -99,10 +99,8 @@ public class ComponentInstaller : ActionBase
             return;
         }
 
+        var dockerPath = DockerPath.GetDockerPath();
         var readmeLines = await PrintReadmeFileAsync();
-        var windowsVersion = readmeLines[0].Split(":")[1].Trim();
-        var installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
-        var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
         await ExpandReleaseZipFile();
 
         var imageListTxtPath = Path.Combine(_registryConfig.Location, "Installer", "image_list.txt");
@@ -111,9 +109,10 @@ public class ComponentInstaller : ActionBase
             File.Delete(imageListTxtPath);
         }
 
+        var windowsVersion = readmeLines[0].Split(":")[1].Trim();
+        var installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
+        var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
         await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
-
-        var dockerPath = DockerPath.GetDockerPath();
 
         await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", Path.Combine(_registryConfig.Location, "Installer"));
 
@@ -230,7 +229,7 @@ public class ComponentInstaller : ActionBase
         try
         {
             var installLocation = new DirectoryInfo(_registryConfig.Location);
-            
+
             if (specificComponents?.Length > 0)
             {
                 return specificComponents
@@ -303,7 +302,7 @@ public class ComponentInstaller : ActionBase
     private bool NeedUpdateComponent(string componentName, string[][] installingVesrion_Component, List<DockerContainerInfoModel> currentContainers)
     {
         var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
-        var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage+componentName.ToLower());
+        var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage + componentName.ToLower());
         var currentComponentOs = currentContainer.ImageTag.Substring(0, 13);
         var currentComponentVersion = currentContainer.ImageTag.Substring(13);
         var containerToKeep = currentContainer.ImageName + ":" + currentComponentOs + bringingComponentTag;
@@ -350,7 +349,7 @@ public class ComponentInstaller : ActionBase
 
         return File.Exists(location);
     }
-    
+
     private async Task RunExecuteCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running execution for '{action.Source}'");
@@ -456,10 +455,10 @@ public class ComponentInstaller : ActionBase
         await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
-    private async Task UpdateRabbitCredentials(string usernameEnvVar, 
+    private async Task UpdateRabbitCredentials(string usernameEnvVar,
         string passwordEnvVar,
-        Models.AccountType accountType, 
-        string envFilePath, 
+        Models.AccountType accountType,
+        string envFilePath,
         string updatingUserName,
         string rabbitDefinitionFile)
     {
@@ -775,6 +774,7 @@ public class ComponentInstaller : ActionBase
         {
             _logger.LogInformation(line);
         }
+
         return readmeLines;
     }
 
@@ -842,7 +842,7 @@ public class ComponentInstaller : ActionBase
 
     private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
     {
-        var configFiles = string.IsNullOrWhiteSpace(action.Destination) 
+        var configFiles = string.IsNullOrWhiteSpace(action.Destination)
             ? Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories)
             : [action.Destination, "docker-compose.root.yml"];
 

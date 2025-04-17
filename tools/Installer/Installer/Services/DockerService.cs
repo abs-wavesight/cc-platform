@@ -24,7 +24,7 @@ public class DockerService
 
         var startIndicies = headers.Select(h => cmdResult[i].IndexOf(h)).ToArray();
 
-        for (var j = i+1; j < cmdResult.Count; j++)
+        for (var j = i + 1; j < cmdResult.Count; j++)
         {
             var line = cmdResult[j];
             if (string.IsNullOrWhiteSpace(line))
@@ -39,7 +39,7 @@ public class DockerService
                 var endIndex = k == headers.Length - 1 ? line.Length : startIndicies[k + 1];
                 parts[k] = line.Substring(startIndex, endIndex - startIndex).Trim();
             }
-                        
+
             var image = parts[1].Split(":");
 
             var container = new DockerContainerInfoModel
