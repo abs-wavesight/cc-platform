@@ -119,4 +119,9 @@ public partial class CommandExecutionService : ICommandExecutionService
 
         return lines;
     }
+
+    public string GetCleaningScriptPath(string registryConfigLocation)
+    {
+        return Path.Combine(registryConfigLocation, "Installer");
+    }
 }

@@ -234,6 +234,15 @@ public class ComponentInstallerTests
     private static (Mock<ICommandExecutionService> CommandExecute, ComponentInstaller Installer) Initialize(string registryFile, string? installerFile = null, Dictionary<string, string>? parameters = null)
     {
         var commandExecute = new Mock<ICommandExecutionService>();
+        var scriptPath = Directory.GetParent(Directory.GetCurrentDirectory());
+        for (var i = 0; i < 5; i++)
+        {
+            scriptPath = scriptPath?.Parent;
+        }
+
+        commandExecute.Setup(x => x.GetCleaningScriptPath(It.IsAny<string>()))
+            .Returns(Path.Combine(scriptPath.FullName, "scripts/installer"));
+        
         var serviceManager = new Mock<IServiceManager>();
 
         var registryFileInfo = new FileInfo(registryFile);

@@ -102,8 +102,9 @@ public class ComponentInstaller : ActionBase
         var dockerPath = DockerPath.GetDockerPath();
         var readmeLines = await PrintReadmeFileAsync();
         await ExpandReleaseZipFile();
+        var cleaningScriptPath = _commandExecutionService.GetCleaningScriptPath(_registryConfig.Location);
 
-        var imageListTxtPath = Path.Combine(_registryConfig.Location, "Installer", "image_list.txt");
+        var imageListTxtPath = Path.Combine(cleaningScriptPath, "image_list.txt");
         if (File.Exists(imageListTxtPath))
         {
             File.Delete(imageListTxtPath);
@@ -114,7 +115,7 @@ public class ComponentInstaller : ActionBase
         var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
         await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
 
-        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", Path.Combine(_registryConfig.Location, "Installer"));
+        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
 
         var components = await DetermineComponents(specificComponents, installingVesrion_Component);
         VerifySourcesPresent(components);
@@ -170,7 +171,7 @@ public class ComponentInstaller : ActionBase
             }
         }
 
-        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", Path.Combine(_registryConfig.Location, "Installer"));
+        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
         _logger.LogInformation("Installer complete");
     }
 
