@@ -1,4 +1,4 @@
 services:
 
   cc.message-scheduler:
-    image: ghcr.io/abs-wavesight/cc-message-scheduler:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/message-scheduler:windows-${WINDOWS_VERSION}

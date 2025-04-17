@@ -2,9 +2,7 @@
 services:
   cc.message-scheduler:
     container_name: message-scheduler
-    image: ghcr.io/abs-wavesight/cc-message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION
-    depends_on:
-      - cc.rabbitmq
+    image: ghcr.io/abs-wavesight/message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}
