@@ -242,7 +242,7 @@ public class ComponentInstallerTests
 
         commandExecute.Setup(x => x.GetCleaningScriptPath(It.IsAny<string>()))
             .Returns(Path.Combine(scriptPath.FullName, "scripts/installer"));
-        
+
         var serviceManager = new Mock<IServiceManager>();
 
         var registryFileInfo = new FileInfo(registryFile);
