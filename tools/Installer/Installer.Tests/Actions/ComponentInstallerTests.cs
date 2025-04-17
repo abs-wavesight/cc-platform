@@ -11,6 +11,12 @@ namespace Installer.Tests.Actions;
 
 public class ComponentInstallerTests
 {
+    public ComponentInstallerTests()
+    {
+        // Set up the test environment
+        File.Copy(@"Configs/Readme.txt", "Readme.txt", true);
+    }
+
     [Fact]
     public void InvalidInstallerConfig_ThrowsException()
     {
@@ -71,8 +77,8 @@ public class ComponentInstallerTests
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(2));
-        Assert.True(commandCalls.Count == 2 && commandCalls[0] == "first" && commandCalls[1] == "last");
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(4));
+        Assert.True(commandCalls.Count == 4 && commandCalls[1] == "first" && commandCalls[2] == "last");
     }
 
     [Fact]
@@ -148,7 +154,13 @@ public class ComponentInstallerTests
     public async Task ValidConfig_RealFileInstalled()
     {
         var loggerFactory = NullLoggerFactory.Instance;
-        var commandExecution = new CommandExecutionService(loggerFactory);
+        var commandExecution = new Mock<ICommandExecutionService>();
+        commandExecution.Setup(x => x.ExecuteCommandWithResult(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(new List<string> {"CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES",
+                                       "1             i:v    c        c        s       p      n"});
+        commandExecution.Setup(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
+            .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
+
         var serviceManager = new Mock<IServiceManager>();
         var registry = new FileInfo(@"Configs/InstallTest_RegistryConfig.json");
         var config = new FileInfo(@"Configs/InstallerConfig.json");
@@ -160,9 +172,12 @@ public class ComponentInstallerTests
         var sourcePath = Path.Combine(rootPath, "install_file");
         var destinationPath = Path.Combine(rootPath, "install_file_2");
 
+        commandExecution.Setup(x => x.ExecuteCommandAsync("copy", "\"install_file\" \"install_file_2\"", @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
+            .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
+
         await File.WriteAllTextAsync(sourcePath, "This is some test content");
 
-        var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager.Object, registry, config, parameters, false);
+        var installer = new ComponentInstaller(loggerFactory, commandExecution.Object, serviceManager.Object, registry, config, parameters, false);
         await installer.ExecuteAsync();
 
         Assert.True(File.Exists(destinationPath));

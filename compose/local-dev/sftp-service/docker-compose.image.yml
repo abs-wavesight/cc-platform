@@ -1,4 +1,4 @@
 ﻿---
 services:
   cc.sftp-service:
-    image: ghcr.io/abs-wavesight/cc-sftp-service:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/sftp-service:windows-${WINDOWS_VERSION}

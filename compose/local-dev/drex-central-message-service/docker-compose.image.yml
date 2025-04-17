@@ -2,4 +2,4 @@
 services:
 
   cc.drex-central-message-service:
-    image: ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/drex-central-message:windows-${WINDOWS_VERSION}

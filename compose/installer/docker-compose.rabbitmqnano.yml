@@ -2,7 +2,7 @@
 services:
   cc.rabbitmq:
     container_name: rabbitmq
-    image: ghcr.io/abs-wavesight/rabbitmqnano:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION
+    image: ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION
     hostname: rabbitmq-$RABBIT_LOCATION
     deploy:
       resources:
