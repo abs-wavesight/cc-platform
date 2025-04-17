@@ -2,7 +2,7 @@
 services:
 
   cc.drex-central-message-service:
-    container_name: drex-central-message
+    container_name: drex-central-message-service
     depends_on:
       - cc.rabbitmq-remote
     environment:
@@ -20,7 +20,7 @@ services:
       - "12346:5000"
     restart: always
     volumes:
-      - type: bind	
+      - type: bind
         source: ${PATH_TO_CC_DREX_REPO}/config/drexcentral
         target: C:/app/config
         read_only: false

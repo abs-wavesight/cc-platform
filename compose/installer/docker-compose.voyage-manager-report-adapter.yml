@@ -2,9 +2,7 @@
 services:
   cc.voyage-manager-report-adapter:
     container_name: voyage-manager-report-adapter
-    image: ghcr.io/abs-wavesight/cc-voyage-manager-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION
-    depends_on:
-      - cc.rabbitmq
+    image: ghcr.io/abs-wavesight/voyage-manager-report-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-certs/rabbitmq.cer
       - FLAT_LOGS=${FLAT_LOGS:-False}

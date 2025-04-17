@@ -43,7 +43,7 @@ jobs:
     name: Build Container
     uses: ./.github/workflows/shared-docker-build-and-push.yml
     with:
-      image-name: rabbitmqnano
+      image-name: rabbitmq
       label-description: ABS Common Core RabbitMQ based on Windows Nano Server Image
       docker-context-directory: containers/rabbitmqnano
       solution-directory: containers/rabbitmqnano

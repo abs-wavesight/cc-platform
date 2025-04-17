@@ -1,4 +1,4 @@
 ﻿---
 services:
   cc.observability-service:
-    image: ghcr.io/abs-wavesight/cc-observability-service:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/observability-service:windows-${WINDOWS_VERSION}

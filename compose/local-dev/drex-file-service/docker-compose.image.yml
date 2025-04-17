@@ -2,7 +2,7 @@
 services:
 
   cc.drex-file-vessel:
-    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/drex-file:windows-${WINDOWS_VERSION}
 
   cc.drex-file-central:
-    image: ghcr.io/abs-wavesight/cc-drex-file-service:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/drex-file:windows-${WINDOWS_VERSION}
