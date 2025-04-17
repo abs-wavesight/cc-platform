@@ -158,8 +158,6 @@ public class ComponentInstallerTests
         commandExecution.Setup(x => x.ExecuteCommandWithResult(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(new List<string> {"CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES",
                                        "1             i:v    c        c        s       p      n"});
-        commandExecution.Setup(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
-            .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
         var scriptPath = Directory.GetParent(Directory.GetCurrentDirectory());
         for (var i = 0; i < 5; i++)
         {
@@ -178,12 +176,11 @@ public class ComponentInstallerTests
         Directory.CreateDirectory(rootPath);
 
         var sourcePath = Path.Combine(rootPath, "install_file");
+        await File.WriteAllTextAsync(sourcePath, "This is some test content");
         var destinationPath = Path.Combine(rootPath, "install_file_2");
 
         commandExecution.Setup(x => x.ExecuteCommandAsync("copy", "\"install_file\" \"install_file_2\"", @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
             .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
-
-        await File.WriteAllTextAsync(sourcePath, "This is some test content");
 
         var installer = new ComponentInstaller(loggerFactory, commandExecution.Object, serviceManager.Object, registry, config, parameters, false);
         await installer.ExecuteAsync();
