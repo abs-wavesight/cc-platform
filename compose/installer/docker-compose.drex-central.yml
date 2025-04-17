@@ -2,9 +2,7 @@
 services:
   cc.drex-message-service:
     container_name: drex-central-message
-    image: ghcr.io/abs-wavesight/cc-drex-central-message-service:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION
-    depends_on:
-      - cc.rabbitmq
+    image: ghcr.io/abs-wavesight/drex-central-message:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
       - LocalMessageBus__Username=${DREX_SHARED_LOCAL_USERNAME}
