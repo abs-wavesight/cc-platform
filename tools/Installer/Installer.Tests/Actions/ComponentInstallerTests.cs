@@ -160,6 +160,14 @@ public class ComponentInstallerTests
                                        "1             i:v    c        c        s       p      n"});
         commandExecution.Setup(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
             .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
+        var scriptPath = Directory.GetParent(Directory.GetCurrentDirectory());
+        for (var i = 0; i < 5; i++)
+        {
+            scriptPath = scriptPath?.Parent;
+        }
+
+        commandExecution.Setup(x => x.GetCleaningScriptPath(It.IsAny<string>()))
+            .Returns(Path.Combine(scriptPath.FullName, "scripts/installer"));
 
         var serviceManager = new Mock<IServiceManager>();
         var registry = new FileInfo(@"Configs/InstallTest_RegistryConfig.json");
