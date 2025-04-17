@@ -79,4 +79,49 @@ public partial class CommandExecutionService : ICommandExecutionService
             throw new Exception($"Error while executing command '{command} {arguments}'");
         }
     }
+
+    public List<string?> ExecuteCommandWithResult(string command, string arguments, string workingDirectory)
+    {
+        _logger.LogInformation("Executing: {command} {arguments}", command, arguments);
+        var isError = false;
+
+        var process = new Process();
+        process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
+        process.StartInfo.Arguments = $"/C docker ps";
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.StartInfo.WorkingDirectory = workingDirectory;
+        process.ErrorDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrWhiteSpace(args.Data))
+            {
+                _logger.LogError(args.Data?.Trim());
+                isError = true;
+            }
+        };
+
+        process.Start();
+        process.WaitForExit();
+
+        if (isError)
+        {
+            throw new Exception($"Error while executing command '{command} {arguments}'");
+        }
+
+        var output = process.StandardOutput;
+        var lines = new List<string?>();
+        while (!output.EndOfStream)
+        {
+            lines.Add(output.ReadLine());
+        }
+
+        return lines;
+    }
+
+    public string GetCleaningScriptPath(string registryConfigLocation)
+    {
+        return Path.Combine(registryConfigLocation, "Installer");
+    }
 }
