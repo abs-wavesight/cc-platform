@@ -186,8 +186,11 @@ public class ComponentInstaller : ActionBase
                 await ProcessExecuteActionAsync(component, Path.Combine(_registryConfig.Location, component.Name), action);
             }
         }
+        if (!widowsVersionSpecified)
+        {
+            await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
+        }
 
-        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
         _logger.LogInformation("Installer complete");
     }
 
