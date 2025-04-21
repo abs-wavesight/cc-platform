@@ -110,12 +110,28 @@ public class ComponentInstaller : ActionBase
             File.Delete(imageListTxtPath);
         }
 
-        var windowsVersion = readmeLines[0].Split(":")[1].Trim();
-        var installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
-        var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
-        await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
+        var widowsVersionSpecified = false;
+        string[][] installingVesrion_Component = null;
+        var windowsVersion = "";
+        try
+        {
+            windowsVersion = _allParameters.GetWindowsVersion();
+            widowsVersionSpecified = true;
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, "Unable to get windows version");
+        }
 
-        await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
+        if (!widowsVersionSpecified)
+        {
+            windowsVersion = readmeLines[0].Split(":")[1].Trim();
+            installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
+            var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
+            await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
+
+            await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
+        }
 
         var components = await DetermineComponents(specificComponents, installingVesrion_Component);
         VerifySourcesPresent(components);

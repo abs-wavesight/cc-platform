@@ -50,7 +50,7 @@ jobs:
         windows-version: [ "2019", "2022" ]
     with:
       name: ${{ inputs.version || needs.get-version.outputs.version }} RabbitMQNano Release
-      component_name: RabbitMqNano
+      component_name: RabbitMq
       tag: ${{ inputs.version || needs.get-version.outputs.version }}_rabbitmq
       description: ${{ inputs.description || 'RabbitMQNano' }}
       component-params: >        
