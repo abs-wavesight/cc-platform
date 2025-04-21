@@ -70,14 +70,6 @@
         {
           "source": "docker-compose.rabbitmqnano.yml",
           "action": "replaceParameters"
-        },
-        {
-          "source": "central.cc-rabbitmq.conf",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "vessel.cc-rabbitmq.conf",
-          "action": "replaceParameters"
         }
       ]
     },
