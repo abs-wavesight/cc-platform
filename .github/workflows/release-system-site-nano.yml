@@ -67,12 +67,12 @@ jobs:
     secrets: inherit
 
   get-default-vector-site-version:
-    name: Get Default Vector Site Version
+    name: Get Default Vector Version
     if: ${{ inputs.vector-site-version == '' }}
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Vector Site Release"
+      name: "Vector Release"
     secrets: inherit
 
   get-default-drex-message-version:
@@ -143,7 +143,7 @@ jobs:
       system-config: SiteSystemConfig.json
       component-params: >
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
-        -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}_vector-site
+        -p `$VECTOR_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}_vector
         -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}_drex-message 
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}_openssl
