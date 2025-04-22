@@ -140,7 +140,7 @@ jobs:
       description: ${{ inputs.description || 'Site System Nano Release' }}
       tag-prefix: site-system-nano
       windows-version: ${{ matrix.windows-version }}
-      system-config: SiteSystemNanoConfig.json
+      system-config: SiteSystemConfig.json
       component-params: >
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
         -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}_vector-site

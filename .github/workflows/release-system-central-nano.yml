@@ -141,7 +141,7 @@ jobs:
       description: ${{ inputs.description || 'Central System Nano Release' }}
       tag-prefix: central-system-nano
       windows-version: ${{ matrix.windows-version }}
-      system-config: CentralSystemNanoConfig.json
+      system-config: CentralSystemConfig.json
       component-params: >
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
         -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}_vector-central
