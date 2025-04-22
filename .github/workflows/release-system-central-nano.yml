@@ -73,7 +73,7 @@ jobs:
     uses: ./.github/workflows/shared-get-latest-release-version.yml
     with:
       repo: "cc-platform"
-      name: "Vector Central Release"
+      name: "Vector Release"
     secrets: inherit
 
   get-default-sftp-service-version:
@@ -144,7 +144,7 @@ jobs:
       system-config: CentralSystemConfig.json
       component-params: >
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
-        -p `$VECTOR_CENTRAL_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}_vector-central
+        -p `$VECTOR_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}_vector
         -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}_sftp-service
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
         -p `$VOYAGE_MANAGER_REPORT_ADAPTER_RELEASE_TAG:${{ needs.get-default-vm-report-adapter-version.outputs.version || inputs.vm-report-version }}_voyage-manager-report-adapter
