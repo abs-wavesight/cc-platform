@@ -39,6 +39,7 @@ jobs:
       increment: true
   
   build-test-publish:
+    needs: [ get-next-version ]
     name: Build, Test, Publish
     uses: abs-wavesight/cc-platform/.github/workflows/shared-dotnet-ci.yml@main
     with:
