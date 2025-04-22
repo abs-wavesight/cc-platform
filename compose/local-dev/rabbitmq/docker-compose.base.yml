@@ -1,42 +1,20 @@
----
-version: "3.9"
-
 services:
 
   cc.rabbitmq-template: &rabbitmq
     logging:
       driver: local
     profiles: [ 'templates' ]
+    deploy:
+      resources:
+        limits:
+          memory: 8G
     restart: always
-    entrypoint: [ "powershell", "-c" ]
-    command:
-      [
-        "Import-Certificate",
-        "-CertStoreLocation",
-        "Cert:\\LocalMachine\\root",
-        "-FilePath",
-        "C:\\certs\\rabbitmq.cer",
-        ";",
-        "cmd",
-        "/C",
-        "c:\\rabbitmq\\sbin\\rabbitmq-server.bat"
-      ]
+    entrypoint: [ cmd, "-c" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
-      test:
-        [
-          "CMD",
-          "powershell",
-          "-Command",
-          "Invoke-WebRequest",
-          "-UseBasicParsing",
-          "-Method",
-          "HEAD",
-          "-Uri",
-          "https://localhost:15671"
-        ]
+      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
       interval: 10s
       timeout: 15s
-      # start_period is set high because it takes awhile to start up, especially when starting multiple instances of rabbitmq simultaneously
       start_period: 120s
       retries: 1
     volumes:
@@ -48,12 +26,12 @@ services:
 
   cc.rabbitmq-local:
     <<: *rabbitmq
-    container_name: rabbitmq-local
+    container_name: rabbitmq-vessel
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
-      RABBITMQ_LOCATION: local
-    hostname: rabbitmq-local
+      RABBITMQ_LOCATION: vessel
+    hostname: rabbitmq-vessel
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -63,7 +41,7 @@ services:
     volumes:
       - *config_volume
       - type: volume
-        source: rabbitmq-local-storage
+        source: rabbitmq-vessel-storage
         target: C:/data/rabbitmq
       - type: bind
         source: ${PATH_TO_CERTS}/local-keys
@@ -73,15 +51,23 @@ services:
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-keys
+        target: C:/centralkeys
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/centralcerts
+        read_only: true
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
-    container_name: rabbitmq-remote
+    container_name: rabbitmq-central
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
       RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
-      RABBITMQ_LOCATION: remote
-    hostname: rabbitmq-remote
+      RABBITMQ_LOCATION: central
+    hostname: rabbitmq-central
     ports:
       - "5682:5672"
       - "15682:15672"
@@ -91,7 +77,7 @@ services:
     volumes:
       - *config_volume
       - type: volume
-        source: rabbitmq-remote-storage
+        source: rabbitmq-central-storage
         target: C:/data/rabbitmq
       - type: bind
         source: ${PATH_TO_CERTS}/remote-keys
@@ -103,5 +89,5 @@ services:
         read_only: true
 
 volumes:
-  rabbitmq-local-storage:
-  rabbitmq-remote-storage:
+  rabbitmq-vessel-storage:
+  rabbitmq-central-storage:

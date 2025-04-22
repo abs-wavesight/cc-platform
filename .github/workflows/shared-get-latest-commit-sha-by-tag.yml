@@ -1,0 +1,40 @@
+﻿name: 'Shared - Get Latest Commit SHA'
+
+on:
+  workflow_call:
+    inputs:
+      repo:
+        description: 'Git repository'
+        type: string
+        required: false
+      branch:
+        description: 'Git branch'
+        type: string
+        required: false
+        default: 'HEAD'
+      tag:
+        description: 'Commit tag'
+        type: string
+        required: true
+    outputs:
+      sha:
+        description: 'sha of the repository/branch'
+        value: ${{ jobs.sha.outputs.sha }}
+      short_sha:
+        description: 'The first 7 characters of the full sha'
+        value: ${{ jobs.sha.outputs.short_sha }}
+
+jobs:
+  sha:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.get_sha.outputs.sha }}
+      short_sha: ${{ steps.get_sha.outputs.short_sha }}
+    steps:
+      - name: Determine platform commit SHA
+        id: get_sha
+        run: |
+          sha=$(git ls-remote https://${{ github.actor }}:"${{ secrets.FETCH_ALL_RELEASES_TOKEN }}"@${{ inputs.repo }} ${{ inputs.branch }} --tag ${{inputs.tag}} | cut -f1)
+          short_sha=${sha:0:7}
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"

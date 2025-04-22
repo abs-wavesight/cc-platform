@@ -23,7 +23,11 @@ on:
         required: false
         type: string
         default: '7.0.x'
-        description: .NET SDK Version      
+        description: .NET SDK Version     
+      version:
+        required: false
+        type: string
+        description: The version number to use for the package 
 
     outputs:
       nuget-version: 
@@ -57,6 +61,7 @@ jobs:
     env:
       BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
       BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
+      PROVIDED_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v3
         name: Checkout branch
@@ -70,14 +75,19 @@ jobs:
             ${{ runner.OS }}-nuget-
             
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ inputs.dotnet-version}}
 
       - name: Construct version number
         working-directory: ${{ env.SOLUTION_DIRECTORY }}
         run: |
-          $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
+          if ("${{ env.PROVIDED_VERSION }}" -ne "") {
+            $Version = "${{ inputs.version }}"
+          } else {
+            $Version = "1.0.${{ github.run_number }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }}"
+          }
+
           Write-Output "Version: ${Version}"
           echo "NUGET_PACKAGE_VERSION=$Version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           $ProjFile = "${{ inputs.project-file }}"

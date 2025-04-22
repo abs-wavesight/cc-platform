@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Diagnostics.CodeAnalysis;
 using Abs.CommonCore.Contracts.Json.Installer;
 using Abs.CommonCore.Installer.Actions;
@@ -9,8 +10,6 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 namespace Abs.CommonCore.Installer;
 
@@ -77,9 +76,14 @@ internal class Program
         var isDrexParam = new Option<bool>(isDrexParamName);
         command.Add(isDrexParam);
 
-        command.SetHandler(async (name, isDrex) => await ExecuteAddSftpUserCommand(name, isDrex, args), usernameParam, isDrexParam);
+        command.SetHandler(Handle, usernameParam, isDrexParam);
 
         return command;
+
+        Task<int> Handle(string name, bool isDrex)
+        {
+            return ExecuteAddSftpUserCommand(name, isDrex, args);
+        }
     }
 
     private static Command SetupDownloadCommand(string[] args)
@@ -132,9 +136,14 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt) => await ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(Handle, registryParam, downloadConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
+
+        Task<int> Handle(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt)
+        {
+            return ExecuteDownloadCommandAsync(registryConfig, downloaderConfig, components, parameters, verifyOnly, noPrompt, args);
+        }
     }
 
     private static Command SetupInstallCommand(string[] args)
@@ -187,10 +196,15 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt)
-                               => await ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(Handle, registryParam, installConfigParam, componentParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
+
+        Task<int> Handle(FileInfo registryConfig, FileInfo installerConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt)
+        {
+            return ExecuteInstallCommandAsync(registryConfig, installerConfig, components, parameters, verifyOnly,
+                noPrompt, args);
+        }
     }
 
     private static Command SetupChunkCommand(string[] args)
@@ -234,9 +248,13 @@ internal class Program
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, size, removeSource, config) => await ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args), sourceParam, destParam, sizeParam, removeSourceParam, configParam);
-
+        command.SetHandler(Handle, sourceParam, destParam, sizeParam, removeSourceParam, configParam);
         return command;
+
+        Task<int> Handle(FileInfo source, DirectoryInfo dest, int size, bool removeSource, FileInfo config)
+        {
+            return ExecuteChunkCommandAsync(source, dest, size, removeSource, config, args);
+        }
     }
 
     private static Command SetupUnchunkCommand(string[] args)
@@ -273,9 +291,14 @@ internal class Program
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteUnchunkCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(Handle, sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
+
+        Task<int> Handle(DirectoryInfo source, FileInfo dest, bool removeSource, FileInfo config)
+        {
+            return ExecuteUnchunkCommandAsync(source, dest, removeSource, config, args);
+        }
     }
 
     private static Command SetupCompressCommand(string[] args)
@@ -312,9 +335,14 @@ internal class Program
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteCompressCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(Handle, sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
+
+        Task<int> Handle(DirectoryInfo source, FileInfo dest, bool removeSource, FileInfo config)
+        {
+            return ExecuteCompressCommandAsync(source, dest, removeSource, config, args);
+        }
     }
 
     private static Command SetupUncompressCommand(string[] args)
@@ -351,9 +379,14 @@ internal class Program
         configParam.AddAlias("-c");
         command.Add(configParam);
 
-        command.SetHandler(async (source, dest, removeSource, config) => await ExecuteUncompressCommandAsync(source, dest, removeSource, config, args), sourceParam, destParam, removeSourceParam, configParam);
+        command.SetHandler(Handle, sourceParam, destParam, removeSourceParam, configParam);
 
         return command;
+
+        Task<int> Handle(FileInfo source, DirectoryInfo dest, bool removeSource, FileInfo config)
+        {
+            return ExecuteUncompressCommandAsync(source, dest, removeSource, config, args);
+        }
     }
 
     private static Command SetupReleaseBodyCommand(string[] args)
@@ -385,9 +418,14 @@ internal class Program
         outputParam.AddAlias("-o");
         command.Add(outputParam);
 
-        command.SetHandler(async (config, parameters, output) => await ExecuteReleaseBodyBuilderCommandAsync(config, parameters, output, args), configParam, parameterParam, outputParam);
+        command.SetHandler(Handle, configParam, parameterParam, outputParam);
 
         return command;
+
+        Task<int> Handle(FileInfo? config, string[]? parameters, FileInfo output)
+        {
+            return ExecuteReleaseBodyBuilderCommandAsync(config, parameters, output, args);
+        }
     }
 
     private static Command SetupConfigureRabbitCommand(string[] args)
@@ -467,7 +505,11 @@ internal class Program
         isSilentParam.AddAlias("-s");
         command.Add(isSilentParam);
 
-        command.SetHandler(async (context) =>
+        command.SetHandler(Handle);
+
+        return command;
+
+        Task<int> Handle(InvocationContext context)
         {
             var arguments = new RabbitConfigureCommandArguments
             {
@@ -483,10 +525,8 @@ internal class Program
                 IsSilent = context.ParseResult.GetValueForOption(isSilentParam),
             };
 
-            await ExecuteConfigureRabbitCommandAsync(arguments, args);
-        });
-
-        return command;
+            return ExecuteConfigureRabbitCommandAsync(arguments, args);
+        }
     }
 
     private static Command SetupUninstallCommand(string[] args)
@@ -521,7 +561,7 @@ internal class Program
         {
             IsRequired = false
         };
-        ;
+
         removeConfigParam.SetDefaultValue(false);
         command.Add(removeConfigParam);
 
@@ -532,9 +572,14 @@ internal class Program
         removeDockerParam.SetDefaultValue(false);
         command.Add(removeDockerParam);
 
-        command.SetHandler(async (docker, path, removeSystem, removeConfig, removeDocker) => await ExecuteUninstallCommandAsync(docker, path, removeSystem, removeConfig, removeDocker, args), dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
+        command.SetHandler(Handle, dockerParam, pathParam, removeSystemParam, removeConfigParam, removeDockerParam);
 
         return command;
+
+        Task<int> Handle(DirectoryInfo dockerLocation, DirectoryInfo installPath, bool removeSystem, bool removeConfig, bool removeDocker)
+        {
+            return ExecuteUninstallCommandAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker, args);
+        }
     }
 
     private static Command SetupGetVersionCommand(string[] args)
@@ -652,13 +697,23 @@ internal class Program
         noPromptParam.AddAlias("-np");
         command.Add(noPromptParam);
 
-        command.SetHandler(async (registryConfig, installerConfig, composePath, parameters, verifyOnly, noPrompt)
-            => await ExecuteRestoreCommandAsync(registryConfig, installerConfig, composePath, parameters, verifyOnly, noPrompt, args), registryParam, installConfigParam, composePathParam, parameterParam, verifyOnlyParam, noPromptParam);
+        command.SetHandler(Handle, registryParam, installConfigParam, composePathParam, parameterParam, verifyOnlyParam, noPromptParam);
 
         return command;
+
+        Task<int> Handle(FileInfo registryConfig, FileInfo? installerConfig, string composePath, string[] parameters, bool verifyOnly, bool noPrompt)
+        {
+            return ExecuteRestoreCommandAsync(
+                registryConfig,
+                installerConfig,
+                composePath,
+                parameters,
+                verifyOnly,
+                noPrompt, args);
+        }
     }
 
-    private static async Task ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
+    private static async Task<int> ExecuteDownloadCommandAsync(FileInfo registryConfig, FileInfo? downloaderConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
     {
         var config = new FileInfo("SystemConfig.json");
         if (downloaderConfig == null && config.Exists)
@@ -671,7 +726,7 @@ internal class Program
         var (_, loggerFactory) = Initialize(filePath, args);
         var promptForMissingParameters = !noPrompt;
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var dataRequest = new DataRequestService(loggerFactory, verifyOnly);
             var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
@@ -680,7 +735,7 @@ internal class Program
         }, true);
     }
 
-    private static async Task ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
+    private static async Task<int> ExecuteInstallCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string[] components, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
     {
         var config = new FileInfo("SystemConfig.json");
         if (installerConfig == null && config.Exists)
@@ -696,120 +751,140 @@ internal class Program
         var commandExecution = new CommandExecutionService(loggerFactory, verifyOnly);
         var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
             await installer.ExecuteAsync(components);
         }, true);
     }
 
-    private static async Task ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, FileInfo? config, string[] args)
+    private static async Task<int> ExecuteChunkCommandAsync(FileInfo source, DirectoryInfo destination, int size, bool removeSource, FileInfo? config, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var chunker = new DataChunker(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
+            return await ExecuteForComponentsAsync(source, destination, config,
                 async (s, d) => await chunker.ChunkFileAsync(s, d, size, removeSource));
         });
     }
 
-    private static async Task ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
+    private static async Task<int> ExecuteUnchunkCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var chunker = new DataChunker(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
+            return await ExecuteForComponentsAsync(source, destination, config,
                 async (s, d) => await chunker.UnchunkFileAsync(s, d, removeSource));
         });
     }
 
-    private static async Task ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
+    private static async Task<int> ExecuteCompressCommandAsync(DirectoryInfo source, FileInfo destination, bool removeSource, FileInfo? config, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var compressor = new DataCompressor(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
+            return await ExecuteForComponentsAsync(source, destination, config,
                 async (s, d) => await compressor.CompressDirectoryAsync(s, d, removeSource));
         });
     }
 
-    private static async Task ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, FileInfo? config, string[] args)
+    private static async Task<int> ExecuteUncompressCommandAsync(FileInfo source, DirectoryInfo destination, bool removeSource, FileInfo? config, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var compressor = new DataCompressor(loggerFactory);
-            await ExecuteForComponentsAsync(source, destination, config,
+            return await ExecuteForComponentsAsync(source, destination, config,
                 async (s, d) => await compressor.UncompressFileAsync(s, d, removeSource));
         });
     }
 
-    private static async Task ExecuteReleaseBodyBuilderCommandAsync(FileInfo? config, string[]? parameters, FileInfo output, string[] args)
+    private static async Task<int> ExecuteReleaseBodyBuilderCommandAsync(FileInfo? config, string[]? parameters, FileInfo output, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
         var configParameters = BuildConfigParameters(parameters);
 
-        await ExecuteCommandAsync(loggerFactory, async () => await ReleaseBodyBuilder.BuildReleaseBodyAsync(config, configParameters, output));
+        return await ExecuteCommandAsync(loggerFactory,
+            async () => await ReleaseBodyBuilder.BuildReleaseBodyAsync(config, configParameters, output));
     }
 
-    private static async Task ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
+    private static async Task<int> ExecuteConfigureRabbitCommandAsync(RabbitConfigureCommandArguments arguments, string[] args)
     {
-        var (_, loggerFactory) = Initialize(args);
+        var (logger, loggerFactory) = Initialize(args);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             if (arguments.AccountType == AccountType.Unknown)
             {
-                throw new Exception("Account type must be specified");
+                logger.LogError("Account type must be specified");
+                return Constants.ExitCodes.GENERIC_ERROR;
             }
 
             if (arguments.UpdatePermissions)
             {
                 await RabbitConfigurer.UpdateUserPermissionsAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.AccountType);
-                return;
+                return Constants.ExitCodes.SUCCESS;
             }
 
             var credentials = await RabbitConfigurer.ConfigureRabbitAsync(arguments.Rabbit!, arguments.RabbitUsername!, arguments.RabbitPassword!, arguments.Username!, arguments.Password, arguments.AccountType, arguments.IsSilent);
 
             if (credentials == null)
             {
-                Console.WriteLine("No credentials added");
-                return;
+                logger.LogWarning("No credentials added");
+                return Constants.ExitCodes.SUCCESS;
             }
 
             if (arguments.DrexSiteConfig != null)
             {
-                await RabbitConfigurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+                try
+                {
+                    await RabbitConfigurer.UpdateDrexSiteConfigAsync(arguments.DrexSiteConfig, credentials);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error updating drex site config");
+                    return Constants.ExitCodes.GENERIC_ERROR;
+                }
             }
 
             if (arguments.CredentialsFile != null)
             {
-                await RabbitConfigurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+                try
+                {
+                    await RabbitConfigurer.UpdateCredentialsFileAsync(credentials, arguments.CredentialsFile);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error updating credentials file");
+                    return Constants.ExitCodes.GENERIC_ERROR;
+                }
             }
+
+            return Constants.ExitCodes.SUCCESS;
         });
     }
 
-    private static async Task ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
+    private static async Task<int> ExecuteUninstallCommandAsync(DirectoryInfo? dockerLocation, DirectoryInfo? installPath, bool? removeSystem, bool? removeConfig, bool? removeDocker, string[] args)
     {
         var (logger, loggerFactory) = Initialize(args);
         var commandExecution = new CommandExecutionService(loggerFactory);
         var serviceManager = new WindowsServiceManager(logger, commandExecution);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var uninstaller = new Uninstaller(loggerFactory, commandExecution, serviceManager);
             await uninstaller.UninstallSystemAsync(dockerLocation, installPath, removeSystem, removeConfig, removeDocker);
         });
     }
 
-    private static async Task ExecuteRestoreCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string composePath, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
+    private static async Task<int> ExecuteRestoreCommandAsync(FileInfo registryConfig, FileInfo? installerConfig, string composePath, string[] parameters, bool verifyOnly, bool noPrompt, string[] args)
     {
         var configParameters = BuildConfigParameters(parameters);
 
@@ -844,14 +919,15 @@ internal class Program
             AdditionalProperties = new Dictionary<string, object>()
         };
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
             await installer.RunSystemRestoreCommandAsync(component, action.Source, action);
         }, true);
     }
 
-    private static async Task ExecuteCommandAsync(ILoggerFactory loggerFactory, Func<Task> action, bool logError = false)
+    private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory,
+        Func<Task> action, bool logError = false)
     {
         try
         {
@@ -865,16 +941,37 @@ internal class Program
                 logger.LogError(ex, "Error executing command");
             }
 
-            throw new Exception("Unable to execute command", ex);
+            return Constants.ExitCodes.GENERIC_ERROR;
+        }
+
+        return Constants.ExitCodes.SUCCESS;
+    }
+
+    private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory,
+        Func<Task<int>> action, bool logError = false)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (Exception ex)
+        {
+            if (logError)
+            {
+                var logger = loggerFactory.CreateLogger<Program>();
+                logger.LogError(ex, "Error executing command");
+            }
+
+            return Constants.ExitCodes.GENERIC_ERROR;
         }
     }
 
-    private static async Task ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
+    private static async Task<int> ExecuteForComponentsAsync(FileInfo source, DirectoryInfo destination, FileInfo? config, Func<FileInfo, DirectoryInfo, Task> action)
     {
         if (config == null)
         {
             await action(source, destination);
-            return;
+            return Constants.ExitCodes.SUCCESS;
         }
 
         var downloaderConfig = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(config.FullName);
@@ -888,14 +985,16 @@ internal class Program
 
                 await action(new FileInfo(s), new DirectoryInfo(d));
             });
+
+        return Constants.ExitCodes.SUCCESS;
     }
 
-    private static async Task ExecuteForComponentsAsync(DirectoryInfo source, FileInfo destination, FileInfo? config, Func<DirectoryInfo, FileInfo, Task> action)
+    private static async Task<int> ExecuteForComponentsAsync(DirectoryInfo source, FileInfo destination, FileInfo? config, Func<DirectoryInfo, FileInfo, Task> action)
     {
         if (config == null)
         {
             await action(source, destination);
-            return;
+            return Constants.ExitCodes.SUCCESS;
         }
 
         var downloaderConfig = ConfigParser.LoadConfig<InstallerComponentDownloaderConfig>(config.FullName);
@@ -905,18 +1004,21 @@ internal class Program
             .ForAllAsync(async c =>
             {
                 var s = source.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
-                var d = destination.FullName.Replace(ComponentNamePlaceholder, c, StringComparison.OrdinalIgnoreCase);
+                var d = destination.FullName.Replace(ComponentNamePlaceholder, c,
+                    StringComparison.OrdinalIgnoreCase);
 
                 await action(new DirectoryInfo(s), new FileInfo(d));
             });
+
+        return Constants.ExitCodes.SUCCESS;
     }
 
-    private static async Task ExecuteAddSftpUserCommand(string name, bool isDrex, string[] args)
+    private static async Task<int> ExecuteAddSftpUserCommand(string name, bool isDrex, string[] args)
     {
         var (_, loggerFactory) = Initialize(args);
         var commandExecution = new CommandExecutionService(loggerFactory);
 
-        await ExecuteCommandAsync(loggerFactory, async () =>
+        return await ExecuteCommandAsync(loggerFactory, async () =>
         {
             var creator = new AddSftpUser(commandExecution);
             await creator.AddSftpUserAsync(name, isDrex);
@@ -963,13 +1065,11 @@ internal class Program
     {
         builder.ClearProviders();
 
-        builder.AddSimpleConsole(options =>
+        builder.AddConsole(options =>
         {
-            options.IncludeScopes = true;
-            options.SingleLine = true;
-            options.TimestampFormat = "yyyy-MM-dd HH:mm:ss:ffffff ";
-            options.ColorBehavior = LoggerColorBehavior.Enabled;
+            options.FormatterName = nameof(CustomConsoleFormatter);
         });
+        builder.Services.AddSingleton<ConsoleFormatter, CustomConsoleFormatter>();
 
         if (string.IsNullOrWhiteSpace(filePath) == false)
         {

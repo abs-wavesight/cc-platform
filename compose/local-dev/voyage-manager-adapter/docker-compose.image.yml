@@ -1,0 +1,4 @@
+services:
+
+  cc.voyage-manager-adapter:
+    image: ghcr.io/abs-wavesight/voyage-manager-report-adapter:windows-${WINDOWS_VERSION}

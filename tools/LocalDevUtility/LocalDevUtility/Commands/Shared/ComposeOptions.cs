@@ -15,26 +15,27 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "openssl", imageName: "openssl")]
     public ComposeComponentMode? Openssl { get; set; }
 
-    [ComposeComponent(composePath: "sftp-service", imageName: "cc-sftp-service")]
+    [ComposeComponent(composePath: "sftp-service", imageName: "sftp-service")]
     public ComposeComponentMode? SftpService { get; set; }
 
-    [ComposeComponent(composePath: "observability-service", imageName: "cc-observability-service")]
+    [ComposeComponent(composePath: "observability-service", imageName: "observability-service")]
     public ComposeComponentMode? ObservabilityService { get; set; }
 
-    [ComposeComponent(composePath: "drex-message-service", imageName: "cc-drex-message-service")]
+    [ComposeComponent(composePath: "drex-message-service", imageName: "drex-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DrexMessageService { get; set; }
 
-    [ComposeComponent(composePath: "disco-service", imageName: "cc-disco")]
+    [ComposeComponent(composePath: "disco-service", imageName: "disco")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DiscoService { get; set; }
 
-    [ComposeComponent(composePath: "drex-file-service", imageName: "cc-drex-file-service")]
+    [ComposeComponent(composePath: "drex-file-service", imageName: "drex-file-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
     [ComposeComponentDependency(nameof(VectorSite))]
     [ComposeComponentDependency(nameof(DrexMessageService))]
+    [ComposeComponentDependency(nameof(DrexCentralMessageService))]
     [ComposeComponentDependency(nameof(SftpService))]
     public ComposeComponentMode? DrexFileService { get; set; }
 
@@ -52,6 +53,11 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "vector", imageName: "vector", profile: Constants.Profiles.VectorCentral, defaultVariant: "default")]
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
     public ComposeComponentMode? VectorCentral { get; set; }
+
+    [ComposeComponent(composePath: "drex-central-message-service", imageName: "drex-central-message-service")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    [ComposeComponentDependency(nameof(VectorCentral))]
+    public ComposeComponentMode? DrexCentralMessageService { get; set; }
 
     [ComposeComponent(composePath: "grafana", imageName: "grafana")]
     [ComposeComponentDependency(nameof(VectorSite))]
@@ -82,13 +88,21 @@ public abstract class ComposeOptions
     [ComposeComponentAlias(nameof(Loki))]
     public ComposeComponentMode? LogViz { get; set; }
 
-    [ComposeComponent(composePath: "siemens-adapter", imageName: "cc-adapters-siemens")]
+    [ComposeComponent(composePath: "siemens-adapter", imageName: "siemens")]
     [ComposeComponentDependency(nameof(DiscoService))]
     public ComposeComponentMode? SiemensAdapter { get; set; }
 
-    [ComposeComponent(composePath: "kdi-adapter", imageName: "cc-adapters-kdi")]
+    [ComposeComponent(composePath: "kdi-adapter", imageName: "kdi")]
     [ComposeComponentDependency(nameof(DiscoService))]
     public ComposeComponentMode? KdiAdapter { get; set; }
+
+    [ComposeComponent(composePath: "voyage-manager-adapter", imageName: "voyage-manager-adapter")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    public ComposeComponentMode? VoyageManagerAdapter { get; set; }
+
+    [ComposeComponent(composePath: "message-scheduler", imageName: "message-scheduler")]
+    [ComposeComponentDependency(nameof(RabbitmqRemote))]
+    public ComposeComponentMode? MessageScheduler { get; set; }
 
     public static List<string> ComponentPropertyNames => typeof(RunOptions)
         .GetProperties()

@@ -25,6 +25,11 @@ on:
         required: true
         type: string
         description: Should be found with the `solution-directory` (e.g., "DrexMessage.Dockerfile")
+      container-version:
+        required: false
+        type: string
+        default: '0.0.0.0'
+        description: Should be found with the repository (e.g., "1.0.1.1")
       test-project-filter-part: # & FullyQualifiedName!~FileShipper
         required: false
         type: string
@@ -156,13 +161,14 @@ jobs:
           directory: ${{ inputs.docker-context-directory }}
           dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
           pushImage: true
-          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }},${{ matrix.os }}-${{ inputs.container-version }}
           labels: >-
             org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_type=application,
+            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
 
@@ -191,21 +197,22 @@ jobs:
           directory: ${{ inputs.docker-context-directory }}
           dockerfile: ${{ inputs.solution-directory }}/${{ inputs.dockerfile-name }}
           pushImage: true
-          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }}
+          tags: ${{ matrix.os }}${{ env.BRANCH_NAME_WITH_PREFIX_DASH }},${{ matrix.os }}-${{ env.BRANCH_NAME }}-${{ env.SHORT_SHA }},${{ matrix.os }}-${{ inputs.container-version }}
           labels: >-
             org.opencontainers.image.description="${{ env.IMAGE_DESCRIPTION }}",
             ${{ env.LABEL_PREFIX }}.github-run-number=${{ github.RUN_NUMBER }},
             ${{ env.LABEL_PREFIX }}.branch=${{ env.BRANCH_NAME }},
             ${{ env.LABEL_PREFIX }}.sha=${{ github.SHA }},
-            ${{ env.LABEL_PREFIX }}.container_type=application
+            ${{ env.LABEL_PREFIX }}.container_type=application,
+            ${{ env.LABEL_PREFIX }}.container_version=${{ inputs.container-version }}
           addTimestamp: true
           platform: windows/amd64
 
-      - uses: SmartsquareGmbH/delete-old-packages@v0.7.0
+      - uses: SmartsquareGmbH/delete-old-packages@v0.8.1
         env:
           BRANCH_NAME: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchName }}
           BRANCH_NAME_WITH_PREFIX_DASH: ${{ needs.get_clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}
-        if: env.BRANCH_NAME != 'main'
+        if: env.BRANCH_NAME != 'main' && contains(env.BRANCH_NAME, 'release') == 'false'
         name: Prune old package versions
         with:
           organization: abs-wavesight

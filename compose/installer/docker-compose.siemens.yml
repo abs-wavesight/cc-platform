@@ -1,10 +1,8 @@
----	
-version: '3'	
-
-services:	
-  cc.siemens:	
-    container_name: siemens	
-    image: ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA
+---
+services:
+  cc.siemens:
+    container_name: siemens
+    image: ghcr.io/abs-wavesight/siemens:windows-$WINDOWS_VERSION-$SIEMENS_VERSION
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - BusConnection__username=${SIEMENS_RABBIT_USERNAME}
@@ -13,12 +11,11 @@ services:
     ports:
       - "12446:5000"
     depends_on:
-      - cc.vector
       - cc.rabbitmq
       - cc.disco
-    logging:	
-      driver: local	
-    restart: always	
+    logging:
+      driver: local
+    restart: always
     volumes:
       - type: bind
         source: $ABS_PATH/certificates/local-certs

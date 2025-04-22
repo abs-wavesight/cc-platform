@@ -1,5 +1,4 @@
 ﻿using Abs.CommonCore.Contracts.Json.Installer;
-using Microsoft.Extensions.Logging;
 
 #pragma warning disable CA1416
 
@@ -13,6 +12,7 @@ public abstract class ActionBase
         {
             if (specificComponents?.Length > 0)
             {
+                Console.WriteLine($"Using specific components: {string.Join(", ", specificComponents)}");
                 return specificComponents
                     .Select(x => registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
                     .Distinct()
@@ -21,6 +21,7 @@ public abstract class ActionBase
 
             if (configComponents?.Count > 0)
             {
+                Console.WriteLine($"Using components from config: {string.Join(", ", configComponents)}");
                 return configComponents
                     .Select(x => registryConfig.Components.First(y => string.Equals(y.Name, x, StringComparison.OrdinalIgnoreCase)))
                     .Distinct()
@@ -29,6 +30,7 @@ public abstract class ActionBase
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error determining components: {ex.Message}");
             throw new Exception("Unable to determine components to use", ex);
         }
 

@@ -29,15 +29,15 @@ jobs:
           echo "ABS_NUGET_PASSWORD=$AbsNugetPassword" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append 
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
                    
       - name: Restore dependencies        
         run: dotnet restore tools/Installer/Installer/Installer.csproj --packages ${{ env.NUGET_PACKAGE_PATH }}
 
       - name: Publish
-        run: dotnet publish tools/Installer/Installer/Installer.csproj --sc -c Release -f net7.0 -r win-x64 -p:PublishSingleFile=true -o ./
+        run: dotnet publish tools/Installer/Installer/Installer.csproj --sc -c Release -f net8.0 -r win-x64 -p:PublishSingleFile=true -o ./
           
       - name: Build release
         uses: ncipollo/release-action@v1
@@ -47,4 +47,4 @@ jobs:
           tag: Installer
           commit: main
           allowUpdates: true
-          artifacts: "Abs.CommonCore.Installer.exe,./config/installer/*.json,./scripts/installer/Uninstall.cmd"
+          artifacts: "Abs.CommonCore.Installer.exe,./config/installer/*.json,./scripts/installer/*"

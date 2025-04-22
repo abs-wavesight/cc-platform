@@ -1,11 +1,9 @@
----	
-version: '3'	
+---
+services:
 
-services:	
-
-  cc.disco:	
-    container_name: disco	
-    image: ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA
+  cc.disco:
+    container_name: disco
+    image: ghcr.io/abs-wavesight/disco:windows-$WINDOWS_VERSION-$DISCO_VERSION
     environment:
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
       - ServiceBusConfiguration__BusConnection__username=${DISCO_RABBIT_USERNAME}
@@ -14,12 +12,11 @@ services:
     ports:
       - "12445:5000"
     depends_on:
-      - cc.vector
       - cc.rabbitmq
-    logging:	
-      driver: local	
-    restart: always	
-    volumes:	
+    logging:
+      driver: local
+    restart: always
+    volumes:
       - type: volume
         source: disco-scheduler-storage
         target: C:/app/scheduler/data

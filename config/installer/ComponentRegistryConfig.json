@@ -6,7 +6,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/openssl:windows-$WINDOWS_VERSION-$OPEN_SSL_VERSION",
           "destination": "openssl.tar"
         },
         {
@@ -37,102 +37,74 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "rabbitmq.tar"
+          "source": "ghcr.io/abs-wavesight/rabbitmq:windows-$WINDOWS_VERSION-$RABBITMQ_NANO_VERSION",
+          "destination": "rabbitmqnano.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmq.yml",
-          "destination": "docker-compose.rabbitmq.yml"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.rabbitmqnano.yml",
+          "destination": "docker-compose.rabbitmqnano.yml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/cc-rabbitmq.conf",
-          "destination": "cc-rabbitmq.conf"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/vessel.cc-rabbitmq.conf",
+          "destination": "vessel.cc-rabbitmq.conf"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/local/local.definitions.json",
-          "destination": "local.definitions.json"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/central.cc-rabbitmq.conf",
+          "destination": "central.cc-rabbitmq.conf"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/remote/remote.definitions.json",
-          "destination": "remote.definitions.json"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/central/central.definitions.json",
+          "destination": "central.definitions.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/rabbitmq/definitions/vessel/vessel.definitions.json",
+          "destination": "vessel.definitions.json"
         }
       ],
       "actions": [
         {
-          "source": "docker-compose.rabbitmq.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "cc-rabbitmq.conf",
+          "source": "docker-compose.rabbitmqnano.yml",
           "action": "replaceParameters"
         }
       ]
     },
     {
-      "name": "Vector-Site",
+      "name": "Vector",
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-$VECTOR_VERSION",
           "destination": "vector.tar"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.vector-site.yml",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.vector.yml",
           "destination": "docker-compose.vector.yml"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/vector.toml",
-          "destination": "vector.toml"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-container-logs.vrl",
-          "destination": "remap-container-logs.vrl"
-        }
-      ],
-      "actions": [
-        {
-          "source": "docker-compose.vector.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "vector.toml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "remap-container-logs.vrl",
-          "action": "replaceParameters"
-        }
-      ]
-    },
-    {
-      "name": "Vector-Central",
-      "files": [
-        {
-          "type": "container",
-          "source": "ghcr.io/abs-wavesight/vector:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
-          "destination": "vector.tar"
-        },
-        {
-          "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.vector-central.yml",
-          "destination": "docker-compose.vector.yml"
+          "destination": "vessel-vector.toml"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/vector.toml",
-          "destination": "vector.toml"
+          "destination": "central-vector.toml"
         },
         {
           "type": "file",
-          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-site-logs.vrl",
-          "destination": "remap-site-logs.vrl"
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/site/remap-vessel-logs.vrl",
+          "destination": "remap-vessel-logs.vrl"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/vector/config/central/remap-central-logs.vrl",
+          "destination": "remap-central-logs.vrl"
         }
       ],
       "actions": [
@@ -141,11 +113,19 @@
           "action": "replaceParameters"
         },
         {
-          "source": "vector.toml",
+          "source": "vessel-vector.toml",
           "action": "replaceParameters"
         },
         {
-          "source": "remap-site-logs.vrl",
+          "source": "remap-vessel-logs.vrl",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "central-vector.toml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "remap-central-logs.vrl",
           "action": "replaceParameters"
         }
       ]
@@ -155,13 +135,18 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-message-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/drex-message:windows-$WINDOWS_VERSION-$DREX_VESSEL_VERSION",
           "destination": "drex-message.tar"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-message.yml",
           "destination": "docker-compose.drex-message.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex/appsettings.json",
+          "destination": "appsettings.json"
         }
       ],
       "actions": [
@@ -176,13 +161,28 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-drex-file-service:windows-$WINDOWS_VERSION-main-$DREX_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/drex-file:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION",
           "destination": "drex-file.tar"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-file.yml",
           "destination": "docker-compose.drex-file.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/central.appsettings.json",
+          "destination": "central.appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/vessel.appsettings.json",
+          "destination": "vessel.appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-f/adapter.drex.config.json",
+          "destination": "drex-f.adapter.drex.config.json"
         }
       ],
       "actions": [
@@ -197,13 +197,18 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-sftp-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/sftp-service:windows-$WINDOWS_VERSION-$SFTP_VERSION",
           "destination": "sftp-service.tar"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.sftp-service.yml",
           "destination": "docker-compose.sftp-service.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/services/SftpService/config/config.schema.json",
+          "destination": "config.schema.json"
         }
       ],
       "actions": [
@@ -218,7 +223,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-observability-service:windows-$WINDOWS_VERSION-main-$PLATFORM_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/observability-service:windows-$WINDOWS_VERSION-$OBSERVABILITY_VERSION",
           "destination": "observability-service.tar"
         },
         {
@@ -239,7 +244,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-disco:windows-$WINDOWS_VERSION-main-$DISCO_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/disco:windows-$WINDOWS_VERSION-$DISCO_VERSION",
           "destination": "disco.tar"
         },
         {
@@ -260,7 +265,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-adapters-siemens:windows-$WINDOWS_VERSION-main-$SIEMENS_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/siemens:windows-$WINDOWS_VERSION-$SIEMENS_VERSION",
           "destination": "siemens.tar"
         },
         {
@@ -281,7 +286,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/cc-adapters-kdi:windows-$WINDOWS_VERSION-main-$KDI_COMMIT_SHA",
+          "source": "ghcr.io/abs-wavesight/kdi:windows-$WINDOWS_VERSION-$KDI_VERSION",
           "destination": "kdi.tar"
         },
         {
@@ -293,6 +298,94 @@
       "actions": [
         {
           "source": "docker-compose.kdi.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Drex-Central-Message",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/drex-central-message:windows-$WINDOWS_VERSION-$DREX_CENTRAL_VERSION",
+          "destination": "drex-central-message.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.drex-central.yml",
+          "destination": "docker-compose.drex-central.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-central/appsettings.json",
+          "destination": "appsettings.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.drex-central.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Voyage-Manager-Report-Adapter",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/voyage-manager-report-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION",
+          "destination": "voyage-manager-report-adapter.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.voyage-manager-report-adapter.yml",
+          "destination": "docker-compose.voyage-manager-report-adapter.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/voyage-manager-adapter/appsettings.json",
+          "destination": "appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/voyage-manager-adapter/adapter.drex.config.json",
+          "destination": "voyage-manager.adapter.drex.config.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.voyage-manager-report-adapter.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
+      "name": "Message-Scheduler",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/message-scheduler:windows-$WINDOWS_VERSION-$MESSAGE_SCHEDULER_VERSION",
+          "destination": "message-scheduler.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.message-scheduler.yml",
+          "destination": "docker-compose.message-scheduler.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/message-scheduler/appsettings.json",
+          "destination": "appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/message-scheduler/adapter.drex.config.json",
+          "destination": "message-scheduler.adapter.drex.config.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.message-scheduler.yml",
           "action": "replaceParameters"
         }
       ]

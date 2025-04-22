@@ -1,0 +1,86 @@
+name: External Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      internal_release_tag:
+        description: 'Internal Release Tag'
+        required: true
+        type: string
+      external_release_name:
+        description: 'External Release Name'
+        required: true
+        type: string
+      external_tag:
+        description: 'External Tag'
+        required: true
+        type: string
+      release_description:
+        description: 'Release Description'
+        required: false
+        type: string
+
+jobs:
+
+  publish-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_url: ${{ steps.publish-release.outputs.html_url }}
+      release_name: ${{ steps.get-release-name.outputs.name }}
+    env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+    steps:
+    - name: Copy Release Files
+      run: |
+        gh release download ${{ github.event.inputs.internal_release_tag }} \
+            --repo="${{ github.repository }}" \
+            --dir="./${{ github.event.inputs.internal_release_tag }}"
+        
+    - name: Get Release Name
+      id: get-release-name
+      run: |
+        release_name=$(gh release view ${{ github.event.inputs.internal_release_tag }} --repo="${{ github.repository }}" --json "name" -q ".name")
+        actual_name=$(echo "$release_name" | sed -E 's/^v[0-9]+ //')
+        echo "name=$actual_name" >> $GITHUB_OUTPUT
+
+    - name: Create release
+      id: publish-release
+      run: |
+        cd ${{ github.event.inputs.internal_release_tag }}
+        ls
+        gh release create "${{ inputs.external_tag }}" ./* \
+            --repo="${{ vars.RELEASE_REPOSITORY }}" \
+            --title="${{ inputs.external_release_name }}" \
+            --notes="${{ inputs.release_description }}"
+
+        release_url=$(gh release view ${{ github.event.inputs.external_tag }} --repo="${{ vars.RELEASE_REPOSITORY }}" --json "url" -q ".url")
+        echo "html_url=$release_url" >> $GITHUB_OUTPUT
+
+  push-release:
+    needs: [publish-release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.RELEASE_REPOSITORY }}
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Release changes
+      run: |
+        base_dir="${{ needs.publish-release.outputs.release_name }}/${{ github.event.inputs.external_tag }} (${{ github.event.inputs.internal_release_tag }})"
+        mkdir -p "$base_dir/Installer" "$base_dir/Docs" "$base_dir/Configs"
+
+        readme_file="$base_dir/Installer/Readme.md"
+        echo "# Release Information  " >> "$readme_file"
+        echo "Release URL: ${{ needs.publish-release.outputs.release_url }}  " >> "$readme_file"
+        echo "Release Tag: ${{ github.event.inputs.external_tag }}  " >> "$readme_file"
+
+    - name: Commit & Push changes
+      uses: actions-js/push@v1.5
+      with:
+        github_token: ${{ secrets.GH_PAT }}
+        message: "Release ${{ github.event.inputs.external_release_name }} - ${{ github.event.inputs.external_tag }}"
+        repository: ${{ vars.RELEASE_REPOSITORY }}

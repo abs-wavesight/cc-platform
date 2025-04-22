@@ -2,5 +2,5 @@
 
 public interface IDataRequestService
 {
-    public Task<byte[]> RequestByteArrayAsync(string source);
+    public Task<Stream> RequestByteArrayAsync(string source);
 }

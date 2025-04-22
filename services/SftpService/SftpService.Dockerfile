@@ -1,11 +1,11 @@
 # powershell image tag; needed for zip extraction.
 ARG POWERSHELL_NANOSERVER_TAG=lts-7.2-nanoserver-1809
 # nanoserver image tag (contains dotnet).
-# Value for windows server 2022: 7.0-nanoserver-ltsc2022
-ARG DOTNET_TAG=7.0-nanoserver-1809
+# Value for windows server 2022: 8.0-nanoserver-ltsc2022
+ARG DOTNET_TAG=8.0-nanoserver-1809
 
-# Value for windows server 2022: 7.0-windowsservercore-ltsc2022
-ARG ASPNET_FULLSERVER_TAG=7.0-windowsservercore-ltsc2019
+# Value for windows server 2022: 8.0-windowsservercore-ltsc2022
+ARG ASPNET_FULLSERVER_TAG=8.0-windowsservercore-ltsc2019
 
 FROM mcr.microsoft.com/powershell:$POWERSHELL_NANOSERVER_TAG AS unzip
 SHELL [ "pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';" ]

@@ -26,15 +26,15 @@ public class RabbitMqConfigurator : IMessengerConfigurator
     public async Task CreateExchangeAsync(string busKey, Models.ExchangeInfo exchange, CancellationToken cancellationToken = default)
     {
         var exchangeInfo = ConvertExchangeInfo(exchange);
-        await _managementClient.CreateExchangeAsync(exchange.Vhost, exchangeInfo, cancellationToken);
-        LogResourceCreation(busKey, _exchange, exchangeInfo.Name);
+        await _managementClient.CreateExchangeAsync(exchange.Name, exchange.Vhost, exchangeInfo, cancellationToken);
+        LogResourceCreation(busKey, _exchange, exchange.Name);
     }
 
     public async Task CreateQueueAsync(string busKey, Models.QueueInfo queue, CancellationToken cancellationToken = default)
     {
         var queueInfo = ConvertQueueInfo(queue);
-        await _managementClient.CreateQueueAsync(queue.VHost, queueInfo, cancellationToken);
-        LogResourceCreation(busKey, _queue, queueInfo.Name);
+        await _managementClient.CreateQueueAsync(queue.Name, queue.VHost, queueInfo, cancellationToken);
+        LogResourceCreation(busKey, _queue, queue.Name);
     }
 
     public async Task CreateExchangeWithQueuesAsync(string busKey, Models.ExchangeInfo exchange, Models.QueueInfo[] queues, CancellationToken cancellationToken = default)
@@ -73,11 +73,11 @@ public class RabbitMqConfigurator : IMessengerConfigurator
 
     private static ExchangeInfo ConvertExchangeInfo(Models.ExchangeInfo exchange)
     {
-        return new ExchangeInfo(exchange.Name, exchange.Type, exchange.AutoDelete, exchange.Durable, exchange.Internal);
+        return new ExchangeInfo(exchange.Type, exchange.AutoDelete, exchange.Durable, exchange.Internal);
     }
 
     private static QueueInfo ConvertQueueInfo(Models.QueueInfo queue)
     {
-        return new QueueInfo(queue.Name, queue.AutoDelete, queue.Durable);
+        return new QueueInfo(queue.AutoDelete, queue.Durable);
     }
 }

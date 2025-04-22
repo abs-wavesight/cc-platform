@@ -1,0 +1,46 @@
+{
+  "vhosts": [
+    {
+      "name": "/"
+    },
+    {
+      "name": "commoncore"
+    }
+  ],
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "commoncore",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    }
+  ],
+  "queues": [
+    {
+      "name": "cc.drex.central.snk-log.q",
+      "vhost": "commoncore",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    }
+  ]
+}

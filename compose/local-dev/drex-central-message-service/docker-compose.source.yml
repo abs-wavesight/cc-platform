@@ -1,0 +1,13 @@
+---
+services:
+
+  cc.drex-central-message-service:
+    build:
+      context: ${PATH_TO_CC_DREX_REPO}
+      dockerfile: service/DrexCentralMessage.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "application"

@@ -1,9 +1,18 @@
 ---
-version: '3.9'
-
 services:
 
-  cc.drex-file-service:
+  cc.drex-file-vessel:
+    build:
+      context: ${PATH_TO_CC_DREX_REPO}
+      dockerfile: service/DrexFile.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "application"
+
+  cc.drex-file-central:
     build:
       context: ${PATH_TO_CC_DREX_REPO}
       dockerfile: service/DrexFile.Dockerfile

@@ -2,6 +2,7 @@
 
 public class AppConfig
 {
+    public string? VoyageManagerRepositoryPath { get; set; }
     public string? CommonCorePlatformRepositoryPath { get; set; }
     public string? CommonCoreDrexRepositoryPath { get; set; }
     public string? CommonCoreDiscoRepositoryPath { get; set; }
@@ -12,4 +13,5 @@ public class AppConfig
     public string? SftpRootPath { get; set; }
     public string? FdzRootPath { get; set; }
     public string? SshKeysPath { get; set; }
+    public string? CommonCoreSchedulerRepositoryPath { get; set; }
 }

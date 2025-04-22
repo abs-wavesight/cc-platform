@@ -60,13 +60,14 @@ public class LocalDevUtilityFixture
         var dummyFdzRootPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-fdz-root");
         Directory.CreateDirectory(dummyFdzRootPath);
 
-        var dummydrexServicePath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/service");
+        var dummyDrexPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo");
+        var dummydrexServicePath = Path.Combine(dummyDrexPath, "service");
         Directory.CreateDirectory(dummydrexServicePath);
 
-        var dummydrexClientPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/client");
+        var dummydrexClientPath = Path.Combine(dummyDrexPath, "client");
         Directory.CreateDirectory(dummydrexClientPath);
 
-        var dummydrexDemoPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo/demo");
+        var dummydrexDemoPath = Path.Combine(dummyDrexPath, "demo");
         Directory.CreateDirectory(dummydrexDemoPath);
 
         CopyFile(repoRootPath, dummydrexServicePath, "nuget.config");
@@ -82,13 +83,21 @@ public class LocalDevUtilityFixture
         var dummyKdiAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-kdi-adapter-repo");
         Directory.CreateDirectory(dummyKdiAdapterPath);
 
+        var dummyVoyageManagerAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-voyage-manager-adapter-repo");
+        Directory.CreateDirectory(dummyVoyageManagerAdapterPath);
+
+        var dummySchedulerPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-scheduler-repo");
+        Directory.CreateDirectory(dummySchedulerPath);
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
-            CommonCoreDrexRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-repo"),
-            CommonCoreDiscoRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-disco-repo"),
-            CommonCoreSiemensAdapterRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-siemens-adapter-repo"),
-            CommonCoreKdiAdapterRepositoryPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-kdi-adapter-repo"),
+            CommonCoreDrexRepositoryPath = dummyDrexPath,
+            CommonCoreDiscoRepositoryPath = dummyDiscoRepoPath,
+            CommonCoreSiemensAdapterRepositoryPath = dummySiemensAdapterPath,
+            CommonCoreKdiAdapterRepositoryPath = dummyKdiAdapterPath,
+            VoyageManagerRepositoryPath = dummyVoyageManagerAdapterPath,
+            CommonCoreSchedulerRepositoryPath = dummySchedulerPath,
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,

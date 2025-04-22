@@ -1,15 +1,12 @@
 ﻿---
-version: '3.9'
-
 services:
-
-  cc.drex-file-service:
-    container_name: drex-file-service
+  cc.drex-file-vessel:
+    container_name: drex-file-vessel
     depends_on:
-      - cc.vector-site
       - cc.rabbitmq-local
       - cc.sftp-service
       - cc.drex-message-service
+    restart: always
     environment:
       - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
       - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
@@ -18,13 +15,15 @@ services:
       - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
-      - "12346:5000"
-    restart: always
+      - "12348:5000"
     volumes:
       - type: bind
-        source: ${PATH_TO_CC_DREX_REPO}/config/drex
+        source: ${PATH_TO_CC_DREX_REPO}/config/drex-f
         target: C:/app/config
         read_only: true
+      - type: volume
+        source: drex-f-vessel-storage
+        target: C:/data/temp
       - type: bind
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/rabbitmq-local-certs
@@ -40,4 +39,48 @@ services:
       - type: bind
         source: ${ABS_CC_SSH_KEYS_PATH}
         target: c:/ssh-keys
-        read_only: false 
+        read_only: false
+    
+  cc.drex-file-central:
+    container_name: drex-file-central
+    depends_on:
+      - cc.rabbitmq-remote
+      - cc.drex-central-message-service
+    restart: always
+    environment:
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/rabbitmq.cer
+      - ABS_CC_FDZ_PATH=c:/fdz
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12347:5000"
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_DREX_REPO}/config/drex-f-central
+        target: C:/app/config
+        read_only: true
+      - type: volume
+        source: drex-f-central-storage
+        target: C:/data/temp
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: ${ABS_CC_FDZ_PATH}
+        target: c:/fdz
+        read_only: false
+      - type: bind
+        source: ${ABS_CC_SSH_KEYS_PATH}
+        target: c:/ssh-keys
+        read_only: false
+
+volumes:
+  drex-f-vessel-storage:
+  drex-f-central-storage:

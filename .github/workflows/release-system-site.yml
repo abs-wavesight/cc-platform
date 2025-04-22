@@ -139,13 +139,13 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: SiteSystemConfig.json
       component-params: >
-        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}-rabbitmq 
-        -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}-vector-site
-        -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}-drex-message 
-        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}-drex-file
-        -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}-openssl
-        -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}-disco
-        -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}-observability-service
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
+        -p `$VECTOR_SITE_RELEASE_TAG:${{ needs.get-default-vector-site-version.outputs.version || inputs.vector-site-version }}_vector-site
+        -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}_drex-message 
+        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
+        -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}_openssl
+        -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}_disco
+        -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}_observability-service
       release-name-prefix: Site System Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

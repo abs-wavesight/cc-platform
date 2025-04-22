@@ -51,6 +51,8 @@ public static class DockerHelper
             [Constants.ComposeEnvKeys.PathToCommonCoreDiscoRepository] = appConfig.CommonCoreDiscoRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCommonCoreSiemensAdapterRepository] = appConfig.CommonCoreSiemensAdapterRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCommonCoreKdiAdapterRepository] = appConfig.CommonCoreKdiAdapterRepositoryPath!,
+            [Constants.ComposeEnvKeys.PathToCommonCoreVoyageManagerAdapterRepository] = appConfig.VoyageManagerRepositoryPath!,
+            [Constants.ComposeEnvKeys.PathToCommonCoreSchedulerRepository] = appConfig.CommonCoreSchedulerRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCertificates] = appConfig.CertificatePath!,
             [Constants.ComposeEnvKeys.PathToSshKeys] = appConfig.SshKeysPath!,
             [Constants.ComposeEnvKeys.SftpRootPath] = appConfig.SftpRootPath!,

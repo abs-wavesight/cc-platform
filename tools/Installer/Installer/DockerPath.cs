@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Abs.CommonCore.Installer;
+﻿namespace Abs.CommonCore.Installer;
 public static class DockerPath
 {
-    private const string _dockerPath = @"c:\\docker\\docker.exe";
+    public const string DockerFilePath = @"c:\\docker\\docker.exe";
     private const string _dockerExe = "docker";
 
     private const string _dockerComposePath = @"c:\\docker\\docker-compose.exe";
@@ -15,9 +9,9 @@ public static class DockerPath
 
     public static string GetDockerPath()
     {
-        var exists = File.Exists(_dockerPath);
+        var exists = File.Exists(DockerFilePath);
         return exists
-            ? _dockerPath
+            ? DockerFilePath
             : _dockerExe;
     }
 

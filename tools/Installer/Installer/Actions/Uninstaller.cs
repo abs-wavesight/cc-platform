@@ -2,7 +2,6 @@
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Microsoft.Extensions.Logging;
 
 // This call site is reachable on all platforms. 'ServiceController' is only supported on: 'windows'.
 #pragma warning disable CA1416

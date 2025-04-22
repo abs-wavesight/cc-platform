@@ -1,7 +1,5 @@
 ---
-version: '3.9'
-
 services:
 
   cc.siemens-adapter:
-    image: ghcr.io/abs-wavesight/cc-adapters-siemens:windows-${WINDOWS_VERSION}
+    image: ghcr.io/abs-wavesight/siemens:windows-${WINDOWS_VERSION}

@@ -10,7 +10,7 @@ public class DataRequestServiceTests
     {
         var dataRequest = new DataRequestService(NullLoggerFactory.Instance, true);
         var result = await dataRequest.RequestByteArrayAsync("http://Not.a.valid.url.path");
-        Assert.Equal(Array.Empty<byte>(), result);
+        Assert.Equal(Stream.Null, result);
     }
 
     [Fact]

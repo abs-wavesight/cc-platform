@@ -8,8 +8,8 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
-using Microsoft.Extensions.Logging;
 using PasswordGenerator;
+using Polly;
 using AccountType = Abs.CommonCore.Installer.Actions.Models.AccountType;
 using User = EasyNetQ.Management.Client.Model.User;
 
@@ -29,7 +29,7 @@ public partial class RabbitConfigurer : ActionBase
     [GeneratedRegex(@"^cc\.(drex\.site\.drex-file|drex-file\.site\.).*\.q$", RegexOptions.Compiled)]
     private static partial Regex SiteFileShippingRegex();
 
-    private const string SystemVhost = "/";
+    private const string SystemVhost = "commoncore";
     private const string UsernamePlaceholder = "$USERNAME";
     private const string PasswordPlaceholder = "$PASSWORD";
 
@@ -42,11 +42,27 @@ public partial class RabbitConfigurer : ActionBase
         _logger = loggerFactory.CreateLogger<RabbitConfigurer>();
     }
 
-    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(Uri rabbit, string rabbitUsername, string rabbitPassword, string username, string? password, AccountType accountType, bool isSilent)
+    public static async Task<RabbitCredentials?> ConfigureRabbitAsync(
+        Uri rabbit,
+        string rabbitUsername,
+        string rabbitPassword,
+        string username,
+        string? password,
+        AccountType accountType,
+        bool isSilent)
     {
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
-        var client = new ManagementClient(rabbit, rabbitUsername, rabbitPassword);
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
 
+        var client = await waitAndRetry.ExecuteAsync(async () => new ManagementClient(rabbit, rabbitUsername, rabbitPassword));
+
+        Console.WriteLine($"Connected to RabbitMQ at '{rabbit}'");
         return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
     }
 
@@ -105,11 +121,28 @@ public partial class RabbitConfigurer : ActionBase
 
     private static async Task<RabbitCredentials?> ConfigureRabbitAsync(IManagementClient client, string username, string? password, AccountType accountType, bool isSilent)
     {
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
+
+        Console.WriteLine($"Checking if vhost '{SystemVhost}' exists");
+        var existingVHosts = await waitAndRetry.ExecuteAsync(async () => await client.GetVhostsAsync());
+        if (!existingVHosts.Any(v => string.Equals(v.Name, SystemVhost, StringComparison.OrdinalIgnoreCase)))
+        {
+            Console.WriteLine($"Creating vhost '{SystemVhost}'");
+            await client.CreateVhostAsync(SystemVhost);
+        }
+
         // Cryptographically secure password generator: https://github.com/prjseal/PasswordGenerator/blob/0beb483fc6bf796bfa9f81db91265d74f90f29dd/PasswordGenerator/Password.cs#L157
         password = string.IsNullOrWhiteSpace(password)
             ? GeneratePassword()
             : password;
 
+        Console.WriteLine($"Creating {accountType} account");
         var isAdded = await AddUserAccountAsync(client, username, password, accountType, isSilent);
 
         if (isAdded == false)
@@ -131,7 +164,15 @@ public partial class RabbitConfigurer : ActionBase
 
     private static async Task<bool> AddUserAccountAsync(IManagementClient client, string username, string password, AccountType accountType, bool isSilent)
     {
-        var existingUser = await GetUserAsync(client, username);
+        var waitAndRetry = Polly.Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            {
+                <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
+                _ => TimeSpan.FromMinutes(1)
+            });
+        Console.WriteLine($"Checking if user '{username}' exists");
+        var existingUser = await waitAndRetry.ExecuteAsync(async () => await GetUserAsync(client, username));
 
         if (existingUser != null && string.Equals(existingUser.Name, username, StringComparison.OrdinalIgnoreCase) && !isSilent)
         {
@@ -146,11 +187,22 @@ public partial class RabbitConfigurer : ActionBase
             }
         }
 
-        var user = UserInfo.ByPassword(username, password)
-            .AddTag(UserTags.Management);
+        Console.WriteLine($"Creating user '{username}'");
+        var user = UserInfo.ByPassword(password);
+        if (accountType == AccountType.LocalDrex || accountType == AccountType.RemoteDrex)
+        {
+            user = user.AddTag(UserTags.Administrator);
+        }
+        else
+        {
+            user = user.AddTag(UserTags.Management);
+        }
 
-        await client.CreateUserAsync(user);
-        await UpdateUserPermissionsAsync(client, username, accountType);
+        Console.WriteLine($"Sending request to create user '{username}'");
+        await waitAndRetry.ExecuteAsync(async () => await client.CreateUserAsync(username, user));
+        Console.WriteLine($"User '{username}' created");
+
+        await waitAndRetry.ExecuteAsync(async () => await UpdateUserPermissionsAsync(client, username, accountType));
 
         var userRecord = await client.GetUserAsync(username);
         return userRecord != null
@@ -167,7 +219,7 @@ public partial class RabbitConfigurer : ActionBase
         var configurePermissions = BuildConfigurePermissions(accountType, permissionRegex);
 
         var vHost = await client.GetVhostAsync(SystemVhost);
-        await client.CreatePermissionAsync(vHost, new PermissionInfo(username, configurePermissions, permissionRegex, permissionRegex));
+        await client.CreatePermissionAsync(vHost, username, new PermissionInfo(configurePermissions, permissionRegex, permissionRegex));
     }
 
     private static string BuildConfigurePermissions(AccountType accountType, string permissionsRegex)
@@ -176,6 +228,7 @@ public partial class RabbitConfigurer : ActionBase
         {
             AccountType.Unknown => throw new Exception($"Unknown account type: {accountType}"),
             AccountType.LocalDrex => ".*",
+            AccountType.RemoteDrex => ".*",
             AccountType.Disco => ".*",
             _ => permissionsRegex
         };
@@ -194,7 +247,9 @@ public partial class RabbitConfigurer : ActionBase
             case AccountType.Unknown:
                 throw new Exception($"Unknown account type: {accountType}");
             case AccountType.LocalDrex:
+            case AccountType.RemoteDrex:
             case AccountType.Disco:
+            case AccountType.VMReport:
                 return ".*";
             case AccountType.Vector:
                 const string siteQueue = Drex.Shared.Constants.MessageBus.Message.SiteLogQueueName;
@@ -227,7 +282,13 @@ public partial class RabbitConfigurer : ActionBase
         }
         catch (UnexpectedHttpStatusCodeException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
+            Console.WriteLine($"User '{username}' does not exist");
             return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting user '{username}': {ex.Message}");
+            throw;
         }
     }
 

@@ -1,0 +1,22 @@
+---
+services:
+  cc.voyage-manager-report-adapter:
+    container_name: voyage-manager-report-adapter
+    image: ghcr.io/abs-wavesight/voyage-manager-report-adapter:windows-$WINDOWS_VERSION-$VOYAGE_MANAGER_REPORT_ADAPTER_VERSION
+    environment:
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-certs/rabbitmq.cer
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+      - ConnectionSettings__Username=${VOYAGE_MANAGER_RABBIT_USERNAME}
+      - ConnectionSettings__Password=${VOYAGE_MANAGER_RABBIT_PASSWORD}
+    ports:
+      - "12348:5000"
+    restart: always
+    volumes:
+      - type: bind
+        source: $ABS_PATH/config/voyage-manager-report-adapter
+        target: C:/app/config
+        read_only: false
+      - type: bind
+        source: $ABS_PATH/certificates/local-certs
+        target: C:/rabbitmq-certs
+        read_only: true

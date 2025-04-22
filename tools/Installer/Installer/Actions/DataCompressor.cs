@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using Microsoft.Extensions.Logging;
 
 namespace Abs.CommonCore.Installer.Actions;
 
@@ -36,21 +35,28 @@ public class DataCompressor : ActionBase
 
     public async Task UncompressFileAsync(FileInfo source, DirectoryInfo destination, bool removeSource)
     {
-        _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
-
-        if (File.Exists(source.FullName) == false)
+        try
         {
-            _logger.LogWarning($"Source location '{source.FullName}' does not exist");
-            return;
+            _logger.LogInformation($"Uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
+
+            if (File.Exists(source.FullName) == false)
+            {
+                _logger.LogWarning($"Source location '{source.FullName}' does not exist");
+                return;
+            }
+
+            await Task.Yield();
+            ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
+
+            if (removeSource)
+            {
+                _logger.LogInformation($"Removing source file: '{source.FullName}'");
+                source.Delete();
+            }
         }
-
-        await Task.Yield();
-        ZipFile.ExtractToDirectory(source.FullName, destination.FullName, true);
-
-        if (removeSource)
+        catch (Exception ex)
         {
-            _logger.LogInformation($"Removing source file: '{source.FullName}'");
-            source.Delete();
+            _logger.LogError(ex, $"Error uncompressing file '{source.FullName}' to folder '{destination.FullName}'");
         }
     }
 }

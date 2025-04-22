@@ -4,8 +4,8 @@ using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
-using Microsoft.Extensions.Logging;
 using Octokit;
+using FileMode = System.IO.FileMode;
 
 namespace Abs.CommonCore.Installer.Actions;
 
@@ -141,10 +141,12 @@ public class ComponentDownloader : ActionBase
         Directory.CreateDirectory(directory);
 
         _logger.LogInformation($"Downloading file '{source}'");
-        var data = await _dataRequestService.RequestByteArrayAsync(source);
+        await using var data = await _dataRequestService.RequestByteArrayAsync(source);
 
         _logger.LogInformation($"Saving file '{source}' to '{destination}'");
-        await File.WriteAllBytesAsync(outputPath, data);
+
+        await using FileStream fileStream = new(outputPath, FileMode.Create, FileAccess.Write);
+        await data.CopyToAsync(fileStream);
     }
 
     private async Task ProcessReleaseFileAsync(Component component, string source, string destination)
@@ -172,10 +174,11 @@ public class ComponentDownloader : ActionBase
         await files
             .ForEachAsync(async file =>
             {
-                var response = await client.Connection.Get<byte[]>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
+                var response = await client.Connection.Get<Stream>(file.Url, new Dictionary<string, string>(), "application/octet-stream");
                 var outputLocation = Path.Combine(outputPath, file.Filename);
 
-                await File.WriteAllBytesAsync(outputLocation, response.Body);
+                await using FileStream fileStream = new(outputLocation, FileMode.Create, FileAccess.Write);
+                await response.Body.CopyToAsync(fileStream);
             });
     }
 }
