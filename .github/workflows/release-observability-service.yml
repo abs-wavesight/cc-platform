@@ -49,9 +49,9 @@ jobs:
       matrix:
         windows-version: [ "2019", "2022" ]
     with:
-      name: ${{ inputs.version || needs.get-version.outputs.version }} Observability Service Release
+      name: ${{ inputs.version || needs.get-next-version.outputs.version }} Observability Service Release
       component_name: Observability-Service
-      tag: ${{ inputs.version || needs.get-version.outputs.version }}_observability-service
+      tag: ${{ inputs.version || needs.get-next-version.outputs.version }}_observability-service
       description: ${{ inputs.description || 'Observability Service' }}
       component-params: >         
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
