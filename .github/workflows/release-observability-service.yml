@@ -55,7 +55,7 @@ jobs:
       description: ${{ inputs.description || 'Observability Service' }}
       component-params: >         
         -p `$PLATFORM_COMMIT_SHA:${{ needs.get-default-platform-commit-sha.outputs.version || inputs.platform-commit-sha }} 
-        -p `$OBSERVABILITY_VERSION:${{ needs.get-version.outputs.version || inputs.version }}
+        -p `$OBSERVABILITY_VERSION:${{ needs.get-next-version.outputs.version || inputs.version }}
       windows-version: ${{ matrix.windows-version }}
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
