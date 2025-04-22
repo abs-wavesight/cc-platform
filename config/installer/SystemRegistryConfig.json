@@ -267,8 +267,8 @@
       "files": [
         {
           "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_SITE_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Vector-Site/"
+          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$VECTOR_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Vector/"
         }
       ],
       "actions": [
