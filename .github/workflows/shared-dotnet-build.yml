@@ -168,7 +168,7 @@ jobs:
 
       - name: Cache SonarQube packages
         if: inputs.run-sonar-scan == true
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ${{ inputs.solution-directory }}/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -177,7 +177,7 @@ jobs:
       - name: Cache SonarQube scanner
         if: inputs.run-sonar-scan == true
         id: cache-sonar-scanner
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ${{ inputs.solution-directory }}/.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
