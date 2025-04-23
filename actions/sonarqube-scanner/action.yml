@@ -75,7 +75,7 @@ runs:
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir="${{ inputs.sonar-project-base-directory }}"" `
+          /d:sonar.projectBaseDir="${{ inputs.sonar-project-base-directory }}" `
           /d:sonar.qualitygate.wait=true `
           /d:sonar.qualitygate.timeout=500 `
           /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} `
