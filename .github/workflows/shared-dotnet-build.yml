@@ -149,7 +149,6 @@ jobs:
 
       # ------------------- CONFIGURE SONARQUBE ------------------- #
       - name: Echo Github.Workspace
-        shell: powershell
         run: echo ${{ inputs.sonar-project-base-directory }}
 
       # - name: Build Solution w/ SonarQube Analysis
