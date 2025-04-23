@@ -61,10 +61,6 @@ on:
         required: true
         description: "Reposiroty ID in SonarQube"
         type: string
-      sonar-project-base-directory:
-        required: true
-        description: "Root of repository for build analysis"
-        type: string
       run-sonar-scan:
         required: true
         description: "Boolean to run sonarqube (true) or not (false)"
@@ -148,18 +144,15 @@ jobs:
         run: dotnet restore ${{ inputs.solution-name }} --packages ${{ env.NUGET_PACKAGE_PATH }}
 
       # ------------------- CONFIGURE SONARQUBE ------------------- #
-      - name: Echo Github.Workspace
-        run: echo ${{ inputs.sonar-project-base-directory }}
 
-      # - name: Build Solution w/ SonarQube Analysis
-      #   uses: abs-wavesight/cc-platform/actions/sonarqube-scanner@feature/sonar
-      #   if: inputs.run-sonar-scan == true
-      #   with:
-      #     solution-directory: ${{ inputs.solution-directory }}
-      #     solution-name: ${{ inputs.solution-name }}
-      #     sonar-project-key: ${{ inputs.sonar-project-key }}
-      #     sonar-project-base-directory: ${{ inputs.sonar-project-base-directory }}
-      #     sonar-token: ${{ secrets.SONAR_TOKEN }}
+      - name: Build Solution w/ SonarQube Analysis
+        uses: abs-wavesight/cc-platform/actions/sonarqube-scanner@feature/sonar
+        if: inputs.run-sonar-scan == true
+        with:
+          solution-directory: ${{ inputs.solution-directory }}
+          solution-name: ${{ inputs.solution-name }}
+          sonar-project-key: ${{ inputs.sonar-project-key }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       # - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
       #   if: inputs.run-sonar-scan == true

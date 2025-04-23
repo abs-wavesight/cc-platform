@@ -10,10 +10,6 @@ inputs:
   sonar-project-key:
     required: true
     description: "Reposiroty ID in SonarQube"
-  sonar-project-base-directory:
-    required: true
-    description: "Root of repository for build analysis"
-    type: string
   sonar-token:
     required: true
     description: "SonarQube Token"
@@ -21,10 +17,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Echo Github.Workspace
-      shell: powershell
-      run: echo ${{ inputs.sonar-project-base-directory }}
-
     # 1.------------------ CONFIGURE SONARQUBE ------------------- #
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -76,7 +68,7 @@ runs:
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
           /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir="${{ inputs.sonar-project-base-directory }}" `
+          /d:sonar.projectBaseDir="${{ github.workspace }}" `
           /d:sonar.qualitygate.wait=true `
           /d:sonar.qualitygate.timeout=500 `
           /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} `
