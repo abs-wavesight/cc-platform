@@ -21,6 +21,7 @@ runs:
   using: "composite"
   steps:
     - name: Echo Github.Workspace
+      shell: bash
       run: echo ${{ github.workspace }}
 
     # 1.------------------ CONFIGURE SONARQUBE ------------------- #
