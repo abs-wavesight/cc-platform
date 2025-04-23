@@ -92,9 +92,6 @@ jobs:
 
     steps:
 
-      - name: Echo Github.Workspace
-        run: echo ${{ github.workspace }}
-
       - name: Dump context
         uses: abs-wavesight/cc-platform/actions/dump-context@main
 
