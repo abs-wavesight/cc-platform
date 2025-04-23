@@ -13,6 +13,7 @@ inputs:
   sonar-project-base-directory:
     required: true
     description: "Root of repository for build analysis"
+    type: string
   sonar-token:
     required: true
     description: "SonarQube Token"
@@ -22,7 +23,7 @@ runs:
   steps:
     - name: Echo Github.Workspace
       shell: powershell
-      run: echo ${{ github.workspace }}
+      run: echo ${{ inputs.sonar-project-base-directory }}
 
     # 1.------------------ CONFIGURE SONARQUBE ------------------- #
     - name: Set up JDK 17
