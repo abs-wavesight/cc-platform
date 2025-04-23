@@ -13,6 +13,7 @@ inputs:
   sonar-project-base-directory:
     required: true
     description: "Root of repository for build analysis"
+    type: string
   sonar-token:
     required: true
     description: "SonarQube Token"
