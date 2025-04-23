@@ -29,7 +29,7 @@ runs:
         java-version: 17
 
     - name: Cache SonarQube packages
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.solution-directory }}/.sonar/cache
         key: ${{ runner.os }}-sonar
@@ -37,7 +37,7 @@ runs:
 
     - name: Cache SonarQube scanner
       id: cache-sonar-scanner
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.solution-directory }}/.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
