@@ -20,6 +20,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Echo Github.Workspace
+      run: echo ${{ github.workspace }}
+
     # 1.------------------ CONFIGURE SONARQUBE ------------------- #
     - name: Set up JDK 17
       uses: actions/setup-java@v4
