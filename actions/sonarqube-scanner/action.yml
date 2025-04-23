@@ -92,7 +92,7 @@ runs:
         dotnet build ${{ inputs.solution-name }} -c Release --no-restore
 
         # End SonarQube Analysis
-        ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt
+        ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ inputs.sonar-token }} | tee logs.txt
 
     - name: Export Sonar Report File
       working-directory: ${{ inputs.solution-directory }}
