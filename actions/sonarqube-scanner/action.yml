@@ -32,7 +32,6 @@ runs:
         distribution: "adopt"
 
     - name: Cache SonarQube packages
-      working-directory: ${{ inputs.sonar-project-base-directory }}
       uses: actions/cache@v4
       with:
         path: .\.sonar\cache
@@ -40,7 +39,6 @@ runs:
         restore-keys: ${{ runner.os }}-sonar
 
     - name: Cache SonarQube scanner
-      working-directory: ${{ inputs.sonar-project-base-directory }}
       id: cache-sonar-scanner
       uses: actions/cache@v4
       with:
@@ -49,7 +47,6 @@ runs:
         restore-keys: ${{ runner.os }}-sonar-scanner
 
     - name: Install SonarQube scanner
-      working-directory: ${{ inputs.sonar-project-base-directory }}
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       shell: powershell
       run: |
@@ -70,7 +67,6 @@ runs:
 
     # 2.-----  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
     - name: Build Solution w/ SonarQube Analysis
-      working-directory: ${{ inputs.sonar-project-base-directory }}
       shell: powershell
       run: |
         # Begin SonarQube Analysis
@@ -93,7 +89,6 @@ runs:
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonar-token }} | Tee-Object -FilePath logs.txt
 
     - name: Export Sonar Report File
-      working-directory: ${{ inputs.sonar-project-base-directory }}
       shell: bash
       run: |
         LINE=$(grep "View details on " logs.txt)
