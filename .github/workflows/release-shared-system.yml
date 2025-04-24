@@ -96,6 +96,14 @@ jobs:
           file: Uninstall.cmd
           target: Uninstall.cmd
           token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
+
+      - name: Download cleanup.ps
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: tags/Installer
+          file: cleanup.ps1
+          target: cleanup.ps1
+          token: ${{ secrets.FETCH_ALL_RELEASES_TOKEN }}
           
       - name: Download components       
         run: |
