@@ -67,7 +67,7 @@ runs:
           /k:${{ inputs.sonar-project-key }} `
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
-          /d:sonar.branch.name=${{ github.head_ref }} \
+          /d:sonar.branch.name=${{ github.head_ref }} `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
           /d:sonar.scanner.skipJreProvisioning=true
