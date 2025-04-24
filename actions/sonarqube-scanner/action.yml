@@ -67,13 +67,10 @@ runs:
           /k:${{ inputs.sonar-project-key }} `
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
+          /d:sonar.branch.name=${{ github.head_ref }} \
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
-          /d:sonar.qualitygate.wait=true `
-          /d:sonar.qualitygate.timeout=500 `
-          /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} `
-          /d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} `
-          /d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+          /d:sonar.scanner.skipJreProvisioning=true
 
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
