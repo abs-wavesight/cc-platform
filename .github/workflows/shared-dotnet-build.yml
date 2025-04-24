@@ -145,111 +145,110 @@ jobs:
 
       # ------------------- CONFIGURE SONARQUBE ------------------- #
 
-      # - name: Build Solution w/ SonarQube Analysis
-      #   uses: abs-wavesight/cc-platform/actions/sonarqube-scanner@feature/sonar
-      #   if: inputs.run-sonar-scan == true
-      #   with:
-      #     solution-directory: ${{ inputs.solution-directory }}
-      #     solution-name: ${{ inputs.solution-name }}
-      #     sonar-project-key: ${{ inputs.sonar-project-key }}
-      #     sonar-token: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
-        if: inputs.run-sonar-scan == true
-        run: echo "PREPARING SONARQUBE FOR CODE ANALYSIS"
-      
-      - name: Set up JDK 17
-        if: inputs.run-sonar-scan == true
-        uses: actions/setup-java@v4
-        with:
-          path: ${{ inputs.solution-directory }}
-          distribution: "adopt"
-          java-version: 17
-
-      - name: Cache SonarQube packages
-        if: inputs.run-sonar-scan == true
-        uses: actions/cache@v3
-        with:
-          path: ${{ inputs.solution-directory }}/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache SonarQube scanner
-        if: inputs.run-sonar-scan == true
-        id: cache-sonar-scanner
-        uses: actions/cache@v3
-        with:
-          path: ${{ inputs.solution-directory }}/.sonar/scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-
-      - name: Install SonarQube scanner
-        if: inputs.run-sonar-scan == true
-        # if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        working-directory: ${{ inputs.solution-directory }}
-        shell: bash
-        run: |
-          mkdir -p ./.sonar/scanner
-          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-        # run: |
-        #   if inputs.run-sonar-scan == true; then
-        #     mkdir -p ./.sonar/scanner
-        #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-        #   else
-        #     echo "SonarQube Scanner is NOT ENABLED"
-        #   fi
-
-      - name: Check SonareQube URL Access
-        if: inputs.run-sonar-scan == true
-        shell: bash
-        run: |
-          URL="https://sonarqube.absns.cloud"
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Failed to access $URL, status code: $HTTP_STATUS"
-            exit 1
-          else
-            echo "Successfully accessed $URL, status code: $HTTP_STATUS"
-          fi
-
-      # ------  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
-
       - name: Build Solution w/ SonarQube Analysis
+        uses: abs-wavesight/cc-platform/actions/sonarqube-scanner@feature/sonar
         if: inputs.run-sonar-scan == true
-        working-directory: ${{ inputs.solution-directory }}
-        shell: bash
-        run: |
-          # Begin SonarQube Analysis
-          ./.sonar/scanner/dotnet-sonarscanner begin \
-            -k:${{ inputs.sonar-project-key }} \
-            -d:sonar.token=${{ secrets.SONAR_TOKEN }} \
-            -d:sonar.host.url="https://sonarqube.absns.cloud" \
-            -d:sonar.ws.timeout=500 \
-            -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
-            -d:sonar.qualitygate.wait=true \
-            -d:sonar.qualitygate.timeout=500 \
-            -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-            -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+        with:
+          solution-directory: ${{ inputs.solution-directory }}
+          solution-name: ${{ inputs.solution-name }}
+          sonar-project-key: ${{ inputs.sonar-project-key }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
-          # Build .NET Project
-          dotnet build ${{ inputs.solution-name }} -c Release --no-restore
+      # - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
+      #   if: inputs.run-sonar-scan == true
+      #   run: echo "PREPARING SONARQUBE FOR CODE ANALYSIS"
+      
+      # - name: Set up JDK 17
+      #   if: inputs.run-sonar-scan == true
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     path: ${{ inputs.solution-directory }}
+      #     distribution: "adopt"
+      #     java-version: 17
 
-          # End SonarQube Analysis
-          ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt   
+      # - name: Cache SonarQube packages
+      #   if: inputs.run-sonar-scan == true
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ inputs.solution-directory }}/.sonar/cache
+      #     key: ${{ runner.os }}-sonar
+      #     restore-keys: ${{ runner.os }}-sonar
 
-      - name: Export Sonar Report File
-        if: inputs.run-sonar-scan == true
-        working-directory: ${{ inputs.solution-directory }}
-        shell: bash
-        run: |
-          LINE=$(grep "View details on " logs.txt)
-          URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "sonar_output_url=$URL"
+      # - name: Cache SonarQube scanner
+      #   if: inputs.run-sonar-scan == true
+      #   id: cache-sonar-scanner
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ inputs.solution-directory }}/.sonar/scanner
+      #     key: ${{ runner.os }}-sonar-scanner
+      #     restore-keys: ${{ runner.os }}-sonar-scanner
+
+      # - name: Install SonarQube scanner
+      #   if: inputs.run-sonar-scan == true
+      #   # if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      #   working-directory: ${{ inputs.solution-directory }}
+      #   shell: bash
+      #   run: |
+      #     mkdir -p ./.sonar/scanner
+      #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      #   # run: |
+      #   #   if inputs.run-sonar-scan == true; then
+      #   #     mkdir -p ./.sonar/scanner
+      #   #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      #   #   else
+      #   #     echo "SonarQube Scanner is NOT ENABLED"
+      #   #   fi
+
+      # - name: Check SonareQube URL Access
+      #   if: inputs.run-sonar-scan == true
+      #   shell: bash
+      #   run: |
+      #     URL="https://sonarqube.absns.cloud"
+      #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
+      #     if [ "$HTTP_STATUS" -ne 200 ]; then
+      #       echo "Failed to access $URL, status code: $HTTP_STATUS"
+      #       exit 1
+      #     else
+      #       echo "Successfully accessed $URL, status code: $HTTP_STATUS"
+      #     fi
+
+      # # ------  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
+
+      # - name: Build Solution w/ SonarQube Analysis
+      #   if: inputs.run-sonar-scan == true
+      #   working-directory: ${{ inputs.solution-directory }}
+      #   shell: bash
+      #   run: |
+      #     # Begin SonarQube Analysis
+      #     ./.sonar/scanner/dotnet-sonarscanner begin \
+      #       -k:${{ inputs.sonar-project-key }} \
+      #       -d:sonar.token=${{ secrets.SONAR_TOKEN }} \
+      #       -d:sonar.host.url="https://sonarqube.absns.cloud" \
+      #       -d:sonar.ws.timeout=500 \
+      #       -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
+      #       -d:sonar.qualitygate.wait=true \
+      #       -d:sonar.qualitygate.timeout=500 \
+      #       -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+      #       -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+      #       -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+
+      #     # Build .NET Project
+      #     dotnet build ${{ inputs.solution-name }} -c Release --no-restore
+
+      #     # End SonarQube Analysis
+      #     ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt   
+
+      # - name: Export Sonar Report File
+      #   if: inputs.run-sonar-scan == true
+      #   working-directory: ${{ inputs.solution-directory }}
+      #   shell: bash
+      #   run: |
+      #     LINE=$(grep "View details on " logs.txt)
+      #     URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
+      #     echo "url=$URL" >> $GITHUB_OUTPUT
+      #     echo "sonar_output_url=$URL"
 
       # ---------------------------------------------------------- #
-
 
       - name: Build Solution
         if: inputs.run-sonar-scan == false

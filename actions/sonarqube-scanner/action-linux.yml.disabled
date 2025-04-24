@@ -21,13 +21,14 @@ runs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: 17
+        path: ${{ github.workspace }}
         distribution: "adopt"
+        java-version: 17
 
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.solution-directory }}\.sonar\cache
+        path: ${{ github.workspace }}/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
@@ -35,17 +36,24 @@ runs:
       id: cache-sonar-scanner
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.solution-directory }}\.sonar\scanner
+        path: ${{ github.workspace }}/.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
 
     - name: Install SonarQube scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      working-directory: ${{ inputs.solution-directory }}
-      shell: powershell
+      working-directory: ${{ github.workspace }}
+      shell: bash
       run: |
-        New-Item -Path .\.sonar\scanner -ItemType Directory
-        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+        mkdir -p ./.sonar/scanner
+        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      # run: |
+      #   if inputs.run-sonar-scan == true; then
+      #     mkdir -p ./.sonar/scanner
+      #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      #   else
+      #     echo "SonarQube Scanner is NOT ENABLED"
+      #   fi
 
     - name: Check SonareQube URL Access
       shell: bash
@@ -61,29 +69,30 @@ runs:
 
     # 2.-----  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
     - name: Build Solution w/ SonarQube Analysis
-      working-directory: ${{ inputs.solution-directory }}
-      shell: powershell
+      working-directory: ${{ github.workspace }}
+      shell: bash
       run: |
         # Begin SonarQube Analysis
-        .\.sonar\scanner\dotnet-sonarscanner begin `
-          /k:${{ inputs.sonar-project-key }} `
-          /d:sonar.token=${{ inputs.sonar-token }} `
-          /d:sonar.host.url="https://sonarqube.absns.cloud" `
-          /d:sonar.ws.timeout=500 `
-          /d:sonar.projectBaseDir=${{ github.workspace }} `
-          /d:sonar.qualitygate.wait=true `
-          /d:sonar.qualitygate.timeout=500 `
-          /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} `
-          /d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} `
-          /d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+        ./.sonar/scanner/dotnet-sonarscanner begin \
+          -k:${{ inputs.sonar-project-key }} \
+          -d:sonar.token=${{ inputs.sonar-token }} \
+          -d:sonar.host.url="https://sonarqube.absns.cloud" \
+          -d:sonar.ws.timeout=500 \
+          -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
+          -d:sonar.qualitygate.wait=true \
+          -d:sonar.qualitygate.timeout=500 \
+          -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+          -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
 
         # Build .NET Project
-        dotnet build ${{ inputs.solution-name }} -c Release --no-restore
+        dotnet build ${{ inputs.solution-directory }}/${{ inputs.solution-name }} -c Release --no-restore
 
         # End SonarQube Analysis
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonar-token }} | Tee-Object -FilePath logs.txt
+        ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ inputs.sonar-token }} | tee logs.txt
 
     - name: Export Sonar Report File
+      working-directory: ${{ inputs.solution-directory }}
       shell: bash
       run: |
         LINE=$(grep "View details on " logs.txt)
