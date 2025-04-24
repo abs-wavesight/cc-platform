@@ -110,6 +110,7 @@ jobs:
         run: |
           xcopy Installer.exe c:\abs\installer\Installer\
           xcopy Uninstall.cmd c:\abs\installer\Installer\
+          xcopy cleanup.ps1 c:\abs\installer\Installer\
 
       - name: Remove logs
         run: |

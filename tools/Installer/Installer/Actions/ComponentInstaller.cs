@@ -36,7 +36,6 @@ public class ComponentInstaller : ActionBase
 
     private const int DefaultMaxChunkSize = 1 * 1024 * 1024 * 1024; // 1GB
     private const string ReleaseZipName = "Release.zip";
-    private const string ReadmeName = "readme.txt";
     private const string AdditionalFilesName = "AdditionalFiles";
 
     private const string Win32OptionalFeatures = "Win32_OptionalFeature";
@@ -785,7 +784,8 @@ public class ComponentInstaller : ActionBase
     private async Task<string[]> PrintReadmeFileAsync()
     {
         var current = Directory.GetCurrentDirectory();
-        var readmePath = Path.Combine(current, ReadmeName);
+        var readmeName = Directory.GetFiles(current, "readme*.txt", SearchOption.TopDirectoryOnly).First();
+        var readmePath = Path.Combine(current, readmeName);
         var readmeExists = File.Exists(readmePath);
 
         if (!readmeExists)

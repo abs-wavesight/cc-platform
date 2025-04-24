@@ -47,4 +47,4 @@ jobs:
           tag: Installer
           commit: main
           allowUpdates: true
-          artifacts: "Abs.CommonCore.Installer.exe,./config/installer/*.json,./scripts/installer/*"
+          artifacts: "Abs.CommonCore.Installer.exe,./config/installer/*.json,./scripts/installer/*.*"
