@@ -71,13 +71,14 @@ runs:
     # 2.-----  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
     - name: Build Solution w/ SonarQube Analysis
       shell: powershell
+      # /d:sonar.branch.name=${{ env.BRANCH_NAME }} `
       run: |
         # Begin SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner begin `
           /k:${{ inputs.sonar-project-key }} `
           /d:sonar.token=${{ inputs.sonar-token }} `
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
-          /d:sonar.branch.name=${{ env.BRANCH_NAME }} `
+          
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
           /d:sonar.scanner.skipJreProvisioning=true `
