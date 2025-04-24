@@ -86,14 +86,19 @@ runs:
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
 
         # End SonarQube Analysis
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonar-token }} | Tee-Object -FilePath .\.sonar\logs.txt
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonar-token }} | Tee-Object -FilePath .\.sonar\sonar-logs.txt
 
-    - name: Export Sonar Report File
-      shell: bash
-      run: |
-        sed -i 's/\r$//' ./.sonar/logs.txt
-        LINE=$(grep "View details on " ./.sonar/logs.txt)
-        URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
-        echo "url=$URL" >> $GITHUB_OUTPUT
-        echo "sonar_output_url=$URL"
+    - name: "Upload Sonar Report File"
+      uses: actions/upload-artifact@v4
+      with:
+        name: sonar-logs
+        path: ${{ github.workspace }}\.sonar\sonar-logs.txt
+
+    # - name: Export Sonar Report File
+    # shell: bash
+    # run: |
+    #   LINE=$(grep "View details on " ./.sonar/logs.txt)
+    #   URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
+    #   echo "url=$URL" >> $GITHUB_OUTPUT
+    #   echo "sonar_output_url=$URL"
   # ---------------------------------------------------------- #
