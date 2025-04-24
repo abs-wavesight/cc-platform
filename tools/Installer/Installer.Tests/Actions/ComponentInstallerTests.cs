@@ -77,8 +77,8 @@ public class ComponentInstallerTests
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(4));
-        Assert.True(commandCalls.Count == 4 && commandCalls[1] == "first" && commandCalls[2] == "last");
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(3));
+        Assert.True(commandCalls.Count == 3 && commandCalls[0] == "first" && commandCalls[1] == "last");
     }
 
     [Fact]
