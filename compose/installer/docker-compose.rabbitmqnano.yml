@@ -9,7 +9,7 @@ services:
         limits:
           memory: 8G
     entrypoint: [ cmd, "-c" ]
-    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\ca.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
       test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
       interval: 10s

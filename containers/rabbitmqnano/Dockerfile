@@ -8,8 +8,7 @@ LABEL Description="RabbitMQ" Version="3.13.7"
 # RABBITMQ_VERSION: rabbitmq version used in download url and to rename folder extracted from zip file
 # RABBITMQ_CONFIG_FILE: tell rabbitmq where to find our custom config file
 ENV ERLANG_HOME="c:\\erlang" \
-    RABBITMQ_VERSION="3.13.7" \
-    RABBITMQ_CONFIG_FILE="c:\\rabbitmq\\config\\rabbitmq.conf"
+    RABBITMQ_VERSION="3.13.7"
 
 USER ContainerAdministrator
 # setup powershell options for RUN commands
