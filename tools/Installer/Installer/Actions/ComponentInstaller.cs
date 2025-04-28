@@ -784,14 +784,14 @@ public class ComponentInstaller : ActionBase
     private async Task<string[]> PrintReadmeFileAsync()
     {
         var current = Directory.GetCurrentDirectory();
-        var readmeName = Directory.GetFiles(current, "readme*.txt", SearchOption.TopDirectoryOnly).First();
-        var readmePath = Path.Combine(current, readmeName);
-        var readmeExists = File.Exists(readmePath);
-
-        if (!readmeExists)
+        var readmeName = Directory.GetFiles(current, "readme*.txt", SearchOption.TopDirectoryOnly).FirstOrDefault();
+        if (string.IsNullOrEmpty(readmeName))
         {
             return new string[0];
         }
+
+        var readmePath = Path.Combine(current, readmeName);
+        var readmeExists = File.Exists(readmePath);
 
         var readmeLines = await File.ReadAllLinesAsync(readmePath);
 

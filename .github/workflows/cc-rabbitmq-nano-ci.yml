@@ -33,7 +33,7 @@ jobs:
     with:
       major: 1
       minor: 0
-      project_marker: "rabbitmqnano"
+      project_marker: "rabbitmq"
       release_branch: "releases/1_0_1"
       develop_branch: "main"
       increment: true
