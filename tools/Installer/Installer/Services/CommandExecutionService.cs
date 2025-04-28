@@ -44,7 +44,10 @@ public partial class CommandExecutionService : ICommandExecutionService
             if (!string.IsNullOrWhiteSpace(args.Data))
             {
                 _logger.LogError(args.Data?.Trim());
-                isError = true;
+                if (args.Data != "What's Next?" && !args.Data.StartsWith("  View a summary of image vulnerabilities and recommendations"))
+                {
+                    isError = true;
+                }
             }
         };
         process.OutputDataReceived += (sender, args) =>
