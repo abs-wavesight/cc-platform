@@ -215,6 +215,12 @@ jobs:
       - name: Build Solution w/ SonarQube Analysis
         if: inputs.run-sonar-scan == true
         working-directory: ${{ inputs.solution-directory }}
+        # ADDTIONAL SONAR PARAMETERS
+        # -d:sonar.qualitygate.wait=true \
+        # -d:sonar.qualitygate.timeout=500 \
+        # -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+        # -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+        # -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
         shell: bash
         run: |
           # Begin SonarQube Analysis
@@ -224,11 +230,7 @@ jobs:
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
             -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
-            -d:sonar.qualitygate.wait=true \
-            -d:sonar.qualitygate.timeout=500 \
-            -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-            -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            -d:sonar.branch.name=${{ github.ref_name }} 
 
           # Build .NET Project
           dotnet build ${{ inputs.solution-name }} -c Release --no-restore
