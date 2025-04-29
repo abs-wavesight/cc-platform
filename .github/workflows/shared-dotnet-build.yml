@@ -236,17 +236,13 @@ jobs:
           dotnet build ${{ inputs.solution-name }} -c Release --no-restore
 
           # End SonarQube Analysis
-          ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee logs.txt   
+          ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee sonar-logs.txt   
 
-      - name: Export Sonar Report File
-        if: inputs.run-sonar-scan == true
-        working-directory: ${{ inputs.solution-directory }}
-        shell: bash
-        run: |
-          LINE=$(grep "View details on " logs.txt)
-          URL=$(echo $LINE | grep -Eo 'https://[^ >]+'|head -1)
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "sonar_output_url=$URL"
+      # - name: "Upload Sonar Report File"
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: sonar-logs
+      #     path: ${{ inputs.solution-directory }}/.sonar/sonar-logs.txt
 
       # ---------------------------------------------------------- #
 
