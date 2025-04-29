@@ -230,7 +230,7 @@ jobs:
             -d:sonar.host.url="https://sonarqube.absns.cloud" \
             -d:sonar.ws.timeout=500 \
             -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
-            -d:sonar.branch.name=${{ github.ref_name }} 
+            -d:sonar.branch.name=${{ github.event.pull_request.head.ref }}
 
           # Build .NET Project
           dotnet build ${{ inputs.solution-name }} -c Release --no-restore
