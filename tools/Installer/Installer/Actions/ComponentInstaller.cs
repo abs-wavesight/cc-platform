@@ -111,9 +111,10 @@ public class ComponentInstaller : ActionBase
         }
 
         var dockerRun = true;
+
         try
         {
-            _commandExecutionService.ExecuteCommandWithResult(dockerPath, "ps", "");
+            await _commandExecutionService.ExecuteCommandAsync(dockerPath, "ps", "");
         }
         catch
         {
