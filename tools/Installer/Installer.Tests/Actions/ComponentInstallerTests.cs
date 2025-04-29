@@ -53,7 +53,7 @@ public class ComponentInstallerTests
 
         var dockerPath = DockerPath.GetDockerPath();
         initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(dockerPath,
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(2));
     }
 
     [Fact]
@@ -77,8 +77,8 @@ public class ComponentInstallerTests
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(4));
-        Assert.True(commandCalls.Count == 4 && commandCalls[1] == "first" && commandCalls[2] == "last");
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(5));
+        Assert.True(commandCalls.Count == 5 && commandCalls[2] == "first" && commandCalls[3] == "last");
     }
 
     [Fact]
