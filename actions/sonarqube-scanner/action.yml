@@ -37,7 +37,7 @@ runs:
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/.sonar/cache
+        path: ./.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
@@ -45,13 +45,12 @@ runs:
       id: cache-sonar-scanner
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/.sonar/scanner
+        path: ./.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
 
     - name: Install SonarQube scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      working-directory: ${{ github.workspace }}
       shell: powershell
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
@@ -73,13 +72,6 @@ runs:
     - name: Build Solution w/ SonarQube Analysis
       working-directory: ${{ github.workspace }}
       shell: powershell
-      # /d:sonar.branch.name=${{ env.BRANCH_NAME }} `
-      # /d:sonar.go.coverage.reportPaths=coverage.out `
-      # /d:sonar.qualitygate.wait=true `
-      # /d:sonar.qualitygate.timeout=2000 `
-      # /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} `
-      # /d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} `
-      # /d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
       run: |
         # Begin SonarQube Analysis
         .\.sonar\scanner\dotnet-sonarscanner begin `
@@ -88,8 +80,8 @@ runs:
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
-          /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
+          /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false
           
         # Build .NET Project
