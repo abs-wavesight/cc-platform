@@ -881,7 +881,7 @@ public class ComponentInstaller : ActionBase
     {
         var configFiles = string.IsNullOrWhiteSpace(action.Destination)
             ? Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories)
-            : [action.Destination, "docker-compose.root.yml"];
+            : [action.Destination, Path.Combine(action.Source, "docker-compose.root.yml")];
 
         var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);
 
