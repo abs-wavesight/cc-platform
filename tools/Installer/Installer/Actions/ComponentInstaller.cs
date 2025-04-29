@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CommandLine;
 using System.Linq;
 using System.Management;
 using System.Text.Json;
@@ -109,7 +110,17 @@ public class ComponentInstaller : ActionBase
             File.Delete(imageListTxtPath);
         }
 
-        var dockerInstalled = File.Exists(DockerPath.DockerFilePath);
+        var dockerRun = true;
+        try
+        {
+            _commandExecutionService.ExecuteCommandWithResult(dockerPath, "ps", "");
+        }
+        catch
+        {
+            dockerRun = false;
+            _logger.LogInformation("Docker is not running.");
+        }
+
         var widowsVersionSpecified = false;
         string[][] installingVesrion_Component = null;
         var windowsVersion = "";
@@ -130,13 +141,13 @@ public class ComponentInstaller : ActionBase
             var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
             await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
 
-            if (dockerInstalled)
+            if (dockerRun)
             {
                 await _commandExecutionService.ExecuteCommandAsync("powershell", $"-File cleanup.ps1 -DockerPath {dockerPath}", cleaningScriptPath);
             }
         }
 
-        var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerInstalled);
+        var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerRun);
         VerifySourcesPresent(components);
 
         var orderedComponenets = components
@@ -248,7 +259,7 @@ public class ComponentInstaller : ActionBase
         await ExecuteDockerComposeAsync(rootLocation, action);
     }
 
-    private async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerInstalled)
+    private async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerRun)
     {
         try
         {
@@ -269,10 +280,10 @@ public class ComponentInstaller : ActionBase
                     .Distinct()
                     .ToArray();
                 var command = DockerPath.GetDockerPath();
-                var currentContainers = !dockerInstalled ? new List<DockerContainerInfoModel>() :
+                var currentContainers = !dockerRun ? new List<DockerContainerInfoModel>() :
                     DockerService.ParceDockerPsCommand(_commandExecutionService.ExecuteCommandWithResult(command, "ps", ""));
 
-                if (!dockerInstalled
+                if (!dockerRun
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMq") && NeedUpdateComponent("RabbitMq", installingVesrion_Component, currentContainers)))
                 {

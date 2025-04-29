@@ -77,8 +77,8 @@ public class ComponentInstallerTests
 
         await initializer.Installer.ExecuteAsync(new[] { "ExecuteImmediateTest" });
 
-        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(3));
-        Assert.True(commandCalls.Count == 3 && commandCalls[0] == "first" && commandCalls[1] == "last");
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(4));
+        Assert.True(commandCalls.Count == 4 && commandCalls[1] == "first" && commandCalls[2] == "last");
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class ComponentInstallerTests
         var loggerFactory = NullLoggerFactory.Instance;
         var commandExecution = new Mock<ICommandExecutionService>();
         commandExecution.Setup(x => x.ExecuteCommandWithResult(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Returns(new List<string> {"CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES",
-                                       "1             i:v    c        c        s       p      n"});
+            .Returns(new List<string> {"CONTAINER ID  IMAGE                                                       COMMAND  CREATED  STATUS  PORTS  NAMES",
+                                       "1             ghcr.io/abs-wavesight/rabbitmq:windows-2019-1.0.0.1-beta    c        c        s       p      n"});
         var scriptPath = Directory.GetParent(Directory.GetCurrentDirectory());
         for (var i = 0; i < 5; i++)
         {
