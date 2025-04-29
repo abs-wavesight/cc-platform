@@ -132,7 +132,7 @@ public class ComponentInstaller : ActionBase
 
             if (dockerInstalled)
             {
-                await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
+                await _commandExecutionService.ExecuteCommandAsync("powershell", $"-File cleanup.ps1 -DockerPath {dockerPath}", cleaningScriptPath);
             }
         }
 
@@ -192,7 +192,7 @@ public class ComponentInstaller : ActionBase
 
         if (!widowsVersionSpecified)
         {
-            await _commandExecutionService.ExecuteCommandAsync("cleanup.ps1", $"-DockerPath {dockerPath}", cleaningScriptPath);
+            await _commandExecutionService.ExecuteCommandAsync("powershell", $"-File cleanup.ps1 -DockerPath {dockerPath}", cleaningScriptPath);
         }
 
         _logger.LogInformation("Installer complete");
