@@ -95,7 +95,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT_PRINCE_SONAR || ' ' }}
+          token: ${{ secrets.GH_PAT || ' ' }}
 
       - name: Checkout branch 
         if: inputs.use-submodules == false
