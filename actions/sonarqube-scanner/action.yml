@@ -89,7 +89,8 @@ runs:
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
           /d:sonar.scanner.skipJreProvisioning=true `
-          /d:sonar.branch.name=${{ github.event.pull_request.head.ref }}
+          /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
+          /d:sonar.scanner.scanAll=false
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
