@@ -13,6 +13,10 @@ inputs:
   sonar-token:
     required: true
     description: "SonarQube Token"
+  sonar-exclusion-paths:
+    required: false
+    description: "Comma separated list of paths to exclude from SonarQube analysis"
+    default: ""
 
 runs:
   using: "composite"
@@ -82,7 +86,8 @@ runs:
           /d:sonar.projectBaseDir=${{ github.workspace }} `
           /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
           /d:sonar.scanner.skipJreProvisioning=true `
-          /d:sonar.scanner.scanAll=false
+          /d:sonar.scanner.scanAll=false `
+          /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }}
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
