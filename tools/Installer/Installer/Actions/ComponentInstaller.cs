@@ -632,14 +632,14 @@ public class ComponentInstaller : ActionBase
                                   adminUser.Password, VectorUsername, null,
                                   Models.AccountType.Vector, true);
 
-        var config = await File.ReadAllTextAsync(action.Source);
+        var config = await File.ReadAllTextAsync(action.Destination);
 
         // Replace the vector account credentials
         var newText = config
                       .RequireReplace($"{LocalRabbitUsername}:{LocalRabbitPassword}", $"{account!.Username}:{HttpUtility.UrlEncode(account.Password)}");
 
         _logger.LogInformation("Updating vector account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        await File.WriteAllTextAsync(action.Destination, newText);
     }
 
     private async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
