@@ -884,6 +884,7 @@ public class ComponentInstaller : ActionBase
     {
         var dockerPath = DockerPath.GetDockerPath();
         await _commandExecutionService.ExecuteCommandAsync(dockerPath, "system prune -f", "");
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, "network prune -f", "");
     }
 
     private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
