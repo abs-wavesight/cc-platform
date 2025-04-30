@@ -281,8 +281,12 @@ public class ComponentInstaller : ActionBase
                     .Distinct()
                     .ToArray();
                 var command = DockerPath.GetDockerPath();
-                var currentContainers = !dockerRun ? new List<DockerContainerInfoModel>() :
-                    DockerService.ParceDockerPsCommand(_commandExecutionService.ExecuteCommandWithResult(command, "ps", ""));
+                var currentContainers = new List<DockerContainerInfoModel>();
+                if (dockerRun)
+                {
+                    var rawDockerPsResponse = _commandExecutionService.ExecuteCommandWithResult(command, "ps", "");
+                    currentContainers = DockerService.ParceDockerPsCommand(rawDockerPsResponse);
+                }
 
                 if (!dockerRun
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
