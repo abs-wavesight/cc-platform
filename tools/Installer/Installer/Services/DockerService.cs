@@ -6,15 +6,15 @@ public class DockerService
     public static List<DockerContainerInfoModel> ParceDockerPsCommand(List<string> cmdResult)
     {
         var result = new List<DockerContainerInfoModel>();
-        if (cmdResult == null || cmdResult.Count < 2)
-        {
-            return result;
-        }
-
         var i = 0;
         while (!cmdResult[i].Contains("CONTAINER ID"))
         {
             i++;
+        }
+
+        if (i+1 == cmdResult.Count)
+        {
+            return result;
         }
 
         var headers = new[] {
