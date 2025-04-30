@@ -149,7 +149,7 @@ jobs:
       # ------------------- CONFIGURE SONARQUBE ------------------- #
 
       - name: Build Solution w/ SonarQube Analysis - WINDOWS
-        uses: abs-wavesight/cc-platform/actions/sonarqube-scanner-windows@feature/sonar-scan
+        uses: abs-wavesight/cc-platform/actions/sonar-scanner-windows@feature/sonar-scan
         if: inputs.run-sonar-scan == true
         with:
           solution-directory: ${{ inputs.solution-directory }}
@@ -159,7 +159,7 @@ jobs:
           sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
 
       # - name: Build Solution w/ SonarQube Analysis - LINUX
-      #   uses: abs-wavesight/cc-platform/actions/sonarqube-scanner-linux@feature/sonar-scan
+      #   uses: abs-wavesight/cc-platform/actions/sonar-scanner-linux@feature/sonar-scan
       #   if: inputs.run-sonar-scan == true
       #   with:
       #     solution-directory: ${{ inputs.solution-directory }}
