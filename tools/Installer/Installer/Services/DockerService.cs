@@ -12,7 +12,7 @@ public class DockerService
             i++;
         }
 
-        if (i+1 == cmdResult.Count)
+        if (i + 1 == cmdResult.Count)
         {
             return result;
         }
