@@ -339,6 +339,11 @@ public class ComponentInstaller : ActionBase
     {
         var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
         var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage + componentName.ToLower());
+        if (currentContainer == null)
+        {
+            return true;
+        }
+
         var currentComponentOs = currentContainer.ImageTag.Substring(0, 13);
         var currentComponentVersion = currentContainer.ImageTag.Substring(13);
         var containerToKeep = currentContainer.ImageName + ":" + currentComponentOs + bringingComponentTag;
