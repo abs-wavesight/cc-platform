@@ -122,6 +122,18 @@ public class ComponentInstaller : ActionBase
             _logger.LogInformation("Docker is not running.");
         }
 
+        var dockerRun = true;
+
+        try
+        {
+            await _commandExecutionService.ExecuteCommandAsync(dockerPath, "ps", "");
+        }
+        catch
+        {
+            dockerRun = false;
+            _logger.LogInformation("Docker is not running.");
+        }
+
         var widowsVersionSpecified = false;
         string[][] installingVesrion_Component = null;
         var windowsVersion = "";
@@ -143,11 +155,13 @@ public class ComponentInstaller : ActionBase
             await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
 
             if (dockerRun)
+            if (dockerRun)
             {
                 await _commandExecutionService.ExecuteCommandAsync("powershell", $"-File cleanup.ps1 -DockerPath {dockerPath}", cleaningScriptPath);
             }
         }
 
+        var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerRun);
         var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerRun);
         VerifySourcesPresent(components);
 
@@ -261,6 +275,7 @@ public class ComponentInstaller : ActionBase
     }
 
     private async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerRun)
+    private async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerRun)
     {
         try
         {
@@ -284,6 +299,7 @@ public class ComponentInstaller : ActionBase
                 var currentContainers = !dockerRun ? new List<DockerContainerInfoModel>() :
                     DockerService.ParceDockerPsCommand(_commandExecutionService.ExecuteCommandWithResult(command, "ps", ""));
 
+                if (!dockerRun
                 if (!dockerRun
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMq") && NeedUpdateComponent("RabbitMq", installingVesrion_Component, currentContainers)))
@@ -339,6 +355,11 @@ public class ComponentInstaller : ActionBase
     {
         var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
         var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage + componentName.ToLower());
+        if (currentContainer == null)
+        {
+            return true;
+        }
+
         var currentComponentOs = currentContainer.ImageTag.Substring(0, 13);
         var currentComponentVersion = currentContainer.ImageTag.Substring(13);
         var containerToKeep = currentContainer.ImageName + ":" + currentComponentOs + bringingComponentTag;
@@ -623,14 +644,14 @@ public class ComponentInstaller : ActionBase
                                   adminUser.Password, VectorUsername, null,
                                   Models.AccountType.Vector, true);
 
-        var config = await File.ReadAllTextAsync(action.Source);
+        var config = await File.ReadAllTextAsync(action.Destination);
 
         // Replace the vector account credentials
         var newText = config
                       .RequireReplace($"{LocalRabbitUsername}:{LocalRabbitPassword}", $"{account!.Username}:{HttpUtility.UrlEncode(account.Password)}");
 
         _logger.LogInformation("Updating vector account");
-        await File.WriteAllTextAsync(action.Source, newText);
+        await File.WriteAllTextAsync(action.Destination, newText);
     }
 
     private async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
@@ -713,7 +734,7 @@ public class ComponentInstaller : ActionBase
                 _logger.Log(logLevel, $"Container '{container.Name.Trim('/')}': {(isHealthy ? "Healthy" : "Unhealthy")}");
             }
 
-            if (healthyCount == totalContainers)
+            if (healthyCount >= totalContainers)
             {
                 _logger.LogInformation("All containers are healthy");
                 return;
@@ -875,12 +896,14 @@ public class ComponentInstaller : ActionBase
     {
         var dockerPath = DockerPath.GetDockerPath();
         await _commandExecutionService.ExecuteCommandAsync(dockerPath, "system prune -f", "");
+        await _commandExecutionService.ExecuteCommandAsync(dockerPath, "network prune -f", "");
     }
 
     private async Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action)
     {
         var configFiles = string.IsNullOrWhiteSpace(action.Destination)
             ? Directory.GetFiles(action.Source, "docker-compose.*.yml", SearchOption.AllDirectories)
+            : [action.Destination, Path.Combine(action.Source, "docker-compose.root.yml")];
             : [action.Destination, Path.Combine(action.Source, "docker-compose.root.yml")];
 
         var envFile = Directory.GetFiles(action.Source, "environment.env", SearchOption.TopDirectoryOnly);

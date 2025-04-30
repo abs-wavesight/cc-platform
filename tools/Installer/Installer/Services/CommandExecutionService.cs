@@ -85,12 +85,12 @@ public partial class CommandExecutionService : ICommandExecutionService
 
     public List<string?> ExecuteCommandWithResult(string command, string arguments, string workingDirectory)
     {
-        _logger.LogInformation("Executing: {command} {arguments}", command, arguments);
+        _logger.LogInformation("Executing: {command} {arguments} and waiting for results", command, arguments);
         var isError = false;
 
         var process = new Process();
         process.StartInfo.FileName = "cmd"; // Use cmd for more extensibility
-        process.StartInfo.Arguments = $"/C docker ps";
+        process.StartInfo.Arguments = $"/C {command} {arguments}";
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
