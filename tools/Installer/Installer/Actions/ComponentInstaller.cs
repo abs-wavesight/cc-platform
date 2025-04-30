@@ -722,7 +722,7 @@ public class ComponentInstaller : ActionBase
                 _logger.Log(logLevel, $"Container '{container.Name.Trim('/')}': {(isHealthy ? "Healthy" : "Unhealthy")}");
             }
 
-            if (healthyCount == totalContainers)
+            if (healthyCount >= totalContainers)
             {
                 _logger.LogInformation("All containers are healthy");
                 return;
