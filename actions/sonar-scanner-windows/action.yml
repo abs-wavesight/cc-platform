@@ -91,7 +91,7 @@ runs:
           /d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} `
           /d:sonar.issue.ignore.multicriteria=e1 `
           /d:sonar.issue.ignore.multicriteria.e1.ruleKey=** `
-          /d:sonar.issue.ignore.multicriteria.e1.filePattern=${{ inputs.sonar-exclusion-paths }}
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=${{ inputs.sonar-exclusion-paths }}
           #/d:sonar.issue.ignore.paths=${{ inputs.sonar-exclusion-paths }}
           
         # Build .NET Project
