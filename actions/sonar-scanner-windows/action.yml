@@ -87,7 +87,9 @@ runs:
           /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
-          /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }}
+          /d:sonar.issue.ignore.multicriteria=exclude `
+          /d:sonar.issue.ignore.multicriteria.exclude.rule=** `
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=${{ inputs.sonar-exclusion-paths }}
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
@@ -100,3 +102,25 @@ runs:
       with:
         name: sonar-logs
         path: ${{ github.workspace }}/.sonar/sonar-logs.txt
+# --------- SONAR QUBE PROPERTY KEYS EXPLAINED  --------- #
+
+# .\.sonar\scanner\dotnet-sonarscanner begin `
+
+#   /k:
+#   /d:sonar.token=
+#   /d:sonar.host.url=
+#   /d:sonar.ws.timeout=
+#   /d:sonar.projectBaseDir=
+#   /d:sonar.branch.name=
+#   /d:sonar.scanner.skipJreProvisioning=
+#   /d:sonar.scanner.scanAll=
+#   /d:sonar.exclusions=
+#   /d:sonar.issue.ignore.multicriteria=exclude `
+#   /d:sonar.issue.ignore.multicriteria.exclude.rule=
+#   /d:sonar.issue.ignore.multicriteria.e1.resourceKey=
+
+# # Build .NET Project
+# dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
+
+# # End SonarQube Analysis
+# .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token=${{ inputs.sonar-token }} | Tee-Object -FilePath .\.sonar\sonar-logs.txt
