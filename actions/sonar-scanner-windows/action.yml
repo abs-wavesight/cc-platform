@@ -89,7 +89,7 @@ runs:
           /d:sonar.scanner.scanAll=false `
           /d:sonar.issue.ignore.multicriteria=e1 `
           /d:sonar.issue.ignore.multicriteria.e1.ruleKey=** `
-          /d:sonar.issue.ignore.multicriteria.e1.filePattern=submodules/**/*
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=submodules/**/*
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
