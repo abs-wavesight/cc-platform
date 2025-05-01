@@ -525,12 +525,14 @@ public class ComponentInstaller : ActionBase
         {
             if (envLines[i].Contains(usernameEnvVar))
             {
+                _logger.LogInformation($"Updating {usernameEnvVar} in env file");
                 userNameLineFound = true;
                 envLines[i] = $"{usernameEnvVar}={account!.Username}";
             }
 
             if (envLines[i].Contains(passwordEnvVar))
             {
+                _logger.LogInformation($"Updating {passwordEnvVar} in env file");
                 userPassLineFound = true;
                 envLines[i] = $"{passwordEnvVar}={account!.Password}";
             }
@@ -543,18 +545,20 @@ public class ComponentInstaller : ActionBase
 
         if (!userNameLineFound)
         {
+            _logger.LogInformation($"Adding {usernameEnvVar} to env file");
             envLines.Add($"{usernameEnvVar}={account!.Username}");
         }
 
         if (!userPassLineFound)
         {
+            _logger.LogInformation($"Adding {passwordEnvVar} to env file");
             envLines.Add($"{passwordEnvVar}={account!.Password}");
         }
 
         var newText = envLines.StringJoin(Environment.NewLine);
 
-        _logger.LogInformation("Updating local drex account");
-        await File.WriteAllTextAsync(passwordEnvVar, newText);
+        _logger.LogInformation("Updating env file {envFilePath}", envFilePath);
+        await File.WriteAllTextAsync(envFilePath, newText);
     }
 
     private static async Task<RabbitMqUserModel> GetRabbitAdminUser(string rabbitDefinitionFile)
