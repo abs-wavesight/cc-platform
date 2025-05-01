@@ -88,8 +88,8 @@ runs:
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
           /d:sonar.issue.ignore.multicriteria=exclude `
-          /d:sonar.issue.ignore.multicriteria.exclude.rule=** `
-          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=${{ inputs.sonar-exclusion-paths }}
+          /d:sonar.issue.ignore.multicriteria.exclude.ruleKey=** `
+          /d:sonar.issue.ignore.multicriteria.exclude.filePattern=${ inputs.sonar-exclusion-paths }
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
