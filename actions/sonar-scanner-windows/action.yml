@@ -87,9 +87,8 @@ runs:
           /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
-          /d:sonar.issue.ignore.multicriteria=e1 `
-          /d:sonar.issue.ignore.multicriteria.e1.ruleKey=** `
-          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=submodules/**/*
+          /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} `
+          /d:sonar.issue.ignore.paths=${{ inputs.sonar-exclusion-paths }}
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
