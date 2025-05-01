@@ -292,17 +292,22 @@ public class ComponentInstaller : ActionBase
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMq") && NeedUpdateComponent("RabbitMq", installingVesrion_Component, currentContainers)))
                 {
-                    await _serviceManager.StopServiceAsync("dockerd");
-                    await _serviceManager.StopServiceAsync("docker");
+                    if (dockerRun)
+                    {
+                        await _commandExecutionService.ExecuteCommandAsync(command, "network prune -f", "");
 
-                    return defaultComponentsToInstall;
-                }
-                else
-                {
-                    return SelectUpdatedComponents(installingVesrion_Component, defaultComponentsToInstall, currentContainers).ToArray();
+
+                        await _serviceManager.StopServiceAsync("dockerd");
+                        await _serviceManager.StopServiceAsync("docker");
+
+                        return defaultComponentsToInstall;
+                    }
+                    else
+                    {
+                        return SelectUpdatedComponents(installingVesrion_Component, defaultComponentsToInstall, currentContainers).ToArray();
+                    }
                 }
             }
-        }
         catch (Exception ex)
         {
             throw new Exception("Unable to determine components to use", ex);
