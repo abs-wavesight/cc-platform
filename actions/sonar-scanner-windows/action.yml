@@ -88,11 +88,7 @@ runs:
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
           /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} `
-          /d:sonar.issue.ignore.multicriteria=e1 `
-          /d:sonar.issue.ignore.multicriteria.e1.ruleKey=mintainability `
-          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=${{ inputs.sonar-exclusion-paths }}
-          #/d:sonar.issue.ignore.paths=${{ inputs.sonar-exclusion-paths }}
-          # /d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} `
+          /d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }}
           
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}\${{ inputs.solution-name }} -c Release --no-restore
