@@ -296,7 +296,6 @@ public class ComponentInstaller : ActionBase
                     {
                         await _commandExecutionService.ExecuteCommandAsync(command, "network prune -f", "");
 
-
                         await _serviceManager.StopServiceAsync("dockerd");
                         await _serviceManager.StopServiceAsync("docker");
 
@@ -308,6 +307,7 @@ public class ComponentInstaller : ActionBase
                     }
                 }
             }
+        }
         catch (Exception ex)
         {
             throw new Exception("Unable to determine components to use", ex);
@@ -413,7 +413,9 @@ public class ComponentInstaller : ActionBase
         if (action.Source.EndsWith(".tar"))
         {
             var dockerPath = DockerPath.GetDockerPath();
-            await _commandExecutionService.ExecuteCommandAsync(dockerPath, $"load -i {action.Source}", rootLocation);
+            var policy = Policy.Handle<Exception>()
+                .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromMinutes(Math.Pow(2, retryAttempt)));
+            await policy.ExecuteAsync(async () => await _commandExecutionService.ExecuteCommandAsync(dockerPath, $"load -i {action.Source}", rootLocation));
         }
         else
         {
