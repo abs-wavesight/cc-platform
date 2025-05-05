@@ -296,7 +296,6 @@ public class ComponentInstaller : ActionBase
                     {
                         await _commandExecutionService.ExecuteCommandAsync(command, "network prune -f", "");
 
-
                         await _serviceManager.StopServiceAsync("dockerd");
                         await _serviceManager.StopServiceAsync("docker");
 
