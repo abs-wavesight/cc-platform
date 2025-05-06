@@ -285,26 +285,37 @@ public class ComponentInstaller : ActionBase
                 if (dockerRun)
                 {
                     var rawDockerPsResponse = _commandExecutionService.ExecuteCommandWithResult(command, "ps", "");
+                    _logger.LogInformation("Parsing raw ps command response:");
+                    foreach (var line in rawDockerPsResponse)
+                    {
+                        _logger.LogInformation("    {line}", line);
+                    }
+
                     currentContainers = DockerService.ParceDockerPsCommand(rawDockerPsResponse);
                 }
+
+                _logger.LogInformation("Determining components to install");
 
                 if (!dockerRun
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMqNano") && NeedUpdateComponent("RabbitMqNano", installingVesrion_Component, currentContainers))
                     || (defaultComponentsToInstall.Any(c => c.Name == "RabbitMq") && NeedUpdateComponent("RabbitMq", installingVesrion_Component, currentContainers)))
                 {
+                    _logger.LogInformation("Full installation is required");
                     if (dockerRun)
                     {
+                        _logger.LogInformation("Stopping docker");
                         await _commandExecutionService.ExecuteCommandAsync(command, "network prune -f", "");
 
                         await _serviceManager.StopServiceAsync("dockerd");
                         await _serviceManager.StopServiceAsync("docker");
+                    }
 
-                        return defaultComponentsToInstall;
-                    }
-                    else
-                    {
-                        return SelectUpdatedComponents(installingVesrion_Component, defaultComponentsToInstall, currentContainers).ToArray();
-                    }
+                    return defaultComponentsToInstall;
+                }
+                else
+                {
+                    _logger.LogInformation("Selecting components to update.");
+                    return SelectUpdatedComponents(installingVesrion_Component, defaultComponentsToInstall, currentContainers).ToArray();
                 }
             }
         }
@@ -341,6 +352,7 @@ public class ComponentInstaller : ActionBase
             }
         }
 
+        _logger.LogInformation("Components to install: {components}", componentsToInstall.Select(x => x.Name).StringJoin(Environment.NewLine));
         return componentsToInstall;
     }
 
