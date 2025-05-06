@@ -62,7 +62,7 @@ on:
         description: "Reposiroty ID in SonarQube"
         type: string
       run-sonar-scan:
-        required: false
+        required: true
         description: "Boolean to run sonarqube (true) or not (false)"
         type: boolean
         default: false
