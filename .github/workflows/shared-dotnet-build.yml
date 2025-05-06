@@ -58,11 +58,11 @@ on:
 
       # SonarQube Input Parameters
       sonar-project-key:
-        required: true
+        required: false
         description: "Reposiroty ID in SonarQube"
         type: string
       run-sonar-scan:
-        required: true
+        required: false
         description: "Boolean to run sonarqube (true) or not (false)"
         type: boolean
         default: false
@@ -71,6 +71,11 @@ on:
         description: "Comma separated list of paths to exclude from SonarQube analysis"
         type: string
         default: ""
+      runner-os-platform:
+        required: false
+        description: "Platform to run the tests on (e.g., windows-2019, ubuntu-latest)"
+        type: string
+        default: 'windows'
 
 
 env:
@@ -150,7 +155,7 @@ jobs:
 
       - name: Build Solution w/ SonarQube Analysis - WINDOWS
         uses: abs-wavesight/cc-platform/actions/sonar-scanner-windows@feature/sonar-scan
-        if: inputs.run-sonar-scan == true
+        if: ${{ inputs.run-sonar-scan == 'true' && inputs.runner-os-platform == 'windows' }}
         with:
           solution-directory: ${{ inputs.solution-directory }}
           solution-name: ${{ inputs.solution-name }}
@@ -158,107 +163,15 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
 
-      # - name: Build Solution w/ SonarQube Analysis - LINUX
-      #   uses: abs-wavesight/cc-platform/actions/sonar-scanner-linux@feature/sonar-scan
-      #   if: inputs.run-sonar-scan == true
-      #   with:
-      #     solution-directory: ${{ inputs.solution-directory }}
-      #     solution-name: ${{ inputs.solution-name }}
-      #     sonar-project-key: ${{ inputs.sonar-project-key }}
-      #     sonar-token: ${{ secrets.SONAR_TOKEN }}
-      #     sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
-
-      # - name: Run SonarQube Code Scan - ${{ inputs.run-sonar-scan }}
-      #   if: inputs.run-sonar-scan == true
-      #   run: echo "PREPARING SONARQUBE FOR CODE ANALYSIS"
-      
-      # - name: Set up JDK 17
-      #   if: inputs.run-sonar-scan == true
-      #   uses: actions/setup-java@v4
-      #   with:
-      #     path: ${{ inputs.solution-directory }}
-      #     distribution: "adopt"
-      #     java-version: 17
-
-      # - name: Cache SonarQube packages
-      #   if: inputs.run-sonar-scan == true
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ inputs.solution-directory }}/.sonar/cache
-      #     key: ${{ runner.os }}-sonar
-      #     restore-keys: ${{ runner.os }}-sonar
-
-      # - name: Cache SonarQube scanner
-      #   if: inputs.run-sonar-scan == true
-      #   id: cache-sonar-scanner
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ inputs.solution-directory }}/.sonar/scanner
-      #     key: ${{ runner.os }}-sonar-scanner
-      #     restore-keys: ${{ runner.os }}-sonar-scanner
-
-      # - name: Install SonarQube scanner
-      #   if: inputs.run-sonar-scan == true
-      #   # if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      #   working-directory: ${{ inputs.solution-directory }}
-      #   shell: bash
-      #   run: |
-      #     mkdir -p ./.sonar/scanner
-      #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-      #   # run: |
-      #   #   if inputs.run-sonar-scan == true; then
-      #   #     mkdir -p ./.sonar/scanner
-      #   #     dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-      #   #   else
-      #   #     echo "SonarQube Scanner is NOT ENABLED"
-      #   #   fi
-
-      # - name: Check SonareQube URL Access
-      #   if: inputs.run-sonar-scan == true
-      #   shell: bash
-      #   run: |
-      #     URL="https://sonarqube.absns.cloud"
-      #     HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$URL")
-      #     if [ "$HTTP_STATUS" -ne 200 ]; then
-      #       echo "Failed to access $URL, status code: $HTTP_STATUS"
-      #       exit 1
-      #     else
-      #       echo "Successfully accessed $URL, status code: $HTTP_STATUS"
-      #     fi
-
-      # # ------  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
-
-      # - name: Build Solution w/ SonarQube Analysis
-      #   if: inputs.run-sonar-scan == true
-      #   working-directory: ${{ inputs.solution-directory }}
-      #   # ADDTIONAL SONAR PARAMETERS
-      #   # -d:sonar.qualitygate.wait=true \
-      #   # -d:sonar.qualitygate.timeout=500 \
-      #   # -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
-      #   # -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-      #   # -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
-      #   shell: bash
-      #   run: |
-      #     # Begin SonarQube Analysis
-      #     ./.sonar/scanner/dotnet-sonarscanner begin \
-      #       -k:${{ inputs.sonar-project-key }} \
-      #       -d:sonar.token=${{ secrets.SONAR_TOKEN }} \
-      #       -d:sonar.host.url="https://sonarqube.absns.cloud" \
-      #       -d:sonar.ws.timeout=500 \
-      #       -d:sonar.projectBaseDir=D:/a/cc-cloud-tenant-adapters/cc-cloud-tenant-adapters/ \
-      #       -d:sonar.branch.name=${{ github.event.pull_request.head.ref }}
-
-      #     # Build .NET Project
-      #     dotnet build ${{ inputs.solution-name }} -c Release --no-restore
-
-      #     # End SonarQube Analysis
-      #     ./.sonar/scanner/dotnet-sonarscanner end -d:sonar.token=${{ secrets.SONAR_TOKEN }} | tee sonar-logs.txt   
-
-      # # - name: "Upload Sonar Report File"
-      # #   uses: actions/upload-artifact@v4
-      # #   with:
-      # #     name: sonar-logs
-      # #     path: ${{ inputs.solution-directory }}/.sonar/sonar-logs.txt
+      - name: Build Solution w/ SonarQube Analysis - LINUX
+        uses: abs-wavesight/cc-platform/actions/sonar-scanner-linux@feature/sonar-scan
+        if: ${{ inputs.run-sonar-scan == 'true' && inputs.runner-os-platform == 'linux' }}
+        with:
+          solution-directory: ${{ inputs.solution-directory }}
+          solution-name: ${{ inputs.solution-name }}
+          sonar-project-key: ${{ inputs.sonar-project-key }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
 
       # ---------------------------------------------------------- #
 
