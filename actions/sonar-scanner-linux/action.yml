@@ -75,7 +75,7 @@ runs:
     # 2.-----  BUILD SOLUTION with SONARQUBE ANALYSIS-------- #
     - name: Build Solution w/ SonarQube Analysis
       working-directory: ${{ github.workspace }}
-      shell: powershell
+      shell: bash
       run: |
         # Begin SonarQube Analysis
         ./.sonar/scanner/dotnet-sonarscanner begin \
