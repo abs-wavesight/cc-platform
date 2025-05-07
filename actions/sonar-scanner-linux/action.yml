@@ -97,22 +97,38 @@ runs:
       shell: bash
       run: |
         # Begin SonarQube Analysis
-        ./.sonar/scanner/dotnet-sonarscanner begin \
-          -k:${{ inputs.sonar-project-key }} \
-          -d:sonar.token=${{ inputs.sonar-token }} \
-          -d:sonar.host.url="https://sonarqube.absns.cloud" \
-          -d:sonar.ws.timeout=500 \
-          -d:sonar.projectBaseDir=${{ env.PROJECT_BASE_DIR }} \
-          -d:sonar.qualitygate.wait=true \
-          -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
-          -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-          -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }} \
-          -d:sonar.scanner.skipJreProvisioning=true \
-          -d:sonar.scanner.scanAll=false \
-          -d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} \
-          -d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} \
-          -d:sonar.coverage.exclusions=${{ inputs.solution-directory }}/**
-          
+        if [ ${{ github.event }} == 'pull_request' ]; then
+          ./.sonar/scanner/dotnet-sonarscanner begin \
+            -k:${{ inputs.sonar-project-key }} \
+            -d:sonar.token=${{ inputs.sonar-token }} \
+            -d:sonar.host.url="https://sonarqube.absns.cloud" \
+            -d:sonar.ws.timeout=500 \
+            -d:sonar.projectBaseDir=${{ env.PROJECT_BASE_DIR }} \
+            -d:sonar.qualitygate.wait=true \
+            -d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+            -d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }} \
+            -d:sonar.scanner.skipJreProvisioning=true \
+            -d:sonar.scanner.scanAll=false \
+            -d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} \
+            -d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} \
+            -d:sonar.coverage.exclusions=${{ inputs.solution-directory }}/**
+        else;
+          ./.sonar/scanner/dotnet-sonarscanner begin \
+            -k:${{ inputs.sonar-project-key }} \
+            -d:sonar.token=${{ inputs.sonar-token }} \
+            -d:sonar.host.url="https://sonarqube.absns.cloud" \
+            -d:sonar.ws.timeout=500 \
+            -d:sonar.projectBaseDir=${{ env.PROJECT_BASE_DIR }} \
+            -d:sonar.qualitygate.wait=true \
+            -d:sonar.branch.name=${{ github.head_ref }} \
+            -d:sonar.scanner.skipJreProvisioning=true \
+            -d:sonar.scanner.scanAll=false \
+            -d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} \
+            -d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} \
+            -d:sonar.coverage.exclusions=${{ inputs.solution-directory }}/**
+        fi
+
         # Build .NET Project
         dotnet build ${{ inputs.solution-directory }}/${{ inputs.solution-name }} -c Release --no-restore
 
