@@ -155,7 +155,7 @@ jobs:
 
       - name: Build Solution w/ SonarQube Analysis - WINDOWS
         uses: abs-wavesight/cc-platform/actions/sonar-scanner-windows@feature/sonar-scan
-        if: ${{ inputs.run-sonar-scan == 'true' && inputs.sonar-runner-os-platform == 'windows' }}
+        if: ${{ inputs.run-sonar-scan && inputs.sonar-runner-os-platform == 'windows' }}
         with:
           solution-directory: ${{ inputs.solution-directory }}
           solution-name: ${{ inputs.solution-name }}
@@ -165,7 +165,7 @@ jobs:
 
       - name: Build Solution w/ SonarQube Analysis - LINUX
         uses: abs-wavesight/cc-platform/actions/sonar-scanner-linux@feature/sonar-scan
-        if: ${{ inputs.run-sonar-scan == 'true' && inputs.sonar-runner-os-platform == 'linux' }}
+        if: ${{ inputs.run-sonar-scan && inputs.sonar-runner-os-platform == 'linux' }}
         with:
           solution-directory: ${{ inputs.solution-directory }}
           solution-name: ${{ inputs.solution-name }}
