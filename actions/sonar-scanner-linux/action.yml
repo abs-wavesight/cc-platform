@@ -104,7 +104,9 @@ runs:
           -d:sonar.ws.timeout=500 \
           -d:sonar.projectBaseDir=${{ env.PROJECT_BASE_DIR }} \
           -d:sonar.qualitygate.wait=true \
-          -d:sonar.branch.name=${{ github.event.pull_request.head.ref }} \
+          /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          /d:sonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+          /d:sonar.pullrequest.base=${{ github.event.pull_request.base.ref }} \
           -d:sonar.scanner.skipJreProvisioning=true \
           -d:sonar.scanner.scanAll=false \
           -d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} \
