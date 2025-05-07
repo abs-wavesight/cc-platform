@@ -97,7 +97,7 @@ runs:
       shell: bash
       run: |
         # Begin SonarQube Analysis
-        if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+        if [ "${{ github.event }}" == "pull_request" ]; then
           ./.sonar/scanner/dotnet-sonarscanner begin \
             -k:${{ inputs.sonar-project-key }} \
             -d:sonar.token=${{ inputs.sonar-token }} \
@@ -113,7 +113,7 @@ runs:
             -d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} \
             -d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} \
             -d:sonar.coverage.exclusions=${{ inputs.solution-directory }}/**
-        else;
+        else
           ./.sonar/scanner/dotnet-sonarscanner begin \
             -k:${{ inputs.sonar-project-key }} \
             -d:sonar.token=${{ inputs.sonar-token }} \
