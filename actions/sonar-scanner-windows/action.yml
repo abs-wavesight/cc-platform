@@ -87,8 +87,8 @@ runs:
           /d:sonar.branch.name=${{ github.head_ref }} `
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
-          /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} `
-          /d:sonar.test.exclusions=${{ inputs.sonar-exclusion-paths }} `
+          /d:sonar.exclusions="${{ inputs.sonar-exclusion-paths }}" `
+          /d:sonar.test.exclusions="${{ inputs.sonar-exclusion-paths }}" `
           /d:sonar.coverage.exclusions=${{ inputs.solution-directory }}/**
           
         # Build .NET Project
