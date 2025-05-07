@@ -84,7 +84,7 @@ runs:
           /d:sonar.host.url="https://sonarqube.absns.cloud" `
           /d:sonar.ws.timeout=500 `
           /d:sonar.projectBaseDir=${{ github.workspace }} `
-          /d:sonar.branch.name=${{ github.event.pull_request.head.ref }} `
+          /d:sonar.branch.name=${{ github.head_ref }} `
           /d:sonar.scanner.skipJreProvisioning=true `
           /d:sonar.scanner.scanAll=false `
           /d:sonar.exclusions=${{ inputs.sonar-exclusion-paths }} `
