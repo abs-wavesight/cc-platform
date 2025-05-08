@@ -71,12 +71,6 @@ on:
         description: "Comma separated list of paths to exclude from SonarQube analysis"
         type: string
         default: ""
-      # sonar-runner-os-platform:
-      #   required: false
-      #   description: "Platform to run the tests on (e.g., windows-2019, ubuntu-latest)"
-      #   type: string
-      #   default: 'windows'
-
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
