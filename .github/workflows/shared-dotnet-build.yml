@@ -153,7 +153,7 @@ jobs:
 
       # ------------------- CONFIGURE SONARQUBE ------------------- #
 
-      - name: Build Solution w/ SonarQube Analysis - Windows
+      - name: Build w/ SonarQube Analysis - Windows
         uses: abs-wavesight/cc-platform/actions/sonar-scanner-windows@feature/sonar-scan
         if: ${{ inputs.run-sonar-scan && runner.os == 'Windows' }}
         with:
@@ -163,7 +163,7 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
 
-      - name: Build Solution w/ SonarQube Analysis - Linux
+      - name: Build w/ SonarQube Analysis - Linux
         uses: abs-wavesight/cc-platform/actions/sonar-scanner-linux@feature/sonar-scan
         if: ${{ inputs.run-sonar-scan && runner.os == 'Linux' }}
         with:
@@ -175,7 +175,7 @@ jobs:
 
       # ---------------------------------------------------------- #
 
-      - name: Build Solution
+      - name: Build
         if: inputs.run-sonar-scan == false
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
