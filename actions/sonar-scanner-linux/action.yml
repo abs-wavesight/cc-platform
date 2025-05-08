@@ -2,19 +2,19 @@ name: .NET Build + SonarQube Scanner
 description: Builds .NET project and runs SonarQube scanner
 inputs:
   solution-directory:
-    required: false
+    required: true
     description: Relative to the repository root (e.g., "service")
   solution-name:
-    required: false
+    required: true
     description: Should be found with the `solution-directory` (e.g., "Drex.sln")
   sonar-project-key:
-    required: false
+    required: true
     description: "Reposiroty ID in SonarQube"
   sonar-token:
-    required: false
+    required: true
     description: "SonarQube Token"
   sonar-exclusion-paths:
-    required: false
+    required: true
     description: "Comma separated list of paths to exclude from SonarQube analysis"
     default: ""
 
