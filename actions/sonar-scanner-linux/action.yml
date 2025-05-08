@@ -21,25 +21,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Convert Windows file path to Unix format
-      shell: bash
-      env:
-        RUNNER_OS: ${{ runner.os }}
-        GITHUB_WORKSPACE: ${{ github.workspace }}
-      run: |
-        if [ "$RUNNER_OS" != "Linux" ]; then
-          # Convert Windows path to Unix format
-          WindowsPath="$GITHUB_WORKSPACE"
-          UnixPath=$(echo "$WindowsPath" | tr '\\' '/')
-          UnixPath=$(echo "$UnixPath" | sed -E 's|^([A-Z]):|/\L\1|')
-          echo "Windows Path: $WindowsPath"
-          echo "Unix Path: $UnixPath"
-          echo "PROJECT_BASE_DIR=$UnixPath" >> $GITHUB_ENV
-        else
-          echo "PROJECT_BASE_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          echo "Running on Linux, no conversion needed."
-        fi
-
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -91,7 +72,7 @@ runs:
           -d:sonar.token=${{ inputs.sonar-token }} \
           -d:sonar.host.url="https://sonarqube.absns.cloud" \
           -d:sonar.ws.timeout=500 \
-          -d:sonar.projectBaseDir=${{ env.PROJECT_BASE_DIR }} \
+          -d:sonar.projectBaseDir=${{ github.workspace }} \
           -d:sonar.qualitygate.wait=true \
           -d:sonar.branch.name=${{ github.head_ref }} \
           -d:sonar.scanner.skipJreProvisioning=true \
