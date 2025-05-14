@@ -1001,7 +1001,7 @@ public class ComponentInstaller : ActionBase
         else
         {
             var error = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
-            _logger.LogError("Failed to get certificates: {response}. {message}", responseContent, 
+            _logger.LogError("Failed to get certificates: {response}. {message}", responseContent,
                 string.Join(Environment.NewLine, error?.Errors.Select(e => $"{e.Code.Code}:${e.Message}") ?? []));
             throw new Exception($"Failed to get certificates: {responseContent}");
         }
