@@ -10,7 +10,7 @@ services:
       - CloudParameters__CcTenantId=$CC_TENANT_ID
       - CloudParameters__CcTenantName=$CC_TENANT_NAME
       - CloudParameters__CloudTenantId=$CLOUD_TENANT_ID
-      - CloudParameters__ApimServiceUrl=$APIM_SERVICE_URL
+      - CloudParameters__ApimServiceUrl=$APIM_SERVICE_URL/vmprovisionadapters/CentralRegistry
       - CloudParameters__CloudClientId=$CLOUD_CLIENT_ID
       - CloudParameters__CloudClientSecret=$CLOUD_CLIENT_SECRET
       - AdaptersFolderPath=C:/app/adapters

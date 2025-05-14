@@ -1,10 +1,10 @@
-﻿using System;
-using System.CommandLine;
-using System.Linq;
-using System.Management;
+﻿using System.Management;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Contracts.Proto;
+using Abs.CommonCore.Contracts.Proto.Installer;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
@@ -12,9 +12,9 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using Octokit;
 using Polly;
 using JsonParser = Abs.CommonCore.Installer.Services.JsonParser;
 
@@ -169,7 +169,8 @@ public class ComponentInstaller : ActionBase
         foreach (var component in orderedComponenets)
         {
             var orderedActions = component.Actions
-            .OrderByDescending(x => x.Action == ComponentActionAction.Copy)
+            .OrderByDescending(x => x.Action == ComponentActionAction.RequestCertificates)
+            .ThenByDescending(x => x.Action == ComponentActionAction.Copy)
             .ThenByDescending(x => x.Action == ComponentActionAction.ValidateJson)
             .ThenByDescending(x => x.Action == ComponentActionAction.ReplaceParameters)
             .ThenByDescending(x => x.Action == ComponentActionAction.ExecuteImmediate)
@@ -239,6 +240,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostDrexCentralInstall => RunPostDrexCentralInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.ValidateJson => RunValidateJsonCommandAsync(component, rootLocation, action),
+                ComponentActionAction.RequestCertificates => RequestCertificatesCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -936,6 +938,72 @@ public class ComponentInstaller : ActionBase
         if (WaitForDockerContainersHealthy)
         {
             await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+        }
+    }
+
+    private async Task RequestCertificatesCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        var cloudClientId = action.AdditionalProperties["cloud_client_id"].ToString();
+        var cloudClientSecret = action.AdditionalProperties["cloud_client_secret"].ToString();
+        var cloudTenantId = action.AdditionalProperties["cloud_tenant_id"].ToString();
+        var ccTenantId = action.AdditionalProperties["cc_tenant_id"].ToString();
+        var centralHostName = action.AdditionalProperties["central_host_name"].ToString();
+        var apimAppScope = "https://graph.microsoft.com/.default";
+        var confidentialClientApplication = ConfidentialClientApplicationBuilder
+            .Create(cloudClientId)
+            .WithClientSecret(cloudClientSecret)
+            .WithAuthority(new Uri($"https://login.microsoftonline.com/{cloudTenantId}"))
+            .Build();
+
+        var builder = confidentialClientApplication.AcquireTokenForClient([apimAppScope]);
+        var result = await builder.ExecuteAsync();
+        var requestUrl = action.Source;
+
+        using HttpClient client = new();
+        client.BaseAddress = new Uri(requestUrl);
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaTypes.Protobuf));
+        client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
+        client.DefaultRequestHeaders.Add(Constants.Headers.Client, cloudClientId);
+        client.DefaultRequestHeaders.Add(Constants.Headers.Tenant, ccTenantId);
+        client.DefaultRequestHeaders.Add("central-hosts", $"[\"${centralHostName}\"]");
+
+        var httpResponse = await client.GetAsync(requestUrl);
+        var responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("Certificates received successfully");
+            var certificates = JsonSerializer.Deserialize<CertificateResponse>(responseContent);
+            var certificatePath = Path.Combine(rootLocation, action.Destination);
+            Directory.CreateDirectory(certificatePath);
+
+            var fileName = Path.Combine(certificatePath, "ca.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.CaCerts);
+
+            fileName = Path.Combine(certificatePath, "central-rabbitmq.cert.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.CentralServerCert);
+
+            fileName = Path.Combine(certificatePath, "central-rabbitmq.key.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.CentralServerKeys);
+
+            fileName = Path.Combine(certificatePath, "vessel-rabbitmq.cert.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.VesselShovelCert);
+
+            fileName = Path.Combine(certificatePath, "vessel-rabbitmq.key.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.VesselShovelKeys);
+
+            fileName = Path.Combine(certificatePath, "cloud-rabbitmq.cert.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.CentralShovelCert);
+
+            fileName = Path.Combine(certificatePath, "cloud-rabbitmq.key.pem");
+            await File.WriteAllTextAsync(fileName, certificates!.CentralShovelKeys);
+        }
+        else
+        {
+            var error = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
+            _logger.LogError("Failed to get certificates: {response}. {message}", responseContent, 
+                string.Join(Environment.NewLine, error?.Errors.Select(e => $"{e.Code.Code}:${e.Message}") ?? []));
+            throw new Exception($"Failed to get certificates: {responseContent}");
         }
     }
 }
