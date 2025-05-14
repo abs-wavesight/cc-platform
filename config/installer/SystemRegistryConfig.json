@@ -27,6 +27,16 @@
       "files": [],
       "actions": [
         {
+          "action": "requestCertificates",
+          "source": "$APIM_SERVICE_URL/api/client_certificates",
+          "destination": "..\\AdditionalFiles",
+          "cloud_tenant_id": "$CLOUD_TENANT_ID",
+          "cc_tenant_id": "$CC_TENANT_ID",
+          "cloud_client_id": "$CLOUD_CLIENT_ID",
+          "cloud_client_secret": "$CLOUD_CLIENT_SECRET",
+          "central_host_name": "$CENTRAL_HOST_NAME"
+        },
+        {
           "source": "..\\AdditionalFiles\\central-rabbitmq.key",
           "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.key",
           "action": "copy"
