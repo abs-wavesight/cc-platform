@@ -28,7 +28,7 @@
       "actions": [
         {
           "action": "requestCertificates",
-          "source": "$APIM_SERVICE_URL/api/client_certificates",
+          "source": "$APIM_SERVICE_URL/crypto/client_certificates",
           "destination": "..\\AdditionalFiles",
           "cloud_tenant_id": "$CLOUD_TENANT_ID",
           "cc_tenant_id": "$CC_TENANT_ID",
