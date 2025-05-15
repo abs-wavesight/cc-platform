@@ -968,12 +968,12 @@ public class ComponentInstaller : ActionBase
         client.DefaultRequestHeaders.Add("central-hosts", $"[\"${centralHostName}\"]");
 
         var httpResponse = await client.GetAsync(requestUrl);
-        var responseContent = await httpResponse.Content.ReadAsStringAsync();
+        var responseContent = await httpResponse.Content.ReadAsStreamAsync();
 
         if (httpResponse.IsSuccessStatusCode)
         {
             _logger.LogInformation("Certificates received successfully");
-            var certificates = JsonSerializer.Deserialize<CertificateResponse>(responseContent);
+            var certificates = CertificateResponse.Parser.ParseFrom(responseContent);
             var certificatePath = Path.Combine(rootLocation, action.Destination);
             Directory.CreateDirectory(certificatePath);
 
