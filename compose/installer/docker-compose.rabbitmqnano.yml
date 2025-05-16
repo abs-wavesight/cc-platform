@@ -9,7 +9,7 @@ services:
         limits:
           memory: 8G
     entrypoint: [ cmd, "-c" ]
-    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
       test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
       interval: 10s
@@ -44,12 +44,12 @@ services:
         target: C:/certs
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/central-keys
-        target: C:/centralkeys
+        source: $ABS_PATH/certificates/cloud-keys
+        target: C:/cloud-keys
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/central-certs
-        target: C:/centralcerts
+        source: $ABS_PATH/certificates/cloud-certs
+        target: C:/cloud-certs
         read_only: true
 
 volumes:

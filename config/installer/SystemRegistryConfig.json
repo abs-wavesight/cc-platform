@@ -29,7 +29,7 @@
         {
           "action": "requestCertificates",
           "source": "$APIM_SERVICE_URL/crypto/client_certificates",
-          "destination": "..\\AdditionalFiles",
+          "destination": "..\\AdditionalFiles\\certs",
           "cloud_tenant_id": "$CLOUD_TENANT_ID",
           "cc_tenant_id": "$CC_TENANT_ID",
           "cloud_client_id": "$CLOUD_CLIENT_ID",
@@ -37,37 +37,37 @@
           "central_host_name": "$CENTRAL_HOST_NAME"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
-          "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.key",
+          "source": "..\\AdditionalFiles\\certs\\ca.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\ca.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
+          "source": "..\\AdditionalFiles\\certs\\central-rabbitmq.cert.pem",
           "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
-          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
+          "source": "..\\AdditionalFiles\\certs\\central-rabbitmq.key.pem",
+          "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
-          "destination": "$ABS_PATH\\certificates\\central-keys\\rabbitmq.key",
+          "source": "..\\AdditionalFiles\\certs\\ca.pem",
+          "destination": "$ABS_PATH\\certificates\\cloud-certs\\ca.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
-          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer",
+          "source": "..\\AdditionalFiles\\certs\\cloud-rabbitmq.cert.pem",
+          "destination": "$ABS_PATH\\certificates\\cloud-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
-          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.pem",
+          "source": "..\\AdditionalFiles\\certs\\cloud-rabbitmq.key.pem",
+          "destination": "$ABS_PATH\\certificates\\cloud-keys\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\ca.pem\"",
           "action": "execute"
         }
       ]
@@ -151,79 +151,34 @@
       ]
     },
     {
-      "name": "OpenSsl",
-      "files": [
-        {
-          "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-platform/releases/download/$OPENSSL_RELEASE_TAG/",
-          "destination": "c:/abs/temp/OpenSsl/"
-        }
-      ],
+      "name": "Certificates-Site",
+      "files": [],
       "actions": [
         {
-          "source": "openssl.tar",
-          "action": "install"
-        },
-        {
-          "source": "generate-certs-prod.ps1",
-          "destination": "$ABS_PATH\\config\\openssl\\generate-certs-prod.ps1",
-          "action": "copy"
-        },
-        {
-          "source": "openssl-prod.cnf",
-          "destination": "$ABS_PATH\\config\\openssl\\openssl-prod.cnf",
-          "action": "copy"
-        },
-        {
-          "source": "manual-docker-compose.openssl.yml",
-          "destination": "$ABS_PATH\\config\\manual-docker-compose.openssl.yml",
-          "action": "copy"
-        },
-        {
-          "source": "$ABS_PATH\\config\\manual-docker-compose.openssl.yml",
-          "action": "replaceParameters"
-        },
-        {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/local-keys')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/cloud-keys')",
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/local-certs')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/cloud-certs')",
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-keys')",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-certs')",
-          "action": "executeImmediate"
-        },
-        {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.cer",
-          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer",
+          "source": "..\\AdditionalFiles\\certs\\ca.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.pem",
-          "destination": "$ABS_PATH\\certificates\\central-certs\\rabbitmq.pem",
+          "source": "..\\AdditionalFiles\\certs\\vessel-rabbitmq.cert.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "..\\AdditionalFiles\\central-rabbitmq.key",
-          "destination": "$ABS_PATH\\certificates\\central-keys\\rabbitmq.key",
+          "source": "..\\AdditionalFiles\\certs\\vessel-rabbitmq.key.pem",
+          "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.pem",
           "action": "copy"
         },
         {
-          "source": "powershell -Command \"c:\\docker\\docker-compose.exe -f \"$ABS_PATH/config/manual-docker-compose.openssl.yml\" up --exit-code-from cc.openssl-generate-certs\" 2>&1",
-          "action": "execute"
-        },
-        {
-          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer\"",
-          "action": "execute"
-        },
-        {
-          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\central-certs\\rabbitmq.cer\"",
+          "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\ca.pem\"",
           "action": "execute"
         }
       ]

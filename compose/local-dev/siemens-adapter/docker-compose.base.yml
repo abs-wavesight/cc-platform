@@ -6,7 +6,7 @@ services:
     depends_on:
       - cc.disco-service
     environment:
-      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
       - "12446:5000"
