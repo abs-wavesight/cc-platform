@@ -2,7 +2,7 @@
   "components": [
     "Docker",
     "RabbitMq",
-    "OpenSsl",
+    "Certificates-Site",
     "Installer",
     "Drex-Message",
     "Drex-File"

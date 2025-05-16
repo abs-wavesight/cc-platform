@@ -10,7 +10,7 @@ services:
           memory: 8G
     restart: always
     entrypoint: [ cmd, "-c" ]
-    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
       test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
       interval: 10s
@@ -29,7 +29,7 @@ services:
     container_name: rabbitmq-vessel
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
-      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\vessel.cc-rabbitmq.conf
       RABBITMQ_LOCATION: vessel
     hostname: rabbitmq-vessel
     ports:
@@ -65,7 +65,7 @@ services:
     container_name: rabbitmq-central
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
-      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\central.cc-rabbitmq.conf
       RABBITMQ_LOCATION: central
     hostname: rabbitmq-central
     ports:

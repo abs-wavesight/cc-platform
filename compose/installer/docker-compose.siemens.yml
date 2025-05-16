@@ -4,7 +4,7 @@ services:
     container_name: siemens
     image: ghcr.io/abs-wavesight/siemens:windows-$WINDOWS_VERSION-$SIEMENS_VERSION
     environment:
-      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
       - BusConnection__username=${SIEMENS_RABBIT_USERNAME}
       - BusConnection__password=${SIEMENS_RABBIT_PASSWORD}
       - FLAT_LOGS=false
