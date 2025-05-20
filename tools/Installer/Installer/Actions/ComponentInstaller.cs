@@ -385,7 +385,7 @@ public class ComponentInstaller : ActionBase
         var requiredFiles = components
             .SelectMany(component => component.Actions, (component, action) => new { component, action })
             .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
-            .Where(t => (bool?)t.action.AdditionalProperties["skipValidation"] != true)
+            .Where(t => !t.action.AdditionalProperties.TryGetValue("skipValidation", out var val) || ((JsonElement)val).GetBoolean() != true)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
             .Select(Path.GetFullPath)
             .ToArray();
