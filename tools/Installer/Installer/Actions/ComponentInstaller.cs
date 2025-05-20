@@ -385,6 +385,7 @@ public class ComponentInstaller : ActionBase
         var requiredFiles = components
             .SelectMany(component => component.Actions, (component, action) => new { component, action })
             .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
+            .Where(t => (bool?)t.action.AdditionalProperties["skipValidation"] != true)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
             .Select(Path.GetFullPath)
             .ToArray();
@@ -977,26 +978,14 @@ public class ComponentInstaller : ActionBase
             var certificatePath = Path.Combine(rootLocation, action.Destination);
             Directory.CreateDirectory(certificatePath);
 
-            var fileName = Path.Combine(certificatePath, "ca.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.CaCerts);
-
-            fileName = Path.Combine(certificatePath, "central-rabbitmq.cert.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.CentralServerCert);
-
-            fileName = Path.Combine(certificatePath, "central-rabbitmq.key.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.CentralServerKeys);
-
-            fileName = Path.Combine(certificatePath, "vessel-rabbitmq.cert.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.VesselShovelCert);
-
-            fileName = Path.Combine(certificatePath, "vessel-rabbitmq.key.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.VesselShovelKeys);
-
-            fileName = Path.Combine(certificatePath, "cloud-rabbitmq.cert.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.CentralShovelCert);
-
-            fileName = Path.Combine(certificatePath, "cloud-rabbitmq.key.pem");
-            await File.WriteAllTextAsync(fileName, certificates!.CentralShovelKeys);
+            await CreateCertificateFile(Path.Combine(certificatePath, "ca.pem"), certificates!.CaCerts);
+            await CreateCertificateFile(Path.Combine(certificatePath, "central-rabbitmq.cert.pem"), certificates!.CentralServerCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "central-rabbitmq.key.pem"), certificates!.CentralServerKeys);
+            await CreateCertificateFile(Path.Combine(certificatePath, "vessel-rabbitmq.cert.pem"), certificates!.VesselShovelCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "vessel-rabbitmq.key.pem"), certificates!.VesselShovelKeys);
+            await CreateCertificateFile(Path.Combine(certificatePath, "cloud-rabbitmq.cert.pem"), certificates!.CentralShovelCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "cloud-rabbitmq.key.pem"), certificates!.CentralShovelKeys);
+            _logger.LogInformation("Certificates created successfully");
         }
         else
         {
@@ -1004,6 +993,21 @@ public class ComponentInstaller : ActionBase
             _logger.LogError("Failed to get certificates: {response}. {message}", responseContent,
                 string.Join(Environment.NewLine, error?.Errors.Select(e => $"{e.Code.Code}:${e.Message}") ?? []));
             throw new Exception($"Failed to get certificates: {responseContent}");
+        }
+
+        return;
+
+        async Task CreateCertificateFile(string path, string content)
+        {
+            if (File.Exists(path))
+            {
+                _logger.LogInformation("{path} already exists. Skipping...", path);
+            }
+            else
+            {
+                await File.WriteAllTextAsync(path, content);
+                _logger.LogInformation("Created {path}", path);
+            }
         }
     }
 }

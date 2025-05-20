@@ -39,32 +39,38 @@
         {
           "source": "..\\AdditionalFiles\\certs\\ca.pem",
           "destination": "$ABS_PATH\\certificates\\local-certs\\ca.pem",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "..\\AdditionalFiles\\certs\\central-rabbitmq.cert.pem",
           "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "..\\AdditionalFiles\\certs\\central-rabbitmq.key.pem",
           "destination": "$ABS_PATH\\certificates\\local-keys\\rabbitmq.pem",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "..\\AdditionalFiles\\certs\\ca.pem",
           "destination": "$ABS_PATH\\certificates\\cloud-certs\\ca.pem",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "..\\AdditionalFiles\\certs\\cloud-rabbitmq.cert.pem",
           "destination": "$ABS_PATH\\certificates\\cloud-certs\\rabbitmq.pem",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "..\\AdditionalFiles\\certs\\cloud-rabbitmq.key.pem",
           "destination": "$ABS_PATH\\certificates\\cloud-keys\\rabbitmq.pem",
-          "action": "copy"
+          "action": "copy",
+          "skipValidation": true
         },
         {
           "source": "certutil.exe -addstore root \"$ABS_PATH\\certificates\\local-certs\\ca.pem\"",
