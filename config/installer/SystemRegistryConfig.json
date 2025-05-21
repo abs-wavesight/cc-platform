@@ -44,7 +44,7 @@
         },
         {
           "source": "..\\AdditionalFiles\\certs\\central-rabbitmq.cert.pem",
-          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.cer",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
           "action": "copy",
           "skipValidation": true
         },
