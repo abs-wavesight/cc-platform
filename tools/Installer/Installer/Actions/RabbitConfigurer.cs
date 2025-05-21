@@ -54,13 +54,13 @@ public partial class RabbitConfigurer : ActionBase
         Console.WriteLine($"Configuring RabbitMQ at '{rabbit}'");
         var waitAndRetry = Polly.Policy
             .Handle<Exception>()
-            .WaitAndRetryAsync(4, retryAttempt => retryAttempt switch
+            .WaitAndRetry(4, retryAttempt => retryAttempt switch
             {
                 <= 3 => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt + 1)),
                 _ => TimeSpan.FromMinutes(1)
             });
 
-        var client = await waitAndRetry.ExecuteAsync(async () => new ManagementClient(rabbit, rabbitUsername, rabbitPassword));
+        var client = waitAndRetry.Execute(() => new ManagementClient(rabbit, rabbitUsername, rabbitPassword));
 
         Console.WriteLine($"Connected to RabbitMQ at '{rabbit}'");
         return await ConfigureRabbitAsync(client, username, password, accountType, isSilent);
