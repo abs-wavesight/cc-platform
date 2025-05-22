@@ -23,7 +23,6 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentInstaller : ActionBase
 {
-    private readonly Uri _localRabbitLocation = new("https://localhost:15671");
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
@@ -59,8 +58,21 @@ public class ComponentInstaller : ActionBase
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
-    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, IServiceManager serviceManager,
-        FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
+    private Uri LocalRabbitLocation => _allParameters.GetInstallationEnvironment() switch
+    {
+        InstallationEnvironment.Central => new Uri("https://localhost:15671"),
+        InstallationEnvironment.Site => new Uri("http://localhost:15672"),
+        _ => throw new ArgumentException("Invalid installation environment")
+    };
+
+    public ComponentInstaller(
+        ILoggerFactory loggerFactory,
+        ICommandExecutionService commandExecutionService,
+        IServiceManager serviceManager,
+        FileInfo registryConfig,
+        FileInfo? installerConfig,
+        Dictionary<string, string> parameters,
+        bool promptForMissingParameters)
     {
         _loggerFactory = loggerFactory;
         _commandExecutionService = commandExecutionService;
@@ -532,7 +544,7 @@ public class ComponentInstaller : ActionBase
         var adminUser = await GetRabbitAdminUser(rabbitDefinitionFile);
 
         var account = await RabbitConfigurer
-                .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+                .ConfigureRabbitAsync(LocalRabbitLocation, adminUser.Name,
                                       adminUser.Password, updatingUserName, null,
                                       accountType, true);
 
@@ -593,15 +605,25 @@ public class ComponentInstaller : ActionBase
         return adminUser;
     }
 
-    private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action, Models.AccountType accountType)
+    private async Task RunPostDrexInstallCommandAsync(
+        Component component,
+        string _,
+        ComponentAction action,
+        Models.AccountType accountType)
     {
         try
         {
             _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Destination}'. Account {accountType}");
-            _logger.LogInformation(_localRabbitLocation.ToString());
+            _logger.LogInformation(LocalRabbitLocation.ToString());
             _logger.LogInformation(DrexSiteUsername);
 
-            await UpdateRabbitCredentials("DREX_SHARED_LOCAL_USERNAME", "DREX_SHARED_LOCAL_PASSWORD", accountType, action.Destination, DrexSiteUsername, action.Source);
+            await UpdateRabbitCredentials(
+                "DREX_SHARED_LOCAL_USERNAME",
+                "DREX_SHARED_LOCAL_PASSWORD",
+                accountType,
+                action.Destination,
+                DrexSiteUsername,
+                action.Source);
         }
         catch (Exception ex)
         {
@@ -648,13 +670,16 @@ public class ComponentInstaller : ActionBase
         await UpdateRabbitCredentials("KDI_RABBIT_USERNAME", "KDI_RABBIT_PASSWORD", Models.AccountType.Kdi, action.Destination, KdiSiteUsername, action.Source);
     }
 
-    private async Task RunPostVectorInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    private async Task RunPostVectorInstallCommandAsync(
+        Component component,
+        string rootLocation,
+        ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Destination}'");
         var adminUser = await GetRabbitAdminUser(action.Source);
 
         var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+            .ConfigureRabbitAsync(LocalRabbitLocation, adminUser.Name,
                                   adminUser.Password, VectorUsername, null,
                                   Models.AccountType.Vector, true);
 
