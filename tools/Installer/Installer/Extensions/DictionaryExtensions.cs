@@ -32,8 +32,16 @@ public static class DictionaryExtensions
     internal static InstallationEnvironment GetInstallationEnvironment(this Dictionary<string, string> parameters)
     {
         var isFound = parameters.TryGetValue(InstallationEnvironmentKey, out var value);
-        return isFound && Enum.TryParse<InstallationEnvironment>(value!, true, out var env)
-            ? env
-            : throw new ArgumentException($"'{InstallationEnvironmentKey}' parameter is invalid.");
+        if (isFound && !string.IsNullOrWhiteSpace(value))
+        {
+            return value.ToLower() switch
+            {
+                "vessel" or "site" => InstallationEnvironment.Site,
+                "central" => InstallationEnvironment.Central,
+                _ => InstallationEnvironment.Unknown
+            };
+        }
+
+        throw new ArgumentException($"'{InstallationEnvironmentKey}' parameter not found.");
     }
 }
