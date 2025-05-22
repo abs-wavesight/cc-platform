@@ -66,12 +66,12 @@ public class ComponentInstaller : ActionBase
     };
 
     public ComponentInstaller(
-        ILoggerFactory loggerFactory, 
-        ICommandExecutionService commandExecutionService, 
+        ILoggerFactory loggerFactory,
+        ICommandExecutionService commandExecutionService,
         IServiceManager serviceManager,
-        FileInfo registryConfig, 
-        FileInfo? installerConfig, 
-        Dictionary<string, string> parameters, 
+        FileInfo registryConfig,
+        FileInfo? installerConfig,
+        Dictionary<string, string> parameters,
         bool promptForMissingParameters)
     {
         _loggerFactory = loggerFactory;
@@ -606,9 +606,9 @@ public class ComponentInstaller : ActionBase
     }
 
     private async Task RunPostDrexInstallCommandAsync(
-        Component component, 
-        string _, 
-        ComponentAction action, 
+        Component component,
+        string _,
+        ComponentAction action,
         Models.AccountType accountType)
     {
         try
@@ -618,11 +618,11 @@ public class ComponentInstaller : ActionBase
             _logger.LogInformation(DrexSiteUsername);
 
             await UpdateRabbitCredentials(
-                "DREX_SHARED_LOCAL_USERNAME", 
-                "DREX_SHARED_LOCAL_PASSWORD", 
-                accountType, 
-                action.Destination, 
-                DrexSiteUsername, 
+                "DREX_SHARED_LOCAL_USERNAME",
+                "DREX_SHARED_LOCAL_PASSWORD",
+                accountType,
+                action.Destination,
+                DrexSiteUsername,
                 action.Source);
         }
         catch (Exception ex)
@@ -671,8 +671,8 @@ public class ComponentInstaller : ActionBase
     }
 
     private async Task RunPostVectorInstallCommandAsync(
-        Component component, 
-        string rootLocation, 
+        Component component,
+        string rootLocation,
         ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Destination}'");
