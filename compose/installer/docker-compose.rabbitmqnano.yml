@@ -11,7 +11,13 @@ services:
     entrypoint: [ cmd, "-c" ]
     command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
-      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
+      test: 
+        [
+          "CMD",
+          "IF", "/I", "\"$RABBIT_LOCATION\"==\"central\"", 
+          "(curl", "-k", "--head", "https://localhost:15671)", 
+          "ELSE", "(curl", "--head", "http://localhost:15672)"
+         ]
       interval: 10s
       timeout: 15s
       start_period: 120s
