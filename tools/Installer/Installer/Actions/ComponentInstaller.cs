@@ -135,7 +135,7 @@ public class ComponentInstaller : ActionBase
         }
 
         var widowsVersionSpecified = false;
-        string[][] installingVesrion_Component = null;
+        string[][] installingVersionComponent = null!;
         var windowsVersion = "";
         try
         {
@@ -150,8 +150,8 @@ public class ComponentInstaller : ActionBase
         if (!widowsVersionSpecified)
         {
             windowsVersion = readmeLines[0].Split(":")[1].Trim();
-            installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
-            var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
+            installingVersionComponent = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
+            var resultContainers = installingVersionComponent.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
             await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
 
             if (dockerRun)
@@ -160,7 +160,7 @@ public class ComponentInstaller : ActionBase
             }
         }
 
-        var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerRun);
+        var components = await DetermineComponents(specificComponents, installingVersionComponent, dockerRun);
         VerifySourcesPresent(components);
 
         var orderedComponenets = components
@@ -341,7 +341,7 @@ public class ComponentInstaller : ActionBase
         throw new Exception("No components found to download");
     }
 
-    private List<Component> SelectUpdatedComponents(string[][] installingVesrion_Component, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)
+    private List<Component> SelectUpdatedComponents(string[][] installingVersionComponent, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)
     {
         var componentsToInstall = new List<Component>();
         foreach (var component in defaultComponentsToInstall)
@@ -357,7 +357,7 @@ public class ComponentInstaller : ActionBase
                     componentsToInstall.Add(component);
                     break;
                 default:
-                    if (NeedUpdateComponent(component.Name, installingVesrion_Component, currentContainers))
+                    if (NeedUpdateComponent(component.Name, installingVersionComponent, currentContainers))
                     {
                         componentsToInstall.Add(component);
                     }
@@ -370,9 +370,9 @@ public class ComponentInstaller : ActionBase
         return componentsToInstall;
     }
 
-    private bool NeedUpdateComponent(string componentName, string[][] installingVesrion_Component, List<DockerContainerInfoModel> currentContainers)
+    private bool NeedUpdateComponent(string componentName, string[][] installingVersionComponent, List<DockerContainerInfoModel> currentContainers)
     {
-        var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
+        var bringingComponentTag = installingVersionComponent.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))?[0];
         var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage + componentName.ToLower());
         if (currentContainer == null)
         {
