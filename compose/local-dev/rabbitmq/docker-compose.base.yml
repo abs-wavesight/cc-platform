@@ -11,12 +11,7 @@ services:
     restart: always
     entrypoint: [ cmd, "-c" ]
     command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
-    healthcheck:
-      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
-      interval: 10s
-      timeout: 15s
-      start_period: 120s
-      retries: 1
+    
     volumes:
       - &config_volume
         type: bind
@@ -38,6 +33,12 @@ services:
       - "5671:5671"
       - "15671:15671"
     profiles: [ 'rabbitmq-local' ]
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "--head", "http://localhost:15672" ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
     volumes:
       - *config_volume
       - type: volume
@@ -74,6 +75,12 @@ services:
       - "5681:5671"
       - "15681:15671"
     profiles: [ 'rabbitmq-remote' ]
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
     volumes:
       - *config_volume
       - type: volume

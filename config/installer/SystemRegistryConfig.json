@@ -178,6 +178,11 @@
         },
         {
           "source": "..\\AdditionalFiles\\certs\\ca.pem",
+          "destination": "$ABS_PATH\\certificates\\central-certs\\ca.pem",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\certs\\ca.pem",
           "destination": "$ABS_PATH\\certificates\\local-certs\\ca.pem",
           "action": "copy"
         },

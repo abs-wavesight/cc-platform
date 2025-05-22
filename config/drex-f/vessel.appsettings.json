@@ -13,9 +13,9 @@
   "ConfigFileMaxSizeInMb": 1,
   "ConnectionSettings": {
     "Host": "rabbitmq-vessel",
-    "Port": 5671,
-    "HttpPort": 15671,
-    "Protocol": "amqps",
+    "Port": 5672,
+    "HttpPort": 15672,
+    "Protocol": "amqp",
     "vHost": "commoncore",
     "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
   },
