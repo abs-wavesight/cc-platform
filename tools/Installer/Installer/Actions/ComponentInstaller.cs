@@ -154,7 +154,7 @@ public class ComponentInstaller : ActionBase
         var orderedComponenets = components
             .OrderByDescending(x => x.Name == "Installer")
             .ThenByDescending(x => x.Name == "Docker")
-            .ThenByDescending(x => x.Name == "Certificates-Central")
+            .ThenByDescending(x => x.Name is "Certificates-Central" or "Certificates-Site")
             .ThenByDescending(x => x.Name == "OpenSsl")
             .ThenByDescending(x => x.Name == "RabbitMq")
             .ThenByDescending(x => x.Name == "Vector")

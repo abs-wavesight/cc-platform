@@ -169,8 +169,16 @@
           "action": "executeImmediate"
         },
         {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-keys')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/certificates/central-certs')",
+          "action": "executeImmediate"
+        },
+        {
           "source": "..\\AdditionalFiles\\certs\\ca.pem",
-          "destination": "$ABS_PATH\\certificates\\local-certs\\rabbitmq.pem",
+          "destination": "$ABS_PATH\\certificates\\local-certs\\ca.pem",
           "action": "copy"
         },
         {
