@@ -4,7 +4,7 @@ services:
     container_name: kdi
     image: ghcr.io/abs-wavesight/kdi:windows-$WINDOWS_VERSION-$KDI_VERSION
     environment:
-      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
       - BusConnection__username=${KDI_RABBIT_USERNAME}
       - BusConnection__password=${KDI_RABBIT_PASSWORD}
       - FLAT_LOGS=false

@@ -43,6 +43,19 @@ public class ComponentInstallerTests
     }
 
     [Fact]
+    public async Task ValidConfig_CopyAction_SkipValidation()
+    {
+        Directory.CreateDirectory(@"c:\abs\installer\CopySkipValidationTest");
+        await File.WriteAllTextAsync(@"c:\abs\installer\CopySkipValidationTest\x", "Test content");
+        await File.WriteAllTextAsync(@"c:\abs\installer\CopySkipValidationTest\x1", "Test content");
+
+        var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
+        await initializer.Installer.ExecuteAsync(new[] { "CopySkipValidationTest" });
+
+        initializer.CommandExecute.Verify(x => x.ExecuteCommandAsync("copy", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Exactly(3));
+    }
+
+    [Fact]
     public async Task ValidConfig_InstallAction()
     {
         Directory.CreateDirectory(@"c:\abs\installer\InstallTest");

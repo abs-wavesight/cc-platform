@@ -1,7 +1,7 @@
 [sources.rabbitmq]
 type = "amqp"
 connection_string = "amqps://guest:guest@rabbitmq-central:5671/commoncore"
-tls.ca_file = "C:\\certs\\rabbitmq.cer"
+tls.ca_file = "C:\\certs\\ca.pem"
 decoding.codec = "bytes"
 consumer = "vector"
 queue = "cc.drex.central.snk-log.q"

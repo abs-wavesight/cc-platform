@@ -9,9 +9,15 @@ services:
         limits:
           memory: 8G
     entrypoint: [ cmd, "-c" ]
-    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
     healthcheck:
-      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
+      test: 
+        [
+          "CMD",
+          "IF", "/I", "\"$RABBIT_LOCATION\"==\"central\"", 
+          "(curl", "-k", "--head", "https://localhost:15671)", 
+          "ELSE", "(curl", "--head", "http://localhost:15672)"
+         ]
       interval: 10s
       timeout: 15s
       start_period: 120s
@@ -27,6 +33,7 @@ services:
       - "5671:5671"
       - "5672:5672"
       - "15671:15671"
+      - "15672:15672"
     volumes:
       - type: volume
         source: rabbitmq-storage
@@ -44,12 +51,12 @@ services:
         target: C:/certs
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/central-keys
-        target: C:/centralkeys
+        source: $ABS_PATH/certificates/cloud-keys
+        target: C:/cloud-keys
         read_only: true
       - type: bind
-        source: $ABS_PATH/certificates/central-certs
-        target: C:/centralcerts
+        source: $ABS_PATH/certificates/cloud-certs
+        target: C:/cloud-certs
         read_only: true
 
 volumes:
