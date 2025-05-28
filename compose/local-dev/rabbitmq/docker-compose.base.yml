@@ -52,14 +52,6 @@ services:
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
-      - type: bind
-        source: ${PATH_TO_CERTS}/remote-keys
-        target: C:/centralkeys
-        read_only: true
-      - type: bind
-        source: ${PATH_TO_CERTS}/remote-certs
-        target: C:/centralcerts
-        read_only: true
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
