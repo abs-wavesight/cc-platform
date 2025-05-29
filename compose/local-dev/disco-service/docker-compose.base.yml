@@ -7,7 +7,7 @@ services:
       - cc.rabbitmq-local
       - cc.vector-site
     environment:
-      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
       - FLAT_LOGS=${FLAT_LOGS:-False}
     ports:
       - "12445:5000"

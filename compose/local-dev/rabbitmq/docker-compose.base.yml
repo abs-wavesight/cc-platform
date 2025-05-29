@@ -10,13 +10,8 @@ services:
           memory: 8G
     restart: always
     entrypoint: [ cmd, "-c" ]
-    command: [ "certoc.exe -addstore root c:\\certs\\rabbitmq.cer", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
-    healthcheck:
-      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
-      interval: 10s
-      timeout: 15s
-      start_period: 120s
-      retries: 1
+    command: [ "certoc.exe -addstore root c:\\certs\\ca.pem", ";", "cmd", "/C", "c:\\rabbitmq\\sbin\\rabbitmq-server.bat" ]
+    
     volumes:
       - &config_volume
         type: bind
@@ -29,7 +24,7 @@ services:
     container_name: rabbitmq-vessel
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
-      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\vessel.cc-rabbitmq.conf
       RABBITMQ_LOCATION: vessel
     hostname: rabbitmq-vessel
     ports:
@@ -38,6 +33,12 @@ services:
       - "5671:5671"
       - "15671:15671"
     profiles: [ 'rabbitmq-local' ]
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "--head", "http://localhost:15672" ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
     volumes:
       - *config_volume
       - type: volume
@@ -51,21 +52,13 @@ services:
         source: ${PATH_TO_CERTS}/local-certs
         target: C:/certs
         read_only: true
-      - type: bind
-        source: ${PATH_TO_CERTS}/remote-keys
-        target: C:/centralkeys
-        read_only: true
-      - type: bind
-        source: ${PATH_TO_CERTS}/remote-certs
-        target: C:/centralcerts
-        read_only: true
 
   cc.rabbitmq-remote:
     <<: *rabbitmq
     container_name: rabbitmq-central
     environment:
       RABBITMQ_MNESIA_BASE: C:/data/rabbitmq
-      RABBITMQ_CONFIG_FILES: C:\rabbitmq\config
+      RABBITMQ_CONFIG_FILE: C:\rabbitmq\config\central.cc-rabbitmq.conf
       RABBITMQ_LOCATION: central
     hostname: rabbitmq-central
     ports:
@@ -74,6 +67,12 @@ services:
       - "5681:5671"
       - "15681:15671"
     profiles: [ 'rabbitmq-remote' ]
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "--head", "https://localhost:15671" ]
+      interval: 10s
+      timeout: 15s
+      start_period: 120s
+      retries: 1
     volumes:
       - *config_volume
       - type: volume

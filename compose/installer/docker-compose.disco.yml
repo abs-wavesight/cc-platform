@@ -5,7 +5,7 @@ services:
     container_name: disco
     image: ghcr.io/abs-wavesight/disco:windows-$WINDOWS_VERSION-$DISCO_VERSION
     environment:
-      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/rabbitmq.cer
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
       - ServiceBusConfiguration__BusConnection__username=${DISCO_RABBIT_USERNAME}
       - ServiceBusConfiguration__BusConnection__password=${DISCO_RABBIT_PASSWORD}
       - FLAT_LOGS=false

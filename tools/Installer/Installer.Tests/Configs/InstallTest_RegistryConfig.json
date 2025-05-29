@@ -24,6 +24,29 @@
       ]
     },
     {
+      "name": "CopySkipValidationTest",
+      "files": [],
+      "actions": [
+        {
+          "source": "x",
+          "destination": "y",
+          "action": "copy",
+          "skipValidation": true
+        },
+        {
+          "source": "x1",
+          "destination": "y1",
+          "action": "copy",
+          "skipValidation": false
+        },
+        {
+          "source": "x1",
+          "destination": "y1",
+          "action": "copy"
+        }
+      ]
+    },
+    {
       "name": "InstallTest",
       "files": [],
       "actions": [

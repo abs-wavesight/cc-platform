@@ -2,7 +2,7 @@
   "components": [
     "Docker",
     "RabbitMq",
-    "OpenSsl",
+    "Certificates-Site",
     "Installer",
     "Drex-Message",
     "Drex-File"
@@ -11,8 +11,6 @@
     "$ABS_PATH": "c:/abs",
     "$RABBIT_LOCATION": "vessel",
     "$FDZ_ROOT_PATH": "c:/abs/fdz",
-    "$DREX_SHARED_CENTRAL_USERNAME": "drex",
-    "$DREX_SHARED_CENTRAL_PASSWORD": "guest",
     "$RMQ_CENTRAL_HOST": "central.com",
     "$SFTP_CENTRAL_HOST": "central.com",
     "$VESSEL_IMO": "123456",

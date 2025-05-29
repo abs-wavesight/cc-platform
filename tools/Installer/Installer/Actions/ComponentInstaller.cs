@@ -1,10 +1,10 @@
-﻿using System;
-using System.CommandLine;
-using System.Linq;
-using System.Management;
+﻿using System.Management;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 using Abs.CommonCore.Contracts.Json.Installer;
+using Abs.CommonCore.Contracts.Proto;
+using Abs.CommonCore.Contracts.Proto.Installer;
 using Abs.CommonCore.Installer.Actions.Models;
 using Abs.CommonCore.Installer.Extensions;
 using Abs.CommonCore.Installer.Services;
@@ -12,9 +12,9 @@ using Abs.CommonCore.Platform.Config;
 using Abs.CommonCore.Platform.Extensions;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using Octokit;
 using Polly;
 using JsonParser = Abs.CommonCore.Installer.Services.JsonParser;
 
@@ -23,7 +23,6 @@ namespace Abs.CommonCore.Installer.Actions;
 
 public class ComponentInstaller : ActionBase
 {
-    private readonly Uri _localRabbitLocation = new("https://localhost:15671");
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
     private const string DrexSiteUsername = "drex";
@@ -59,8 +58,21 @@ public class ComponentInstaller : ActionBase
 
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
-    public ComponentInstaller(ILoggerFactory loggerFactory, ICommandExecutionService commandExecutionService, IServiceManager serviceManager,
-        FileInfo registryConfig, FileInfo? installerConfig, Dictionary<string, string> parameters, bool promptForMissingParameters)
+    private Uri LocalRabbitLocation => _allParameters.GetInstallationEnvironment() switch
+    {
+        InstallationEnvironment.Central => new Uri("https://localhost:15671"),
+        InstallationEnvironment.Site => new Uri("http://localhost:15672"),
+        _ => throw new ArgumentException("Invalid installation environment")
+    };
+
+    public ComponentInstaller(
+        ILoggerFactory loggerFactory,
+        ICommandExecutionService commandExecutionService,
+        IServiceManager serviceManager,
+        FileInfo registryConfig,
+        FileInfo? installerConfig,
+        Dictionary<string, string> parameters,
+        bool promptForMissingParameters)
     {
         _loggerFactory = loggerFactory;
         _commandExecutionService = commandExecutionService;
@@ -123,7 +135,7 @@ public class ComponentInstaller : ActionBase
         }
 
         var widowsVersionSpecified = false;
-        string[][] installingVesrion_Component = null;
+        string[][] installingVersionComponent = null!;
         var windowsVersion = "";
         try
         {
@@ -138,8 +150,8 @@ public class ComponentInstaller : ActionBase
         if (!widowsVersionSpecified)
         {
             windowsVersion = readmeLines[0].Split(":")[1].Trim();
-            installingVesrion_Component = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
-            var resultContainers = installingVesrion_Component.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
+            installingVersionComponent = readmeLines.Skip(3).Select(c => c.Split(":")[1].Trim().Split("_")).ToArray();
+            var resultContainers = installingVersionComponent.Select(x => $"{_imageStorage}{x[1]}:windows-{windowsVersion}-{x[0]}").ToArray();
             await File.WriteAllLinesAsync(imageListTxtPath, resultContainers);
 
             if (dockerRun)
@@ -148,13 +160,13 @@ public class ComponentInstaller : ActionBase
             }
         }
 
-        var components = await DetermineComponents(specificComponents, installingVesrion_Component, dockerRun);
+        var components = await DetermineComponents(specificComponents, installingVersionComponent, dockerRun);
         VerifySourcesPresent(components);
 
         var orderedComponenets = components
             .OrderByDescending(x => x.Name == "Installer")
             .ThenByDescending(x => x.Name == "Docker")
-            .ThenByDescending(x => x.Name == "Certificates-Central")
+            .ThenByDescending(x => x.Name is "Certificates-Central" or "Certificates-Site")
             .ThenByDescending(x => x.Name == "OpenSsl")
             .ThenByDescending(x => x.Name == "RabbitMq")
             .ThenByDescending(x => x.Name == "Vector")
@@ -169,7 +181,8 @@ public class ComponentInstaller : ActionBase
         foreach (var component in orderedComponenets)
         {
             var orderedActions = component.Actions
-            .OrderByDescending(x => x.Action == ComponentActionAction.Copy)
+            .OrderByDescending(x => x.Action == ComponentActionAction.RequestCertificates)
+            .ThenByDescending(x => x.Action == ComponentActionAction.Copy)
             .ThenByDescending(x => x.Action == ComponentActionAction.ValidateJson)
             .ThenByDescending(x => x.Action == ComponentActionAction.ReplaceParameters)
             .ThenByDescending(x => x.Action == ComponentActionAction.ExecuteImmediate)
@@ -239,6 +252,7 @@ public class ComponentInstaller : ActionBase
                 ComponentActionAction.SystemRestore => RunSystemRestoreCommandAsync(component, rootLocation, action),
                 ComponentActionAction.PostDrexCentralInstall => RunPostDrexCentralInstallCommandAsync(component, rootLocation, action),
                 ComponentActionAction.ValidateJson => RunValidateJsonCommandAsync(component, rootLocation, action),
+                ComponentActionAction.RequestCertificates => RequestCertificatesCommandAsync(component, rootLocation, action),
                 _ => throw new Exception($"Unknown action command: {action.Action}")
             });
         }
@@ -327,7 +341,7 @@ public class ComponentInstaller : ActionBase
         throw new Exception("No components found to download");
     }
 
-    private List<Component> SelectUpdatedComponents(string[][] installingVesrion_Component, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)
+    private List<Component> SelectUpdatedComponents(string[][] installingVersionComponent, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)
     {
         var componentsToInstall = new List<Component>();
         foreach (var component in defaultComponentsToInstall)
@@ -343,7 +357,7 @@ public class ComponentInstaller : ActionBase
                     componentsToInstall.Add(component);
                     break;
                 default:
-                    if (NeedUpdateComponent(component.Name, installingVesrion_Component, currentContainers))
+                    if (NeedUpdateComponent(component.Name, installingVersionComponent, currentContainers))
                     {
                         componentsToInstall.Add(component);
                     }
@@ -356,9 +370,9 @@ public class ComponentInstaller : ActionBase
         return componentsToInstall;
     }
 
-    private bool NeedUpdateComponent(string componentName, string[][] installingVesrion_Component, List<DockerContainerInfoModel> currentContainers)
+    private bool NeedUpdateComponent(string componentName, string[][] installingVersionComponent, List<DockerContainerInfoModel> currentContainers)
     {
-        var bringingComponentTag = installingVesrion_Component.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))[0];
+        var bringingComponentTag = installingVersionComponent.FirstOrDefault(x => x[1].Contains(componentName.ToLower()))?[0];
         var currentContainer = currentContainers.FirstOrDefault(x => x.ImageName == _imageStorage + componentName.ToLower());
         if (currentContainer == null)
         {
@@ -383,6 +397,7 @@ public class ComponentInstaller : ActionBase
         var requiredFiles = components
             .SelectMany(component => component.Actions, (component, action) => new { component, action })
             .Where(t => t.action.Action is ComponentActionAction.Install or ComponentActionAction.Copy)
+            .Where(t => !t.action.AdditionalProperties.TryGetValue("skipValidation", out var val) || ((JsonElement)val).GetBoolean() != true)
             .Select(t => Path.Combine(_registryConfig.Location, t.component.Name, t.action.Source))
             .Select(Path.GetFullPath)
             .ToArray();
@@ -529,7 +544,7 @@ public class ComponentInstaller : ActionBase
         var adminUser = await GetRabbitAdminUser(rabbitDefinitionFile);
 
         var account = await RabbitConfigurer
-                .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+                .ConfigureRabbitAsync(LocalRabbitLocation, adminUser.Name,
                                       adminUser.Password, updatingUserName, null,
                                       accountType, true);
 
@@ -590,15 +605,25 @@ public class ComponentInstaller : ActionBase
         return adminUser;
     }
 
-    private async Task RunPostDrexInstallCommandAsync(Component component, string rootLocation, ComponentAction action, Models.AccountType accountType)
+    private async Task RunPostDrexInstallCommandAsync(
+        Component component,
+        string _,
+        ComponentAction action,
+        Models.AccountType accountType)
     {
         try
         {
             _logger.LogInformation($"{component.Name}: Running Drex post install for '{action.Destination}'. Account {accountType}");
-            _logger.LogInformation(_localRabbitLocation.ToString());
+            _logger.LogInformation(LocalRabbitLocation.ToString());
             _logger.LogInformation(DrexSiteUsername);
 
-            await UpdateRabbitCredentials("DREX_SHARED_LOCAL_USERNAME", "DREX_SHARED_LOCAL_PASSWORD", accountType, action.Destination, DrexSiteUsername, action.Source);
+            await UpdateRabbitCredentials(
+                "DREX_SHARED_LOCAL_USERNAME",
+                "DREX_SHARED_LOCAL_PASSWORD",
+                accountType,
+                action.Destination,
+                DrexSiteUsername,
+                action.Source);
         }
         catch (Exception ex)
         {
@@ -645,13 +670,16 @@ public class ComponentInstaller : ActionBase
         await UpdateRabbitCredentials("KDI_RABBIT_USERNAME", "KDI_RABBIT_PASSWORD", Models.AccountType.Kdi, action.Destination, KdiSiteUsername, action.Source);
     }
 
-    private async Task RunPostVectorInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    private async Task RunPostVectorInstallCommandAsync(
+        Component component,
+        string rootLocation,
+        ComponentAction action)
     {
         _logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Destination}'");
         var adminUser = await GetRabbitAdminUser(action.Source);
 
         var account = await RabbitConfigurer
-            .ConfigureRabbitAsync(_localRabbitLocation, adminUser.Name,
+            .ConfigureRabbitAsync(LocalRabbitLocation, adminUser.Name,
                                   adminUser.Password, VectorUsername, null,
                                   Models.AccountType.Vector, true);
 
@@ -936,6 +964,75 @@ public class ComponentInstaller : ActionBase
         if (WaitForDockerContainersHealthy)
         {
             await WaitForDockerContainersHealthyAsync(containerCount, TimeSpan.FromMinutes(3), TimeSpan.FromSeconds(10));
+        }
+    }
+
+    private async Task RequestCertificatesCommandAsync(Component component, string rootLocation, ComponentAction action)
+    {
+        var cloudClientId = action.AdditionalProperties["cloud_client_id"].ToString();
+        var cloudClientSecret = action.AdditionalProperties["cloud_client_secret"].ToString();
+        var cloudTenantId = action.AdditionalProperties["cloud_tenant_id"].ToString();
+        var ccTenantId = action.AdditionalProperties["cc_tenant_id"].ToString();
+        var centralHostName = action.AdditionalProperties["central_host_name"].ToString();
+        var apimAppScope = "https://graph.microsoft.com/.default";
+        var confidentialClientApplication = ConfidentialClientApplicationBuilder
+            .Create(cloudClientId)
+            .WithClientSecret(cloudClientSecret)
+            .WithAuthority(new Uri($"https://login.microsoftonline.com/{cloudTenantId}"))
+            .Build();
+
+        var builder = confidentialClientApplication.AcquireTokenForClient([apimAppScope]);
+        var result = await builder.ExecuteAsync();
+        var requestUrl = action.Source;
+
+        using HttpClient client = new();
+        client.BaseAddress = new Uri(requestUrl);
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaTypes.Protobuf));
+        client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
+        client.DefaultRequestHeaders.Add(Constants.Headers.Client, cloudClientId);
+        client.DefaultRequestHeaders.Add(Constants.Headers.Tenant, ccTenantId);
+        client.DefaultRequestHeaders.Add("central-hosts", $"[\"{centralHostName}\"]");
+
+        var httpResponse = await client.GetAsync(requestUrl);
+        var responseContent = await httpResponse.Content.ReadAsStreamAsync();
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("Certificates received successfully");
+            var certificates = CertificateResponse.Parser.ParseFrom(responseContent);
+            var certificatePath = Path.Combine(rootLocation, action.Destination);
+            Directory.CreateDirectory(certificatePath);
+
+            await CreateCertificateFile(Path.Combine(certificatePath, "ca.pem"), certificates!.CaCerts);
+            await CreateCertificateFile(Path.Combine(certificatePath, "central-rabbitmq.cert.pem"), certificates!.CentralServerCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "central-rabbitmq.key.pem"), certificates!.CentralServerKeys);
+            await CreateCertificateFile(Path.Combine(certificatePath, "vessel-rabbitmq.cert.pem"), certificates!.VesselShovelCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "vessel-rabbitmq.key.pem"), certificates!.VesselShovelKeys);
+            await CreateCertificateFile(Path.Combine(certificatePath, "cloud-rabbitmq.cert.pem"), certificates!.CentralShovelCert);
+            await CreateCertificateFile(Path.Combine(certificatePath, "cloud-rabbitmq.key.pem"), certificates!.CentralShovelKeys);
+            _logger.LogInformation("Certificates created successfully");
+        }
+        else
+        {
+            var error = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
+            _logger.LogError("Failed to get certificates: {response}. {message}", responseContent,
+                string.Join(Environment.NewLine, error?.Errors.Select(e => $"{e.Code.Code}:${e.Message}") ?? []));
+            throw new Exception($"Failed to get certificates: {responseContent}");
+        }
+
+        return;
+
+        async Task CreateCertificateFile(string path, string content)
+        {
+            if (File.Exists(path))
+            {
+                _logger.LogInformation("{path} already exists. Skipping...", path);
+            }
+            else
+            {
+                await File.WriteAllTextAsync(path, content);
+                _logger.LogInformation("Created {path}", path);
+            }
         }
     }
 }
