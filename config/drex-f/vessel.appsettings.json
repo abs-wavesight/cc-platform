@@ -17,7 +17,7 @@
     "HttpPort": 15672,
     "Protocol": "amqp",
     "vHost": "commoncore",
-    "TriggerQueueName": "q.cc.drex.adapter.mailbox.drex-f"
+    "TriggerQueueName": "q.cc.drex.inbox.direct.adapter.drex-f"
   },
   "VesselImo": "$VESSEL_IMO",
   "TempFolderPath": "C:/data/temp",
