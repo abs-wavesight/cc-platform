@@ -54,7 +54,23 @@ on:
         required: false
         type: string
         default: '7.0.x'
-        description: .NET SDK Version        
+        description: .NET SDK Version
+
+      # SonarQube Input Parameters
+      sonar-project-key:
+        required: false
+        description: "Reposiroty ID in SonarQube"
+        type: string
+      run-sonar-scan:
+        required: false
+        description: "Boolean to run sonarqube (true) or not (false)"
+        type: boolean
+        default: false
+      sonar-exclusion-paths:
+        required: false
+        description: "Comma separated list of paths to exclude from SonarQube analysis"
+        type: string
+        default: ""
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -71,9 +87,7 @@ defaults:
 jobs:
   build:
     name: Build & Run Tests
-
     runs-on: windows-2019
-
     steps:
 
       - name: Dump context
@@ -81,7 +95,7 @@ jobs:
 
       - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
         if: inputs.use-submodules == true
-        uses: actions/checkout@v3        
+        uses: actions/checkout@v4        
         with:
           submodules: true
           fetch-depth: 0
@@ -106,6 +120,10 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version}}
 
+      - name: .NET Version
+        shell: bash
+        run: dotnet --version
+
       - name: Install docker-compose
         if: inputs.install-docker-compose == true
         run: Start-BitsTransfer -Source "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-windows-x86_64.exe" -Destination "C:\ProgramData\Chocolatey\bin\docker-compose.exe"
@@ -127,7 +145,32 @@ jobs:
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet restore ${{ inputs.solution-name }} --packages ${{ env.NUGET_PACKAGE_PATH }}
 
+      # ------------------- CONFIGURE SONARQUBE ------------------- #
+
+      - name: Build w/ SonarQube Analysis - Windows
+        uses: ./actions/sonar-scanner-windows
+        if: ${{ inputs.run-sonar-scan && runner.os == 'Windows' }}
+        with:
+          solution-directory: ${{ inputs.solution-directory }}
+          solution-name: ${{ inputs.solution-name }}
+          sonar-project-key: ${{ inputs.sonar-project-key }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
+
+      - name: Build w/ SonarQube Analysis - Linux
+        uses: ./actions/sonar-scanner-linux
+        if: ${{ inputs.run-sonar-scan && runner.os == 'Linux' }}
+        with:
+          solution-directory: ${{ inputs.solution-directory }}
+          solution-name: ${{ inputs.solution-name }}
+          sonar-project-key: ${{ inputs.sonar-project-key }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-exclusion-paths: ${{ inputs.sonar-exclusion-paths }}
+
+      # ---------------------------------------------------------- #
+
       - name: Build
+        if: inputs.run-sonar-scan == false
         working-directory: ${{ inputs.solution-directory }}
         run: dotnet build ${{ inputs.solution-name }} -c Release --no-restore
 
