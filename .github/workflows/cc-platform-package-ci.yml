@@ -34,7 +34,7 @@ jobs:
     with:
       solution-directory: libraries/Platform
       solution-name: CommonCore.Platform.sln
-      sonar-project-key: "abs-wavesight_cc-platform_a2f6cd66-bfcc-4a77-a714-29ac0c5d7bef" #Repository ID in SonarQube
+      sonar-project-key: "abs-wavesight_cc-platform_46d66166-413a-4321-b37f-03f36f695e6e" #Repository ID in SonarQube
       sonar-exclusion-paths: "**/bin/**,**/obj/**,**/TestResults/**,**/Zip Deploy/**,**/*.g.cs,**/*.designer.cs,**/*.Generated.cs,**/*.AssemblyAttributes.cs,**/*.arm.json,submodules/**"                                                            #Comma separated list of paths to exclude from SonarQube analysis
       run-sonar-scan: true                                                                #Toggle to enable or disable SonarQube Scan
       check-code-formatting: true
