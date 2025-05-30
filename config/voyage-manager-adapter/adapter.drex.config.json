@@ -1,4 +1,7 @@
 {
     "Name": "voyage-manager-report",
-    "Ver": "1.0.0"
+    "Ver": "1.0.0",
+    "Direct": {
+        "Enable": true
+    }
 }

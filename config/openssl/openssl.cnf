@@ -19,8 +19,4 @@ challengePassword              = A challenge password
 
 [v3_req]
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-extendedKeyUsage = serverAuth
-subjectAltName = @alt_names
-[alt_names]
-DNS.1 = localhost
-DNS.2 = rabbitmq-vessel
+extendedKeyUsage = clientAuth
