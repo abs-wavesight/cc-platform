@@ -63,11 +63,18 @@ public static class ConfigureCommand
             voyageManagerRepositoryPath = readAppConfig?.VoyageManagerRepositoryPath;
         }
 
-        Console.Write($"\"cc-scheduler\" repository lacal path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreSchedulerRepositoryPath})" : "")}: ");
+        Console.Write($"\"cc-scheduler\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreSchedulerRepositoryPath})" : "")}: ");
         var ccSchedulerRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccSchedulerRepositoryPath))
         {
             ccSchedulerRepositoryPath = readAppConfig?.CommonCoreSchedulerRepositoryPath;
+        }
+
+        Console.Write($"\"cc-drex-notification-adapter\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexNotificationAdapterRepositoryPath})" : "")}: ");
+        var ccDrexNotificationAdapterRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccDrexNotificationAdapterRepositoryPath))
+        {
+            ccDrexNotificationAdapterRepositoryPath = readAppConfig?.CommonCoreDrexNotificationAdapterRepositoryPath;
         }
 
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
@@ -133,6 +140,7 @@ public static class ConfigureCommand
             CommonCoreDiscoRepositoryPath = ccDiscoRepositoryLocalPath,
             CommonCoreSiemensAdapterRepositoryPath = ccSiemensAdapterRepositoryLocalPath,
             CommonCoreKdiAdapterRepositoryPath = ccKdiAdapterRepositoryLocalPath,
+            CommonCoreDrexNotificationAdapterRepositoryPath = ccDrexNotificationAdapterRepositoryPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
@@ -248,6 +256,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSchedulerRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSchedulerRepositoryPath).Exists)
         {
             errors.Add($"\"cc-scheduler\" repository path ({appConfig.CommonCoreSchedulerRepositoryPath}) could not be found");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-drex-notification-adapter\" repository path ({appConfig.CommonCoreDrexNotificationAdapterRepositoryPath}) could not be found");
         }
 
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")

@@ -1,0 +1,69 @@
+﻿---
+services:
+  vessel:
+    container_name: drex-notification-adapter-vessel
+    depends_on:
+      - cc.rabbitmq-local
+      - cc.drex-message-service
+    profiles:
+      - vessel
+    restart: always
+    environment:
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12349:5000"
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_DREX_NOTIFICATION_ADAPTER_REPO}/config
+        target: C:/app/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: ${ABS_CC_SSH_KEYS_PATH}
+        target: c:/ssh-keys
+        read_only: false
+
+  central:
+    container_name: drex-notification-adapter-central
+    depends_on:
+      - cc.rabbitmq-remote
+      - cc.drex-central-message-service
+    profiles:
+      - central
+    restart: always
+    environment:
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    ports:
+      - "12350:5000"
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_DREX_NOTIFICATION_ADAPTER_REPO}/config
+        target: C:/app/config
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: ${ABS_CC_SSH_KEYS_PATH}
+        target: c:/ssh-keys
+        read_only: false
