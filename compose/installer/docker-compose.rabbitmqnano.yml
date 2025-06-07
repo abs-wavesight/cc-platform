@@ -13,10 +13,8 @@ services:
     healthcheck:
       test: 
         [
-          "CMD",
-          "IF", "/I", "\"$RABBIT_LOCATION\"==\"central\"", 
-          "(curl", "-k", "--head", "https://localhost:15671)", 
-          "ELSE", "(curl", "--head", "http://localhost:15672)"
+          "CMD-SHELL",
+          "IF /I \"%RABBITMQ_LOCATION%\"==\"central\" (C:\\Windows\\System32\\curl.exe -k --head https://localhost:15671) ELSE (C:\\Windows\\System32\\curl.exe --head http://localhost:15672)"
          ]
       interval: 10s
       timeout: 15s

@@ -188,7 +188,7 @@ public static class ConfigureCommand
 
             using (CliStep.Start("Installing TLS certificates", true))
             {
-                const string rabbitMqCertName = "rabbitmq.cer";
+                const string rabbitMqCertName = "ca.pem";
                 CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.LocalCerts}/{rabbitMqCertName}", null, logger);
                 CertificateImporter.ImportCertificate($"{appConfig.CertificatePath}/{Constants.CertificateSubDirectories.RemoteCerts}/{rabbitMqCertName}", null, logger);
             }

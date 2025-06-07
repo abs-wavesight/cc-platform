@@ -68,5 +68,6 @@ RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_management --offline
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_delayed_message_exchange --offline
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_shovel --offline
 RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_shovel_management --offline
+RUN c:\rabbitmq\sbin\rabbitmq-plugins.bat enable rabbitmq_auth_mechanism_ssl --offline
 #
 CMD c:\rabbitmq\sbin\rabbitmq-server.bat

@@ -991,7 +991,7 @@ public class ComponentInstaller : ActionBase
         client.DefaultRequestHeaders.Add("Authorization", result.AccessToken);
         client.DefaultRequestHeaders.Add(Constants.Headers.Client, cloudClientId);
         client.DefaultRequestHeaders.Add(Constants.Headers.Tenant, ccTenantId);
-        client.DefaultRequestHeaders.Add("central-hosts", $"[\"{centralHostName}\",\"{centralHostName}:15671\",\"{centralHostName}:5671\"]");
+        client.DefaultRequestHeaders.Add("central-hosts", $"[\"{centralHostName}\"]");
 
         var httpResponse = await client.GetAsync(requestUrl);
         var responseContent = await httpResponse.Content.ReadAsStreamAsync();
