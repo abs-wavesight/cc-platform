@@ -34,7 +34,7 @@ services:
         target: c:/ssh-keys
         read_only: false
       - type: bind
-        source: ${PATH_TO_ABS_CC_LOGS}
+        source: ${ABS_CC_LOGS_PATH}
         target: c:/app/logs
         read_only: false
 
@@ -72,6 +72,6 @@ services:
         target: c:/ssh-keys
         read_only: false
       - type: bind
-        source: ${PATH_TO_ABS_CC_LOGS}
+        source: ${ABS_CC_LOGS_PATH}
         target: c:/app/logs
         read_only: false

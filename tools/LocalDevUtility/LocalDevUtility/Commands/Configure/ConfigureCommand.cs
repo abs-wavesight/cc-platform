@@ -113,6 +113,13 @@ public static class ConfigureCommand
             fdzRootPath = readAppConfig?.FdzRootPath;
         }
 
+        Console.Write($"Local path to use for log files created by Drex Notification Adapter{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreCliensLogs) ? $" ({readAppConfig.CommonCoreCliensLogs})" : "")}: ");
+        var ccLogsPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccLogsPath))
+        {
+            ccLogsPath = readAppConfig?.CommonCoreCliensLogs;
+        }
+
         Console.Write("Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
@@ -145,7 +152,8 @@ public static class ConfigureCommand
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
             SftpRootPath = sftpRootPath,
-            FdzRootPath = fdzRootPath,
+            FdzRootPath = fdzRootPath, 
+            CommonCoreCliensLogs = ccLogsPath
         };
 
         CreateDirectories(appConfig);
@@ -286,6 +294,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath) || !new DirectoryInfo(appConfig.FdzRootPath).Exists)
         {
             errors.Add($"FDZ root path ({appConfig.FdzRootPath}) is required");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreCliensLogs) || !new DirectoryInfo(appConfig.CommonCoreCliensLogs).Exists)
+        {
+            errors.Add($"CommonCore applications logs path ({appConfig.CommonCoreCliensLogs}) is required");
         }
 
         return errors;

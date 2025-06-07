@@ -40,6 +40,7 @@ public static class Constants
         public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
         public static readonly string SftpRootPath = PlatformConstants.SFTP_Path;
         public static readonly string FdzRootPath = PlatformConstants.FDZ_Path;
+        public static readonly string AbsCcClientsLogsPath = "ABS_CC_LOGS_PATH";
     }
 
     public static class CertificateSubDirectories
