@@ -20,7 +20,7 @@ defaults:
 jobs:
   clean_branch_names:
     name: Clean Branch Names
-    runs-on: windows-2019
+    runs-on: windows-2022
     outputs:
       tagFriendlyBranchName: ${{ steps.clean_branch_names.outputs.tagFriendlyBranchName }}
       tagFriendlyBranchNameWithPrefixDash: ${{ steps.clean_branch_names.outputs.tagFriendlyBranchNameWithPrefixDash }}

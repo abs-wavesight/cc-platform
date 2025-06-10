@@ -1,0 +1,19 @@
+[ req ]
+default_bits        = 4096
+default_md          = sha256
+distinguished_name  = req_distinguished_name
+x509_extensions     = v3_ca
+prompt              = no
+
+[ req_distinguished_name ]
+C  = US
+ST = TX
+L  = Spring
+O  = American Bureau of Shipping
+CN = dev-root-ca
+
+[ v3_ca ]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical, keyCertSign, cRLSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always

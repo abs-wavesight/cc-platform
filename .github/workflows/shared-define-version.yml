@@ -5,8 +5,8 @@ on:
     inputs:
         release_branch:
           description: 'The release branch'
-          required: true
-          type: string          
+          type: string
+          default: "releases/${{ inputs.major }}_${{ inputs.minor }}_1"          
         develop_branch:
           description: 'The develop branch'
           required: true
