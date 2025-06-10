@@ -89,6 +89,12 @@ public class LocalDevUtilityFixture
         var dummySchedulerPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-scheduler-repo");
         Directory.CreateDirectory(dummySchedulerPath);
 
+        var dummyDrexNotificationAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-notification-adapter-repo");
+        Directory.CreateDirectory(dummyDrexNotificationAdapterPath);
+
+        var dummyDrexNotificationLogsPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-notification-adapter-repo/cc-logs");
+        Directory.CreateDirectory(dummyDrexNotificationLogsPath);
+
         return new AppConfig
         {
             CommonCorePlatformRepositoryPath = repoRootPath,
@@ -102,7 +108,9 @@ public class LocalDevUtilityFixture
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
             SftpRootPath = dummySftpRootPath,
-            FdzRootPath = dummyFdzRootPath
+            FdzRootPath = dummyFdzRootPath, 
+            CommonCoreDrexNotificationAdapterRepositoryPath = dummyDrexNotificationAdapterPath, 
+            CommonCoreCliensLogs = dummyDrexNotificationLogsPath
         };
     }
 
