@@ -1,0 +1,29 @@
+services:
+  cc.system-monitor-adapter:
+    container_name: abs-cc-system-monitor-adapter
+    depends_on:
+      - cc.rabbitmq-local
+      - cc.drex-message-service
+    environment:
+      - SiteConfigFileName=${DREX_SITE_CONFIG_FILE_NAME}
+      - RABBITMQ_LOCAL_CERT_PATH=C:/rabbitmq-local-certs/ca.pem   
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
+      - ABS_CC_SSH_KEYS_PATH=c:/ssh-keys
+    profiles:
+      - vessel
+    restart: always
+    isolation: process
+    user: ContainerAdministrator
+    volumes:      
+      - type: bind
+        source: ${PATH_TO_CERTS}/local-certs
+        target: C:/rabbitmq-local-certs
+        read_only: true
+      - type: bind
+        source: ${PATH_TO_CC_SYSTEM_MONITOR_ADAPTER_REPO}/config/SystemMonitor
+        target: C:/app/configs
+        read_only: false
+      - type: bind
+        source: ${PATH_TO_CC_SYSTEM_MONITOR_ADAPTER_REPO}/logs
+        target: C:/app/logs
+        read_only: false

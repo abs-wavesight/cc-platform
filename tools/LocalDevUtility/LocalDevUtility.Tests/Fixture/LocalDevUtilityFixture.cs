@@ -88,6 +88,9 @@ public class LocalDevUtilityFixture
 
         var dummySchedulerPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-scheduler-repo");
         Directory.CreateDirectory(dummySchedulerPath);
+        
+        var dummySystemMonitorPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-observability-repo");
+        Directory.CreateDirectory(dummySchedulerPath);
 
         var dummyDrexNotificationAdapterPath = Path.Combine(repoRootPath, "tools/LocalDevUtility/dummy-cc-drex-notification-adapter-repo");
         Directory.CreateDirectory(dummyDrexNotificationAdapterPath);
@@ -104,6 +107,7 @@ public class LocalDevUtilityFixture
             CommonCoreKdiAdapterRepositoryPath = dummyKdiAdapterPath,
             VoyageManagerRepositoryPath = dummyVoyageManagerAdapterPath,
             CommonCoreSchedulerRepositoryPath = dummySchedulerPath,
+            CommonCoreSystemMonitorAdapterRepositoryPath = dummySystemMonitorPath,
             ContainerWindowsVersion = "2019",
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
