@@ -102,7 +102,7 @@ jobs:
       matrix:
         os: [ windows-2019, windows-2022 ]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
 
     steps:
       - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
