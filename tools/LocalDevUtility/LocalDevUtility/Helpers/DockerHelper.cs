@@ -53,10 +53,12 @@ public static class DockerHelper
             [Constants.ComposeEnvKeys.PathToCommonCoreKdiAdapterRepository] = appConfig.CommonCoreKdiAdapterRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCommonCoreVoyageManagerAdapterRepository] = appConfig.VoyageManagerRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCommonCoreSchedulerRepository] = appConfig.CommonCoreSchedulerRepositoryPath!,
+            [Constants.ComposeEnvKeys.PathToCommonCoreDrexNotificationAdapterRepository] = appConfig.CommonCoreDrexNotificationAdapterRepositoryPath!,
             [Constants.ComposeEnvKeys.PathToCertificates] = appConfig.CertificatePath!,
             [Constants.ComposeEnvKeys.PathToSshKeys] = appConfig.SshKeysPath!,
             [Constants.ComposeEnvKeys.SftpRootPath] = appConfig.SftpRootPath!,
             [Constants.ComposeEnvKeys.FdzRootPath] = appConfig.FdzRootPath!,
+            [Constants.ComposeEnvKeys.AbsCcClientsLogsPath] = appConfig.CommonCoreCliensLogs!
         };
 
         if (additionalOptions != null)

@@ -63,11 +63,18 @@ public static class ConfigureCommand
             voyageManagerRepositoryPath = readAppConfig?.VoyageManagerRepositoryPath;
         }
 
-        Console.Write($"\"cc-scheduler\" repository lacal path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreSchedulerRepositoryPath})" : "")}: ");
+        Console.Write($"\"cc-scheduler\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreSchedulerRepositoryPath})" : "")}: ");
         var ccSchedulerRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccSchedulerRepositoryPath))
         {
             ccSchedulerRepositoryPath = readAppConfig?.CommonCoreSchedulerRepositoryPath;
+        }
+
+        Console.Write($"\"cc-drex-notification-adapter\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexNotificationAdapterRepositoryPath})" : "")}: ");
+        var ccDrexNotificationAdapterRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccDrexNotificationAdapterRepositoryPath))
+        {
+            ccDrexNotificationAdapterRepositoryPath = readAppConfig?.CommonCoreDrexNotificationAdapterRepositoryPath;
         }
 
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
@@ -106,6 +113,13 @@ public static class ConfigureCommand
             fdzRootPath = readAppConfig?.FdzRootPath;
         }
 
+        Console.Write($"Local path to use for log files created by Drex Notification Adapter{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreCliensLogs) ? $" ({readAppConfig.CommonCoreCliensLogs})" : "")}: ");
+        var ccLogsPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccLogsPath))
+        {
+            ccLogsPath = readAppConfig?.CommonCoreCliensLogs;
+        }
+
         Console.Write("Generate and install certificates now -- this only needs to be done once ever (y/n)? (n): ");
         var generateCertificatesNow = false;
         var generateCertificatesNowInput = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
@@ -133,11 +147,13 @@ public static class ConfigureCommand
             CommonCoreDiscoRepositoryPath = ccDiscoRepositoryLocalPath,
             CommonCoreSiemensAdapterRepositoryPath = ccSiemensAdapterRepositoryLocalPath,
             CommonCoreKdiAdapterRepositoryPath = ccKdiAdapterRepositoryLocalPath,
+            CommonCoreDrexNotificationAdapterRepositoryPath = ccDrexNotificationAdapterRepositoryPath,
             ContainerWindowsVersion = containerWindowsVersion,
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
             SftpRootPath = sftpRootPath,
             FdzRootPath = fdzRootPath,
+            CommonCoreCliensLogs = ccLogsPath
         };
 
         CreateDirectories(appConfig);
@@ -250,6 +266,11 @@ public static class ConfigureCommand
             errors.Add($"\"cc-scheduler\" repository path ({appConfig.CommonCoreSchedulerRepositoryPath}) could not be found");
         }
 
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-drex-notification-adapter\" repository path ({appConfig.CommonCoreDrexNotificationAdapterRepositoryPath}) could not be found");
+        }
+
         if (appConfig.ContainerWindowsVersion is not "2019" and not "2022")
         {
             errors.Add($"Container Windows version ({appConfig.ContainerWindowsVersion}) is invalid (must be either \"2019\" or \"2022\")");
@@ -273,6 +294,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.FdzRootPath) || !new DirectoryInfo(appConfig.FdzRootPath).Exists)
         {
             errors.Add($"FDZ root path ({appConfig.FdzRootPath}) is required");
+        }
+
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreCliensLogs) || !new DirectoryInfo(appConfig.CommonCoreCliensLogs).Exists)
+        {
+            errors.Add($"CommonCore applications logs path ({appConfig.CommonCoreCliensLogs}) is required");
         }
 
         return errors;
