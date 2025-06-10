@@ -1,0 +1,4 @@
+services:
+
+  cc.system-monitor-adapter:
+    image: ghcr.io/abs-wavesight/system-monitor-adapter:windows-${WINDOWS_VERSION}
