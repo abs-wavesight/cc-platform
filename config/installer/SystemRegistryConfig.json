@@ -787,7 +787,7 @@
           "action": "replaceParameters"
         },
         {
-          "source": "appsettings.json",
+          "source": "$RABBIT_LOCATION.appsettings.json",
           "destination": "$ABS_PATH\\config\\message-scheduler\\appsettings.json",
           "action": "copy"
         },

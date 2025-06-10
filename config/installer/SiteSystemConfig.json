@@ -5,7 +5,8 @@
     "Certificates-Site",
     "Installer",
     "Drex-Message",
-    "Drex-File"
+    "Drex-File",
+    "Message-Scheduler"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
