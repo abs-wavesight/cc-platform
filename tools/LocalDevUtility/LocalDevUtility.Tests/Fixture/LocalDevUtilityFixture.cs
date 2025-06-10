@@ -108,8 +108,8 @@ public class LocalDevUtilityFixture
             CertificatePath = dummyCertPath,
             SshKeysPath = dummyCertPath,
             SftpRootPath = dummySftpRootPath,
-            FdzRootPath = dummyFdzRootPath, 
-            CommonCoreDrexNotificationAdapterRepositoryPath = dummyDrexNotificationAdapterPath, 
+            FdzRootPath = dummyFdzRootPath,
+            CommonCoreDrexNotificationAdapterRepositoryPath = dummyDrexNotificationAdapterPath,
             CommonCoreCliensLogs = dummyDrexNotificationLogsPath
         };
     }
