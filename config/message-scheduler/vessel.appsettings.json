@@ -1,0 +1,32 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "System": "Information",
+            "Microsoft": "Information",
+            "Microsoft.AspNetCore": "Warning",
+            "Microsoft.Extensions.Diagnostics.HealthChecks": "Warning"
+        }
+    },
+    "AllowedHosts": "*",
+    "ConnectionSettings": {
+        "Host": "rabbitmq-vessel",
+        "Port": 5672,
+        "HttpPort": 15672,
+        "Protocol": "amqp",
+        "vHost": "commoncore",
+        "TriggerQueueName": "q.cc.drex.inbox.direct.adapter.message-scheduler"
+    },
+    "SchedulerSettings": {
+        "DbConnectionString": "scheduler/data/schedule.hangfire.sqlite.db",
+        "TargetExchange": "e.cc.drex.portal"
+    },
+    "MachineSettings": {
+        "SiteType": "vessel",
+        "SiteId": "$VESSEL_IMO"
+    },
+    "HealthChecks": {
+        "HealthCheckProbePollFrequencySeconds": 15,
+        "HealthCheckProbeTcpPort": 5000
+    }
+}
