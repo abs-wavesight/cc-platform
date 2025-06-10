@@ -14,4 +14,6 @@ public class AppConfig
     public string? FdzRootPath { get; set; }
     public string? SshKeysPath { get; set; }
     public string? CommonCoreSchedulerRepositoryPath { get; set; }
+    public string? CommonCoreDrexNotificationAdapterRepositoryPath { get; set; }
+    public string? CommonCoreCliensLogs { get; set; }
 }
