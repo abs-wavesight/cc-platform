@@ -103,6 +103,11 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "message-scheduler", imageName: "message-scheduler")]
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
     public ComposeComponentMode? MessageScheduler { get; set; }
+    
+    [ComposeComponent(composePath: "system-monitor", imageName: "system-monitor-adapter")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(DrexMessageService))]
+    public ComposeComponentMode? SystemMonitorAdapter { get; set; }
 
     [ComposeComponent(composePath: "drex-notification-adapter", imageName: "drex-notification-adapter", profile: Constants.Profiles.DrexVesselAdapter)]
     [ComposeComponentDependency(nameof(DrexMessageService))]
