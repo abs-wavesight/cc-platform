@@ -62,7 +62,7 @@ env:
   NUGET_PACKAGE_PATH: ${{ github.workspace }}/.nuget/packages
   COVERAGE_OUTPUT_LOCATION: service/{0}/TestResults/*/coverage.cobertura.xml
   DOCKER_REPO: ghcr.io/abs-wavesight
-  RABBITMQ_IMAGE_TAG: windows-2019
+  RABBITMQ_IMAGE_TAG: windows-2022
 
 defaults:
   run:
