@@ -39,7 +39,7 @@ env:
   
 jobs:
   build_and_publish_windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     outputs:
       should_wrap: ${{ steps.publish.outputs.should_wrap }}
     steps:
