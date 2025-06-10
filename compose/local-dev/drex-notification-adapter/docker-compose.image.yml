@@ -1,0 +1,8 @@
+---
+services:
+
+  vessel:
+    image: ghcr.io/abs-wavesight/drex-notification-adapter:windows-${WINDOWS_VERSION}
+
+  central:
+    image: ghcr.io/abs-wavesight/drex-notification-adapter:windows-${WINDOWS_VERSION}

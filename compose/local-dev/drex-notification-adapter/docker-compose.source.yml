@@ -1,0 +1,24 @@
+---
+services:
+
+  vessel:
+    build:
+      context: ${PATH_TO_CC_DREX_NOTIFICATION_ADAPTER_REPO}
+      dockerfile: src/NotificationService.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "application"
+
+  central:
+    build:
+      context: ${PATH_TO_CC_DREX_NOTIFICATION_ADAPTER_REPO}
+      dockerfile: src/NotificationService.Dockerfile
+      args:
+        ABS_NUGET_USERNAME: $ABS_NUGET_USERNAME
+        ABS_NUGET_PASSWORD: $ABS_NUGET_PASSWORD
+      labels:
+        org.eagle.wavesight.built_from: "source"
+        org.eagle.wavesight.container_type: "application"

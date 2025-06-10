@@ -55,7 +55,7 @@ jobs:
   publish-nuget-package:
     name: Publish Nuget Package
     needs: [get_clean_branch_names]
-    runs-on: windows-2019
+    runs-on: windows-2022
     outputs:
       version: ${{ env.NUGET_PACKAGE_VERSION }}
     env:

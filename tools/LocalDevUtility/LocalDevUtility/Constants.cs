@@ -20,6 +20,8 @@ public static class Constants
         public const string RabbitMqRemote = "rabbitmq-remote";
         public const string VectorSite = "vector-site";
         public const string VectorCentral = "vector-central";
+        public const string DrexVesselAdapter = "vessel";
+        public const string DrexCentralAdapter = "central";
     }
 
     public static class ComposeEnvKeys
@@ -32,11 +34,13 @@ public static class Constants
         public const string PathToCommonCoreKdiAdapterRepository = "PATH_TO_CC_KDI_ADAPTER_REPO";
         public const string PathToCommonCoreVoyageManagerAdapterRepository = "PATH_TO_CC_VOYAGE_MANAGER_ADAPTER_REPO";
         public const string PathToCommonCoreSchedulerRepository = "PATH_TO_CC_SCHEDULER_REPO";
+        public const string PathToCommonCoreDrexNotificationAdapterRepository = "PATH_TO_CC_DREX_NOTIFICATION_ADAPTER_REPO";
         public const string DrexSiteConfigFileNameOverride = "DREX_SITE_CONFIG_FILE_NAME";
         public const string PathToCertificates = "PATH_TO_CERTS";
         public static readonly string PathToSshKeys = PlatformConstants.SSH_Keys_Path;
         public static readonly string SftpRootPath = PlatformConstants.SFTP_Path;
         public static readonly string FdzRootPath = PlatformConstants.FDZ_Path;
+        public static readonly string AbsCcClientsLogsPath = "ABS_CC_LOGS_PATH";
     }
 
     public static class CertificateSubDirectories
