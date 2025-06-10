@@ -100,9 +100,9 @@ jobs:
     needs: [ get_clean_branch_names, build ]
     strategy:
       matrix:
-        os: [ windows-2019, windows-2022 ]
+        os: [ windows-2022 ]
 
-    runs-on: windows-2022
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout branch with Submodules - ${{ inputs.use-submodules }}
