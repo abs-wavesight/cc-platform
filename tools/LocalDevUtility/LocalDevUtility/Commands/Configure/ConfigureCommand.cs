@@ -152,7 +152,7 @@ public static class ConfigureCommand
             CertificatePath = certificatePath,
             SshKeysPath = sshKeysPath,
             SftpRootPath = sftpRootPath,
-            FdzRootPath = fdzRootPath, 
+            FdzRootPath = fdzRootPath,
             CommonCoreCliensLogs = ccLogsPath
         };
 
