@@ -148,7 +148,7 @@ jobs:
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
-        windows-version: [ "2019", "2022" ]
+        windows-version: [ "2022" ]
     with:
       version: ${{ inputs.version || needs.get-next-version.outputs.version }}
       description: ${{ inputs.description || 'Site System Nano Release' }}

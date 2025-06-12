@@ -37,10 +37,10 @@ jobs:
     name: Clean Up Container Images
     strategy:
       matrix:
-        os: [windows-2019, windows-2022]
+        os: [ windows-2022]
         image: ${{ fromJson(inputs.image-names) }}
 
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - name: Set branch names from current branch
@@ -76,7 +76,7 @@ jobs:
       matrix:
         package: ${{ fromJson(inputs.nuget-package-names) }}
 
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - name: Set branch names from current branch
