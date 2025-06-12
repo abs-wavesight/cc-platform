@@ -43,6 +43,10 @@ on:
         required: false
         type: string
         description: Version to use for Message Scheduler release # v100
+      drex-notification-adapter-version:
+        required: false
+        type: string
+        description: Version to use for Drex Notification Adapter release # v100
 
 concurrency:
   group: site-system-nano-release-${{ github.head_ref }}
@@ -133,6 +137,15 @@ jobs:
       name: "Message Scheduler Release"
     secrets: inherit
 
+  get-default-drex-notification-adapter-version:
+    name: Get Default Drex Notification Adapter Version
+    if: ${{ inputs.drex-notification-adapter-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex-notification-adapter"
+      name: "Drex Notification Adapter Release"
+    secrets: inherit
+
   release-component:
     name: Site System Release
     needs: 
@@ -145,6 +158,7 @@ jobs:
       - get-default-disco-version
       - get-default-observability-service-version
       - get-default-message-scheduler-version
+      - get-default-drex-notification-adapter-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -164,6 +178,7 @@ jobs:
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}_disco
         -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}_observability-service
         -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
+        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-drex-notification-adapter-version.outputs.version || inputs.drex-notification-adapter-version }}_drex_notification_adapter
       release-name-prefix: Site System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
