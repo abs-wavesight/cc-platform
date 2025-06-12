@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "System": "Information",
+      "Microsoft": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.Extensions.Diagnostics.HealthChecks": "Warning"
+    }
+  },
+  "CommonCoreLoggingSettings": {
+    "InternalFileSizeLimitMB": 10,
+    "LogFilesPath": "logs",
+    "RetainedInternalFileCountLimit": 7,
+    "OpenTelemetry": {
+      "Exporters": []
+    }
+  },
+  "ConnectionSettings": {
+    "Key": "local",
+    "Host": "rabbitmq-central",
+    "Port": 5681,
+    "HttpPort": 15681,
+    "Protocol": "amqps",
+    "Username": "guest",
+    "Password": "guest",
+    "vHost": "commoncore",
+    "TriggerQueueName": "q.cc.drex.inbox.broadcast.adapter.drex-notification-adapter"
+  },
+  "SkipCertificateImport": false
+}

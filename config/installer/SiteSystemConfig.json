@@ -5,7 +5,8 @@
     "Certificates-Site",
     "Installer",
     "Drex-Message",
-    "Drex-File"
+    "Drex-File",
+    "Drex-Notification-Adapter"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
