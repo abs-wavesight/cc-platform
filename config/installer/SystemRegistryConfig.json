@@ -849,6 +849,10 @@
           "action": "executeImmediate"
         },
         {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/cc-logs')",
+          "action": "executeImmediate"
+        },        
+        {
           "source": "drex-notification.adapter.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-notification.adapter.drex.config.json",
           "action": "copy"

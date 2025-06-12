@@ -400,7 +400,7 @@
       "files": [
         {
           "type": "container",
-          "source": "ghcr.io/abs-wavesight/drex-notification-adapter:windows-$WINDOWS_VERSION-$DREX_FILE_VERSION",
+          "source": "ghcr.io/abs-wavesight/drex-notification-adapter:windows-$WINDOWS_VERSION-$DREX_NOTIFICATION_ADAPTER_VERSION",
           "destination": "drex-notification-adapter.tar"
         },
         {

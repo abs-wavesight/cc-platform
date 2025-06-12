@@ -22,8 +22,6 @@
     "Port": 5672,
     "HttpPort": 15672,
     "Protocol": "amqp",
-    "Username": "guest",
-    "Password": "guest",
     "vHost": "commoncore",
     "TriggerQueueName": "q.cc.drex.inbox.broadcast.adapter.drex-notification-adapter"
   },

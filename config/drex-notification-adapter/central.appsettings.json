@@ -19,11 +19,9 @@
   "ConnectionSettings": {
     "Key": "local",
     "Host": "rabbitmq-central",
-    "Port": 5681,
-    "HttpPort": 15681,
+    "Port": 5671,
+    "HttpPort": 15671,
     "Protocol": "amqps",
-    "Username": "guest",
-    "Password": "guest",
     "vHost": "commoncore",
     "TriggerQueueName": "q.cc.drex.inbox.broadcast.adapter.drex-notification-adapter"
   },
