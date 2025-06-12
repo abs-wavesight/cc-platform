@@ -174,7 +174,7 @@ jobs:
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}_disco
         -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}_observability-service
         -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
-        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-drex-notification-adapter-version.outputs.version }}_drex_notification_adapter
+        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-drex-notification-adapter-version.outputs.version }}_drex-notification-adapter
       release-name-prefix: Site System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
