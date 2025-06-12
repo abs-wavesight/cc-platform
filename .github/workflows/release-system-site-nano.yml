@@ -38,7 +38,11 @@ on:
       observability-service-version:
         required: false
         type: string
-        description: Version to use for Observability Service release # v100        
+        description: Version to use for Observability Service release # v100
+      message-scheduler-version:
+        required: false
+        type: string
+        description: Version to use for Message Scheduler release # v100
 
 concurrency:
   group: site-system-nano-release-${{ github.head_ref }}
@@ -120,6 +124,15 @@ jobs:
       name: "Observability Service Release"
     secrets: inherit
 
+  get-default-message-scheduler-version:
+    name: Get Default Message Scheduler Version
+    if: ${{ inputs.message-scheduler-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-scheduler"
+      name: "Message Scheduler Release"
+    secrets: inherit
+
   release-component:
     name: Site System Release
     needs: 
@@ -131,6 +144,7 @@ jobs:
       - get-next-version
       - get-default-disco-version
       - get-default-observability-service-version
+      - get-default-message-scheduler-version
     uses: ./.github/workflows/release-shared-system.yml
     strategy:
       matrix:
@@ -149,6 +163,7 @@ jobs:
         -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}_openssl
         -p `$DISCO_RELEASE_TAG:${{ needs.get-default-disco-version.outputs.version || inputs.disco-version }}_disco
         -p `$OBSERVABILITY_SERVICE_RELEASE_TAG:${{ needs.get-default-observability-service-version.outputs.version || inputs.observability-service-version }}_observability-service
+        -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
       release-name-prefix: Site System Nano Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

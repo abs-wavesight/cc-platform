@@ -6,6 +6,7 @@
     "Installer",
     "Drex-Message",
     "Drex-File",
+    "Message-Scheduler",
     "Drex-Notification-Adapter"
   ],
   "parameters": {
