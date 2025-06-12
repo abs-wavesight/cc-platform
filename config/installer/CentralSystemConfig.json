@@ -9,7 +9,8 @@
     "Drex-Central-Message",
     "Voyage-Manager-Report-Adapter",
     "Message-Scheduler",
-    "Drex-File"
+    "Drex-File",
+    "Drex-Notification-Adapter"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",

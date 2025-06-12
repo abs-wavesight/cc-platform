@@ -1,0 +1,10 @@
+{
+  "Name": "drex-notification-adapter",
+  "Ver": "1.0.0",
+  "Broadcast": {
+    "Enable": true,
+    "Topics": [
+      "abs.cc.notification.#"
+    ]
+  }
+}

@@ -811,6 +811,63 @@
           "action": "runDockerCompose"
         }
       ]
+    },
+    {
+      "name": "Drex-Notification-Adapter",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex-notification-adapter/releases/download/$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-Notification-Adapter/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "drex-notification-adapter.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.drex-notification-adapter.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-notification-adapter.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.drex-notification-adapter.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$RABBIT_LOCATION.appsettings.json",
+          "destination": "$ABS_PATH\\config\\drex-notification-adapter\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\drex-notification-adapter\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/config/drex-shared/adapters')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/cc-logs')",
+          "action": "executeImmediate"
+        },        
+        {
+          "source": "drex-notification.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-notification.adapter.drex.config.json",
+          "action": "copy"
+        },
+        {
+          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
+          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.drex-notification-adapter.yml",
+          "action": "runDockerCompose"
+        }
+      ]
     }
   ]
 }

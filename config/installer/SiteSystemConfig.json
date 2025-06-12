@@ -6,7 +6,8 @@
     "Installer",
     "Drex-Message",
     "Drex-File",
-    "Message-Scheduler"
+    "Message-Scheduler",
+    "Drex-Notification-Adapter"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",
