@@ -47,7 +47,7 @@ jobs:
     uses: ./.github/workflows/release-shared-component.yml
     strategy:
       matrix:
-        windows-version: [ "2019", "2022" ]
+        windows-version: [ "2022" ]
     with:
       name: ${{ inputs.version || needs.get-next-version.outputs.version }} Observability Service Release
       component_name: Observability-Service
