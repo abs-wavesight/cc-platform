@@ -172,7 +172,7 @@ public class ComponentInstaller : ActionBase
             .ThenByDescending(x => x.Name == "Vector")
             .ThenByDescending(x => x.Name == "Sftp-Service")
             .ThenByDescending(x => x.Name is "Drex-Message" or "Drex-Central-Message")
-            .ThenByDescending(x => x.Name is "Drex-File" or "Voyage-Manager-Report-Adapter" or "Message-Scheduler")
+            .ThenByDescending(x => x.Name is "Drex-File" or "Voyage-Manager-Report-Adapter" or "Message-Scheduler" or "Drex-Notification-Adapter")
             .ThenByDescending(x => x.Name == "Disco")
             .ThenByDescending(x => x.Name is "Siemens" or "Kdi")
             .ThenByDescending(x => x.Name == "Observability-Service")
