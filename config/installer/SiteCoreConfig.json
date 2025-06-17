@@ -1,0 +1,21 @@
+﻿{
+  "components": [
+    "Docker",
+    "RabbitMq",
+    "Certificates-Site",
+    "Installer",
+    "Drex-Message",
+    "Drex-File",
+    "Message-Scheduler"
+  ],
+  "parameters": {
+    "$ABS_PATH": "c:/abs",
+    "$RABBIT_LOCATION": "vessel",
+    "$FDZ_ROOT_PATH": "c:/abs/fdz",
+    "$RMQ_CENTRAL_HOST": "central.com",
+    "$SFTP_CENTRAL_HOST": "central.com",
+    "$VESSEL_IMO": "123456",
+    "$SFTP_CENTRAL_USERNAME": "drex",
+    "$SFTP_CENTRAL_PASSWORD": "P@ssword"
+  }
+}
