@@ -17,6 +17,6 @@
     "$SFTP_CENTRAL_HOST": "central.com",
     "$VESSEL_IMO": "123456",
     "$SFTP_CENTRAL_USERNAME": "drex",
-    "$SFTP_CENTRAL_PASSWORD": "P@ssword"
+    "$SFTP_CENTRAL_PASSWORD": "placeholder"
   }
 }

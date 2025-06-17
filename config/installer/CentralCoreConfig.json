@@ -21,6 +21,6 @@
     "$CC_TENANT_NAME": "tenantName",
     "$FDZ_ROOT_PATH": "c:/abs/fdz",
     "$SFTP_CENTRAL_USERNAME": "drex",
-    "$SFTP_CENTRAL_PASSWORD": "P@ssword"
+    "$SFTP_CENTRAL_PASSWORD": "placeholder"
   }
 }
