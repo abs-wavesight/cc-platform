@@ -15,14 +15,6 @@ on:
         required: false
         type: string
         description: Version to use for RabbitMQ release # v100
-      vector-central-version:
-        required: false
-        type: string
-        description: Version to use for Vector central release # v100
-      sftp-service-version:
-        required: false
-        type: string
-        description: Version to use for Sftp Service release # v100
       drex-central-version:
         required: false
         type: string
@@ -35,7 +27,6 @@ on:
         required: false
         type: string
         description: Version to use for Message Scheduler release # v100
-        
 
 concurrency:
   group: central-core-release-${{ github.head_ref }}
@@ -61,24 +52,6 @@ jobs:
     with:
       repo: "cc-platform"
       name: "RabbitMQNano Release"
-    secrets: inherit
-
-  get-default-vector-central-version:
-    name: Get Default Vector Central Version
-    if: ${{ inputs.vector-central-version == '' }}
-    uses: ./.github/workflows/shared-get-latest-release-version.yml
-    with:
-      repo: "cc-platform"
-      name: "Vector Release"
-    secrets: inherit
-
-  get-default-sftp-service-version:
-    name: Get Default Sftp Service Version
-    if: ${{ inputs.sftp-service-version == '' }}
-    uses: ./.github/workflows/shared-get-latest-release-version.yml
-    with:
-      repo: "cc-platform"
-      name: "Sftp Service Release"
     secrets: inherit
 
   get-default-drex-central-version:
@@ -112,8 +85,6 @@ jobs:
     name: Central Core Release
     needs: 
       - get-default-rabbitmq-version
-      - get-default-vector-central-version
-      - get-default-sftp-service-version
       - get-default-drex-central-version
       - get-default-drex-file-version
       - get-default-message-scheduler-version
@@ -130,8 +101,6 @@ jobs:
       system-config: CentralCoreConfig.json
       component-params: >
         -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
-        -p `$VECTOR_RELEASE_TAG:${{ needs.get-default-vector-central-version.outputs.version || inputs.vector-central-version }}_vector
-        -p `$SFTP_SERVICE_RELEASE_TAG:${{ needs.get-default-sftp-service-version.outputs.version || inputs.sftp-service-version }}_sftp-service
         -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
         -p `$DREX_CENTRAL_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-central-version.outputs.version || inputs.drex-central-version }}_drex-central-message
         -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
