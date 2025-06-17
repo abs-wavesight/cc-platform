@@ -1,0 +1,110 @@
+﻿name: Site Core Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        type: string
+        description: Unique version for the release
+      description:
+        required: false
+        type: string
+        description: Description of the release
+      rabbitmq-version:
+        required: false
+        type: string
+        description: Version to use for RabbitMQ release # v100
+      drex-message-version:
+        required: false
+        type: string
+        description: Version to use for Drex Message release # v100
+      drex-file-version:
+        required: false
+        type: string
+        description: Version to use for Drex File release # v100
+      message-scheduler-version:
+        required: false
+        type: string
+        description: Version to use for Message Scheduler release # v100
+
+concurrency:
+  group: site-core-release-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  get-next-version:
+    name: Get Next Version
+    if: ${{ inputs.version == '' }}
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
+    with:
+      major: 1
+      minor: 0
+      project_marker: "core-site"
+      release_branch: "releases/1_0_1"
+      develop_branch: "main"
+      increment: true
+
+  get-default-rabbitmq-version:
+    name: Get Default RabbitMQ Nano Version
+    if: ${{ inputs.rabbitmq-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-platform"
+      name: "RabbitMQNano Release"
+    secrets: inherit
+
+  get-default-drex-message-version:
+    name: Get Default Drex Message Version
+    if: ${{ inputs.drex-message-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex Message Release"
+    secrets: inherit
+
+  get-default-drex-file-version:
+    name: Get Default Drex File Version
+    if: ${{ inputs.drex-file-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex"
+      name: "Drex File Release"
+    secrets: inherit
+
+  get-default-message-scheduler-version:
+    name: Get Default Message Scheduler Version
+    if: ${{ inputs.message-scheduler-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-scheduler"
+      name: "Message Scheduler Release"
+    secrets: inherit
+
+  release-component:
+    name: Site Core Release
+    needs: 
+      - get-default-rabbitmq-version
+      - get-default-drex-message-version
+      - get-default-drex-file-version
+      - get-next-version
+      - get-default-message-scheduler-version
+    uses: ./.github/workflows/release-shared-system.yml
+    strategy:
+      matrix:
+        windows-version: [ "2022" ]
+    with:
+      version: ${{ inputs.version || needs.get-next-version.outputs.version }}
+      description: ${{ inputs.description || 'Site Core Release' }}
+      tag-prefix: site-core
+      windows-version: ${{ matrix.windows-version }}
+      system-config: SiteCoreConfig.json
+      component-params: >
+        -p `$RABBIT_RELEASE_TAG:${{ needs.get-default-rabbitmq-version.outputs.version || inputs.rabbitmq-version }}_rabbitmq
+        -p `$DREX_MESSAGE_RELEASE_TAG:${{ needs.get-default-drex-message-version.outputs.version || inputs.drex-message-version }}_drex-message 
+        -p `$DREX_FILE_RELEASE_TAG:${{ needs.get-default-drex-file-version.outputs.version || inputs.drex-file-version }}_drex-file
+        -p `$OPENSSL_RELEASE_TAG:${{ needs.get-default-openssl-version.outputs.version || inputs.openssl-version }}_openssl
+        -p `$MESSAGE_SCHEDULER_RELEASE_TAG:${{ needs.get-default-message-scheduler-version.outputs.version || inputs.message-scheduler-version }}_message-scheduler
+      release-name-prefix: Site Core Release
+    secrets: inherit
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
