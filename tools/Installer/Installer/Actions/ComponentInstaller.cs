@@ -1014,10 +1014,11 @@ public class ComponentInstaller : ActionBase
         }
         else
         {
-            var error = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
-            _logger.LogError("Failed to get certificates: {response}. {message}", responseContent,
+            var content = await httpResponse.Content.ReadAsStringAsync();
+            var error = JsonSerializer.Deserialize<ErrorResponse>(content);
+            _logger.LogError("Failed to get certificates: {response}. {message}", content,
                 string.Join(Environment.NewLine, error?.Errors.Select(e => $"{e.Code.Code}:${e.Message}") ?? []));
-            throw new Exception($"Failed to get certificates: {responseContent}");
+            throw new Exception($"Failed to get certificates: {content}");
         }
 
         return;
