@@ -69,12 +69,19 @@ public static class ConfigureCommand
         {
             ccSchedulerRepositoryPath = readAppConfig?.CommonCoreSchedulerRepositoryPath;
         }
-
+        
         Console.Write($"\"cc-drex-notification-adapter\" repository local path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSchedulerRepositoryPath) ? $" ({readAppConfig.CommonCoreDrexNotificationAdapterRepositoryPath})" : "")}: ");
         var ccDrexNotificationAdapterRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(ccDrexNotificationAdapterRepositoryPath))
         {
             ccDrexNotificationAdapterRepositoryPath = readAppConfig?.CommonCoreDrexNotificationAdapterRepositoryPath;
+        }
+
+        Console.Write($"\"cc-drex-system-monitor\" repository lacal path{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.CommonCoreSystemMonitorAdapterRepositoryPath) ? $" ({readAppConfig.CommonCoreSystemMonitorAdapterRepositoryPath})" : "")}: ");
+        var ccSystemMonitorRepositoryPath = Console.ReadLine()?.TrimTrailingSlash().ToForwardSlashes() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(ccSystemMonitorRepositoryPath))
+        {
+            ccSystemMonitorRepositoryPath = readAppConfig?.CommonCoreSystemMonitorAdapterRepositoryPath;
         }
 
         Console.Write($"Container Windows version, 2019 or 2022{(readAppConfig != null && !string.IsNullOrEmpty(readAppConfig.ContainerWindowsVersion) ? $" ({readAppConfig.ContainerWindowsVersion})" : "")}: ");
@@ -140,6 +147,7 @@ public static class ConfigureCommand
 
         var appConfig = new AppConfig
         {
+            CommonCoreSystemMonitorAdapterRepositoryPath = ccSystemMonitorRepositoryPath,
             CommonCoreSchedulerRepositoryPath = ccSchedulerRepositoryPath,
             VoyageManagerRepositoryPath = voyageManagerRepositoryPath,
             CommonCorePlatformRepositoryPath = ccPlatformRepositoryLocalPath,
@@ -264,6 +272,11 @@ public static class ConfigureCommand
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSchedulerRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSchedulerRepositoryPath).Exists)
         {
             errors.Add($"\"cc-scheduler\" repository path ({appConfig.CommonCoreSchedulerRepositoryPath}) could not be found");
+        }
+        
+        if (string.IsNullOrWhiteSpace(appConfig.CommonCoreSystemMonitorAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreSystemMonitorAdapterRepositoryPath).Exists)
+        {
+            errors.Add($"\"cc-drex-system-monitor\" repository path ({appConfig.CommonCoreSystemMonitorAdapterRepositoryPath}) could not be found");
         }
 
         if (string.IsNullOrWhiteSpace(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath) || !new DirectoryInfo(appConfig.CommonCoreDrexNotificationAdapterRepositoryPath).Exists)
