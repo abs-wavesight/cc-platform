@@ -9,9 +9,6 @@ services:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
       - LocalMessageBus__Username=guest
       - LocalMessageBus__Password=guest
-      - LocalMessageBus__Port=5672
-      - LocalMessageBus__HttpPort=15672
-      - LocalMessageBus__Protocol=amqp
       - AdaptersFolderPath=C:/app/config/adapters
       - VesselsFolderPath=C:/app/config/vessels
       - HistoryFolderPath=C:/app/config/history

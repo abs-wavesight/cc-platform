@@ -9,4 +9,11 @@ public static class PlatformConstants
     public const string FlatLogsVariableName = "FLAT_LOGS";
 
     public const string Rebex_License_Key = "==FudJOUJlqLaPVaBtOVJ1jdBLjJJ+4T/W1NvAV4SFwbM2JnZrMzKbjMLnSMNKWai2b1Ete==";
+
+    public static class KnownAdapterNames
+    {
+        public const string DrexFileAppName = "drex-f";
+        public const string MessageSchedulerAppName = "message-scheduler";
+        public const string FileTransferSchedulerAppName = "file-transfer-scheduler";
+    }
 }
