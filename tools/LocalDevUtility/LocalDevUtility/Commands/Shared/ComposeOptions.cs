@@ -23,17 +23,14 @@ public abstract class ComposeOptions
 
     [ComposeComponent(composePath: "drex-message-service", imageName: "drex-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DrexMessageService { get; set; }
 
     [ComposeComponent(composePath: "disco-service", imageName: "disco")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DiscoService { get; set; }
 
     [ComposeComponent(composePath: "drex-file-service", imageName: "drex-file-service")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
-    [ComposeComponentDependency(nameof(VectorSite))]
     [ComposeComponentDependency(nameof(DrexMessageService))]
     [ComposeComponentDependency(nameof(DrexCentralMessageService))]
     [ComposeComponentDependency(nameof(SftpService))]
@@ -56,7 +53,6 @@ public abstract class ComposeOptions
 
     [ComposeComponent(composePath: "drex-central-message-service", imageName: "drex-central-message-service")]
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
-    [ComposeComponentDependency(nameof(VectorCentral))]
     public ComposeComponentMode? DrexCentralMessageService { get; set; }
 
     [ComposeComponent(composePath: "grafana", imageName: "grafana")]
@@ -79,8 +75,6 @@ public abstract class ComposeOptions
     [Description("Alias for \"rabbitmq-local\", \"rabbitmq-remote\", \"vector-site\", and \"vector-central\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     [ComposeComponentAlias(nameof(RabbitmqRemote))]
-    [ComposeComponentAlias(nameof(VectorSite))]
-    [ComposeComponentAlias(nameof(VectorCentral))]
     public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]
@@ -103,6 +97,12 @@ public abstract class ComposeOptions
     [ComposeComponent(composePath: "message-scheduler", imageName: "message-scheduler")]
     [ComposeComponentDependency(nameof(RabbitmqRemote))]
     public ComposeComponentMode? MessageScheduler { get; set; }
+
+    [ComposeComponent(composePath: "file-transfer-scheduler", imageName: "file-transfer-scheduler")]
+    [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(MessageScheduler))]
+    [ComposeComponentDependency(nameof(DrexFileService))]
+    public ComposeComponentMode? FileTransferScheduler { get; set; }
 
     [ComposeComponent(composePath: "drex-notification-adapter", imageName: "drex-notification-adapter", profile: Constants.Profiles.DrexVesselAdapter)]
     [ComposeComponentDependency(nameof(DrexMessageService))]
