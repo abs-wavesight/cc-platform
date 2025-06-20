@@ -406,7 +406,7 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.file-transfer-scheduler.yml",
-          "destination": "docker-compose.message-scheduler.yml"
+          "destination": "docker-compose.file-transfer-scheduler.yml"
         },
         {
           "type": "file",
