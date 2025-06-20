@@ -937,14 +937,24 @@ internal class Program
         {
             if (logError)
             {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "Error executing command");
+                LogCommandExecutionError(loggerFactory, ex);
             }
 
             return Constants.ExitCodes.GENERIC_ERROR;
         }
 
         return Constants.ExitCodes.SUCCESS;
+    }
+
+    private static void LogCommandExecutionError(ILoggerFactory loggerFactory, Exception? ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+
+        do
+        {
+            logger.LogError(ex, "Error executing command");
+            ex = ex?.InnerException;
+        } while (ex is not null);
     }
 
     private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory,
@@ -958,8 +968,7 @@ internal class Program
         {
             if (logError)
             {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "Error executing command");
+                LogCommandExecutionError(loggerFactory, ex);
             }
 
             return Constants.ExitCodes.GENERIC_ERROR;
