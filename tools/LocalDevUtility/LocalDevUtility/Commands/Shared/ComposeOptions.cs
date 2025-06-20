@@ -27,6 +27,7 @@ public abstract class ComposeOptions
 
     [ComposeComponent(composePath: "disco-service", imageName: "disco")]
     [ComposeComponentDependency(nameof(RabbitmqLocal))]
+    [ComposeComponentDependency(nameof(VectorSite))]
     public ComposeComponentMode? DiscoService { get; set; }
 
     [ComposeComponent(composePath: "drex-file-service", imageName: "drex-file-service")]
@@ -75,6 +76,8 @@ public abstract class ComposeOptions
     [Description("Alias for \"rabbitmq-local\", \"rabbitmq-remote\", \"vector-site\", and \"vector-central\"")]
     [ComposeComponentAlias(nameof(RabbitmqLocal))]
     [ComposeComponentAlias(nameof(RabbitmqRemote))]
+    [ComposeComponentAlias(nameof(VectorCentral))]
+    [ComposeComponentAlias(nameof(VectorSite))]
     public ComposeComponentMode? Deps { get; set; }
 
     [Description("Alias for \"loki\" and \"grafana\"")]
