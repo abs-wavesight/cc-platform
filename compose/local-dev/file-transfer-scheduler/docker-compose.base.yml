@@ -4,7 +4,7 @@ services:
   cc.file-transfer-scheduler:
     container_name: file-transfer-scheduler
     depends_on:
-      - cc.rabbitmq-remote
+      - cc.rabbitmq-local
     environment:
       - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
       - SchedulerSettings__AdaptersFolderPath=C:/app/config/adapters
