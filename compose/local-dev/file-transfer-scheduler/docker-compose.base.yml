@@ -1,0 +1,26 @@
+---
+services:
+
+  cc.file-transfer-scheduler:
+    container_name: file-transfer-scheduler
+    depends_on:
+      - cc.rabbitmq-local
+    environment:
+      - RABBITMQ_REMOTE_CERT_PATH=C:/rabbitmq-remote-certs/ca.pem
+      - SchedulerSettings__AdaptersFolderPath=C:/app/config/adapters
+      - ABS_CC_FDZ_PATH=c:/fdz
+      - FLAT_LOGS=${FLAT_LOGS:-False}
+    restart: always
+    volumes:
+      - type: bind
+        source: ${PATH_TO_CC_SCHEDULER_REPO}/config/FileTransferScheduler
+        target: C:/app/config
+        read_only: false
+      - type: bind
+        source: ${PATH_TO_CERTS}/remote-certs
+        target: C:/rabbitmq-remote-certs
+        read_only: true
+      - type: bind
+        source: ${ABS_CC_FDZ_PATH}
+        target: c:/fdz
+        read_only: false
