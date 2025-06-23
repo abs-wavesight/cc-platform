@@ -72,7 +72,7 @@ jobs:
       system-config: SiteObservabilityConfig.json
       component-params: >
         -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-system-monitor-version.outputs.version || inputs.notification-adapter-version }}_drex_notification_adapter
-        -p `$DREX_SYSTEM_MONITOR_RELEASE_TAG:${{ needs.get-default-system-monitor-version.outputs.version || inputs.system-monitor-version }}
+        -p `$DREX_SYSTEM_MONITOR_RELEASE_TAG:${{ needs.get-default-system-monitor-version.outputs.version || inputs.system-monitor-version }}_system-monitor
       release-name-prefix: Site Observability Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped
