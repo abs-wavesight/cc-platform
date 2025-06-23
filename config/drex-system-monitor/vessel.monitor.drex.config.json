@@ -1,0 +1,13 @@
+{
+    "Name": "system-monitor",
+    "Ver": "1.0.0",
+    "Direct": {
+        "Enable": true
+    },
+    "Broadcast": {
+        "Enable": true,
+        "Topics": [
+            "abs.drex.vessel.central.connection.status"
+        ]
+    }
+}

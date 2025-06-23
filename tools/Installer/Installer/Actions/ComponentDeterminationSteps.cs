@@ -4,14 +4,14 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Extensions;
 
 namespace Abs.CommonCore.Installer.Actions;
-public class ComponentDeterminationSteps(ICommandExecutionService commandExecutionService, 
+internal class ComponentDeterminationSteps(ICommandExecutionService commandExecutionService, 
     ILogger logger, 
     IServiceManager serviceManager, 
     InstallerComponentRegistryConfig registryConfig, 
     InstallerComponentInstallerConfig? installerConfig,
     string imageStorage)
 {
-    public async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerRun)
+    internal async Task<Component[]> DetermineComponents(string[]? specificComponents, string[][] installingVesrion_Component, bool dockerRun)
     {
         try
         {
@@ -32,18 +32,7 @@ public class ComponentDeterminationSteps(ICommandExecutionService commandExecuti
                     .Distinct()
                     .ToArray();
                 var command = DockerPath.GetDockerPath();
-                var currentContainers = new List<DockerContainerInfoModel>();
-                if (dockerRun)
-                {
-                    var rawDockerPsResponse = commandExecutionService.ExecuteCommandWithResult(command, "ps", "");
-                    logger.LogInformation("Parsing raw ps command response:");
-                    foreach (var line in rawDockerPsResponse)
-                    {
-                        logger.LogInformation("    {line}", line);
-                    }
-
-                    currentContainers = DockerService.ParceDockerPsCommand(rawDockerPsResponse);
-                }
+                var currentContainers = GetCurrentContainers(commandExecutionService, logger, dockerRun, command);
 
                 logger.LogInformation("Determining components to install");
 
@@ -76,6 +65,24 @@ public class ComponentDeterminationSteps(ICommandExecutionService commandExecuti
         }
 
         throw new Exception("No components found to download");
+    }
+
+    internal List<DockerContainerInfoModel> GetCurrentContainers(ICommandExecutionService commandExecutionService, ILogger logger, bool dockerRun, string command)
+    {
+        var currentContainers = new List<DockerContainerInfoModel>();
+        if (dockerRun)
+        {
+            var rawDockerPsResponse = commandExecutionService.ExecuteCommandWithResult(command, "ps", "");
+            logger.LogInformation("Parsing raw ps command response:");
+            foreach (var line in rawDockerPsResponse)
+            {
+                logger.LogInformation("    {line}", line);
+            }
+
+            currentContainers = DockerService.ParceDockerPsCommand(rawDockerPsResponse);
+        }
+
+        return currentContainers;
     }
 
     private List<Component> SelectUpdatedComponents(string[][] installingVersionComponent, Component[] defaultComponentsToInstall, List<DockerContainerInfoModel> currentContainers)

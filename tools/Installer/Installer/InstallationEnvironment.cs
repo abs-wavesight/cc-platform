@@ -1,5 +1,5 @@
 ﻿namespace Abs.CommonCore.Installer;
-public enum InstallationEnvironment
+internal enum InstallationEnvironment
 {
     Unknown = 0,
     Site,

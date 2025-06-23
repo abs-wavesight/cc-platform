@@ -10,6 +10,23 @@ public class DockerActions(ICommandExecutionService commandExecutionService, ILo
 {
     public bool WaitForDockerContainersHealthy { get; set; } = true;
 
+    public async Task<bool> IsDockerRunning(string dockerPath)
+    {
+        var dockerRun = true;
+
+        try
+        {
+            await commandExecutionService.ExecuteCommandAsync(dockerPath, "ps", "");
+        }
+        catch
+        {
+            dockerRun = false;
+            logger.LogInformation("Docker is not running.");
+        }
+
+        return dockerRun;
+    }
+
     public async Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         logger.LogInformation($"{component.Name}: Running docker compose for '{action.Source}'");

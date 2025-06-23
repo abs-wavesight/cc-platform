@@ -39,6 +39,7 @@ public class ComponentInstaller : ActionBase
     private readonly ComponentDeterminationSteps _componentDeterminationSteps;
     private readonly FileManipulationSteps _fileManipulationSteps;
     private readonly PostInstallActions _postInstallActions;
+    private readonly PreInstallActions _preInstallActions;
     private readonly InstallerComponentInstallerConfig? _installerConfig;
     private readonly InstallerComponentRegistryConfig _registryConfig;
     private readonly Dictionary<string, string> _allParameters;
@@ -78,6 +79,7 @@ public class ComponentInstaller : ActionBase
         _componentDeterminationSteps = new ComponentDeterminationSteps(commandExecutionService, _logger, serviceManager, _registryConfig, _installerConfig, _imageStorage);
         _fileManipulationSteps = new FileManipulationSteps(_logger, loggerFactory, commandExecutionService, _registryConfig);
         _postInstallActions = new PostInstallActions(_logger, commandExecutionService);
+        _preInstallActions = new PreInstallActions(commandExecutionService, _logger, _componentDeterminationSteps);
     }
 
     public async Task ExecuteAsync(string[]? specificComponents = null)
@@ -106,17 +108,7 @@ public class ComponentInstaller : ActionBase
             File.Delete(imageListTxtPath);
         }
 
-        var dockerRun = true;
-
-        try
-        {
-            await _commandExecutionService.ExecuteCommandAsync(dockerPath, "ps", "");
-        }
-        catch
-        {
-            dockerRun = false;
-            _logger.LogInformation("Docker is not running.");
-        }
+        var dockerRun = await _dockerActions.IsDockerRunning(dockerPath);
 
         var widowsVersionSpecified = false;
         string[][] installingVersionComponent = null!;
@@ -149,6 +141,7 @@ public class ComponentInstaller : ActionBase
 
         var orderedComponenets = components
             .OrderByDescending(x => x.Name == "Installer")
+            .ThenByDescending(x => x.Name == "Check-Observability-Prerequisites")
             .ThenByDescending(x => x.Name == "Docker")
             .ThenByDescending(x => x.Name is "Certificates-Central" or "Certificates-Site")
             .ThenByDescending(x => x.Name == "OpenSsl")
@@ -156,7 +149,7 @@ public class ComponentInstaller : ActionBase
             .ThenByDescending(x => x.Name == "Vector")
             .ThenByDescending(x => x.Name == "Sftp-Service")
             .ThenByDescending(x => x.Name is "Drex-Message" or "Drex-Central-Message")
-            .ThenByDescending(x => x.Name is "Drex-File" or "Voyage-Manager-Report-Adapter" or "Message-Scheduler")
+            .ThenByDescending(x => x.Name is "Drex-File" or "Voyage-Manager-Report-Adapter" or "Message-Scheduler" or "Drex-Notification-Adapter")
             .ThenByDescending(x => x.Name == "Disco")
             .ThenByDescending(x => x.Name is "Siemens" or "Kdi")
             .ThenByDescending(x => x.Name == "Observability-Service")
@@ -165,7 +158,8 @@ public class ComponentInstaller : ActionBase
         foreach (var component in orderedComponenets)
         {
             var orderedActions = component.Actions
-            .OrderByDescending(x => x.Action == ComponentActionAction.RequestCertificates)
+            .OrderByDescending(x => x.Action == ComponentActionAction.CheckPrerequisites)
+            .ThenByDescending(x => x.Action == ComponentActionAction.RequestCertificates)
             .ThenByDescending(x => x.Action == ComponentActionAction.Copy)
             .ThenByDescending(x => x.Action == ComponentActionAction.ValidateJson)
             .ThenByDescending(x => x.Action == ComponentActionAction.ReplaceParameters)
@@ -213,6 +207,7 @@ public class ComponentInstaller : ActionBase
         {
             await (action.Action switch
             {
+                ComponentActionAction.CheckPrerequisites => _preInstallActions.CheckRequiredContainersRun(component, rootLocation, action, await _dockerActions.IsDockerRunning(DockerPath.GetDockerPath())),
                 ComponentActionAction.Execute => RunExecuteCommandAsync(component, rootLocation, action),
                 ComponentActionAction.ExecuteImmediate => RunExecuteCommandAsync(component, rootLocation, action),
                 ComponentActionAction.Copy => _fileManipulationSteps.RunCopyCommandAsync(component, rootLocation, action),

@@ -4,7 +4,7 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Extensions;
 
 namespace Abs.CommonCore.Installer.Actions;
-public class FileManipulationSteps(ILogger logger,
+internal class FileManipulationSteps(ILogger logger,
     ILoggerFactory loggerFactory,
     ICommandExecutionService commandExecutionService,
     InstallerComponentRegistryConfig registryConfig)
@@ -13,7 +13,7 @@ public class FileManipulationSteps(ILogger logger,
     private const string ReleaseZipName = "Release.zip";
     private const string AdditionalFilesName = "AdditionalFiles";
 
-    public void VerifySourcesPresent(Component[] components)
+    internal void VerifySourcesPresent(Component[] components)
     {
         logger.LogInformation("Verifying source files are present");
         var requiredFiles = components
@@ -49,7 +49,7 @@ public class FileManipulationSteps(ILogger logger,
         return File.Exists(location);
     }
 
-    public async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunUpdatePathCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         logger.LogInformation($"{component.Name}: Adding '{action.Source}' to system path");
         var path = Environment.GetEnvironmentVariable(Constants.PathEnvironmentVariable, EnvironmentVariableTarget.Machine)
@@ -63,7 +63,7 @@ public class FileManipulationSteps(ILogger logger,
         await commandExecutionService.ExecuteCommandAsync("setx", $"/M {Constants.PathEnvironmentVariable} \"%{Constants.PathEnvironmentVariable}%;{action.Source}\"", rootLocation);
     }
 
-    public async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunCopyCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         logger.LogInformation($"{component.Name}: Copying file '{action.Source}' to '{action.Destination}'");
         var directory = Path.GetDirectoryName(action.Destination)!;
@@ -76,7 +76,7 @@ public class FileManipulationSteps(ILogger logger,
         await commandExecutionService.ExecuteCommandAsync("copy", $"\"{action.Source}\" \"{action.Destination}\"", rootLocation);
     }
 
-    public async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action, Dictionary<string, string> allParameters)
+    internal async Task RunReplaceParametersCommandAsync(Component component, string rootLocation, ComponentAction action, Dictionary<string, string> allParameters)
     {
         logger.LogInformation($"{component.Name}: Replacing parameters in '{action.Source}'");
         var path = Path.Combine(rootLocation, action.Source);
@@ -90,7 +90,7 @@ public class FileManipulationSteps(ILogger logger,
         await File.WriteAllTextAsync(path, text);
     }
 
-    public async Task RunChunkCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunChunkCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         var chunker = new DataChunker(loggerFactory);
 
@@ -99,7 +99,7 @@ public class FileManipulationSteps(ILogger logger,
         await chunker.ChunkFileAsync(source, destination, DefaultMaxChunkSize, false);
     }
 
-    public async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunUnchunkCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         var chunker = new DataChunker(loggerFactory);
 
@@ -108,7 +108,7 @@ public class FileManipulationSteps(ILogger logger,
         await chunker.UnchunkFileAsync(source, destination, false);
     }
 
-    public async Task RunCompressCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunCompressCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         var compressor = new DataCompressor(loggerFactory);
 
@@ -117,7 +117,7 @@ public class FileManipulationSteps(ILogger logger,
         await compressor.CompressDirectoryAsync(source, destination, false);
     }
 
-    public async Task RunUncompressCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunUncompressCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         var compressor = new DataCompressor(loggerFactory);
 
@@ -126,7 +126,7 @@ public class FileManipulationSteps(ILogger logger,
         await compressor.UncompressFileAsync(source, destination, false);
     }
 
-    public async Task<string[]> PrintReadmeFileAsync()
+    internal async Task<string[]> PrintReadmeFileAsync()
     {
         var current = Directory.GetCurrentDirectory();
         var readmeName = Directory.GetFiles(current, "readme*.txt", SearchOption.TopDirectoryOnly).FirstOrDefault();
@@ -148,7 +148,7 @@ public class FileManipulationSteps(ILogger logger,
         return readmeLines;
     }
 
-    public async Task ExpandReleaseZipFile()
+    internal async Task ExpandReleaseZipFile()
     {
         logger.LogInformation("Preparing install components");
 

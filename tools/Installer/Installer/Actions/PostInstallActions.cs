@@ -7,7 +7,7 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Extensions;
 
 namespace Abs.CommonCore.Installer.Actions;
-public class PostInstallActions(ILogger logger, ICommandExecutionService commandExecutionService)
+internal class PostInstallActions(ILogger logger, ICommandExecutionService commandExecutionService)
 {
     private const string LocalRabbitUsername = "guest";
     private const string LocalRabbitPassword = "guest";
@@ -19,7 +19,7 @@ public class PostInstallActions(ILogger logger, ICommandExecutionService command
     private const string VMReportUsername = "vm-report-adapter";
     private const string MessageSchedulerUsername = "message-scheduler";
 
-    public async Task RunPostDrexInstallCommandAsync(
+    internal async Task RunPostDrexInstallCommandAsync(
         Component component,
         string _,
         ComponentAction action,
@@ -48,7 +48,7 @@ public class PostInstallActions(ILogger logger, ICommandExecutionService command
         }
     }
 
-    public async Task RunPostRabbitMqInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunPostRabbitMqInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         logger.LogInformation($"{component.Name}: Running RabbitMq post install for '{action.Source}'");
 
@@ -63,30 +63,30 @@ public class PostInstallActions(ILogger logger, ICommandExecutionService command
         await File.WriteAllTextAsync(action.Source, newText);
     }
 
-    public async Task RunPostDrexCentralInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostDrexCentralInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         await RunPostDrexInstallCommandAsync(component, rootLocation, action, AccountType.RemoteDrex, installationEnvironment);
     }
 
-    public async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostDiscoInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running DISCO post install for '{action.Destination}'");
         await UpdateRabbitCredentials("DISCO_RABBIT_USERNAME", "DISCO_RABBIT_PASSWORD", AccountType.Disco, action.Destination, DiscoSiteUsername, action.Source, installationEnvironment);
     }
 
-    public async Task RunPostSiemensInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostSiemensInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running Siemens post install for '{action.Destination}'");
         await UpdateRabbitCredentials("SIEMENS_RABBIT_USERNAME", "SIEMENS_RABBIT_PASSWORD", AccountType.Siemens, action.Destination, SiemensSiteUsername, action.Source, installationEnvironment);
     }
 
-    public async Task RunPostKdiInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostKdiInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running Kdi post install for '{action.Destination}'");
         await UpdateRabbitCredentials("KDI_RABBIT_USERNAME", "KDI_RABBIT_PASSWORD", AccountType.Kdi, action.Destination, KdiSiteUsername, action.Source, installationEnvironment);
     }
 
-    public async Task RunPostVectorInstallCommandAsync(
+    internal async Task RunPostVectorInstallCommandAsync(
         Component component,
         string rootLocation,
         ComponentAction action, 
@@ -110,19 +110,19 @@ public class PostInstallActions(ILogger logger, ICommandExecutionService command
         await File.WriteAllTextAsync(action.Destination, newText);
     }
 
-    public async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostVoyageManagerInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running Voyage Report Manager post install for '{action.Destination}'");
         await UpdateRabbitCredentials("VOYAGE_MANAGER_RABBIT_USERNAME", "VOYAGE_MANAGER_RABBIT_PASSWORD", AccountType.VMReport, action.Destination, VMReportUsername, action.Source, installationEnvironment);
     }
 
-    public async Task RunPostMessageSchedulerInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
+    internal async Task RunPostMessageSchedulerInstallCommandAsync(Component component, string rootLocation, ComponentAction action, InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running Message Scheduler post install for '{action.Destination}'");
         await UpdateRabbitCredentials("MESSAGE_SCHEDULER_USERNAME", "MESSAGE_SCHEDULER_PASSWORD", AccountType.LocalDrex, action.Destination, MessageSchedulerUsername, action.Source, installationEnvironment);
     }
 
-    public async Task RunPostInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
+    internal async Task RunPostInstallCommandAsync(Component component, string rootLocation, ComponentAction action)
     {
         logger.LogInformation($"{component.Name}: Running post install for '{action.Source}'");
         var parts = action.Source.Split(' ');

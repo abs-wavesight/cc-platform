@@ -9,4 +9,5 @@ public interface IDockerActions
     Task ExecuteDockerComposeAsync(string rootLocation, ComponentAction action);
     Task RunDockerComposeCommandAsync(Component component, string rootLocation, ComponentAction action);
     Task StopAllContainersAsync();
+    Task<bool> IsDockerRunning(string dockerPath);
 }
