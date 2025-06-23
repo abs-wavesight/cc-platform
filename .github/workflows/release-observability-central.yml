@@ -1,4 +1,4 @@
-name: Central Core Release
+name: Central Observability Release
 
 on:
   workflow_dispatch:
