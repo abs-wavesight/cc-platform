@@ -38,7 +38,7 @@ internal class PostInstallActions(ILogger logger, ICommandExecutionService comma
                 accountType,
                 action.Destination,
                 DrexSiteUsername,
-                action.Source, 
+                action.Source,
                 installationEnvironment);
         }
         catch (Exception ex)
@@ -89,7 +89,7 @@ internal class PostInstallActions(ILogger logger, ICommandExecutionService comma
     internal async Task RunPostVectorInstallCommandAsync(
         Component component,
         string rootLocation,
-        ComponentAction action, 
+        ComponentAction action,
         InstallationEnvironment installationEnvironment)
     {
         logger.LogInformation($"{component.Name}: Running Vector post install for '{action.Destination}'");

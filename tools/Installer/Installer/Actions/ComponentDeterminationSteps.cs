@@ -4,10 +4,10 @@ using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Extensions;
 
 namespace Abs.CommonCore.Installer.Actions;
-internal class ComponentDeterminationSteps(ICommandExecutionService commandExecutionService, 
-    ILogger logger, 
-    IServiceManager serviceManager, 
-    InstallerComponentRegistryConfig registryConfig, 
+internal class ComponentDeterminationSteps(ICommandExecutionService commandExecutionService,
+    ILogger logger,
+    IServiceManager serviceManager,
+    InstallerComponentRegistryConfig registryConfig,
     InstallerComponentInstallerConfig? installerConfig,
     string imageStorage)
 {

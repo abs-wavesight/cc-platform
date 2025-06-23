@@ -5,7 +5,7 @@ public class DockerService
 {
     public static List<DockerContainerInfoModel> ParceDockerPsCommand(List<string> cmdResult)
     {
-        
+
         try
         {
             var result = new List<DockerContainerInfoModel>();

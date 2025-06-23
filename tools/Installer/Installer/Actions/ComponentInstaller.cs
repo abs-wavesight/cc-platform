@@ -22,7 +22,7 @@ public class ComponentInstaller : ActionBase
 {
     private const string DockerServiceName = "dockerd";
     private const string _imageStorage = "ghcr.io/abs-wavesight/";
-    
+
     private const string Win32OptionalFeatures = "Win32_OptionalFeature";
     private const string Win32ContainerFeature = "Containers";
     private const string Win32InstalledStatus = "InstallState";
@@ -58,7 +58,7 @@ public class ComponentInstaller : ActionBase
         _commandExecutionService = commandExecutionService;
         _serviceManager = serviceManager;
         _logger = loggerFactory.CreateLogger<ComponentInstaller>();
-        
+
         _installerConfig = installerConfig != null
             ? ConfigParser.LoadConfig<InstallerComponentInstallerConfig>(installerConfig.FullName)
             : null;
