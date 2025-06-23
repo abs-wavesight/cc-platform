@@ -1,0 +1,7 @@
+{
+    "Name": "file-transfer-scheduler",
+    "Ver": "1.0.0",
+    "Direct": {
+        "Enable": true
+    }
+}

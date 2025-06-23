@@ -396,6 +396,37 @@
       ]
     },
     {
+      "name": "File-Transfer-Scheduler",
+      "files": [
+        {
+          "type": "container",
+          "source": "ghcr.io/abs-wavesight/file-transfer-scheduler:windows-$WINDOWS_VERSION-$FILE_TRANSFER_SCHEDULER_VERSION",
+          "destination": "file-transfer-scheduler.tar"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/compose/installer/docker-compose.file-transfer-scheduler.yml",
+          "destination": "docker-compose.file-transfer-scheduler.yml"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/file-transfer-scheduler/vessel.appsettings.json",
+          "destination": "vessel.appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/file-transfer-scheduler/adapter.drex.config.json",
+          "destination": "file-transfer-scheduler.adapter.drex.config.json"
+        }
+      ],
+      "actions": [
+        {
+          "source": "docker-compose.file-transfer-scheduler.yml",
+          "action": "replaceParameters"
+        }
+      ]
+    },
+    {
       "name": "Drex-Notification-Adapter",
       "files": [
         {

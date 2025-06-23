@@ -1,0 +1,4 @@
+services:
+
+  cc.file-transfer-scheduler:
+    image: ghcr.io/abs-wavesight/file-transfer-scheduler:windows-${WINDOWS_VERSION}
