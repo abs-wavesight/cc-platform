@@ -2,6 +2,7 @@
 using Abs.CommonCore.Installer.Actions;
 using Abs.CommonCore.Installer.Services;
 using Abs.CommonCore.Platform.Exceptions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Newtonsoft.Json;
@@ -11,6 +12,8 @@ namespace Installer.Tests.Actions;
 
 public class ComponentInstallerTests
 {
+    private static DockerActions _dockerActions;
+
     public ComponentInstallerTests()
     {
         // Set up the test environment
@@ -136,7 +139,7 @@ public class ComponentInstallerTests
         await File.WriteAllTextAsync(@"c:\\config\\test-app2\\docker-compose.test-app2.yml", "Invalid content");
 
         var initializer = Initialize(@"Configs/InstallTest_RegistryConfig.json");
-        initializer.Installer.WaitForDockerContainersHealthy = false;
+        _dockerActions.WaitForDockerContainersHealthy = false;
         await initializer.Installer.ExecuteAsync(new[] { "RunDockerComposeTest" });
 
         var args = "";
@@ -195,7 +198,9 @@ public class ComponentInstallerTests
         commandExecution.Setup(x => x.ExecuteCommandAsync("copy", "\"install_file\" \"install_file_2\"", @"c:\abs\installer\RabbitMq", It.IsAny<bool>()))
             .Returns(Task.Run(() => { File.Copy(@"c:\abs\installer\RabbitMq\install_file", @"c:\abs\installer\RabbitMq\install_file_2", true); }));
 
-        var installer = new ComponentInstaller(loggerFactory, commandExecution.Object, serviceManager.Object, registry, config, parameters, false);
+        var dockerActions = new DockerActions(commandExecution.Object, loggerFactory.CreateLogger("DockerActions"));
+
+        var installer = new ComponentInstaller(loggerFactory, commandExecution.Object, serviceManager.Object, registry, config, parameters, false, dockerActions);
         await installer.ExecuteAsync();
 
         Assert.True(File.Exists(destinationPath));
@@ -268,8 +273,10 @@ public class ComponentInstallerTests
             ? new FileInfo(installerFile)
             : null;
 
+        var logger = new Mock<ILogger>();
         parameters ??= new Dictionary<string, string>();
-        var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, serviceManager.Object, registryFileInfo, installerFileInfo, parameters, false);
+        _dockerActions = new DockerActions(commandExecute.Object, logger.Object);
+        var downloader = new ComponentInstaller(NullLoggerFactory.Instance, commandExecute.Object, serviceManager.Object, registryFileInfo, installerFileInfo, parameters, false, _dockerActions);
         return (commandExecute, downloader);
     }
 

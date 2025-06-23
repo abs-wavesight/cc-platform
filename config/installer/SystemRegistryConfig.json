@@ -868,6 +868,55 @@
           "action": "runDockerCompose"
         }
       ]
+    },
+    {
+      "name": "Check-Observability-Prerequisites",
+      "files": [],
+      "actions": [
+        {
+          "source": "observability-service.txt",
+          "action": "checkPrerequisites"
+        }
+      ]
+    },
+    {
+      "name": "Drex-System-Monitor",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/",
+          "destination": "c:/abs/temp/Drex-System-Monitor/Abs.CommonCore.SystemMonitorAdapter.exe"
+        }
+      ],
+      "actions": [
+        {
+          "source": "Abs.CommonCore.SystemMonitorAdapter.exe",
+          "destination": "$ABS_PATH\\drex-system-monitor\\Abs.CommonCore.SystemMonitorAdapter.exe",
+          "action": "copy"
+        },
+        {
+          "source": "$RABBIT_LOCATION.monitor.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\monitor.drex.config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$RABBIT_LOCATION.appsettings.json",
+          "destination": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\drex-system-monitor\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command \"sc create ResourceMonitor binPath= c:\\docker\\docker\" 2>&1",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_PATH')",
+          "action": "execute"
+        }
+      ]
     }
   ]
 }

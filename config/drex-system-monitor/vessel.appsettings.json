@@ -1,0 +1,69 @@
+﻿{
+  "Monitoring": {
+    "SampleIntervalSeconds": 10,
+    "SummaryReportIntervalSeconds": 3600,
+    "AveragingWindow": 15,
+    "CentralIpAdress": "$SFTP_CENTRAL_HOST",
+    "CentralPort": "80"
+  },
+  "Features": {
+    "EnableAlerts": true,
+    "EnableSummaryReport": true
+  },
+  "Alerts": {
+    "CPU": {
+      "WarningThreshold": 60.0,
+      "CriticalThreshold": 85.0
+    },
+    "RAM": {
+      "WarningThreshold": 70.0,
+      "CriticalThreshold": 90.0
+    },
+    "Storage": {
+      "WarningThreshold": 75.0,
+      "CriticalThreshold": 85.0
+    }
+  },
+  "ConnectionSettings": {
+    "Host": "rabbitmq-vessel",
+    "Port": 5672,
+    "HttpPort": 15672,
+    "Protocol": "amqp",
+    "Username": "system-monitor",
+    "Password": "BRwBDRYIThgdCxkVHAEEFgEQFgxBGQ==",
+    "vHost": "commoncore",
+    "Exchange": "e.cc.drex.portal",
+    "CommonCoreStatusQueue": "q.cc.drex.inbox.broadcast.adapter.system-monitor",
+    "RetryDelaySeconds": 30
+  },
+  "MachineSettings": {
+    "SiteType": "$RABBIT_LOCATION",
+    "SiteId": "$VESSEL_IMO"
+  },
+  "RegistryPaths": {
+    "AbsNauticalSystemsPath": "SOFTWARE\\ABS Nautical Systems",
+    "AbsNauticalProductPath": "\\Standard\\Server\\Production",
+    "ServicesPath": "SYSTEM\\CurrentControlSet\\Services\\"
+  },
+  "SkipCertificateImport": true,
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "$ABS_PATH/ResourceMonitoring/logs/app.log",
+          "rollingInterval": "Day",
+          "fileSizeLimitBytes": 5242880,
+          "rollOnFileSizeLimit": true,
+          "retainedFileCountLimit": 3
+        }
+      }
+    ]
+  }
+}

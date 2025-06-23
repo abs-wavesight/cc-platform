@@ -753,7 +753,8 @@ internal class Program
 
         return await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var dockerActions = new DockerActions(commandExecution, logger);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters, dockerActions);
             await installer.ExecuteAsync(components);
         }, true);
     }
@@ -921,7 +922,8 @@ internal class Program
 
         return await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var dockerActions = new DockerActions(commandExecution, logger);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters, dockerActions);
             await installer.RunSystemRestoreCommandAsync(component, action.Source, action);
         }, true);
     }
