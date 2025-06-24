@@ -919,12 +919,12 @@
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/prerequisites/observability-service-vessel.txt",
-          "destination": "observability-service-vessel.txt"
+          "destination": "c:/abs/installer/Check-Observability-Prerequisites/observability-service-vessel.txt"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/prerequisites/observability-service-central.txt",
-          "destination": "observability-service-central.txt"
+          "destination": "c:/abs/installer/Check-Observability-Prerequisites/observability-service-central.txt"
         }
       ],
       "actions": [
@@ -940,17 +940,17 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Drex-System-Monitor/"
+          "destination": "c:/abs/installer/Drex-System-Monitor/"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.monitor.drex.config.json",
-          "destination": "vessel.monitor.drex.config.json"
+          "destination": "c:/abs/installer/Drex-System-Monitor/vessel.monitor.drex.config.json"
         },
         {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.appsettings.json",
-          "destination": "vessel.appsettings.json"
+          "destination": "c:/abs/installer/Drex-System-Monitor/vessel.appsettings.json"
         }
       ],
       "actions": [
