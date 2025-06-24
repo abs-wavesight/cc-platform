@@ -871,10 +871,21 @@
     },
     {
       "name": "Check-Observability-Prerequisites",
-      "files": [],
+      "files": [
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/prerequisites/observability-service-vessel.txt",
+          "destination": "observability-service-vessel.txt"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/prerequisites/observability-service-central.txt",
+          "destination": "observability-service-central.txt"
+        }
+      ],
       "actions": [
         {
-          "source": "observability-service.txt",
+          "source": "observability-service-$RABBIT_LOCATION.txt",
           "action": "checkPrerequisites"
         }
       ]
@@ -885,7 +896,17 @@
         {
           "type": "release",
           "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/",
-          "destination": "c:/abs/temp/Drex-System-Monitor/Abs.CommonCore.SystemMonitorAdapter.exe"
+          "destination": "c:/abs/temp/Drex-System-Monitor/"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-system-monitor/vessel.monitor.drex.config.json",
+          "destination": "vessel.monitor.drex.config.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/$PLATFORM_COMMIT_SHA/config/drex-system-monitor/vessel.appsettings.json",
+          "destination": "vessel.appsettings.json"
         }
       ],
       "actions": [
