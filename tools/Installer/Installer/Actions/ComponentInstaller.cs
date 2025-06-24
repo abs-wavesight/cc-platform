@@ -160,6 +160,11 @@ public class ComponentInstaller : ActionBase
             var orderedActions = component.Actions
             .OrderByDescending(x => x.Action == ComponentActionAction.CheckPrerequisites)
             .ThenByDescending(x => x.Action == ComponentActionAction.RequestCertificates)
+            .ThenByDescending(x =>
+                x.Action is ComponentActionAction.Chunk or
+                    ComponentActionAction.Unchunk or
+                    ComponentActionAction.Compress or
+                    ComponentActionAction.Uncompress)
             .ThenByDescending(x => x.Action == ComponentActionAction.Copy)
             .ThenByDescending(x => x.Action == ComponentActionAction.ValidateJson)
             .ThenByDescending(x => x.Action == ComponentActionAction.ReplaceParameters)
@@ -167,11 +172,6 @@ public class ComponentInstaller : ActionBase
             .ThenByDescending(x => x.Action == ComponentActionAction.Install)
             .ThenByDescending(x => x.Action == ComponentActionAction.Execute)
             .ThenByDescending(x => x.Action == ComponentActionAction.UpdatePath)
-            .ThenByDescending(x =>
-                x.Action is ComponentActionAction.Chunk or
-                    ComponentActionAction.Unchunk or
-                    ComponentActionAction.Compress or
-                    ComponentActionAction.Uncompress)
             .ThenByDescending(x => x.Action == ComponentActionAction.PostRabbitMqInstall)
             .ThenByDescending(x =>
                 x.Action is ComponentActionAction.PostDrexInstall or

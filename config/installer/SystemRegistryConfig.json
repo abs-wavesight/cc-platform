@@ -938,11 +938,6 @@
       "name": "Drex-System-Monitor",
       "files": [
         {
-          "type": "release",
-          "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/",
-          "destination": "c:/abs/installer/Drex-System-Monitor/"
-        },
-        {
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.monitor.drex.config.json",
           "destination": "c:/abs/installer/Drex-System-Monitor/vessel.monitor.drex.config.json"
@@ -951,13 +946,18 @@
           "type": "file",
           "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.appsettings.json",
           "destination": "c:/abs/installer/Drex-System-Monitor/vessel.appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/publish.zip",
+          "destination": "c:/abs/installer/Drex-System-Monitor/publish.zip"
         }
       ],
       "actions": [
         {
-          "source": "Abs.CommonCore.SystemMonitorAdapter.exe",
-          "destination": "$ABS_PATH\\drex-system-monitor\\Abs.CommonCore.SystemMonitorAdapter.exe",
-          "action": "copy"
+          "source": "publish.zip",
+          "destination": "$ABS_PATH\\drex-system-monitor\\",
+          "action": "uncompress"
         },
         {
           "source": "$RABBIT_LOCATION.monitor.drex.config.json",
