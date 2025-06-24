@@ -1,1 +1,2 @@
 drex-message_1.0.0.20
+message-scheduler_1.0.0.10

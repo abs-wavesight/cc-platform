@@ -2,7 +2,8 @@
   "components": [
     "Check-Observability-Prerequisites",
     "Drex-Notification-Adapter",
-    "Drex-System-Monitor"
+    "Drex-System-Monitor",
+    "File-Transfer-Scheduler"
   ],
   "parameters": {
     "$ABS_PATH": "c:/abs",

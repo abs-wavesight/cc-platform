@@ -813,6 +813,50 @@
       ]
     },
     {
+      "name": "File-Transfer-Scheduler",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-scheduler/releases/download/$FILE_TRANSFER_SCHEDULER_RELEASE_TAG/",
+          "destination": "c:/abs/temp/File-Transfer-Scheduler/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "file-transfer-scheduler.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.file-transfer-scheduler.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$RABBIT_LOCATION.appsettings.json",
+          "destination": "$ABS_PATH\\config\\file-transfer-scheduler\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "file-transfer-scheduler.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\file-transfer-scheduler.adapter.drex.config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\file-transfer-scheduler\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "runDockerCompose"
+        }
+      ]
+    },
+    {
       "name": "Drex-Notification-Adapter",
       "files": [
         {
