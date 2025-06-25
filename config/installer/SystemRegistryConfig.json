@@ -984,6 +984,10 @@
         {
           "source": "powershell -Command \"sc.exe start \"ResourceMonitor\"\" 2>&1",
           "action": "execute"
+        },
+        {
+          "source": "powershell -Command \"$ABS_PATH\\drex-system-monitor\\script\\writeAppMetadataToRegistry.ps1 -TargetFile \"$ABS_PATH\\drex-system-monitor\\Abs.CommonCore.SystemMonitorAdapter.exe\" -ProductName \"SystemMonitorAdapter\"\" 2>&1",
+          "action": "execute"
         }
       ]
     }
