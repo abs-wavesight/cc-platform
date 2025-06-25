@@ -1,0 +1,14 @@
+﻿{
+  "components": [
+    "Check-Observability-Prerequisites",
+    "Drex-Notification-Adapter",
+    "Drex-System-Monitor",
+    "File-Transfer-Scheduler"
+  ],
+  "parameters": {
+    "$ABS_PATH": "c:/abs",
+    "$RABBIT_LOCATION": "vessel",
+    "$SFTP_CENTRAL_HOST": "central.com",
+    "$VESSEL_IMO": "123456"
+  }
+}

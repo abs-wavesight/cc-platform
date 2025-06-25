@@ -753,7 +753,8 @@ internal class Program
 
         return await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var dockerActions = new DockerActions(commandExecution, logger);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters, dockerActions);
             await installer.ExecuteAsync(components);
         }, true);
     }
@@ -921,7 +922,8 @@ internal class Program
 
         return await ExecuteCommandAsync(loggerFactory, async () =>
         {
-            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters);
+            var dockerActions = new DockerActions(commandExecution, logger);
+            var installer = new ComponentInstaller(loggerFactory, commandExecution, serviceManager, registryConfig, installerConfig, configParameters, promptForMissingParameters, dockerActions);
             await installer.RunSystemRestoreCommandAsync(component, action.Source, action);
         }, true);
     }
@@ -937,14 +939,24 @@ internal class Program
         {
             if (logError)
             {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "Error executing command");
+                LogCommandExecutionError(loggerFactory, ex);
             }
 
             return Constants.ExitCodes.GENERIC_ERROR;
         }
 
         return Constants.ExitCodes.SUCCESS;
+    }
+
+    private static void LogCommandExecutionError(ILoggerFactory loggerFactory, Exception? ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+
+        do
+        {
+            logger.LogError(ex, "Error executing command");
+            ex = ex?.InnerException;
+        } while (ex is not null);
     }
 
     private static async Task<int> ExecuteCommandAsync(ILoggerFactory loggerFactory,
@@ -958,8 +970,7 @@ internal class Program
         {
             if (logError)
             {
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "Error executing command");
+                LogCommandExecutionError(loggerFactory, ex);
             }
 
             return Constants.ExitCodes.GENERIC_ERROR;

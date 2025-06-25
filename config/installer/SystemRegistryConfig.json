@@ -28,7 +28,7 @@
       "actions": [
         {
           "action": "requestCertificates",
-          "source": "$APIM_SERVICE_URL/crypto/client_certificates",
+          "source": "$APIM_SERVICE_URL/crypto/client-certificates",
           "destination": "..\\AdditionalFiles\\certs",
           "cloud_tenant_id": "$CLOUD_TENANT_ID",
           "cc_tenant_id": "$CC_TENANT_ID",
@@ -813,6 +813,50 @@
       ]
     },
     {
+      "name": "File-Transfer-Scheduler",
+      "files": [
+        {
+          "type": "release",
+          "source": "https://github.com/abs-wavesight/cc-scheduler/releases/download/$FILE_TRANSFER_SCHEDULER_RELEASE_TAG/",
+          "destination": "c:/abs/temp/File-Transfer-Scheduler/"
+        }
+      ],
+      "actions": [
+        {
+          "source": "file-transfer-scheduler.tar",
+          "action": "install"
+        },
+        {
+          "source": "docker-compose.file-transfer-scheduler.yml",
+          "destination": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$RABBIT_LOCATION.appsettings.json",
+          "destination": "$ABS_PATH\\config\\file-transfer-scheduler\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "file-transfer-scheduler.adapter.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\file-transfer-scheduler.adapter.drex.config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\config\\file-transfer-scheduler\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "$ABS_PATH\\config",
+          "destination": "$ABS_PATH\\config\\docker-compose.file-transfer-scheduler.yml",
+          "action": "runDockerCompose"
+        }
+      ]
+    },
+    {
       "name": "Drex-Notification-Adapter",
       "files": [
         {
@@ -851,7 +895,7 @@
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/cc-logs')",
           "action": "executeImmediate"
-        },        
+        },
         {
           "source": "drex-notification.adapter.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-notification.adapter.drex.config.json",
@@ -866,6 +910,80 @@
           "source": "$ABS_PATH\\config",
           "destination": "$ABS_PATH\\config\\docker-compose.drex-notification-adapter.yml",
           "action": "runDockerCompose"
+        }
+      ]
+    },
+    {
+      "name": "Check-Observability-Prerequisites",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/prerequisites/observability-service-vessel.txt",
+          "destination": "c:/abs/installer/Check-Observability-Prerequisites/observability-service-vessel.txt"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/prerequisites/observability-service-central.txt",
+          "destination": "c:/abs/installer/Check-Observability-Prerequisites/observability-service-central.txt"
+        }
+      ],
+      "actions": [
+        {
+          "source": "$ABS_PATH\\installer\\Check-Observability-Prerequisites\\observability-service-$RABBIT_LOCATION.txt",
+          "action": "checkPrerequisites"
+        }
+      ]
+    },
+    {
+      "name": "Drex-System-Monitor",
+      "files": [
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.monitor.drex.config.json",
+          "destination": "c:/abs/installer/Drex-System-Monitor/vessel.monitor.drex.config.json"
+        },
+        {
+          "type": "file",
+          "source": "https://raw.githubusercontent.com/abs-wavesight/cc-platform/main/config/drex-system-monitor/vessel.appsettings.json",
+          "destination": "c:/abs/installer/Drex-System-Monitor/vessel.appsettings.json"
+        },
+        {
+          "type": "file",
+          "source": "https://github.com/abs-wavesight/cc-drex-system-monitor/releases/download/$DREX_SYSTEM_MONITOR_RELEASE_TAG/publish.zip",
+          "destination": "c:/abs/installer/Drex-System-Monitor/publish.zip"
+        }
+      ],
+      "actions": [
+        {
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\publish.zip",
+          "destination": "$ABS_PATH\\drex-system-monitor\\",
+          "action": "uncompress"
+        },
+        {
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.monitor.drex.config.json",
+          "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\monitor.drex.config.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.appsettings.json",
+          "destination": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
+          "action": "copy"
+        },
+        {
+          "source": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
+          "action": "replaceParameters"
+        },
+        {
+          "source": "powershell -Command \"sc.exe create ResourceMonitor binPath= \"$ABS_PATH/drex-system-monitor/Abs.CommonCore.SystemMonitorAdapter.exe\"\" 2>&1",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/ResourceMonitoring/logs')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command \"sc.exe start \"ResourceMonitor\"\" 2>&1",
+          "action": "execute"
         }
       ]
     }

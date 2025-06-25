@@ -1,0 +1,93 @@
+﻿name: Site Observability Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        type: string
+        description: Unique version for the release
+      description:
+        required: false
+        type: string
+        description: Description of the release
+      system-monitor-version:
+        required: false
+        type: string
+        description: Version to use for System monitor release # v100
+      notification-adapter-version:
+        required: false
+        type: string
+        description: Version to use for Notification adapter release # v100
+      file-transfer-scheduler-version:
+        required: false
+        type: string
+        description: Version to use for File Transfer Scheduler release # v100
+
+concurrency:
+  group: site-observability-release-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  get-next-version:
+    name: Get Next Version
+    if: ${{ inputs.version == '' }}
+    uses: abs-wavesight/cc-platform/.github/workflows/shared-define-version.yml@main
+    with:
+      major: 1
+      minor: 0
+      project_marker: "observability-site"
+      develop_branch: "main"
+      increment: true
+
+  get-default-system-monitor-version:
+    name: Get Default System monitor Version
+    if: ${{ inputs.system-monitor-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex-system-monitor"
+      name: "System Monitor Release"
+    secrets: inherit
+
+  get-default-notification-adapter-version:
+    name: Get Default Notification adapter Version
+    if: ${{ inputs.notification-adapter-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-drex-notification-adapter"
+      name: "Drex Notification Adapter Release"
+    secrets: inherit
+
+  get-default-file-transfer-scheduler-version:
+    name: Get Default File Transfer Scheduler Version
+    if: ${{ inputs.file-transfer-scheduler-version == '' }}
+    uses: ./.github/workflows/shared-get-latest-release-version.yml
+    with:
+      repo: "cc-scheduler"
+      name: "File Transfer Scheduler Release"
+    secrets: inherit
+
+  release-component:
+    name: Site Observability Release
+    needs: 
+      - get-default-system-monitor-version
+      - get-default-notification-adapter-version
+      - get-default-file-transfer-scheduler-version
+      - get-next-version
+    uses: ./.github/workflows/release-shared-system.yml
+    strategy:
+      matrix:
+        windows-version: [ "2022" ]
+    with:
+      version: ${{ inputs.version || needs.get-next-version.outputs.version }}
+      description: ${{ inputs.description || 'Site Observability Release' }}
+      tag-prefix: site-observability
+      windows-version: ${{ matrix.windows-version }}
+      system-config: SiteObservabilityConfig.json
+      component-params: >
+        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-notification-adapter-version.outputs.version || inputs.notification-adapter-version }}_drex-notification-adapter
+        -p `$DREX_SYSTEM_MONITOR_RELEASE_TAG:${{ needs.get-default-system-monitor-version.outputs.version || inputs.system-monitor-version }}_system-monitor
+        -p `$FILE_TRANSFER_SCHEDULER_RELEASE_TAG:${{ needs.get-default-file-transfer-scheduler-version.outputs.version || inputs.file-transfer-scheduler-version }}_file-transfer-scheduler
+      release-name-prefix: Site Observability Release
+    secrets: inherit
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

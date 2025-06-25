@@ -1,0 +1,10 @@
+﻿{
+  "components": [
+    "Check-Observability-Prerequisites",
+    "Drex-Notification-Adapter"
+  ],
+  "parameters": {
+    "$ABS_PATH": "c:/abs",
+    "$RABBIT_LOCATION": "central"
+  }
+}

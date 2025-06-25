@@ -15,14 +15,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.3.0.9-beta" />
+		<PackageReference Include="Abs.CommonCore.Contracts" Version="1.3.0.15-beta" />
 		<PackageReference Include="EasyNetQ.Management.Client" Version="3.0.0" />
-		<PackageReference Include="JsonSchema.Net" Version="4.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.10" />
-		<PackageReference Include="Polly" Version="8.4.2" />
+		<PackageReference Include="JsonSchema.Net" Version="7.3.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.6" />
+		<PackageReference Include="Polly" Version="8.6.1" />
 	</ItemGroup>
 
 

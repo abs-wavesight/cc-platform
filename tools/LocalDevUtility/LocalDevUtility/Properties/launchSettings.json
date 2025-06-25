@@ -2,7 +2,7 @@
   "profiles": {
     "LocalDevUtility": {
       "commandName": "Project",
-      "commandLineArgs": "run --voyage-manager-adapter s"
+      "commandLineArgs": "configure"
     }
   }
 }
