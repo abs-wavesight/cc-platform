@@ -929,7 +929,7 @@
       ],
       "actions": [
         {
-          "source": "observability-service-$RABBIT_LOCATION.txt",
+          "source": "$ABS_PATH\\installer\\Check-Observability-Prerequisites\\observability-service-$RABBIT_LOCATION.txt",
           "action": "checkPrerequisites"
         }
       ]
@@ -955,17 +955,17 @@
       ],
       "actions": [
         {
-          "source": "publish.zip",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\publish.zip",
           "destination": "$ABS_PATH\\drex-system-monitor\\",
           "action": "uncompress"
         },
         {
-          "source": "$RABBIT_LOCATION.monitor.drex.config.json",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.monitor.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\monitor.drex.config.json",
           "action": "copy"
         },
         {
-          "source": "$RABBIT_LOCATION.appsettings.json",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.appsettings.json",
           "destination": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
           "action": "copy"
         },
