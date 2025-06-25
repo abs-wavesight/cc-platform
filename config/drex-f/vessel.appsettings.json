@@ -21,16 +21,6 @@
   },
   "VesselImo": "$VESSEL_IMO",
   "TempFolderPath": "C:/data/temp",
-  "SftpSettings": {
-    "Key": "central",
-    "MaxRetryAttempts": 5,
-    "RetryAttemptBackoffSecondsFactor": 3,
-    "ConnectivityRetrySeconds": 30,
-    "ConnectivityLossLogFrequencySeconds": 60,
-    "host": "$SFTP_CENTRAL_HOST",
-    "port": 1022,
-    "protocol": "sftp"
-  },
   "RemoteConnectionRetryDelaySeconds": 60,
   "HealthChecks": {
     "HealthCheckProbePollFrequencySeconds": 15,
