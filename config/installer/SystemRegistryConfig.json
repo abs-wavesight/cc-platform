@@ -974,7 +974,7 @@
           "action": "replaceParameters"
         },
         {
-          "source": "powershell -Command \"sc.exe create ResourceMonitor binPath= \"$ABS_PATH/drex-system-monitor/Abs.CommonCore.SystemMonitorAdapter.exe\"\" 2>&1",
+          "source": "powershell -Command \"sc.exe create ResourceMonitor binPath= \"$ABS_PATH/drex-system-monitor/Abs.CommonCore.SystemMonitorAdapter.exe\" start= auto\" 2>&1",
           "action": "executeImmediate"
         },
         {
