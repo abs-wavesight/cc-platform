@@ -57,7 +57,7 @@ jobs:
       windows-version: ${{ matrix.windows-version }}
       system-config: CentralObservabilityConfig.json
       component-params: >
-        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-notification-adapter-version.outputs.version || inputs.notification-adapter-version }}_drex_notification_adapter
+        -p `$DREX_NOTIFICATION_ADAPTER_RELEASE_TAG:${{ needs.get-default-notification-adapter-version.outputs.version || inputs.notification-adapter-version }}_drex-notification-adapter
       release-name-prefix: Central Observability Release
     secrets: inherit
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }} # Needed to ensure the full workflow runs even if dependencies skipped

@@ -929,7 +929,7 @@
       ],
       "actions": [
         {
-          "source": "observability-service-$RABBIT_LOCATION.txt",
+          "source": "$ABS_PATH\\installer\\Check-Observability-Prerequisites\\observability-service-$RABBIT_LOCATION.txt",
           "action": "checkPrerequisites"
         }
       ]
@@ -955,30 +955,34 @@
       ],
       "actions": [
         {
-          "source": "publish.zip",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\publish.zip",
           "destination": "$ABS_PATH\\drex-system-monitor\\",
           "action": "uncompress"
         },
         {
-          "source": "$RABBIT_LOCATION.monitor.drex.config.json",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.monitor.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\monitor.drex.config.json",
           "action": "copy"
         },
         {
-          "source": "$RABBIT_LOCATION.appsettings.json",
+          "source": "$ABS_PATH\\installer\\Drex-System-Monitor\\$RABBIT_LOCATION.appsettings.json",
           "destination": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
           "action": "copy"
         },
         {
-          "source": "$ABS_PATH\\config\\drex-system-monitor\\appsettings.json",
+          "source": "$ABS_PATH\\drex-system-monitor\\config\\appsettings.json",
           "action": "replaceParameters"
         },
         {
-          "source": "powershell -Command \"sc create ResourceMonitor binPath= c:\\docker\\docker\" 2>&1",
+          "source": "powershell -Command \"sc.exe create ResourceMonitor binPath= \"$ABS_PATH/drex-system-monitor/Abs.CommonCore.SystemMonitorAdapter.exe\"\" 2>&1",
           "action": "executeImmediate"
         },
         {
-          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$SFTP_SERVICE_PATH')",
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/ResourceMonitoring/logs')",
+          "action": "executeImmediate"
+        },
+        {
+          "source": "powershell -Command \"sc.exe start \"ResourceMonitor\"\" 2>&1",
           "action": "execute"
         }
       ]
