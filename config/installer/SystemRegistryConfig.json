@@ -412,6 +412,10 @@
           "action": "executeImmediate"
         },
         {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/ssh-keys')",
+          "action": "executeImmediate"
+        },
+        {
           "source": "drex-f.adapter.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-f.adapter.drex.config.json",
           "action": "copy"
@@ -419,11 +423,6 @@
         {
           "source": "$ABS_PATH\\config\\docker-compose.drex-file.yml",
           "action": "replaceParameters"
-        },
-        {
-          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
-          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
-          "action": "copy"
         },
         {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$FDZ_ROOT_PATH')",
@@ -893,17 +892,16 @@
           "action": "executeImmediate"
         },
         {
+          "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/ssh-keys')",
+          "action": "executeImmediate"
+        },
+        {
           "source": "powershell -Command [System.IO.Directory]::CreateDirectory('$ABS_PATH/cc-logs')",
           "action": "executeImmediate"
         },
         {
           "source": "drex-notification.adapter.drex.config.json",
           "destination": "$ABS_PATH\\config\\drex-shared\\adapters\\drex-notification.adapter.drex.config.json",
-          "action": "copy"
-        },
-        {
-          "source": "..\\AdditionalFiles\\ssh-host-key-fingerprint.txt",
-          "destination": "$ABS_PATH\\ssh-keys\\ssh-host-key-fingerprint.txt",
           "action": "copy"
         },
         {
