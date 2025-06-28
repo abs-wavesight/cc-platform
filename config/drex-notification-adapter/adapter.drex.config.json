@@ -4,7 +4,7 @@
   "Broadcast": {
     "Enable": true,
     "Topics": [
-      "abs.cc.notification.#"
+      "abs.cc.notifications.#"
     ]
   }
 }
